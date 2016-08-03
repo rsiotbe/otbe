@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
+import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.session.SessionRviaData;
 
 public class IsumValidation
