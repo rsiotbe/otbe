@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="tomcat-demo" default="war" basedir=".">
+	<property name="project-name" value="REP_RUALVIA_REST" />
+	<property name="war-file-name" value="${project-name}.war" />
+	<property name="base-directory" value=".." />
+	<property name="source-directory" value="${base-directory}/src" />
+	<property name="template-directory" value="${base-directory}/template" />
+	<property name="web-directory" value="${base-directory}/WebContent" />
+	<property name="web-xml-file" value="${web-directory}/WEB-INF/web.xml" />
+	<property name="lib-directory" value="${web-directory}/WEB-INF/lib" />
+	<property name="build-directory" value="${base-directory}/build" />
+	<property name="classes-directory" value="${build-directory}/classes" />
+	<property name="configurations-directory" value="${base-directory}/configurations" />
+	<property name="dist-directory" value="${base-directory}/dist" />
+	
+	<target name="clean">
+    	<rmdir dir="${build-directory}"/>
+    	<rmdir dir="${dist-directory}" />
+	</target>	
+	<target name="init">
+    	<mkdir dir="${build-directory}"/>
+    	<mkdir dir="${classes-directory}"/>
+    	<mkdir dir="${dist-directory}" />
+	</target>
+	<path id="compile.classpath">
+    	<fileset dir="WebContent/WEB-INF/lib">
+        	<include name="*.jar"/>
+   		 </fileset>
+	</path>	
+	<target name="compile" depends="init" >
+    	<javac destdir="${classes-directory}" debug="true" srcdir="${source-directory}">
+        	<classpath refid="compile.classpath"/>
+   	 	</javac>
+	</target>
+	<target name="war" depends="compile">
+		<delete file="${dist-directory}/${war-file-name}" />
+		<war warfile="${dist-directory}/${war-file-name}" webxml="${web-xml-file}">
+			<classes dir="${classes-directory}" />
+			<classes dir="${configurations-directory}" />
+			<fileset dir="${web-directory}">
+				<!-- Need to exclude it since webxml is an attribute of the war tag above -->
+				<exclude name="WEB-INF/web.xml" />
+			</fileset>
+			<lib dir="${lib-directory}"/>
+			<fileset dir="${template-directory}"></fileset>	
+		</war>
+	</target>
+</project>
