@@ -12,7 +12,7 @@ public class DDBBFactory
 	 */
 	public enum DDBBProvider
 	{
-		Oracle, MySql
+		Oracle, MySql;
 	}
 
 	/**
