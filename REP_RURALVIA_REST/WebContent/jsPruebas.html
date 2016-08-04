@@ -2,26 +2,27 @@
 	<head>
 		<meta charset="UTF-8"/>
 		<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+		<script src="/api/manageTranslationJS.js"></script>
+	
 		<title>Pruebas JS</title>
 	</head>
 	<body>
 		
 		<div><h2>PRUEBAS JAVASCRIPT AJAX</h2></div>
-		<script type="text/javascript">
-			initTranslator();
+		<script type="text/javascript"> 
 			var translator = translator;
-			translator = {"HC_comun_ClienteClau4" : "bla bla",
-						  "COMUN_Literal_Escribe_tu_nombre" : "bla"};
+			var userLang ="en_UK";
+			if(typeof (translator) == 'undefined')
+				translator = {};
+			
+			translator.HC_comun_ClienteClau4 = "bla bla";
+			translator.COMUN_Literal_Escribe_tu_nombre = "bla";
+			
 
+
+			
 			console.log(translator);
-			ajaxRequest(translator,"en_UK");
-			//NOTA: Translator debe estar inicializada previamente en el bloque script
-			function initTranslator(){	
-				console.log("initTranslator lanzada.");
-				if(!translator){
-					translator = [];
-				}
-			}
+			//xRequest(translator,"en_UK");
 			
 			function ajaxRequest(translator,lang){
 				var id = "";

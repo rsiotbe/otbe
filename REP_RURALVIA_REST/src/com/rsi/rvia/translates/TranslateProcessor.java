@@ -24,14 +24,15 @@ import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 public class TranslateProcessor
 {
 	private static Logger										pLog			= LoggerFactory.getLogger(TranslateProcessor.class);
-	private static Hashtable<String, TranslateEntry>	htCacheData	= new Hashtable<String, TranslateEntry>();
+	public static Hashtable<String, TranslateEntry>	htCacheData	= new Hashtable<String, TranslateEntry>();
 
-	/** 
-	 * Función que recibe una serie de identificadores de traducción e idiona y obtien su traducción
-	 * @param processIds Array de String con los identificadores
-	 * @param strLanguage String con el idioma (es_ES)
-	 * @return hastable con parejas identificador y su traducción. 
-	 */
+	/** Función que recibe una serie de identificadores de traducción e idiona y obtien su traducción
+	 * 
+	 * @param processIds
+	 *           Array de String con los identificadores
+	 * @param strLanguage
+	 *           String con el idioma (es_ES)
+	 * @return hastable con parejas identificador y su traducción. */
 	public static Hashtable<String, String> processIds(String[] astrIds, String strLanguage)
 	{
 		ArrayList<String> alIdsTrans;
@@ -58,9 +59,13 @@ public class TranslateProcessor
 				strLanguage = "es_ES";
 				pLog.warn("No se ha definido idioma de la traduccion, se asigna el espanol");
 			}
-			for(int i =0; i < astrIds.length; i++ )
+			for (int i = 0; i < astrIds.length; i++)
 			{
 				String strAuxId = astrIds[i];
+				if ((strAuxId == null) || (strAuxId.trim().isEmpty()))
+				{
+					continue;
+				}
 				String strAuxTrans = htTransData.get(strAuxId).getTranslate(strLanguage);
 				htReturn.put(strAuxId, strAuxTrans);
 			}
@@ -112,8 +117,7 @@ public class TranslateProcessor
 				}
 				pLog.debug("Documento premodificación null: " + (doc == null));
 				doc = modifyDocument(doc, htTransData, strLanguage);
-				pLog.debug("Documento modificado Correctamente. Tamaño de htTransData: "
-						+ htTransData.size());
+				pLog.debug("Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
 				if (doc != null)
 				{
 					strReturn = documentToString(doc);

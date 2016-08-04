@@ -44,8 +44,8 @@ public class TranslateService extends HttpServlet {
 		astrIds = strIds.split(IDS_PARAM_SEP);
 		htTranslates = TranslateProcessor.processIds(astrIds, strlanguage);
 		strJSONReturn = getJsonResult(htTranslates);
-		response.setContentType("text/json");
-		response.getOutputStream().print(strJSONReturn);
+		response.setContentType("application/json;charset=UTF-8");
+		response.getWriter().print(strJSONReturn);
 	}
 	
 	

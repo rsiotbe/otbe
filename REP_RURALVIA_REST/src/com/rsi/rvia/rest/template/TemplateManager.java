@@ -13,7 +13,7 @@ public class TemplateManager
 {
 	static Logger	pLog	= LoggerFactory.getLogger(OracleDDBB.class);
 	public static String JSON_DATA_TAG = "'__JSONDATA__'";
-	private static Hashtable<String, String> htCacheTemplate = new Hashtable<String, String>();
+	public static Hashtable<String, String> htCacheTemplate = new Hashtable<String, String>();
 	
 	public static String processTemplate (String strPathToTemplate, String strLanguage)
 	{
