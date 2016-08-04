@@ -17,7 +17,7 @@ public class TemplateManager
 	
 	public static String processTemplate (String strPathToTemplate, String strLanguage)
 	{
-		return processTemplate(strPathToTemplate, strLanguage, "");
+		return processTemplate(strPathToTemplate, strLanguage, "{}");
 	}
 	
 	public static String processTemplate (String strPathToTemplate, String strLanguage, String strDataJson)
