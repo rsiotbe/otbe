@@ -5,6 +5,9 @@ import java.io.*;
 import java.net.URI;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -14,17 +17,27 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.ClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
+import com.rsi.rvia.rest.operation.info.InterrogateRvia;
+import com.rsi.rvia.rest.session.SessionRviaData;
 import javax.xml.bind.JAXBElement;
 
 
@@ -32,6 +45,8 @@ import javax.xml.bind.JAXBElement;
 public class RestWSConnector
 {
 	private static Logger pLog = LoggerFactory.getLogger(RestWSConnector.class);
+	private static String _data;
+	
 	
 	private static String RviaXML = "http://10.1.243.142";
 	private static String RviaURI = "http://10.1.243.142";
@@ -39,14 +54,15 @@ public class RestWSConnector
 	
   //@GET
   //@Produces(MediaType.TEXT_PLAIN)	
-	public static Response getData(@Context HttpServletRequest request) throws Exception {		  
-	  String ct="",endp="";
+	public static Response getData(@Context HttpServletRequest request, String data) throws Exception {		  
+	  String ct="",endp="";	  
 	  DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.MySql);
 	  String path=request.getPathInfo();	  
 	  PreparedStatement ps = p3.prepareStatement("select end_point,componet_type from MIQ_QUESTS where path_rest = '" + path + "'");
 	  ResultSet rs = p3.executeQuery(ps);	  
 	  String method = request.getMethod();	 
 	  Response resultado = null;
+	  _data = data;
 	  while (rs.next()){
 		  ct=rs.getString("componet_type");
 		  endp=rs.getString("end_point");		  
@@ -94,18 +110,74 @@ public class RestWSConnector
 	    return UriBuilder.fromUri("http://localhost:8080/api/").build();
 }		
 	
-	private static Response getRVIAInputs(String endp) throws Exception
+	private static Response getRVIAInputs(HttpServletRequest req, String endp) throws Exception
 	{
+		
+		SessionRviaData sesiFoo=new SessionRviaData(req);
+		
+		String sesId=sesiFoo.getRviaSessionId();
+		String host=sesiFoo.getUriRvia().toString();
+		String nodo=sesiFoo.getNodeRvia();
+		
+		String url = host + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + sesId; // + "?" + "clave_pagina=" + endp;
+				
 	    Client client = CustomRSIClient.getClient();
-	    WebTarget target = client.target(getBaseRviaXML());
-	    Response rp = target.
-            request().
+	    WebTarget target = client.target(getBaseRviaXML());	    
+	    Document doc = InterrogateRvia.getXmlDatAndUserInfo(req, endp);	    
+	    NodeList nodos = doc.getElementsByTagName("field");	    
+	    HashMap<String, String> camposDeSession = new HashMap<String, String>();
+	    	    
+	    // Datos existentes en la sessión
+	    for(int i=0; i<nodos.getLength(); i++){
+	   	 Element e = (Element)nodos.item(i);
+	   	 String value = e.getAttribute("value");
+	   	 if(! value.isEmpty()){
+	   		 camposDeSession.put(e.getAttribute("name"), e.getAttribute("value"));
+	   	 }
+	    }
+	    
+	    // Datos llegados por post
+	    String[] arr=_data.split("&");
+	    for(int i=0; i<arr.length; i++){
+	   	 String[] arr2=arr[i].split("=");
+	   	 camposDeSession.put(arr2[0],arr2[1]);
+	    }
+	    
+	    
+/*	    
+	    Form form = new Form();
+	    
+	    MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
+	    
+	    formData.add("key1", "value1");
+	    formData.add("key2", "value2");
+	    
+	    Response response = webTarget.request().post(Entity.form(formData));
+*/	    
+
+	    String qParams="";
+	    Iterator<?> it = camposDeSession.entrySet().iterator();
+	    while (it.hasNext()) {
+		    Map.Entry e = (Map.Entry)it.next();
+		    qParams = qParams + "&" + e.getKey() + "=" + e.getValue();
+	    }	    
+	    
+	    target=client.target(UriBuilder.fromUri(url).build());
+/*	    
+	    MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
+	    formData.add("name1", "val1");
+	    formData.add("name2", "val2");
+*/    
+	    //target=target.queryParam(qParams, target);
+	    
+	    	   Response rp = target.
+            request(qParams).
+            
+            //post(Entity.entity.form(formData)).
+            
             accept(MediaType.TEXT_PLAIN).
             get(Response.class);
 	    pLog.info("RVIA____________: " + rp.getHeaders().toString());	
-	    
-	    
-	    
 	    
 	    /*
 	     * rp contiene la respuesta xml con las entradas a la página de ruralvia.
@@ -113,6 +185,8 @@ public class RestWSConnector
 	     * Considerar censar las entradas en el modelo en la petición, una vez al día, y si han variado.
 	     * 
 	     * */
+	    
+	    
 	    
 		return rp;
    
@@ -149,14 +223,14 @@ public class RestWSConnector
 	             path("hello").
 	             request().
 	             accept(MediaType.TEXT_PLAIN).
-	             get(Response.class);
+	             get(Response.class);	
 		    
 		    pLog.info("RVIA_POST: " + rp.toString());		  
 			
 
 		  pLog.info(endp);
 		  pLog.info(ct);
-		  rp = getRVIAInputs(endp);
+		  rp = getRVIAInputs(request,endp);
 		  rp = performRviaConnection(rp);
 		  return rp;
 	  }	

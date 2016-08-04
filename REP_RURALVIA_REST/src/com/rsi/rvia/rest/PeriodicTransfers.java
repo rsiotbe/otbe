@@ -36,11 +36,12 @@ public class PeriodicTransfers
 	 */ 
 	@POST
    @Produces(MediaType.TEXT_PLAIN)		
-	public Response getAllUserPeriodicTransfers(@Context HttpServletRequest request) throws Exception
+	public Response getAllUserPeriodicTransfers(@Context HttpServletRequest request, String data) throws Exception
 	{
-		Response p = RestWSConnector.getData(request);		
-		pLog.info("Se recibe una peticion de listado de transferencias periódicas");
-		return Response.ok().entity(p.toString()).build();
+		Response p = RestWSConnector.getData(request, data);		
+		pLog.info("Se recibe una peticion de listado de transferencias periódicas");		
+		return p.ok().build();		
+		//return Response.ok().entity(p.toString()).build();
 	}
 	
 	/**
