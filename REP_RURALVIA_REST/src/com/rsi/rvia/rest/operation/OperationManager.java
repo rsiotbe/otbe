@@ -1,6 +1,7 @@
 package com.rsi.rvia.rest.operation;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import com.rsi.isum.IsumValidation;
@@ -10,8 +11,10 @@ import com.rsi.rvia.rest.template.TemplateManager;
 
 public class OperationManager
 {
+	private static HttpSession pSession;
 	public static Response proccesFromRvia(HttpServletRequest pRequest, String data, MediaType pMediaType) throws Exception
 	{
+		pSession = pRequest.getSession(true);
 		SessionRviaData pSessionRviaData = new SessionRviaData(pRequest);
 		if(!IsumValidation.IsValidService(pSessionRviaData))
 			throw new Exception("EL servicio solicitado no es permitido para este usuario por ISUM");
