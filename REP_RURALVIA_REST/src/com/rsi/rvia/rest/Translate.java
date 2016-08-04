@@ -23,7 +23,16 @@ public class Translate {
 		strReturn = TranslateProcessor.processXHTML(strHTMLPruebas, "es_ES");
 		return strReturn;
 	}
-	
-
-
+	@Path("/prueba")
+	public String translateHTML2() {
+		String strHTMLPruebas = "<html><head><meta charset=\"UTF-8\"/><title>Prueba HTML translator</title></head>" +
+				"<body><div><h2>Bloque Traducción 1</h2><p data-translate=\"COMUN_Literal_Escribe_tu_nombre\">bla bla bla</p></div><div>" +
+				"<h2>Bloque Traducción 2</h2><p data-translate=\"COMUN_Literal_Contratacion_-_Buscar_oficina_no_ofi\">bla</p></div><div>" +
+				"<h2>Bloque Traducción 2</h2><p data-translate=\"COMUN_Literal_Contratacion_-_Buscar_oficina_no_ofi\">bla</p></div><div>" +
+				"<h2>Bloque Traducción 2</h2><p data-translate=\"COMUN_Literal_Contratacion_-_Buscar_oficina_no_ofi\">bla</p></div><div>" +
+				"<h2>Bloque Traducción 3</h2><p data-translate=\"HC_comun_ClienteClau4\">bla bla bla</p></div></body></html>";
+		String strReturn = "";
+		strReturn = TranslateProcessor.processXHTML(strHTMLPruebas, "es_ES");
+		return strReturn;
+	}
 }

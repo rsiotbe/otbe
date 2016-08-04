@@ -10,11 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.rsi.rvia.rest.Cards;
-
 /**
  * Servlet implementation class translateService
  */
@@ -23,54 +18,53 @@ public class TranslateService extends HttpServlet {
 	private static final String IDS_PARAM = "id";
 	private static final String IDS_PARAM_SEP = ",";
 	private static final String LANGUAGE_PARAM = "lang";
-	private static Logger pLog = LoggerFactory.getLogger(TranslateService.class);
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public TranslateService() {
-		super();
-	}
+      
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public TranslateService() {
+        super();
+    }
 
-	protected void service(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+
+	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
 		String strJSONReturn;
 		String strIds;
 		String strlanguage;
-		String[] astrIds;
+		String[] astrIds; 
 		Hashtable<String, String> htTranslates;
 		strIds = request.getParameter(IDS_PARAM);
 		strlanguage = request.getParameter(LANGUAGE_PARAM);
-		if (strIds == null || strIds.trim().isEmpty()) {
+		if(IDS_PARAM == null || IDS_PARAM.trim().isEmpty())
+		{
 			response.sendError(HttpServletResponse.SC_NO_CONTENT);
 			return;
 		}
 		astrIds = strIds.split(IDS_PARAM_SEP);
 		htTranslates = TranslateProcessor.processIds(astrIds, strlanguage);
-		
 		strJSONReturn = getJsonResult(htTranslates);
-		response.setContentType("text/json; charset=\"UTF-8\"");
+		response.setContentType("text/json");
 		response.getOutputStream().print(strJSONReturn);
 	}
-
-	private String getJsonResult(Hashtable<String, String> htTranslates) {
+	
+	
+	private String getJsonResult(Hashtable<String, String> htTranslates)
+	{
 		boolean fFirstElement = true;
 		StringBuffer pSB = new StringBuffer();
 		pSB.append("{");
-		Iterator<Entry<String, String>> pIterator = htTranslates.entrySet()
-				.iterator();
-		while (pIterator.hasNext()) {
-			if (fFirstElement)
-				fFirstElement = false;
-			else
-				pSB.append(",");
-			Map.Entry<String, String> pair = (Entry<String, String>) pIterator
-					.next();
-			pSB.append("\"" + pair.getKey() + "\":\""
-					+ pair.getValue().replace("\"", "\\\"") + "\"");
-			
-		}
+	   Iterator<Entry<String, String>> pIterator = htTranslates.entrySet().iterator();
+	   while (pIterator.hasNext()) 
+	   {
+	   	if(fFirstElement)
+	   		fFirstElement = false;
+	   	else
+	   		pSB.append(",");
+		  Map.Entry<String, String> pair = (Entry<String, String>) pIterator.next();
+		  pSB.append("\"" + pair.getKey() + "\":\"" +  pair.getValue().replace("\"", "\\\"")+ "\"");
+	   }
 		pSB.append("}");
 		return pSB.toString();
 	}
-
 }
