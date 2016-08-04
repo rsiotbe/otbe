@@ -7,7 +7,8 @@ import org.slf4j.LoggerFactory;
 
 public class MySqlDDBB extends AbstractDDBB
 {
-	
+	private static DDBBConnection _pDDBB = null;
+
 	private MySqlDDBB() throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException
 	{
 		pLog = LoggerFactory.getLogger(MySqlDDBB.class);

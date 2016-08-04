@@ -1,9 +1,11 @@
 $(document).ready(function() {
 	console.log(translator);
-	ajaxRequest(translator, userLang);
+	var userLang = $('html')[0].lang.replace('-','_');
+	if(userLang != 'es_ES')
+		ajaxRequest(translator, userLang);
 });
 
-function ajaxRequest(translator,lang){
+function ajaxRequest(translator, lang){
 	if(typeof(lang) == 'undefined'){
 		lang = 'es_ES';
 	}

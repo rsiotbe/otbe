@@ -58,7 +58,7 @@ public class RestWSConnector
 	  String ct="",endp="";	  
 	  DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.MySql);
 	  String path=request.getPathInfo();	  
-	  PreparedStatement ps = p3.prepareStatement("select end_point,componet_type from MIQ_QUESTS where path_rest = '" + path + "'");
+	  PreparedStatement ps = p3.prepareStatement("select end_point,componet_type from microquest.MIQ_QUESTS where path_rest = '" + path + "'");
 	  ResultSet rs = p3.executeQuery(ps);	  
 	  String method = request.getMethod();	 
 	  Response resultado = null;

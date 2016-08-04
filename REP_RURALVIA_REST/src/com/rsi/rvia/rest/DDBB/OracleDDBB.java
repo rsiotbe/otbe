@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory;
 
 public class OracleDDBB extends AbstractDDBB
 {
+	private static DDBBConnection _pDDBB = null;
 	
 	private OracleDDBB() throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException
 	{

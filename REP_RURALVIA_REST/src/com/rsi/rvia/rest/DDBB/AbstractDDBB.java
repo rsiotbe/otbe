@@ -13,7 +13,6 @@ public abstract class AbstractDDBB implements DDBBConnection {
 	protected static Logger pLog = LoggerFactory.getLogger(AbstractDDBB.class);;
 	private Connection _pConnection = null;
 	protected Properties pAppProperties = new Properties();
-	protected static DDBBConnection _pDDBB = null;
 
 	private synchronized void BBDD_Connect() throws Exception {
 		String strURI = null;

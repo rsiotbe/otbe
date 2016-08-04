@@ -28,7 +28,7 @@ public class OperationManager
 			p = Response.ok(strPageResult).build();
 		}
 		
-		
+
 		return p;
 	}
 	

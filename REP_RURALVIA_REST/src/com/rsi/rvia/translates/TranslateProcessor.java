@@ -244,6 +244,9 @@ public class TranslateProcessor
 				}
 			}
 		}
+		
+		/* se añade el atributo lang a la etiqueta html para poder manejar el idioma dentro de la página */
+		doc.getElementsByTag("html").attr("lang", strLanguage.replace("_", "-"));	
 		return doc;
 	}
 

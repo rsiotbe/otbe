@@ -15,22 +15,8 @@ function pageQuery(url, data, callbackFunction)
 	$('html').load(url, data,callbackFunction);	
 }
 
-function postDataToLoadPage(parameters)
-{   	
-	var form = "";
-	form = '<form action="/api(" method="post">';
-    for(var attr in parameters)
-    {
-        var attrName = attr;
-        var attrValue =  parameters[attr];
-        form += '<input type="hidden" name="' + attrName + '" value="' + attrValue + '">';
-    }
-	form += '</form>';
-	$(form).appendTo('body').submit();
-}
-
 /* Función genérica para las llamadas AJAX  */
-function genericAjax (jParameters, beforeSendCallback, successCallback, erroCallback, aParams ) 
+function genericAjax (jParameters, beforeSendCallback, successCallback, errorCallback ) 
 {
 	var result = ""; 
 	$.ajax({
@@ -56,7 +42,7 @@ function genericAjax (jParameters, beforeSendCallback, successCallback, erroCall
 				successCallback (jqXHR, textStatus); 
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
-			if (typeof(erroCallback) == "function")
+			if (typeof(errorCallback) == "function")
 				erroCallback(xhr, textStatus, errorThrown);
 			else
 				console.log( 'ERROR genericAjax: ' + textStatus + " - " + errorThrown);
