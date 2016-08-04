@@ -45,16 +45,16 @@ import javax.xml.bind.JAXBElement;
 public class RestWSConnector
 {
 	private static Logger pLog = LoggerFactory.getLogger(RestWSConnector.class);
-	private static String _data;
+
+	
 	
 	
 	private static String RviaXML = "http://10.1.243.142";
-	private static String RviaURI = "http://10.1.243.142";
-	private static String WSURI = "http://10.1.243.142";
+
 	
   //@GET
   //@Produces(MediaType.TEXT_PLAIN)	
-	public static Response getData(@Context HttpServletRequest request, String data) throws Exception {		  
+	public static Response getData( HttpServletRequest request, String data, SessionRviaData sesion_rvia) throws Exception {		  
 	  String ct="",endp="";	  
 	  DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.MySql);
 	  String path=request.getPathInfo();	  
@@ -62,7 +62,6 @@ public class RestWSConnector
 	  ResultSet rs = p3.executeQuery(ps);	  
 	  String method = request.getMethod();	 
 	  Response resultado = null;
-	  _data = data;
 	  while (rs.next()){
 		  ct=rs.getString("componet_type");
 		  endp=rs.getString("end_point");		  
@@ -73,7 +72,7 @@ public class RestWSConnector
 			  resultado = get(request);			  			  
 			  if("RVIA".equals(ct)){
 				  pLog.info("Derivando petición a Ruralvía");
-				  resultado = rviaPost(request,ct,endp);
+				  resultado = rviaPost(request,ct,endp, sesion_rvia, data);
 			  }
 			  else{
 				  pLog.info("Solicitando peticióñn REST");
@@ -83,7 +82,7 @@ public class RestWSConnector
 		  case "POST":
 			  if("RVIA".equals(ct)){
 				  pLog.info("Derivando petición a Ruralvía");
-				  resultado = rviaPost(request,ct,endp);
+				  resultado = rviaPost(request,ct,endp, sesion_rvia, data);
 			  }
 			  else{
 				  pLog.info("Solicitando peticióñn REST");
@@ -110,10 +109,10 @@ public class RestWSConnector
 	    return UriBuilder.fromUri("http://localhost:8080/api/").build();
 }		
 	
-	private static Response getRVIAInputs(HttpServletRequest req, String endp) throws Exception
+	private static Response getRVIAInputs(HttpServletRequest req, String endp, SessionRviaData sesion_rvia, String data) throws Exception
 	{
 		
-		SessionRviaData sesiFoo=new SessionRviaData(req);
+		SessionRviaData sesiFoo=sesion_rvia;
 		
 		String sesId=sesiFoo.getRviaSessionId();
 		String host=sesiFoo.getUriRvia().toString();
@@ -137,7 +136,7 @@ public class RestWSConnector
 	    }
 	    
 	    // Datos llegados por post
-	    String[] arr=_data.split("&");
+	    String[] arr=data.split("&");
 	    for(int i=0; i<arr.length; i++){
 	   	 String[] arr2=arr[i].split("=");
 	   	 camposDeSession.put(arr2[0],arr2[1]);
@@ -208,7 +207,7 @@ public class RestWSConnector
 	{
 		// TODO Auto-generated method ssdFAStub		
 	}	
-	  private static Response rviaPost(@Context HttpServletRequest request, String ct, String endp) throws Exception { 
+	  private static Response rviaPost(@Context HttpServletRequest request, String ct, String endp, SessionRviaData sesion_rvia, String data) throws Exception { 
 		  Client client = CustomRSIClient.getClient();
 		    
 		    URI targetxml = getBaseRviaXML();
@@ -230,7 +229,7 @@ public class RestWSConnector
 
 		  pLog.info(endp);
 		  pLog.info(ct);
-		  rp = getRVIAInputs(request,endp);
+		  rp = getRVIAInputs(request,endp, sesion_rvia, data);
 		  rp = performRviaConnection(rp);
 		  return rp;
 	  }	

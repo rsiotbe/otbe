@@ -16,6 +16,8 @@ import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.*;
+import com.rsi.rvia.rest.operation.OperationManager;
+import com.rsi.rvia.rest.template.TemplateManager;
 
 
 
@@ -38,10 +40,24 @@ public class PeriodicTransfers
    @Produces(MediaType.TEXT_PLAIN)		
 	public Response getAllUserPeriodicTransfers(@Context HttpServletRequest request, String data) throws Exception
 	{
-		Response p = RestWSConnector.getData(request, data);		
+		Response p = OperationManager.proccesFromRvia(request, data, MediaType.TEXT_PLAIN_TYPE);		
 		pLog.info("Se recibe una peticion de listado de transferencias periódicas");		
 		return p.ok().build();		
 		//return Response.ok().entity(p.toString()).build();
+	}
+	
+	/**
+	 * Obtiene el listado completo de tarjetas de un usuario
+	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+	 * @throws Exception 
+	 */ 
+	@GET
+   @Produces(MediaType.APPLICATION_XHTML_XML)		
+	public Response getAllUserPeriodicTransfersXhtml(@Context HttpServletRequest request, String data) throws Exception
+	{
+		Response p = OperationManager.proccesFromRvia(request, data, MediaType.APPLICATION_XHTML_XML_TYPE);		
+		pLog.info("Se recibe unsa peticion de listado de transferencias periódicas");		
+		return p;
 	}
 	
 	/**
