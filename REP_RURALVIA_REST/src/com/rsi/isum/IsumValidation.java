@@ -8,7 +8,7 @@ import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.session.SessionRviaData;
 
 public class IsumValidation
-{ 
+{
 	
 	public static boolean IsValidService(SessionRviaData pSessionRviaData) throws Exception
 	{

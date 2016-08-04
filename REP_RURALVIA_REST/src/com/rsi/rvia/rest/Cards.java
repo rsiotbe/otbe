@@ -11,8 +11,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.isum.IsumValidation;
+import com.rsi.rvia.rest.DDBB.DDBBConnection;
+import com.rsi.rvia.rest.DDBB.DDBBFactory;
+import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
+import com.rsi.rvia.rest.client.*;
+import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 import com.rsi.rvia.rest.session.SessionRviaData;
-import com.rsi.rvia.rest.template.TemplateManager;
 
 
 
@@ -33,15 +38,18 @@ public class Cards
 	 * @throws Exception 
 	 */
 	@GET
-   @Produces(MediaType.APPLICATION_XHTML_XML)
+   @Produces(MediaType.TEXT_PLAIN)
+		
 	public Response getAllUserCards(@Context HttpServletRequest request) throws Exception
 	{
 		SessionRviaData pSessionRviaData = new SessionRviaData (request);
-
-		String strReturn = TemplateManager.processTemplate("/test/sample.xhtml", pSessionRviaData.getLanguage());
-		
-		
-		return Response.ok(strReturn).build();
+		boolean fServiceValid = IsumValidation.IsValidService(pSessionRviaData);
+		//Tra
+		InterrogateRvia.getXmlDatAndUserInfo(pSessionRviaData, "BDP_EXCLUSIVE_ALERTAS_ALTA");
+		DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.MySql);		
+		Response p = RestWSConnector.getData(request);		
+		pLog.info("Se recibe una peticion de listado de tarjetas");
+		return Response.ok().entity(p.toString()).build();
 	}
 	
 	/**

@@ -1,0 +1,65 @@
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+		<title>Pruebas JS</title>
+	</head>
+	<body>
+		
+		<div><h2>PRUEBAS JAVASCRIPT AJAX</h2></div>
+		<script type="text/javascript">
+			initTranslator();
+			var translator = translator;
+			translator = {"HC_comun_ClienteClau4" : "bla bla",
+						  "COMUN_Literal_Escribe_tu_nombre" : "bla"};
+
+			console.log(translator);
+			ajaxRequest(translator,"en_UK");
+			//NOTA: Translator debe estar inicializada previamente en el bloque script
+			function initTranslator(){	
+				console.log("initTranslator lanzada.");
+				if(!translator){
+					translator = [];
+				}
+			}
+			
+			function ajaxRequest(translator,lang){
+				var id = "";
+				var dataGet = {};
+				for(var key in translator){
+					if(id !== ""){
+						id += ",";
+					}
+					id += key;
+				}
+				dataGet.id = id;
+				dataGet.lang = lang;
+
+				console.log(dataGet);
+				$.ajax({
+					url : 'http://localhost:8080/api/translate',
+					data : dataGet,
+					type : 'GET',
+					dataType : 'json',
+					success : newTranslateAplication,
+    				error : function(xhr, status) {
+        				console.log("xhr" + xhr);
+        				console.log("status: " + status);
+    				},
+    				complete : function(xhr, status) {
+        				console.log("xhr" + xhr);
+        				console.log("status: " + status);
+    				}
+				});
+			}
+
+			function newTranslateAplication(response){
+				console.log(response);
+
+			}
+		</script>
+	</body>
+
+
+
+</html>

@@ -11,8 +11,6 @@ import java.util.Hashtable;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Entities.EscapeMode;
-import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,7 +185,7 @@ public class TranslateProcessor
 	 * @return Documento bien formado */
 	private static Document strToDocumentParser(String strData)
 	{
-		Document doc = (Document) Jsoup.parse(strData, "", Parser.xmlParser());
+		Document doc = (Document) Jsoup.parse(strData);
 		return doc;
 	}
 
@@ -253,7 +251,6 @@ public class TranslateProcessor
 		String strReturn = null;
 		if (pDoc != null)
 		{
-			pDoc.outputSettings().escapeMode(EscapeMode.xhtml);
 			strReturn = pDoc.toString();
 		}
 		else
