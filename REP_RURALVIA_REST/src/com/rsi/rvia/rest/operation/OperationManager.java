@@ -24,43 +24,33 @@ import com.rsi.rvia.utils.Utils;
 
 public class OperationManager
 {
-	private static HttpSession pSession;
-	private static Logger										pLog			= LoggerFactory.getLogger(TranslateProcessor.class);
-	public static Response proccesFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String data, MediaType pMediaType) throws Exception
+	private static HttpSession	pSession;
+	private static Logger		pLog	= LoggerFactory.getLogger(TranslateProcessor.class);
+
+	public static Response proccesFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String data,
+			MediaType pMediaType) throws Exception
 	{
 		pSession = pRequest.getSession(true);
 		SessionRviaData pSessionRviaData = new SessionRviaData(pRequest);
-		if(!IsumValidation.IsValidService(pSessionRviaData))
+		if (!IsumValidation.IsValidService(pSessionRviaData))
 			throw new Exception("EL servicio solicitado no es permitido para este usuario por ISUM");
-		
 		Utils pUtil = new Utils();
 		String strPrimaryPath = pUtil.getPrimaryPath(pUriInfo);
-		Response p = RestWSConnector.getData(pRequest, data, pSessionRviaData, strPrimaryPath);	
-		
-		if(pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
+		Response p = RestWSConnector.getData(pRequest, data, pSessionRviaData, strPrimaryPath);
+		if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
 		{
-			String strPageResult =TemplateManager.processTemplate("/test/sample.xhtml", pSessionRviaData.getLanguage(), p.readEntity(String.class));
+			String strPageResult = TemplateManager.processTemplate("/test/sample.xhtml", pSessionRviaData.getLanguage(), p.readEntity(String.class));
 			p = Response.ok(strPageResult).build();
 		}
-		
-
 		return p;
 	}
 	/*
-	private static Hashtable<String,String> checkRviaOrWS(String strPrimaryPath)throws Exception{
-		Hashtable<String,String> htReturn = new Hashtable<String,String>();
-		String strQuery = "SELECT * FROM bdptb222_miq_quests where path_rest = ?";
-			DDBBConnection pDDBBTranslate = DDBBFactory.getDDBB(DDBBProvider.Oracle);
-			PreparedStatement pPS = pDDBBTranslate.prepareStatement(strQuery);
-			pPS.setString(1, strPrimaryPath);
-			ResultSet pQueryResult = pPS.executeQuery();
-			while (pQueryResult.next())
-			{
-				String strComponentType = (String) pQueryResult.getString("component_type");
-				htReturn.put("compoment_type", strComponentType);
-			
-		}
-		return htReturn;
-	}*/
-	
+	 * private static Hashtable<String,String> checkRviaOrWS(String strPrimaryPath)throws Exception{
+	 * Hashtable<String,String> htReturn = new Hashtable<String,String>(); String strQuery =
+	 * "SELECT * FROM bdptb222_miq_quests where path_rest = ?"; DDBBConnection pDDBBTranslate =
+	 * DDBBFactory.getDDBB(DDBBProvider.Oracle); PreparedStatement pPS = pDDBBTranslate.prepareStatement(strQuery);
+	 * pPS.setString(1, strPrimaryPath); ResultSet pQueryResult = pPS.executeQuery(); while (pQueryResult.next()) {
+	 * String strComponentType = (String) pQueryResult.getString("component_type"); htReturn.put("compoment_type",
+	 * strComponentType); } return htReturn; }
+	 */
 }

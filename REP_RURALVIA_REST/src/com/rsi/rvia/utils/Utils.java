@@ -30,6 +30,6 @@ public class Utils
 			}
 			strPath += lStrPathParts[i];
 		}
-		return (strPath + strKeys);
+		return ("/" + strPath + strKeys);
 	}
 }
