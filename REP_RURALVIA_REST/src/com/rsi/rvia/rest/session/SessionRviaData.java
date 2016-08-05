@@ -19,6 +19,7 @@ public class SessionRviaData
 	private String					strIsumUserProfile = "";
 	private String					strIsumServiceId = "";
 	private String					strLanguage = "";
+	private String					strToken = "";
 	
 	public String getNodeRvia()
 	{
@@ -55,9 +56,12 @@ public class SessionRviaData
 		return strLanguage;
 	}	
 	
+	public String getToken()
+	{
+		return strToken;
+	}	
 	public SessionRviaData(HttpServletRequest request) throws Exception
 	{
-		String strToken;
 		String[] strParameters;
 		pLog.debug("Se procede a cargar la configuración de la conexión con ruralvia");
 		
