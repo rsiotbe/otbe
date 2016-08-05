@@ -54,10 +54,11 @@ public class RestWSConnector
 	
   //@GET
   //@Produces(MediaType.TEXT_PLAIN)	
-	public static Response getData( HttpServletRequest request, String data, SessionRviaData sesion_rvia) throws Exception {		  
+	public static Response getData( HttpServletRequest request, String data, SessionRviaData sesion_rvia, String strPrimaryPath) throws Exception {		  
 	  String ct="",endp="";	  
 	  DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.MySql);
-	  String path=request.getPathInfo();	  
+	  //String path=request.getPathInfo();	 	  
+	  String path=strPrimaryPath;
 	  PreparedStatement ps = p3.prepareStatement("select end_point,componet_type from microquest.MIQ_QUESTS where path_rest = '" + path + "'");
 	  ResultSet rs = p3.executeQuery(ps);	  
 	  String method = request.getMethod();	 

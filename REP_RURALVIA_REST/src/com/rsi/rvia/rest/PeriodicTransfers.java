@@ -48,11 +48,10 @@ public class PeriodicTransfers
 	 * @throws Exception */
 	@GET
 	@Produces(MediaType.APPLICATION_XHTML_XML)
-	public Response getAllUserPeriodicTransfersXhtml(@Context HttpServletRequest request, String data) throws Exception
+	public Response getAllUserPeriodicTransfersXhtml(@Context HttpServletRequest request, @Context UriInfo pUriInfo, String data) throws Exception
 	{
-		Utils pUtil = new Utils();
-		String strPrimaryPath = pUtil.getPrimaryPath(uriInfo);
-		Response p = OperationManager.proccesFromRvia(request, data, MediaType.APPLICATION_XHTML_XML_TYPE, strPrimaryPath);
+
+		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.APPLICATION_XHTML_XML_TYPE);
 		pLog.info("Se recibe unsa peticion de listado de transferencias periódicas");
 		return p;
 	}
