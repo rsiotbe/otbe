@@ -138,11 +138,13 @@ public class RestWSConnector
 	    
 	    // Datos llegados por post
 	    String[] arr=data.split("&");
-	    for(int i=0; i<arr.length; i++){
-	   	 String[] arr2=arr[i].split("=");
-	   	 camposDeSession.put(arr2[0],arr2[1]);
+	    if(!data.trim().isEmpty())
+	    {
+		    for(int i=0; i<arr.length; i++){
+		   	 String[] arr2=arr[i].split("=");
+		   	 camposDeSession.put(arr2[0],arr2[1]);
+		    }
 	    }
-	    
 	    
 /*	    
 	    Form form = new Form();
