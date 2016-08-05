@@ -1,29 +1,41 @@
 package com.rsi.rvia.rest.operation;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.rsi.isum.IsumValidation;
+import com.rsi.rvia.rest.DDBB.DDBBConnection;
+import com.rsi.rvia.rest.DDBB.DDBBFactory;
+import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.RestWSConnector;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.template.TemplateManager;
+import com.rsi.rvia.translates.TranslateEntry;
+import com.rsi.rvia.translates.TranslateProcessor;
+import com.rsi.rvia.utils.Utils;
 
 public class OperationManager
 {
 	private static HttpSession pSession;
-	public static Response proccesFromRvia(HttpServletRequest pRequest, String data, MediaType pMediaType) throws Exception
+	private static Logger										pLog			= LoggerFactory.getLogger(TranslateProcessor.class);
+	public static Response proccesFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String data, MediaType pMediaType) throws Exception
 	{
 		pSession = pRequest.getSession(true);
 		SessionRviaData pSessionRviaData = new SessionRviaData(pRequest);
 		if(!IsumValidation.IsValidService(pSessionRviaData))
 			throw new Exception("EL servicio solicitado no es permitido para este usuario por ISUM");
 		
-		/* comprueba si la operativa es de tipo WS o RVIA-JSON */
-		/*if(operativa es de tipo WS) 
-				recuerar pametros necesarios
-				*/
-		Response p = RestWSConnector.getData(pRequest, data, pSessionRviaData);	
+		Utils pUtil = new Utils();
+		String strPrimaryPath = pUtil.getPrimaryPath(pUriInfo);
+		Response p = RestWSConnector.getData(pRequest, data, pSessionRviaData, strPrimaryPath);	
 		
 		if(pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
 		{
@@ -34,5 +46,21 @@ public class OperationManager
 
 		return p;
 	}
+	/*
+	private static Hashtable<String,String> checkRviaOrWS(String strPrimaryPath)throws Exception{
+		Hashtable<String,String> htReturn = new Hashtable<String,String>();
+		String strQuery = "SELECT * FROM bdptb222_miq_quests where path_rest = ?";
+			DDBBConnection pDDBBTranslate = DDBBFactory.getDDBB(DDBBProvider.Oracle);
+			PreparedStatement pPS = pDDBBTranslate.prepareStatement(strQuery);
+			pPS.setString(1, strPrimaryPath);
+			ResultSet pQueryResult = pPS.executeQuery();
+			while (pQueryResult.next())
+			{
+				String strComponentType = (String) pQueryResult.getString("component_type");
+				htReturn.put("compoment_type", strComponentType);
+			
+		}
+		return htReturn;
+	}*/
 	
 }
