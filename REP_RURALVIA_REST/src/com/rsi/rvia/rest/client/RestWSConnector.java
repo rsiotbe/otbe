@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -135,6 +136,7 @@ public class RestWSConnector
 	   		 camposDeSession.put(e.getAttribute("name"), e.getAttribute("value"));
 	   	 }
 	    }
+		 camposDeSession.put("clavePagina", endp);
 	    
 	    // Datos llegados por post
 	    String[] arr=data.split("&");
@@ -158,9 +160,9 @@ public class RestWSConnector
 */	    
 
 	    String qParams="";
-	    Iterator<?> it = camposDeSession.entrySet().iterator();
+	    Iterator<Entry<String, String>> it = camposDeSession.entrySet().iterator();
 	    while (it.hasNext()) {
-		    Map.Entry e = (Map.Entry)it.next();
+		    Map.Entry<String, String> e = (Map.Entry<String, String>)it.next();
 		    qParams = qParams + "&" + e.getKey() + "=" + e.getValue();
 	    }	    
 	    
@@ -177,9 +179,9 @@ public class RestWSConnector
             
             //post(Entity.entity.form(formData)).
             
-            accept(MediaType.TEXT_PLAIN).
-            get(Response.class);
-	    pLog.info("RVIA____________: " + rp.getHeaders().toString());	
+            //accept(MediaType.TEXT_PLAIN).
+            get();
+	   //pLog.info("RVIA____________: " + rp.getHeaders().toString());	
 	    
 	    /*
 	     * rp contiene la respuesta xml con las entradas a la página de ruralvia.

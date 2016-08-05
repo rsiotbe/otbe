@@ -40,7 +40,7 @@ public class OperationManager
 		if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
 		{
 			String strPageResult = TemplateManager.processTemplate("/test/sample.xhtml", pSessionRviaData.getLanguage(), p.readEntity(String.class));
-			p = Response.ok(strPageResult).build();
+			//p = Response.ok(strPageResult).build();
 		}
 		return p;
 	}
