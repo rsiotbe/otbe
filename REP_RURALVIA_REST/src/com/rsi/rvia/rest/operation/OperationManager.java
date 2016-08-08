@@ -37,14 +37,20 @@ public class OperationManager
 		if (!IsumValidation.IsValidService(pSessionRviaData))
 			throw new Exception("EL servicio solicitado no es permitido para este usuario por ISUM");
 		Utils pUtil = new Utils();
+		
 		String strPrimaryPath = pUtil.getPrimaryPath(pUriInfo);
-		Response p = RestWSConnector.getData(pRequest, data, pSessionRviaData, strPrimaryPath);;
+		Response p = RestWSConnector.getData(pRequest, data, pSessionRviaData, strPrimaryPath);
 		
 		if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
 		{
 			String strPageResult = TemplateManager.processTemplate("/test/sample.xhtml", pSessionRviaData.getLanguage(), p.readEntity(String.class));
 			//p = Response.ok(strPageResult).build();
 		}
-		return p.ok().cookie(new NewCookie("token", pSessionRviaData.getToken())).build();
+		NewCookie pCookieToken = new NewCookie("token", pSessionRviaData.getToken());
+		pLog.debug("Se Crea la Cookie con el Token.");
+		Response pReturn = Response.ok(p.getEntity()).cookie(pCookieToken).build();
+		pLog.debug("Se Añade la Cookie con el Token a la respuesta.");
+		return pReturn;
+	
 	}
 }

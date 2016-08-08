@@ -37,9 +37,10 @@ public class PeriodicTransfers
 			String data) throws Exception
 	{
 		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.TEXT_PLAIN_TYPE);
-		pLog.info("Se recibe una peticion de listado de transferencias periódicas");
+		pLog.info("Se recibe una peticion de listado de transferencias periodicas");
 		//return Response.ok(p.getEntity()).build();
-		return Response.ok().entity(p.getEntity()).build();
+		//return Response.ok().entity(p.getEntity()).build();
+		return p;
 	}
 
 	/** Obtiene el listado completo de tarjetas de un usuario
