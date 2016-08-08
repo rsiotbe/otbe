@@ -38,6 +38,4 @@ public class Translate
 		strReturn = TranslateProcessor.processXHTML(strHTMLPruebas, "es_ES");
 		return strReturn;
 	}
-
-	
 }

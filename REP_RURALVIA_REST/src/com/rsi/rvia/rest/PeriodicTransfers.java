@@ -25,7 +25,6 @@ import com.rsi.rvia.utils.Utils;
 @Path("/periodictransfers")
 public class PeriodicTransfers
 {
-	
 	private static Logger	pLog	= LoggerFactory.getLogger(Cards.class);
 
 	/** Obtiene el listado completo de tarjetas de un usuario
@@ -34,9 +33,10 @@ public class PeriodicTransfers
 	 * @throws Exception */
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response getAllUserPeriodicTransfers(@Context HttpServletRequest request, @Context UriInfo pUriInfo, String data) throws Exception
+	public Response getAllUserPeriodicTransfers(@Context HttpServletRequest request, @Context UriInfo pUriInfo,
+			String data) throws Exception
 	{
-		Response p = OperationManager.proccesFromRvia(request,pUriInfo, data, MediaType.TEXT_PLAIN_TYPE);
+		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Se recibe una peticion de listado de transferencias periódicas");
 		return p.ok().build();
 		// return Response.ok().entity(p.toString()).build();
@@ -48,9 +48,9 @@ public class PeriodicTransfers
 	 * @throws Exception */
 	@GET
 	@Produces(MediaType.APPLICATION_XHTML_XML)
-	public Response getAllUserPeriodicTransfersXhtml(@Context HttpServletRequest request, @Context UriInfo pUriInfo, String data) throws Exception
+	public Response getAllUserPeriodicTransfersXhtml(@Context HttpServletRequest request, @Context UriInfo pUriInfo,
+			String data) throws Exception
 	{
-
 		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.APPLICATION_XHTML_XML_TYPE);
 		pLog.info("Se recibe unsa peticion de listado de transferencias periódicas");
 		return p;
