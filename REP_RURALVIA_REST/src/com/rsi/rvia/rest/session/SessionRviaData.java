@@ -63,6 +63,7 @@ public class SessionRviaData
 	public SessionRviaData(HttpServletRequest request) throws Exception
 	{
 		String[] strParameters;
+		String strDesToken = "";
 		pLog.debug("Se procede a cargar la configuración de la conexión con ruralvia");
 		
 		/* se coprueba si el contenido viene encriptado enel parámetro token */
@@ -71,11 +72,11 @@ public class SessionRviaData
 		{
 			pLog.debug("La información viene cifrada, se procede a descifrarla");
 			/* se desencipta la información */
-			strToken = RviaConnectCipher.symmetricDecrypt(strToken,RviaConnectCipher.RVIA_CONNECT_KEY);
-			pLog.debug("Contenido descifrado. Token: " + strToken);
+			strDesToken = RviaConnectCipher.symmetricDecrypt(strToken,RviaConnectCipher.RVIA_CONNECT_KEY);
+			pLog.debug("Contenido descifrado. Token: " + strDesToken);
 			
 			/* se obtienen las variables recibidas */
-			strParameters = strToken.split("&");
+			strParameters = strDesToken.split("&");
 			for(int i =0; i < strParameters.length; i++)
 			{
 				String[] strAux = strParameters[i].split("=");
