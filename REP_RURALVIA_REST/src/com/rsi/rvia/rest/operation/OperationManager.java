@@ -7,11 +7,13 @@ import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.isum.IsumValidation;
+import com.rsi.rvia.rest.RviaConnectCipher;
 import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
@@ -36,21 +38,13 @@ public class OperationManager
 			throw new Exception("EL servicio solicitado no es permitido para este usuario por ISUM");
 		Utils pUtil = new Utils();
 		String strPrimaryPath = pUtil.getPrimaryPath(pUriInfo);
-		Response p = RestWSConnector.getData(pRequest, data, pSessionRviaData, strPrimaryPath);
+		Response p = RestWSConnector.getData(pRequest, data, pSessionRviaData, strPrimaryPath);;
+		
 		if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
 		{
 			String strPageResult = TemplateManager.processTemplate("/test/sample.xhtml", pSessionRviaData.getLanguage(), p.readEntity(String.class));
 			//p = Response.ok(strPageResult).build();
 		}
-		return p;
+		return p.ok().cookie(new NewCookie("token", pSessionRviaData.getToken())).build();
 	}
-	/*
-	 * private static Hashtable<String,String> checkRviaOrWS(String strPrimaryPath)throws Exception{
-	 * Hashtable<String,String> htReturn = new Hashtable<String,String>(); String strQuery =
-	 * "SELECT * FROM bdptb222_miq_quests where path_rest = ?"; DDBBConnection pDDBBTranslate =
-	 * DDBBFactory.getDDBB(DDBBProvider.Oracle); PreparedStatement pPS = pDDBBTranslate.prepareStatement(strQuery);
-	 * pPS.setString(1, strPrimaryPath); ResultSet pQueryResult = pPS.executeQuery(); while (pQueryResult.next()) {
-	 * String strComponentType = (String) pQueryResult.getString("component_type"); htReturn.put("compoment_type",
-	 * strComponentType); } return htReturn; }
-	 */
 }
