@@ -38,8 +38,8 @@ public class PeriodicTransfers
 	{
 		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Se recibe una peticion de listado de transferencias periódicas");
-		return p.ok().build();
-		// return Response.ok().entity(p.toString()).build();
+		//return Response.ok(p.getEntity()).build();
+		return Response.ok().entity(p.getEntity()).build();
 	}
 
 	/** Obtiene el listado completo de tarjetas de un usuario

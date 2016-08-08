@@ -114,6 +114,9 @@ public class RestWSConnector
 	private static Response getRVIAInputs(HttpServletRequest req, String endp, SessionRviaData sesion_rvia, String data) throws Exception
 	{
 		
+		
+//		https://wwwdes.ruralvia.com/api/rest/cards?token=HqJ%2F6fJk2%2B8jXi90%2FVU%2FH1yXdKMwgS1KiQhwq%2BRmKrAKcQDIgO7b9b1y5a8gq1n2ikAbaHGoutULTJOU7KpLFX49WqAVssGx81NDrzqVKa7ST5qQwiEbNmbBo6doPpMbKzUGgFjPwa52Qc9byaHqeFpIqF04Tmszas0LUJjaBuYNmuWF%2F%2BQN6UqoEFktJs2NVSct1v33MAUFeVttuVrkQTwSxl1oWsxUnpPCOSojwLSbMsiuekfJc%2Fh2I75OpHgS
+		
 		SessionRviaData sesiFoo=sesion_rvia;
 		
 		String sesId=sesiFoo.getRviaSessionId();
@@ -133,6 +136,8 @@ public class RestWSConnector
 	   	 Element e = (Element)nodos.item(i);
 	   	 String value = e.getAttribute("value");
 	   	 if(! value.isEmpty()){
+	   		 
+	   	    pLog.info("--------------------- campo informado: " + e.getAttribute("name").toString() +": "+ e.getAttribute("value").toString());
 	   		 camposDeSession.put(e.getAttribute("name"), e.getAttribute("value"));
 	   	 }
 	    }
@@ -143,21 +148,17 @@ public class RestWSConnector
 	    if(!data.trim().isEmpty())
 	    {
 		    for(int i=0; i<arr.length; i++){
+		   	 if(arr[i].trim().isEmpty())
+		   		 continue;
 		   	 String[] arr2=arr[i].split("=");
+		   	 if(arr2.length<2)
+		   		 continue;
+		   	 if(arr2[0].trim().isEmpty() || arr2[1].trim().isEmpty())
+		   		 continue;
 		   	 camposDeSession.put(arr2[0],arr2[1]);
 		    }
 	    }
 	    
-/*	    
-	    Form form = new Form();
-	    
-	    MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
-	    
-	    formData.add("key1", "value1");
-	    formData.add("key2", "value2");
-	    
-	    Response response = webTarget.request().post(Entity.form(formData));
-*/	    
 
 	    String qParams="";
 	    Iterator<Entry<String, String>> it = camposDeSession.entrySet().iterator();
@@ -166,20 +167,13 @@ public class RestWSConnector
 		    qParams = qParams + "&" + e.getKey() + "=" + e.getValue();
 	    }	    
 	    
+	    pLog.info("URL ServletDirectoPortal: " +
+	   		 url.toString());	    
+	    
 	    target=client.target(UriBuilder.fromUri(url).build());
-/*	    
-	    MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
-	    formData.add("name1", "val1");
-	    formData.add("name2", "val2");
-*/    
-	    //target=target.queryParam(qParams, target);
 	    
 	    	   Response rp = target.
             request(qParams).
-            
-            //post(Entity.entity.form(formData)).
-            
-            //accept(MediaType.TEXT_PLAIN).
             get();
 	   //pLog.info("RVIA____________: " + rp.getHeaders().toString());	
 	    
@@ -189,9 +183,15 @@ public class RestWSConnector
 	     * Considerar censar las entradas en el modelo en la petición, una vez al día, y si han variado.
 	     * 
 	     * */
+/*	    	   
+	    	 MultivaluedMap formData = new MultivaluedMapImpl();
+	    	 formData.add("name1", "val1");
+	    	 formData.add("name2", "val2");
+	    	 ClientResponse response = webResource
+	    	     .type(MediaType.APPLICATION_FORM_URLENCODED_TYPE)
+	    	     .post(ClientResponse.class, formData);
 	    
-	    
-	    
+*/	    
 		return rp;
    
 	}	  

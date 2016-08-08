@@ -27,7 +27,7 @@ public class CustomRSIClient {
 	 * @return Objeto Client (Jersey)
 	 */	
 	public static Client getClient(){
-		return getClient(2000, 1000);		
+		return getClient(12000, 10000);		
 	}
 
 }
