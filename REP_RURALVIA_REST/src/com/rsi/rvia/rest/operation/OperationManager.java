@@ -34,6 +34,7 @@ public class OperationManager
 	{
 		pSession = pRequest.getSession(true);
 		SessionRviaData pSessionRviaData = new SessionRviaData(pRequest);
+		pSession.setAttribute("token", pSessionRviaData.getToken());
 		if (!IsumValidation.IsValidService(pSessionRviaData))
 			throw new Exception("EL servicio solicitado no es permitido para este usuario por ISUM");
 		Utils pUtil = new Utils();
