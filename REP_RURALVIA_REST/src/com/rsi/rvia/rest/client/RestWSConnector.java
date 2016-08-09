@@ -130,7 +130,7 @@ public class RestWSConnector
 		String sesId = sesiFoo.getRviaSessionId();
 		String host = sesiFoo.getUriRvia().toString();
 		String nodo = sesiFoo.getNodeRvia();
-		String url = host + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + sesId; // + "?" + "clave_pagina=" + endp;
+		String url = host + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + sesId + "?clavePagina="+ endp; // + "?" + "clave_pagina=" + endp;
 		Client client = CustomRSIClient.getClient();
 		WebTarget target = client.target(getBaseRviaXML());
 		Document doc = InterrogateRvia.getXmlDatAndUserInfo(req, endp);
@@ -210,8 +210,8 @@ public class RestWSConnector
 		pLog.info("RVIA_POST: " + targetxml.toString());
 		WebTarget target = client.target(getBaseRviaXML());
 		Response rp = null;
-		rp = target.path("rest").path("hello").request().accept(MediaType.TEXT_PLAIN).get(Response.class);
-		pLog.info("RVIA_POST: " + rp.toString());
+		//rp = target.path("rest").path("hello").request().accept(MediaType.TEXT_PLAIN).get(Response.class);
+		//pLog.info("RVIA_POST: " + rp.toString());
 		pLog.info(endp);
 		pLog.info(ct);
 		rp = getRVIAInputs(request, endp, sesion_rvia, data);
