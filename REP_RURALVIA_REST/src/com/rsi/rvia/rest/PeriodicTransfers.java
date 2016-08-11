@@ -32,7 +32,7 @@ public class PeriodicTransfers
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
 	 * @throws Exception */
 	@POST
-	@Produces(MediaType.TEXT_PLAIN)
+	//@Produces(MediaType.TEXT_PLAIN)
 	public Response getAllUserPeriodicTransfers(@Context HttpServletRequest request, @Context UriInfo pUriInfo,
 			String data) throws Exception
 	{

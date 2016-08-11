@@ -28,6 +28,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -71,6 +72,7 @@ public class RestWSConnector
 				ct.replace("\t", "");
 			}
 			endp = rs.getString("end_point");
+			//operid = rs.getString("end_point");
 		}
 		pLog.info("Preparando peticion para tipo " + ct + " y endpoint " + endp + " # method: " + method);
 		switch (method)
@@ -129,13 +131,12 @@ public class RestWSConnector
 		SessionRviaData sesiFoo = sesion_rvia;
 		String sesId = sesiFoo.getRviaSessionId();
 		String host = sesiFoo.getUriRvia().toString();
-		String nodo = sesiFoo.getNodeRvia();
 		String url = host + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + sesId + "?clavePagina="+ endp; // + "?" + "clave_pagina=" + endp;
 		Client client = CustomRSIClient.getClient();
 		WebTarget target = client.target(getBaseRviaXML());
 		Document doc = InterrogateRvia.getXmlDatAndUserInfo(req, endp);
 		NodeList nodos = doc.getElementsByTagName("field");
-		HashMap<String, String> camposDeSession = new HashMap<String, String>();
+		MultivaluedMap<String, String> camposDeSession = new MultivaluedHashMap<String, String>();
 		// Datos existentes en la sessión
 		for (int i = 0; i < nodos.getLength(); i++)
 		{
@@ -145,10 +146,13 @@ public class RestWSConnector
 			{
 				pLog.info("--------------------- campo informado: " + e.getAttribute("name").toString() + ": "
 						+ e.getAttribute("value").toString());
-				camposDeSession.put(e.getAttribute("name"), e.getAttribute("value"));
+				camposDeSession.add(e.getAttribute("name"), e.getAttribute("value"));
 			}
 		}
-		camposDeSession.put("clavePagina", endp);
+		camposDeSession.add("clavePagina", endp);
+		//camposDeSession.remove("canal");
+		//camposDeSession.put("canal","000001");
+		
 		// Datos llegados por post
 		String[] arr = data.split("&");
 		if (!data.trim().isEmpty())
@@ -162,29 +166,12 @@ public class RestWSConnector
 					continue;
 				if (arr2[0].trim().isEmpty() || arr2[1].trim().isEmpty())
 					continue;
-				camposDeSession.put(arr2[0], arr2[1]);
+				camposDeSession.add(arr2[0], arr2[1]);
 			}
-		}
-		String qParams = "";
-		Iterator<Entry<String, String>> it = camposDeSession.entrySet().iterator();
-		while (it.hasNext())
-		{
-			Map.Entry<String, String> e = (Map.Entry<String, String>) it.next();
-			qParams = qParams + "&" + e.getKey() + "=" + e.getValue();
 		}
 		pLog.info("URL ServletDirectoPortal: " + url.toString());
 		target = client.target(UriBuilder.fromUri(url).build());
-		Response rp = target.request(qParams).get();
-		// pLog.info("RVIA____________: " + rp.getHeaders().toString());
-		/*
-		 * rp contiene la respuesta xml con las entradas a la página de ruralvia. Considerar censar las entradas en el
-		 * modelo en la petición, una vez al día, y si han variado.
-		 */
-		/*
-		 * MultivaluedMap formData = new MultivaluedMapImpl(); formData.add("name1", "val1"); formData.add("name2",
-		 * "val2"); ClientResponse response = webResource .type(MediaType.APPLICATION_FORM_URLENCODED_TYPE)
-		 * .post(ClientResponse.class, formData);
-		 */
+		Response rp = target.request().post(Entity.form(camposDeSession));
 		return rp;
 	}
 
