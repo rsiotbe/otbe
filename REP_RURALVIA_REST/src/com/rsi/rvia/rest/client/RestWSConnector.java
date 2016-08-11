@@ -211,8 +211,8 @@ public class RestWSConnector
 	private static Response get(HttpServletRequest request) throws Exception
 	{
 		Client client = CustomRSIClient.getClient();
-		WebTarget target = client.target(getBaseRviaXML());
-		Response rp = target.path("rest").path("hello").request().accept(MediaType.TEXT_PLAIN).get(Response.class);
+		WebTarget target = client.target(getBaseRviaXML()).path("");
+		Response rp = target.request().accept(MediaType.APPLICATION_JSON).get();
 		pLog.info("GET: " + rp.toString());
 		return rp;
 	}
@@ -238,8 +238,13 @@ public class RestWSConnector
 	// @Produces(MediaType.TEXT_PLAIN)
 	private static Response put(@Context HttpServletRequest request) throws Exception
 	{
+		request.getParameterMap();
 		Client client = CustomRSIClient.getClient();
+		///??? Modificar con la nueva respuesta.
+		///??? Hacer una peticion de tipo PUT al WS enviandole en la cabecera los datos a modificar.
+		
 		WebTarget target = client.target(getBaseRviaXML());
+		//Response rp = target.request().put();
 		Response rp = null;
 		/*
 		 * Response rp = target.path("rest"). path("hello"). request(). accept(MediaType.TEXT_PLAIN). put(Response.class);
