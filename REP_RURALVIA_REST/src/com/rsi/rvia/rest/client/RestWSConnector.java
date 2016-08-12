@@ -40,6 +40,7 @@ import org.w3c.dom.NodeList;
 import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
+import com.rsi.rvia.rest.DDBB.OracleDDBB;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import javax.xml.bind.JAXBElement;
@@ -183,53 +184,77 @@ public class RestWSConnector
 
 	private static void saveSenssionVarNames(int id_miq, Vector<String> nombres) throws Exception
 	{
-		int i=0,z=0;
-		String in="";
-
-/*		
-		CREATE TABLE BEL.BDPTB225_MIQ_SESSION_INPUTS (
-				  ID_MIQ_INPUT INTEGER NOT NULL,
-				  INPUT_NAME VARCHAR(250)  DEFAULT NULL,
-				  INPUT_VALUE VARCHAR(500)  DEFAULT NULL,
-				  INPUT_DESC VARCHAR(1000)  DEFAULT NULL,
-				  INPUT_TYPE VARCHAR(30)  DEFAULT NULL
-				);
-				CREATE UNIQUE INDEX NX_1_BELTB225 ON BEL.BDPTB225_MIQ_SESSION_INPUTS (ID_MIQ_INPUT);
-				CREATE UNIQUE INDEX NX_2_BELTB225 ON BEL.BDPTB225_MIQ_SESSION_INPUTS (INPUT_NAME);
-
-				CREATE TABLE BEL.BDPTB226_MIQ_QUEST_RL_SESSION (
-				  ID_MIQ INTEGER NOT NULL,
-				  ID_MIQ_INPUT INTEGER NOT NULL,
-				  MIQ_VERB CHAR(10) DEFAULT NULL
-				);
-				CREATE UNIQUE INDEX NX_1_BELTB226 ON BEL.BDPTB226_MIQ_QUEST_RL_SESSION (ID_MIQ, ID_MIQ_INPUT, MIQ_VERB);
-*/		
-
+		int id_miq_param,i;
+		String q;
 		
-		DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.Oracle);
+		DDBBConnection p3 = OracleDDBB.getInstance();
+		
+		//DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.Oracle);
 		PreparedStatement ps;
 		ResultSet rs;
 		for(i=0; i<nombres.size();i++){
-			ps = p3.prepareStatement(	
-					" select max() from                          " + 
-					"	BEL.BDPTB222_MIQ_QUESTS a,              " + 
-					"	BEL.BDPTB226_MIQ_QUEST_RL_SESSION b,    " + 
-					"	BEL.BDPTB225_MIQ_SESSION_INPUTS c       " + 
-					" where a.id_miq=b.id_miq                    " + 
-					" and b.id_miq_input=c.id_miq_input          " + 
+			q=" select a.id_miq from" + 
+					"	BEL.BDPTB222_MIQ_QUESTS a," + 
+					"	BEL.BDPTB226_MIQ_QUEST_RL_SESSION b," + 
+					"	BEL.BDPTB225_MIQ_SESSION_PARAMS c" + 
+					" where a.id_miq=b.id_miq" + 
+					" and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM" + 
 					" and a.id_miq=" + id_miq +
-					" and c.input_name='" + nombres.get(i) + "';" 
-				);
-			rs = p3.executeQuery(ps);		
+					" and c.PARAMNAME='" + nombres.get(i) + "'" ;
+			
+			//q="select x.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS x where x.PARAMNAME = '" + nombres.get(i) + "'" ;
+			
+			pLog.info(q);
+			ps = p3.prepareStatement(q);
+			rs = ps.executeQuery();		
 			if(rs.next()){
+				ps.close();
+				rs.close();
 				continue;
 			}
-			in = in + ((i==0)?"'":"','") + nombres.get(i);
 			ps.close();
+			rs.close();		
+
+			q="select a.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS a where a.PARAMNAME = '" + nombres.get(i) + "'" ;
+			pLog.info(q);
+
+			ps = p3.prepareStatement(q);
+			rs = ps.executeQuery();	
+			
+			if(!rs.next()){
+				ps.close();
+				rs.close();
+				q=" insert into BEL.BDPTB225_MIQ_SESSION_PARAMS" +
+						" select" +
+						"  (select count(*) from BEL.BDPTB225_MIQ_SESSION_PARAMS) +1  " +
+						" , '" + nombres.get(i)  + "' " +
+						" , ''" +
+						" , ''" +
+						" , 'SESION'" +
+						" from dual " 	;
+				pLog.info(q);
+				ps = p3.prepareStatement(q);
+				rs = ps.executeQuery();			
+			}
+			ps.close();
+			rs.close();
+			q=" select h.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS h where h.PARAMNAME='" + nombres.get(i) + "'" ;
+			pLog.info(q);
+			ps = p3.prepareStatement(q);
+			rs = ps.executeQuery();	
+			rs.next();
+			
+			id_miq_param = rs.getInt("ID_MIQ_PARAM");			
+			
+			ps.close();
+			rs.close();
+			q=" insert into BEL.BDPTB226_MIQ_QUEST_RL_SESSION values(" + id_miq + ", " + id_miq_param + " , '')";
+			pLog.info(q);
+			ps = p3.prepareStatement(q);
+			rs = ps.executeQuery();	
+			ps.close();
+			rs.close();
 		}
-		
-	
-		
 	}
 
 	private static Response rviaPost(@Context HttpServletRequest request, String ct, String endp, int id_miq,
