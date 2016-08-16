@@ -5,10 +5,12 @@ import java.io.*;
 import java.net.URI;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -38,6 +40,7 @@ import org.w3c.dom.NodeList;
 import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
+import com.rsi.rvia.rest.DDBB.OracleDDBB;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import javax.xml.bind.JAXBElement;
@@ -54,6 +57,7 @@ public class RestWSConnector
 			String strPrimaryPath) throws Exception
 	{
 		String ct = "", endp = "";
+		int id_miq = 0;
 		DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.Oracle);
 		// String path=request.getPathInfo();
 		String path = strPrimaryPath;
@@ -72,6 +76,7 @@ public class RestWSConnector
 				ct.replace("\t", "");
 			}
 			endp = rs.getString("end_point");
+			id_miq =  rs.getInt("id_miq");
 			//operid = rs.getString("end_point");
 		}
 		pLog.info("Preparando peticion para tipo " + ct + " y endpoint " + endp + " # method: " + method);
@@ -82,7 +87,7 @@ public class RestWSConnector
 				if ("RVIA".equals(ct))
 				{
 					pLog.info("Derivando peticion a Ruralvía");
-					resultado = rviaPost(request, ct, endp, sesion_rvia, data);
+					resultado = rviaPost(request, ct, endp, id_miq, sesion_rvia, data);
 				}
 				else
 				{
@@ -94,7 +99,7 @@ public class RestWSConnector
 				if ("RVIA".equals(ct))
 				{
 					pLog.info("Derivando petición a Ruralvía");
-					resultado = rviaPost(request, ct, endp, sesion_rvia, data);
+					resultado = rviaPost(request, ct, endp, id_miq, sesion_rvia, data);
 				}
 				else
 				{
@@ -124,10 +129,9 @@ public class RestWSConnector
 		return UriBuilder.fromUri("http://localhost:8080/api/").build();
 	}
 
-	private static Response getRVIAInputs(HttpServletRequest req, String endp, SessionRviaData sesion_rvia, String data)
+	private static Response performRviaConnection(HttpServletRequest req, String endp, int id_miq, SessionRviaData sesion_rvia, String data)
 			throws Exception
 	{
-		// https://wwwdes.ruralvia.com/api/rest/cards?token=HqJ%2F6fJk2%2B8jXi90%2FVU%2FH1yXdKMwgS1KiQhwq%2BRmKrAKcQDIgO7b9b1y5a8gq1n2ikAbaHGoutULTJOU7KpLFX49WqAVssGx81NDrzqVKa7ST5qQwiEbNmbBo6doPpMbKzUGgFjPwa52Qc9byaHqeFpIqF04Tmszas0LUJjaBuYNmuWF%2F%2BQN6UqoEFktJs2NVSct1v33MAUFeVttuVrkQTwSxl1oWsxUnpPCOSojwLSbMsiuekfJc%2Fh2I75OpHgS
 		SessionRviaData sesiFoo = sesion_rvia;
 		String sesId = sesiFoo.getRviaSessionId();
 		String host = sesiFoo.getUriRvia().toString();
@@ -136,6 +140,7 @@ public class RestWSConnector
 		WebTarget target = client.target(getBaseRviaXML());
 		Document doc = InterrogateRvia.getXmlDatAndUserInfo(req, endp);
 		NodeList nodos = doc.getElementsByTagName("field");
+		Vector<String> sessionParamNames = new Vector();
 		MultivaluedMap<String, String> camposDeSession = new MultivaluedHashMap<String, String>();
 		// Datos existentes en la sessión
 		for (int i = 0; i < nodos.getLength(); i++)
@@ -147,11 +152,13 @@ public class RestWSConnector
 				pLog.info("--------------------- campo informado: " + e.getAttribute("name").toString() + ": "
 						+ e.getAttribute("value").toString());
 				camposDeSession.add(e.getAttribute("name"), e.getAttribute("value"));
+				sessionParamNames.add(e.getAttribute("name"));
 			}
 		}
+		saveSenssionVarNames(id_miq,sessionParamNames);
 		camposDeSession.add("clavePagina", endp);
 		//camposDeSession.remove("canal");
-		//camposDeSession.put("canal","000001");
+		//camposDeSession.add("canal","000001");
 		
 		// Datos llegados por post
 		String[] arr = data.split("&");
@@ -175,21 +182,82 @@ public class RestWSConnector
 		return rp;
 	}
 
-	private static Response performRviaConnection(Response rp)
+	private static void saveSenssionVarNames(int id_miq, Vector<String> nombres) throws Exception
 	{
-		/*
-		 * Completamos las entradas faltantes con las que se reciban en el request y solicitamos a Ruralvía la página en
-		 * cuestión.
-		 */
-		return rp;
+		int id_miq_param,i;
+		String q;
+		
+		DDBBConnection p3 = OracleDDBB.getInstance();
+		
+		//DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.Oracle);
+		PreparedStatement ps;
+		ResultSet rs;
+		for(i=0; i<nombres.size();i++){
+			q=" select a.id_miq from" + 
+					"	BEL.BDPTB222_MIQ_QUESTS a," + 
+					"	BEL.BDPTB226_MIQ_QUEST_RL_SESSION b," + 
+					"	BEL.BDPTB225_MIQ_SESSION_PARAMS c" + 
+					" where a.id_miq=b.id_miq" + 
+					" and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM" + 
+					" and a.id_miq=" + id_miq +
+					" and c.PARAMNAME='" + nombres.get(i) + "'" ;
+			
+			//q="select x.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS x where x.PARAMNAME = '" + nombres.get(i) + "'" ;
+			
+			pLog.info(q);
+			ps = p3.prepareStatement(q);
+			rs = ps.executeQuery();		
+			if(rs.next()){
+				ps.close();
+				rs.close();
+				continue;
+			}
+			ps.close();
+			rs.close();		
+
+			q="select a.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS a where a.PARAMNAME = '" + nombres.get(i) + "'" ;
+			pLog.info(q);
+
+			ps = p3.prepareStatement(q);
+			rs = ps.executeQuery();	
+			
+			if(!rs.next()){
+				ps.close();
+				rs.close();
+				q=" insert into BEL.BDPTB225_MIQ_SESSION_PARAMS" +
+						" select" +
+						"  (select count(*) from BEL.BDPTB225_MIQ_SESSION_PARAMS) +1  " +
+						" , '" + nombres.get(i)  + "' " +
+						" , ''" +
+						" , ''" +
+						" , 'SESION'" +
+						" from dual " 	;
+				pLog.info(q);
+				ps = p3.prepareStatement(q);
+				rs = ps.executeQuery();			
+			}
+			ps.close();
+			rs.close();
+			q=" select h.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS h where h.PARAMNAME='" + nombres.get(i) + "'" ;
+			pLog.info(q);
+			ps = p3.prepareStatement(q);
+			rs = ps.executeQuery();	
+			rs.next();
+			
+			id_miq_param = rs.getInt("ID_MIQ_PARAM");			
+			
+			ps.close();
+			rs.close();
+			q=" insert into BEL.BDPTB226_MIQ_QUEST_RL_SESSION values(" + id_miq + ", " + id_miq_param + " , '')";
+			pLog.info(q);
+			ps = p3.prepareStatement(q);
+			rs = ps.executeQuery();	
+			ps.close();
+			rs.close();
+		}
 	}
 
-	private static void getWSData()
-	{
-		// TODO Auto-generated method ssdFAStub
-	}
-
-	private static Response rviaPost(@Context HttpServletRequest request, String ct, String endp,
+	private static Response rviaPost(@Context HttpServletRequest request, String ct, String endp, int id_miq,
 			SessionRviaData sesion_rvia, String data) throws Exception
 	{
 		Client client = CustomRSIClient.getClient();
@@ -197,12 +265,11 @@ public class RestWSConnector
 		pLog.info("RVIA_POST: " + targetxml.toString());
 		WebTarget target = client.target(getBaseRviaXML());
 		Response rp = null;
-		//rp = target.path("rest").path("hello").request().accept(MediaType.TEXT_PLAIN).get(Response.class);
-		//pLog.info("RVIA_POST: " + rp.toString());
 		pLog.info(endp);
 		pLog.info(ct);
-		rp = getRVIAInputs(request, endp, sesion_rvia, data);
-		rp = performRviaConnection(rp);
+		pLog.info("xmldat: " + targetxml.toString());
+		pLog.info("clave_pagina: " + endp);
+		rp = performRviaConnection(request, endp, id_miq, sesion_rvia, data);
 		return rp;
 	}
 
