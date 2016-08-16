@@ -52,7 +52,11 @@ public class RestWSConnector
 {
 	private static Logger	pLog		= LoggerFactory.getLogger(RestWSConnector.class);
 	private static String	RviaXML	= "http://localhost:8080";
-
+	private static String strTemplate;
+	
+	public String getTemplate(){
+		return this.strTemplate;
+	}
 	// @GET
 	// @Produces(MediaType.TEXT_PLAIN)
 	public static Response getData(HttpServletRequest request, String data, SessionRviaData sesion_rvia,
@@ -72,13 +76,12 @@ public class RestWSConnector
 		while (rs.next())
 		{
 			ct = rs.getString("component_type");
+			pLog.debug("ct lenght: " + ct.length());
 			if(ct != null){
-				///??? Recoger bien el CT
-				ct.replace("\t","");
 				ct = ct.substring(0,4);
-				ct.replace("\t", "");
 			}
 			endp = rs.getString("end_point");
+			strTemplate = rs.getString("miq_out_template");
 			id_miq =  rs.getInt("id_miq");
 			//operid = rs.getString("end_point");
 		}
@@ -94,7 +97,7 @@ public class RestWSConnector
 				else
 				{
 					pLog.info("Solicitando peticióñn REST");
-					resultado = get(request,endp, data);
+					resultado = get(request,endp);
 				}
 				break;
 			case "POST":
@@ -106,7 +109,7 @@ public class RestWSConnector
 				else
 				{
 					pLog.info("Solicitando peticióñn REST");
-					resultado = post(request);
+					resultado = post(request,endp,data);
 				}
 				break;
 			case "PUT":
@@ -282,13 +285,13 @@ public class RestWSConnector
 
 	// @GET
 	// @Produces(MediaType.TEXT_PLAIN)
-	private static Response get(HttpServletRequest request, String endp, String data) throws Exception
+	private static Response get(HttpServletRequest request, String endp) throws Exception
 	{
 		Client client = CustomRSIClient.getClient();
-		String strQueryParams = data;
+		String strQueryParams = request.getQueryString();
 		WebTarget target = client.target(getBaseWSEndPoint(endp) + "?" + strQueryParams);
 
-		pLog.info("END_POINT:" + endp + "&" + strQueryParams);
+		pLog.info("END_POINT:" + endp + "?" + strQueryParams);
 		
 		Response rp = target.request()
 								  .header("CODSecEnt","18")
@@ -309,15 +312,32 @@ public class RestWSConnector
 	 * @return Response con el objeto respuesta */
 	// @POST
 	// @Produces(MediaType.TEXT_PLAIN)
-	private static Response post(@Context HttpServletRequest request) throws Exception
+	private static Response post(@Context HttpServletRequest request, String endp, String data) throws Exception
 	{
 		Client client = CustomRSIClient.getClient();
-		WebTarget target = client.target(getBaseRviaXML());
-		Response rp = null;
-		/*
-		 * Response rp = target.path("rest"). path("hello"). request(). accept(MediaType.TEXT_PLAIN). get(Response.class);
-		 * pLog.info("POST: " + rp.toString());
-		 */
+	
+		MultivaluedMap<String, String> pDataPost = new MultivaluedHashMap<String, String>();
+		if(data != null){
+			String[] arr = data.split("&");
+			if (!data.trim().isEmpty())
+			{
+				for (int i = 0; i < arr.length; i++)
+				{
+					if (arr[i].trim().isEmpty())
+						continue;
+					String[] arr2 = arr[i].split("=");
+					if (arr2.length < 2)
+						continue;
+					if (arr2[0].trim().isEmpty() || arr2[1].trim().isEmpty())
+						continue;
+					pDataPost.add(arr2[0], arr2[1]);
+				}
+			}
+		}
+		WebTarget target = client.target(getBaseWSEndPoint(endp));
+		Response rp = target.request().post(Entity.form(pDataPost));
+		
+		pLog.info("Respose POST: " + rp.toString());
 		return rp;
 	}
 
@@ -325,7 +345,7 @@ public class RestWSConnector
 	// @Produces(MediaType.TEXT_PLAIN)
 	private static Response put(@Context HttpServletRequest request,String strPathRest, SessionRviaData sesion_rvia) throws Exception
 	{
-		///??? Comprobar
+		///??? Comprobar funcionamiento real
 		Hashtable<String,String> htDatesParameters = new Hashtable<String, String>();
 		Client client = CustomRSIClient.getClient();
 		SessionRviaData sesiFoo = sesion_rvia;
@@ -333,16 +353,16 @@ public class RestWSConnector
 		if(!strParameters.isEmpty()){
 			htDatesParameters = getParameterRviaSession(strParameters, sesion_rvia);
 		}
-		
-		///??? A�adir al multivaluemap de respuesta los datos nuevos!
+		MultivaluedMap<String, String> camposDeSession = new MultivaluedHashMap<String, String>();
+		for (Map.Entry<String, String> entry : htDatesParameters.entrySet())
+		{
+			camposDeSession.add(entry.getKey(), entry.getValue());
+		}
 		
 		WebTarget target = client.target(getBaseRviaXML());
-		//Response rp = target.request().put();
-		Response rp = null;
-		/*
-		 * Response rp = target.path("rest"). path("hello"). request(). accept(MediaType.TEXT_PLAIN). put(Response.class);
-		 * pLog.info("PUT: " + rp.toString());
-		 */
+		Response rp = target.request().put(Entity.form(camposDeSession));
+
+		pLog.info("Respose PUT: " + rp.toString());
 		return rp;
 	}
 
@@ -359,13 +379,15 @@ public class RestWSConnector
 	
 	private static String getOperationParameters(String strPathRest){
 		String strReturn = "";
-		String strQuery =" select c.input_name from" + 
-		" BEL.BDPTB222_MIQ_QUESTS a," + 
-		" BEL.BDPTB226_MIQ_QUEST_RL_SESSION b," + 
-		" BEL.BDPTB225_MIQ_SESSION_INPUTS c" + 
-		" where a.id_miq=b.id_miq" + 
-		" and b.id_miq_input=c.id_miq_input" +
-		" and a.path_rest = '" + strPathRest + "'";
+		String strQuery =" select c.paramname from" + 
+				"	BEL.BDPTB222_MIQ_QUESTS a," + 
+				"	BEL.BDPTB226_MIQ_QUEST_RL_SESSION b," + 
+				"	BEL.BDPTB225_MIQ_SESSION_PARAMS c" + 
+				" where a.id_miq=b.id_miq" + 
+				" and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM" + 
+				" and a.path_rest=" + strPathRest;
+		
+		
 		
 		DDBBConnection pDDBBTranslate = DDBBFactory.getDDBB(DDBBProvider.Oracle);
 		PreparedStatement pPS;
@@ -375,7 +397,7 @@ public class RestWSConnector
 			ResultSet pQueryResult = pPS.executeQuery();
 			while (pQueryResult.next())
 			{
-				String strInputName = (String) pQueryResult.getString("input_name");
+				String strInputName = (String) pQueryResult.getString("paramname");
 				if(!strReturn.isEmpty()){
 					strReturn += ";";
 				}

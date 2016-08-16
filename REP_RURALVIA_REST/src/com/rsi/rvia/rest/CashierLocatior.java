@@ -26,18 +26,11 @@ public class CashierLocatior
    @Produces(MediaType.APPLICATION_JSON)
 	public Response getAllUserCards(@Context HttpServletRequest request,@Context UriInfo pUriInfo) throws Exception
 	{
-		String strCodEntity = request.getParameter("codigoEntidad");
-		String strLong = request.getParameter("longitud");
-		String strLatitude = request.getParameter("latitud");
-		String strRadius = request.getParameter("radio");
-		SessionRviaData pSessionRviaData = new SessionRviaData (request);
-		String strQueryParams = "";
-		strQueryParams += ("codigoEntidad=" + strCodEntity + "&longitud=" +
-								 strLong + "&latitud=" + strLatitude + "&radio=" + strRadius);
-		request.setAttribute("queryParams", strQueryParams);
-		
-		Response p = OperationManager.proccesFromRvia(request, pUriInfo, strQueryParams, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Se recibe una peticion de cashierLocatior");
+		String data = "";
+		SessionRviaData pSessionRviaData = new SessionRviaData (request);
+		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.TEXT_PLAIN_TYPE);
+		
 		
 		///??? La respuesta devuelve ahora mismo JSON para hacer pruebas. Deberia devolver un XHTML con los datos del JSON.
 		
