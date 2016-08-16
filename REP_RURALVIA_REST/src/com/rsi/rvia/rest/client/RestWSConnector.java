@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,6 +32,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientResponse;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -49,7 +51,7 @@ import javax.xml.bind.JAXBElement;
 public class RestWSConnector
 {
 	private static Logger	pLog		= LoggerFactory.getLogger(RestWSConnector.class);
-	private static String	RviaXML	= "http://10.1.243.142";
+	private static String	RviaXML	= "http://localhost:8080";
 
 	// @GET
 	// @Produces(MediaType.TEXT_PLAIN)
@@ -71,6 +73,7 @@ public class RestWSConnector
 		{
 			ct = rs.getString("component_type");
 			if(ct != null){
+				///??? Recoger bien el CT
 				ct.replace("\t","");
 				ct = ct.substring(0,4);
 				ct.replace("\t", "");
@@ -83,7 +86,6 @@ public class RestWSConnector
 		switch (method)
 		{
 			case "GET":
-				resultado = get(request);
 				if ("RVIA".equals(ct))
 				{
 					pLog.info("Derivando peticion a Ruralvía");
@@ -92,7 +94,7 @@ public class RestWSConnector
 				else
 				{
 					pLog.info("Solicitando peticióñn REST");
-					resultado = get(request);
+					resultado = get(request,endp, data);
 				}
 				break;
 			case "POST":
@@ -108,7 +110,7 @@ public class RestWSConnector
 				}
 				break;
 			case "PUT":
-				resultado = put(request);
+				resultado = put(request,path,sesion_rvia);
 				break;
 			case "PATCH":
 				break;
@@ -129,6 +131,11 @@ public class RestWSConnector
 		return UriBuilder.fromUri("http://localhost:8080/api/").build();
 	}
 
+	private static URI getBaseWSEndPoint(String endp)
+	{
+		return UriBuilder.fromUri(endp).build();
+	}
+	
 	private static Response performRviaConnection(HttpServletRequest req, String endp, int id_miq, SessionRviaData sesion_rvia, String data)
 			throws Exception
 	{
@@ -275,11 +282,24 @@ public class RestWSConnector
 
 	// @GET
 	// @Produces(MediaType.TEXT_PLAIN)
-	private static Response get(HttpServletRequest request) throws Exception
+	private static Response get(HttpServletRequest request, String endp, String data) throws Exception
 	{
 		Client client = CustomRSIClient.getClient();
-		WebTarget target = client.target(getBaseRviaXML()).path("");
-		Response rp = target.request().accept(MediaType.APPLICATION_JSON).get();
+		String strQueryParams = data;
+		WebTarget target = client.target(getBaseWSEndPoint(endp) + "?" + strQueryParams);
+
+		pLog.info("END_POINT:" + endp + "&" + strQueryParams);
+		
+		Response rp = target.request()
+								  .header("CODSecEnt","18")
+								  .header("CODSecUser","")
+								  .header("CODSecTrans","")
+								  .header("CODTerminal","18")
+								  .header("CODApl","BDP")
+								  .header("CODCanal","18")
+								  .header("CODSecIp","10.1.245.2")
+								  .accept(MediaType.APPLICATION_JSON).get();
+		
 		pLog.info("GET: " + rp.toString());
 		return rp;
 	}
@@ -303,12 +323,18 @@ public class RestWSConnector
 
 	// @PUT
 	// @Produces(MediaType.TEXT_PLAIN)
-	private static Response put(@Context HttpServletRequest request) throws Exception
+	private static Response put(@Context HttpServletRequest request,String strPathRest, SessionRviaData sesion_rvia) throws Exception
 	{
-		request.getParameterMap();
+		///??? Comprobar
+		Hashtable<String,String> htDatesParameters = new Hashtable<String, String>();
 		Client client = CustomRSIClient.getClient();
-		///??? Modificar con la nueva respuesta.
-		///??? Hacer una peticion de tipo PUT al WS enviandole en la cabecera los datos a modificar.
+		SessionRviaData sesiFoo = sesion_rvia;
+		String strParameters = getOperationParameters(strPathRest);
+		if(!strParameters.isEmpty()){
+			htDatesParameters = getParameterRviaSession(strParameters, sesion_rvia);
+		}
+		
+		///??? A�adir al multivaluemap de respuesta los datos nuevos!
 		
 		WebTarget target = client.target(getBaseRviaXML());
 		//Response rp = target.request().put();
@@ -330,4 +356,72 @@ public class RestWSConnector
 		pLog.info("DELETE: " + rp.toString());
 		return rp;
 	}
+	
+	private static String getOperationParameters(String strPathRest){
+		String strReturn = "";
+		String strQuery =" select c.input_name from" + 
+		" BEL.BDPTB222_MIQ_QUESTS a," + 
+		" BEL.BDPTB226_MIQ_QUEST_RL_SESSION b," + 
+		" BEL.BDPTB225_MIQ_SESSION_INPUTS c" + 
+		" where a.id_miq=b.id_miq" + 
+		" and b.id_miq_input=c.id_miq_input" +
+		" and a.path_rest = '" + strPathRest + "'";
+		
+		DDBBConnection pDDBBTranslate = DDBBFactory.getDDBB(DDBBProvider.Oracle);
+		PreparedStatement pPS;
+		try
+		{
+			pPS = pDDBBTranslate.prepareStatement(strQuery);
+			ResultSet pQueryResult = pPS.executeQuery();
+			while (pQueryResult.next())
+			{
+				String strInputName = (String) pQueryResult.getString("input_name");
+				if(!strReturn.isEmpty()){
+					strReturn += ";";
+				}
+				strReturn += strInputName;
+			}
+		}
+		catch (Exception ex)
+		{
+			pLog.error("Error al recuperar los nombres de parametros Path_Rest(" + strPathRest + "): " + ex);
+			strReturn = "";
+		}
+		
+		
+		return strReturn;
+	}
+	
+
+	private static Hashtable<String,String> getParameterRviaSession(String strParameters, SessionRviaData sesion_rvia){
+		SessionRviaData pSesiFoo = sesion_rvia;
+		String strSesId = pSesiFoo.getRviaSessionId();
+		String strHost = pSesiFoo.getUriRvia().toString();
+		String strHTML = "";
+		String[] strDatosParam = null;
+		Hashtable<String,String> htReturn = new Hashtable();
+		String url = strHost + "/portal_rvia/RviaRestInfo;RVIASESION=" + strSesId + "?listAttributes=" + strParameters;
+		try
+		{
+			//Forzamos que sea Document del tipo: org.jsoup.nodes.Document
+			org.jsoup.nodes.Document docResp = Jsoup.connect(url).get();
+			strHTML = docResp.html();
+			strDatosParam = strHTML.split(";");
+			if(strDatosParam != null){
+				for(String strParam : strDatosParam){
+					String[] strPartesParam = strParam.split("#-#");
+					if((strPartesParam != null)&&(strPartesParam.length >= 2)){
+						htReturn.put(strPartesParam[0], strPartesParam[1]);
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			pLog.error("Error al recuperar parametros de la sesion de Rvia: " + ex);
+			htReturn = null;
+		}
+		return htReturn;
+	}
+	
 }

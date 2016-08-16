@@ -41,19 +41,7 @@ public class OperationManager
 		
 		Utils pUtil = new Utils();
 		String strPrimaryPath = pUtil.getPrimaryPath(pUriInfo);
-		String strQueryParams = "";
-		Map<String,String[]> pParameters = pRequest.getParameterMap();
-		for (Map.Entry<String, String[]> entry : pParameters.entrySet())
-		{
-			if(!strQueryParams.isEmpty()){
-				strQueryParams += "&";
-			}
-			if(entry.getValue().length > 0){
-				strQueryParams += entry.getKey() + "=" + entry.getValue()[0];
- 			}
-		    pLog.info("Query Parameters Peticion: " + strQueryParams);
-		}
-		data = strQueryParams;
+		
 		Response p = RestWSConnector.getData(pRequest, data, pSessionRviaData, strPrimaryPath);
 		
 		if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
