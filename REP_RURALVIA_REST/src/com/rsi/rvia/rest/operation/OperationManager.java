@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
@@ -37,9 +38,22 @@ public class OperationManager
 		pSession.setAttribute("token", pSessionRviaData.getToken());
 		if (!IsumValidation.IsValidService(pSessionRviaData))
 			throw new Exception("EL servicio solicitado no es permitido para este usuario por ISUM");
-		Utils pUtil = new Utils();
 		
+		Utils pUtil = new Utils();
 		String strPrimaryPath = pUtil.getPrimaryPath(pUriInfo);
+		String strQueryParams = "";
+		Map<String,String[]> pParameters = pRequest.getParameterMap();
+		for (Map.Entry<String, String[]> entry : pParameters.entrySet())
+		{
+			if(!strQueryParams.isEmpty()){
+				strQueryParams += "&";
+			}
+			if(entry.getValue().length > 0){
+				strQueryParams += entry.getKey() + "=" + entry.getValue()[0];
+ 			}
+		    pLog.info("Query Parameters Peticion: " + strQueryParams);
+		}
+		data = strQueryParams;
 		Response p = RestWSConnector.getData(pRequest, data, pSessionRviaData, strPrimaryPath);
 		
 		if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
@@ -48,9 +62,9 @@ public class OperationManager
 			//p = Response.ok(strPageResult).build();
 		}
 		NewCookie pCookieToken = new NewCookie("token", pSessionRviaData.getToken());
-		pLog.debug("Se Crea la Cookie con el Token.");
+		pLog.info("Se Crea la Cookie con el Token.");
 		Response pReturn = Response.ok(p.getEntity()).cookie(pCookieToken).build();
-		pLog.debug("Se Añade la Cookie con el Token a la respuesta.");
+		pLog.info("Se Añade la Cookie con el Token a la respuesta.");
 		return pReturn;
 	
 	}
