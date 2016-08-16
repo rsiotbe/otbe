@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.operation.OperationManager;
 import com.rsi.rvia.rest.session.SessionRviaData;
 
-@Path("/cashierLocatior")
-public class CashierLocatior
+@Path("/putprueba")
+public class PutPrueba
 {
 	private static Logger	pLog	= LoggerFactory.getLogger(Cards.class);
 
