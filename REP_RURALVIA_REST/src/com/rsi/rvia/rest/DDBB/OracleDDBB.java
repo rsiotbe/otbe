@@ -30,5 +30,10 @@ public class OracleDDBB extends AbstractDDBB
 		return _pDDBB;
 	}
 	
+	public synchronized static DDBBConnection getInstance(String prefix)
+	{
+		schemaPrefix = prefix;
+		return getInstance();
+	}	
 
 }

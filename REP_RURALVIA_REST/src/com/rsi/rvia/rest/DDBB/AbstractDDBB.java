@@ -12,18 +12,19 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractDDBB implements DDBBConnection {
 	protected static Logger pLog = LoggerFactory.getLogger(AbstractDDBB.class);;
 	private Connection _pConnection = null;
+	protected static String schemaPrefix = "bel";
 	protected Properties pAppProperties = new Properties();
-
+	
 	private synchronized void BBDD_Connect() throws Exception {
 		String strURI = null;
 		try {
 			if ((_pConnection == null) || (_pConnection.isClosed())) {
-				strURI = pAppProperties.getProperty("urlDriver");
+				strURI = pAppProperties.getProperty(schemaPrefix + ".urlDriver");
 				pLog.trace("Se inicia la conexion con la BBDD con el driver:  "
 						+ strURI);
 				_pConnection = DriverManager.getConnection(strURI,
-						pAppProperties.getProperty("user"),
-						pAppProperties.getProperty("pass"));
+						pAppProperties.getProperty(schemaPrefix + ".user"),
+						pAppProperties.getProperty(schemaPrefix + ".pass"));
 				pLog.trace("Se conecta con la BBDD OK");
 			} else
 				pLog.trace("La BBDD ya esto conectada");
