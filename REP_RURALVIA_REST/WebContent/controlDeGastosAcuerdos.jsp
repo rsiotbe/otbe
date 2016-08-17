@@ -29,6 +29,7 @@
 	//pLog.debug("Path Rest: " + strPrimaryPath);
 	PreparedStatement ps = p3.prepareStatement(q);
 	
+	
 	ps.setString(1,request.getParameter("codEntidad"));
 	ps.setString(2, request.getParameter("idInternoPe"));
 	
