@@ -25,7 +25,10 @@ public class PutPrueba
 	public Response getAllUserCards(@Context HttpServletRequest request, @Context UriInfo pUriInfo) throws Exception
 	{
 		pLog.info("Se recibe una peticion de cashierLocatior");
-		String data = "";
+		String data = "{\"EE_I_ActivacionTarjetaBE\": {\"codigoEntidad\": \"3008\"," +
+				"\"usuarioBE\": \"32894488\",\"acuerdoBE\": \"1932504291\"," +
+				"\"acuerdo\": \"1932511486\",\"panToken\": \"4599846092220023\"," +
+				"\"DatosFirma\":{\"firma\": \"G\",\"telefonoMovil\": \"666666666\"}}}";
 		SessionRviaData pSessionRviaData = new SessionRviaData(request);
 		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.TEXT_PLAIN_TYPE);
 		// /??? La respuesta devuelve ahora mismo JSON para hacer pruebas. Deberia devolver un XHTML con los datos del
