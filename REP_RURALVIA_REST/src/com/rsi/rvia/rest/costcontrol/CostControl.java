@@ -15,6 +15,7 @@ import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.*;
+import com.rsi.rvia.rest.tool.LogController;
 
 
 /**
@@ -25,7 +26,7 @@ import com.rsi.rvia.rest.client.*;
 public class CostControl
 {
 	private static Logger pLog = LoggerFactory.getLogger(CostControl.class);
-	
+	private static LogController pLogC = new LogController();
 	
 	/**
 	 * Obtiene el listado completo de tarjetas de un usuario
@@ -39,6 +40,7 @@ public class CostControl
 		DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.MySql);		
 		Response p = MicroQResolver.getData(request);		
 		pLog.info("Se recibe una peticion de control de costes");
+		pLogC.addLog("Info", "Se recibe una peticion de control de costes");
 		return Response.ok().entity(p.toString()).build();
 	}
 

@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Client;
@@ -31,13 +30,15 @@ import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.DDBB.OracleDDBB;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.tool.LogController;
 
 public class RestWSConnector
 {
 	private static Logger	pLog		= LoggerFactory.getLogger(RestWSConnector.class);
 	private static String	strRviaXML	= "http://localhost:8080";
 	private static String	strTemplate;
-
+	private static LogController pLogC = new LogController();
+	
 	public String getTemplate()
 	{
 		return this.strTemplate;
@@ -67,56 +68,61 @@ public class RestWSConnector
 		DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.Oracle);
 		String strPath = strPrimaryPath;
 		pLog.debug("Path Rest: " + strPrimaryPath);
+		pLogC.addLog("Info","Path Rest: " + strPrimaryPath);
 		PreparedStatement ps = p3.prepareStatement("select * from bdptb222_miq_quests where path_rest = '" + strPath + "'");
 		ResultSet rs = p3.executeQuery(ps);
 		pLog.info("Query Ejecutada!");
+		pLogC.addLog("Info","Query Ejecutada!");
 		String method = request.getMethod();
 		Response pReturn = null;
 		while (rs.next())
 		{
 			strComponentType = rs.getString("component_type");
-			pLog.debug("strComponentType lenght: " + strComponentType.length());
-			if (strComponentType != null)
-			{
-				strComponentType = strComponentType.substring(0, 4);
-			}
 			strEndPoint = rs.getString("end_point");
 			strTemplate = rs.getString("miq_out_template");
 			nId_miq = rs.getInt("id_miq");
 		}
 		pLog.info("Preparando peticion para tipo " + strComponentType + " y endpoint " + strEndPoint + " # method: " + method);
+		pLogC.addLog("Info","Preparando peticion para tipo " + strComponentType + " y endpoint " + strEndPoint + " # method: " + method);
 		switch (method)
 		{
 			case "GET":
 				if ("RVIA".equals(strComponentType))
 				{
-					pLog.info("Derivando peticion a RuralvÃ­a");
+					pLog.info("Derivando peticion a Ruralvía");
+					pLogC.addLog("Info","Derivando peticion GET a Ruralvía");
 					pReturn = rviaPost(request, strComponentType, strEndPoint, nId_miq, sesion_rvia, strData);
 				}
 				else
 				{
 					pLog.info("Solicitando peticiÃ³Ã±n REST");
+					pLogC.addLog("Info","Solicitando petición GET REST");
 					pReturn = get(request, strEndPoint);
 				}
 				break;
 			case "POST":
 				if ("RVIA".equals(strComponentType))
 				{
-					pLog.info("Derivando peticiÃ³n a RuralvÃ­a");
+					pLog.info("Derivando petición a Ruralvía");
+					pLogC.addLog("Info","Derivando petición POST a Ruralvía");
 					pReturn = rviaPost(request, strComponentType, strEndPoint, nId_miq, sesion_rvia, strData);
 				}
 				else
 				{
 					pLog.info("Solicitando peticiÃ³Ã±n REST");
+					pLogC.addLog("Info","Solicitando petición POST REST");
 					pReturn = post(request, strPath, sesion_rvia, strData, strEndPoint);
 				}
 				break;
 			case "PUT":
+				pLogC.addLog("Info","Solicitando petición PUT REST");
 				pReturn = put(request, strPath, sesion_rvia, strData, strEndPoint);
 				break;
 			case "PATCH":
+				pLogC.addLog("Info","Solicitando petición PATCH REST");
 				break;
 			case "DELETE":
+				pLogC.addLog("Info","Solicitando petición DELETE REST");
 				pReturn = delete(request);
 				break;
 		}
@@ -147,6 +153,8 @@ public class RestWSConnector
 			{
 				pLog.info("----------------- campo informado: " + e.getAttribute("name").toString() + ": "
 						+ e.getAttribute("value").toString());
+				pLogC.addLog("Info","----------------- campo informado: " + e.getAttribute("name").toString() + ": "
+						+ e.getAttribute("value").toString());
 				camposDeSession.add(e.getAttribute("name"), e.getAttribute("value"));
 				sessionParamNames.add(e.getAttribute("name"));
 			}
@@ -170,6 +178,7 @@ public class RestWSConnector
 			}
 		}
 		pLog.info("URL ServletDirectoPortal: " + url.toString());
+		pLogC.addLog("Info","URL ServletDirectoPortal: " + url.toString());
 		target = client.target(UriBuilder.fromUri(url).build());
 		Response rp = target.request().post(Entity.form(camposDeSession));
 		
@@ -194,6 +203,7 @@ public class RestWSConnector
 					"and a.id_miq=" + id_miq + 
 					"and c.PARAMNAME='" + nombres.get(i) + "'";
 			pLog.info(q);
+			pLogC.addLog("Info","Query: " + q);
 			ps = p3.prepareStatement(q);
 			rs = ps.executeQuery();
 			if (rs.next())
@@ -207,6 +217,7 @@ public class RestWSConnector
 			q = "select a.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS a where a.PARAMNAME = '" + nombres.get(i)
 					+ "'";
 			pLog.info(q);
+			pLogC.addLog("Info","Query: " + q);
 			ps = p3.prepareStatement(q);
 			rs = ps.executeQuery();
 			if (!rs.next())
@@ -217,6 +228,7 @@ public class RestWSConnector
 						+ "  (select count(*) from BEL.BDPTB225_MIQ_SESSION_PARAMS) +1  " + " , '" + nombres.get(i) + "' "
 						+ " , ''" + " , ''" + " , 'SESION'" + " from dual ";
 				pLog.info(q);
+				pLogC.addLog("Info","Query: " + q);
 				ps = p3.prepareStatement(q);
 				rs = ps.executeQuery();
 			}
@@ -224,6 +236,7 @@ public class RestWSConnector
 			rs.close();
 			q = " select h.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS h where h.PARAMNAME='" + nombres.get(i) + "'";
 			pLog.info(q);
+			pLogC.addLog("Info","Query: " + q);
 			ps = p3.prepareStatement(q);
 			rs = ps.executeQuery();
 			rs.next();
@@ -232,6 +245,7 @@ public class RestWSConnector
 			rs.close();
 			q = " insert into BEL.BDPTB226_MIQ_QUEST_RL_SESSION values(" + id_miq + ", " + id_miq_param + " , '')";
 			pLog.info(q);
+			pLogC.addLog("Info","Query: " + q);
 			ps = p3.prepareStatement(q);
 			rs = ps.executeQuery();
 			ps.close();
@@ -245,12 +259,17 @@ public class RestWSConnector
 		Client client = CustomRSIClient.getClient();
 		URI targetxml = getBaseRviaXML();
 		pLog.info("RVIA_POST: " + targetxml.toString());
+		pLogC.addLog("Info","RVIA_POST: " + targetxml.toString());
 		WebTarget target = client.target(getBaseRviaXML());
 		Response rp = null;
 		pLog.info(endp);
+		pLogC.addLog("Info",endp);
 		pLog.info(ct);
+		pLogC.addLog("Info",ct);
 		pLog.info("xmldat: " + targetxml.toString());
+		pLogC.addLog("Info","xmldat: " + targetxml.toString());
 		pLog.info("clave_pagina: " + endp);
+		pLogC.addLog("Info","clave_pagina: " + endp);
 		rp = performRviaConnection(request, endp, id_miq, sesion_rvia, data);
 		return rp;
 	}
@@ -264,6 +283,7 @@ public class RestWSConnector
 		String strQueryParams = request.getQueryString();
 		WebTarget target = client.target(getBaseWSEndPoint(endp) + "?" + strQueryParams);
 		pLog.info("END_POINT:" + endp + "?" + strQueryParams);
+		pLogC.addLog("Info","END_POINT:" + endp + "?" + strQueryParams);
 		Response rp = target.request()
 								  .header("CODSecEnt", "18")
 								  .header("CODSecUser", "")
@@ -274,6 +294,7 @@ public class RestWSConnector
 								  .header("CODSecIp", "10.1.245.2")
 								  .accept(MediaType.APPLICATION_JSON).get();
 		pLog.info("GET: " + rp.toString());
+		pLogC.addLog("Info","GET: " + rp.toString());
 		return rp;
 	}
 
@@ -286,6 +307,7 @@ public class RestWSConnector
 		Client client = CustomRSIClient.getClient();
 		String strParameters = getOperationParameters(strPathRest);
 		pLog.info("Query Params: " + strParameters);
+		pLogC.addLog("Info","Query Params: " + strParameters);
 		if (!strParameters.isEmpty())
 		{
 			htDatesParameters = getParameterRviaSession(strParameters, sesion_rvia);
@@ -302,8 +324,16 @@ public class RestWSConnector
 		strJsonData = pJson.toString();
 		WebTarget target = client.target(getBaseWSEndPoint(strEndPoint));
 		
-		Response rp = target.request().post(Entity.json(strJsonData));
+		Response rp = target.request()
+				.header("CODSecEnt","3008")
+				.header("CODSecTrans", "")
+				.header("CODSecUser", "")
+				.header("CODApl", "BPC")
+				.header("CODTerminal", "")
+				.header("CODSecIp", "111.11.11.1")
+				.post(Entity.json(strJsonData));
 		pLog.info("Respose POST: " + rp.toString());
+		pLogC.addLog("Info","Respose POST: " + rp.toString());
 		return rp;
 	}
 
@@ -314,6 +344,7 @@ public class RestWSConnector
 		Client client = CustomRSIClient.getClient();
 		String strParameters = getOperationParameters(strPathRest);
 		pLog.info("Query Params: " + strParameters);
+		pLogC.addLog("Info","Query Params: " + strParameters);
 		if (!strParameters.isEmpty())
 		{
 			htDatesParameters = getParameterRviaSession(strParameters, sesion_rvia);
@@ -338,6 +369,7 @@ public class RestWSConnector
 				.header("CODSecIp", "111.11.11.1")
 				.put(Entity.json(strJsonData));
 		pLog.info("Respose PUT: " + rp.toString());
+		pLogC.addLog("Info","Respose PUT: " + rp.toString());
 		return rp;
 	}
 
@@ -347,6 +379,7 @@ public class RestWSConnector
 		WebTarget target = client.target(getBaseRviaXML());
 		Response rp = target.path("rest").path("hello").request().accept(MediaType.TEXT_PLAIN).delete(Response.class);
 		pLog.info("DELETE: " + rp.toString());
+		pLogC.addLog("Info","DELETE: " + rp.toString());
 		return rp;
 	}
 
@@ -367,6 +400,7 @@ public class RestWSConnector
 			pPS = pDDBBTranslate.prepareStatement(strQuery);
 			ResultSet pQueryResult = pPS.executeQuery();
 			pLog.debug("Query BBDD Params bien ejecutada");
+			pLogC.addLog("Info","Query BBDD Params bien ejecutada.");
 			while (pQueryResult.next())
 			{
 				String strInputName = (String) pQueryResult.getString("paramname");
@@ -380,6 +414,7 @@ public class RestWSConnector
 		catch (Exception ex)
 		{
 			pLog.error("Error al recuperar los nombres de parametros Path_Rest(" + strPathRest + "): " + ex);
+			pLogC.addLog("Error","Error al recuperar los nombres de parametros Path_Rest(" + strPathRest + "): " + ex);
 			strReturn = "";
 		}
 		return strReturn;
@@ -415,6 +450,7 @@ public class RestWSConnector
 		catch (Exception ex)
 		{
 			pLog.error("Error al recuperar parametros de la sesion de Rvia: " + ex);
+			pLogC.addLog("Error","Error al recuperar parametros de la sesion de Rvia: " + ex);
 			htReturn = null;
 		}
 		return htReturn;

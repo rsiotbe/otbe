@@ -21,6 +21,7 @@ import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.RestWSConnector;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.template.TemplateManager;
+import com.rsi.rvia.rest.tool.LogController;
 import com.rsi.rvia.translates.TranslateEntry;
 import com.rsi.rvia.translates.TranslateProcessor;
 import com.rsi.rvia.utils.Utils;
@@ -29,7 +30,7 @@ public class OperationManager
 {
 	private static HttpSession	pSession;
 	private static Logger		pLog	= LoggerFactory.getLogger(TranslateProcessor.class);
-
+	private static LogController pLogC = new LogController();
 	public static Response proccesFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String data,
 			MediaType pMediaType) throws Exception
 	{
@@ -51,8 +52,10 @@ public class OperationManager
 		}
 		NewCookie pCookieToken = new NewCookie("token", pSessionRviaData.getToken());
 		pLog.info("Se Crea la Cookie con el Token.");
+		pLogC.addLog("Info", "Se Crea la Cookie con el Token.");
 		Response pReturn = Response.ok(p.getEntity()).cookie(pCookieToken).build();
 		pLog.info("Se Añade la Cookie con el Token a la respuesta.");
+		pLogC.addLog("Info", "Se Añade la Cookie con el Token a la respuesta.");
 		return pReturn;
 	
 	}

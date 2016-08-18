@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.tool.LogController;
 
 /**
  * Clase que gestiona el interrogatoria a ruralvia para conocer los datos de la operativa y 
@@ -25,6 +26,7 @@ public class InterrogateRvia
 {
 	public static final String URI_INTERROGATE_SERVICE = "/portal_rvia/rviaRestInfo?clave_pagina=";
 	private static Logger pLog = LoggerFactory.getLogger(InterrogateRvia.class);
+	private static LogController pLogC = new LogController();
 	
 	/**
 	 * Obtiene un documento de tipo XML con la información, es simmilar al fichero xml.dat de la operativa
@@ -61,46 +63,56 @@ public class InterrogateRvia
 			/* se compone la url a invocar, para ello se accede a la inforamción de la sesiión */
 			strURL = pSessionRviaData.getUriRvia() + URI_INTERROGATE_SERVICE + strClavepagina;
 			pLog.info("se compone la URL para interrogar a RVIA. URL: " + strURL);
-			
+			pLogC.addLog("Info", "Se compone la URL para interrogar a RVIA. URL: " + strURL);
 			/* se utiliza el objeto cliente de peticiones http de Jersey */
 			pClient = ClientBuilder.newClient(new ClientConfig());
 			pWebTarget = pClient.target(strURL);
 		   
 			/* se añade la cookie recuperada de la sesión para poder obtener los datos del usuario */
 		   pCookieRvia= new Cookie("RVIASESION", pSessionRviaData.getRviaSessionId());
-			pLog.debug("se procede a invocar a la url con los datos de sesión");	   
+			pLog.debug("se procede a invocar a la url con los datos de sesión");
+			pLogC.addLog("Debug", "Se procede a invocar a la url con los datos de sesión");
 		   pResponseService = pWebTarget.request().cookie(pCookieRvia).get();
-			pLog.debug("El servidor ha respondido");	   
+			pLog.debug("El servidor ha respondido");
+			pLogC.addLog("Debug", "El servidor ha respondido");   
 		}
 		catch (Exception ex) 
 		{
-			pLog.error("Error al realizar la petición al servicio de intearrogar ruralvia", ex);			
+			pLog.error("Error al realizar la petición al servicio de intearrogar ruralvia", ex);
+			pLogC.addLog("Error", "Error al realizar la petición al servicio de intearrogar ruralvia: " + ex);   
 		}
 		/* en caso que el servidor no haya respondido una contenido correcto se lanza una excepción */
 		if(pResponseService == null || pResponseService.getStatus() != 200)
 		{
-			if (pResponseService == null)
-				pLog.error("No se ha podido procesar el objeto ResponseService que devuelve la invocación, el elemento es nulo");			
-			else
+			if (pResponseService == null){
+				pLog.error("No se ha podido procesar el objeto ResponseService que devuelve la invocación, el elemento es nulo");
+				pLogC.addLog("Error", "No se ha podido procesar el objeto ResponseService que devuelve la invocación, el elemento es nulo"); 
+			}else{
 				pLog.error("El servidor ha respondido un codigo http " + pResponseService.getStatus() + 
-						" al realizar la petición al servicio de intearrogar ruralvia");			
+						" al realizar la petición al servicio de intearrogar ruralvia");	
+				pLogC.addLog("Error", "El servidor ha respondido un codigo http " + pResponseService.getStatus() + 
+						" al realizar la petición al servicio de intearrogar ruralvia"); 
+			}
 			throw new Exception("No se ha podido obtener la información del xml.dat y la información del usuario de ruralvia");
 		}
 		try
 		{		
 			/* se obtiene la cadena que contien el XML */
 			strXmlResponse = pResponseService.readEntity(String.class);
-			pLog.debug("El servidor responde: " + strXmlResponse);			
+			pLog.debug("El servidor responde: " + strXmlResponse);
+			pLogC.addLog("Debug", "El servidor responde: " + strXmlResponse);   
 			
 			/* se monta el objeto xmldocument */ 
 			pDocumentBuilderFactory = DocumentBuilderFactory.newInstance();
 			pDocumentBuilder = pDocumentBuilderFactory.newDocumentBuilder();
 			pXmlDoc = pDocumentBuilder.parse(new InputSource(new StringReader(strXmlResponse)));
-			pLog.info("Documento xml generado correctamente");			
+			pLog.info("Documento xml generado correctamente");
+			pLogC.addLog("Info", "Documento xml generado correctamente");   
 
 		}
 		catch (Exception ex) 
 		{
+			pLogC.addLog("Error", "No se ha podido procesar el contenido xml recibido por el servicio de intearrogar ruralvia");   
 			throw new Exception("No se ha podido procesar el contenido xml recibido por el servicio de intearrogar ruralvia");
 		}		
 		return pXmlDoc;

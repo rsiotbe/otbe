@@ -7,11 +7,13 @@ import java.util.Hashtable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.OracleDDBB;
+import com.rsi.rvia.rest.tool.LogController;
 import com.rsi.rvia.translates.TranslateProcessor;
 
 public class TemplateManager
 {
 	static Logger	pLog	= LoggerFactory.getLogger(OracleDDBB.class);
+	private static LogController pLogC = new LogController();
 	public static String JSON_DATA_TAG = "'__JSONDATA__'";
 	public static Hashtable<String, String> htCacheTemplate = new Hashtable<String, String>();
 	
@@ -40,6 +42,7 @@ public class TemplateManager
 		{
 			strReturn = null;
 			pLog.error("No ha sido posible procesar la plantilla xhtml", ex);
+			pLogC.addLog("Error", "No ha sido posible procesar la plantilla xhtml: " + ex);
 		}
 		return strReturn;
 	}
@@ -81,6 +84,7 @@ public class TemplateManager
 		catch (Exception ex)
 		{
 			pLog.error("No es posible leer el contenido del template", ex);
+			pLogC.addLog("Error", "No es posible leer el contenido del template" + ex);
 		}
 		finally
 		{
@@ -93,6 +97,7 @@ public class TemplateManager
 				catch (Exception ex)
 				{
 					pLog.error("No es posible cerrar el StringBuilder", ex);
+					pLogC.addLog("Error", "No es posible cerrar el StringBuilder" + ex);
 				}
 			}
 		}

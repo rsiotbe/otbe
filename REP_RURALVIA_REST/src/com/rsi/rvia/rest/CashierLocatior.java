@@ -14,17 +14,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.operation.OperationManager;
 import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.tool.LogController;
 
 @Path("/cashierLocatior")
 public class CashierLocatior
 {
 	private static Logger	pLog	= LoggerFactory.getLogger(Cards.class);
-
+	private static LogController pLogC = new LogController();
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllUserCards(@Context HttpServletRequest request, @Context UriInfo pUriInfo) throws Exception
 	{
 		pLog.info("Se recibe una peticion de cashierLocatior");
+		pLogC.addLog("Info", "Se recibe una peticion de cashierLocatior");
 		String data = "";
 		SessionRviaData pSessionRviaData = new SessionRviaData(request);
 		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.TEXT_PLAIN_TYPE);
@@ -33,15 +35,4 @@ public class CashierLocatior
 		return p;
 	}
 
-	@PUT
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response updateThink(@Context HttpServletRequest request, @Context UriInfo pUriInfo, String data)
-			throws Exception
-	{
-		pLog.info("Se recibe una peticion de cashierLocatior, PUT");
-		SessionRviaData pSessionRviaData = new SessionRviaData(request);
-		Response rp = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.TEXT_PLAIN_TYPE);
-		return rp;
-	}
 }
