@@ -76,7 +76,7 @@ public abstract class AbstractDDBB implements DDBBConnection {
 			pReturn = pStatement.executeQuery();
 			return pReturn;
 		} catch (Exception ex) {
-			pLog.error("Ha fallado la petici�n de Query. Se inicia el reintento. ERROR: "
+			pLog.error("Ha fallado la peticin de Query. Se inicia el reintento. ERROR: "
 					+ ex.toString());
 			return pStatement.executeQuery();
 		}
@@ -89,7 +89,7 @@ public abstract class AbstractDDBB implements DDBBConnection {
 			pStatement.close();
 			pLog.trace("Cierre OK");
 		} catch (Exception ex) {
-			pLog.error("Ha fallado la petici�n de cerrar el statment. ERROR: "
+			pLog.error("Ha fallado la peticin de cerrar el statment. ERROR: "
 					+ ex.toString());
 		}
 	}
