@@ -27,20 +27,12 @@
 
 	Logger	pLog = LoggerFactory.getLogger("jsp");
 	
-
 	DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.Oracle,"cip");	
 	PreparedStatement ps = p3.prepareStatement(q);
-	
 	ps.setString(1,request.getParameter("codEntidad"));
 	ps.setString(2, request.getParameter("idInternoPe"));
-
-	//ps.setString(1,request.getParameter("3076"));
-	//ps.setInt(2, 1555617);
-	
 	ResultSet rs = p3.executeQuery(ps);
-	
 	JSONArray json = Resultset2JSONConverter.convert(rs);
-	
 	rs.close();
 	ps.close();
 	p3.BBDD_Disconnect();	
