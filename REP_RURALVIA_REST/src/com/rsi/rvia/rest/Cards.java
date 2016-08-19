@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.template.TemplateManager;
+import com.rsi.rvia.rest.tool.LogController;
 
 
 
@@ -25,7 +26,7 @@ import com.rsi.rvia.rest.template.TemplateManager;
 public class Cards
 {
 	private static Logger pLog = LoggerFactory.getLogger(Cards.class);
-	
+	private static LogController pLogC = new LogController();
 	
 	/**
 	 * Obtiene el listado completo de tarjetas de un usuario

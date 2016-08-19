@@ -26,6 +26,7 @@ import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.CustomRSIClient;
+import com.rsi.rvia.rest.tool.LogController;
 
 
 
@@ -46,6 +47,7 @@ import com.rsi.rvia.rest.client.CustomRSIClient;
 public class MicroQResolver
 {
 	private static Logger pLog = LoggerFactory.getLogger(MicroQResolver.class);
+	private static LogController pLogC = new LogController();
 	private static String RviaXML = "http://10.1.243.142";
 	private static String RviaURI = "http://10.1.243.142";
 	private static String WSURI = "http://10.1.243.142";
@@ -95,6 +97,7 @@ public class MicroQResolver
             accept(MediaType.TEXT_PLAIN).
             get(Response.class);
 	    pLog.info("RVIA____________: " + rp.getHeaders().toString());	
+	    pLogC.addLog("Info", "RVIA____________: " + rp.getHeaders().toString());
 	    
 	    
 	    /*
@@ -135,7 +138,9 @@ public class MicroQResolver
 		    pLog.info("POST: " + rp.toString());		  
 			*/
 		  pLog.info(endp);
+		  pLogC.addLog("Info", endp);
 		  pLog.info(ct);
+		  pLogC.addLog("Info", ct);
 		  rp = getRVIAInputs(endp);
 		  rp = performRviaConnection(rp);
 		  return rp;
@@ -151,7 +156,7 @@ public class MicroQResolver
 	             get(Response.class);
 		    
 		    pLog.info("GET: " + rp.toString());
-		    
+		    pLogC.addLog("Info", "GET: " + rp.toString());
 	    
 		    return rp;		  
 	  }	

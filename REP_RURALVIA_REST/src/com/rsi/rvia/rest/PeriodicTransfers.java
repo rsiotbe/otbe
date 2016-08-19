@@ -19,6 +19,7 @@ import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.*;
 import com.rsi.rvia.rest.operation.OperationManager;
 import com.rsi.rvia.rest.template.TemplateManager;
+import com.rsi.rvia.rest.tool.LogController;
 import com.rsi.rvia.utils.Utils;
 
 /** Clase que responde a las peticiones REST para las acciones sobre una coleccion de tarjetas */
@@ -26,7 +27,7 @@ import com.rsi.rvia.utils.Utils;
 public class PeriodicTransfers
 {
 	private static Logger	pLog	= LoggerFactory.getLogger(Cards.class);
-
+	private static LogController pLogC = new LogController();
 	/** Obtiene el listado completo de tarjetas de un usuario
 	 * 
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
@@ -38,6 +39,7 @@ public class PeriodicTransfers
 	{
 		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Se recibe una peticion de listado de transferencias periodicas");
+		pLogC.addLog("Info", "Se recibe una peticion de listado de transferencias periodicas");
 		//return Response.ok(p.getEntity()).build();
 		//return Response.ok().entity(p.getEntity()).build();
 		return p;
@@ -54,6 +56,7 @@ public class PeriodicTransfers
 	{
 		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.APPLICATION_XHTML_XML_TYPE);
 		pLog.info("Se recibe unsa peticion de listado de transferencias periÃ³dicas");
+		pLogC.addLog("Info", "Se recibe unsa peticion de listado de transferencias periódicas");
 		return p;
 	}
 

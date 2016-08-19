@@ -7,10 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.RviaConnectCipher;
+import com.rsi.rvia.rest.tool.LogController;
 
 public class SessionRviaData
 {
 	private static Logger		pLog	= LoggerFactory.getLogger(SessionRviaData.class);
+	private static LogController pLogC = new LogController();
 	private String					strNodeRvia;
 	private Cookie[]				pCookiesRviaData;
 	private static Properties 	pAddressRviaProp  = new Properties();	
@@ -65,16 +67,17 @@ public class SessionRviaData
 		String[] strParameters;
 		String strDesToken = "";
 		pLog.debug("Se procede a cargar la configuración de la conexión con ruralvia");
-		
+		pLogC.addLog("Debug", "Se procede a cargar la configuración de la conexión con ruralvia");
 		/* se coprueba si el contenido viene encriptado enel parámetro token */
 		strToken = request.getParameter("token");
 		if(strToken != null)
 		{
 			pLog.debug("La información viene cifrada, se procede a descifrarla");
+			pLogC.addLog("Debug", "La información viene cifrada, se procede a descifrarla");
 			/* se desencipta la información */
 			strDesToken = RviaConnectCipher.symmetricDecrypt(strToken,RviaConnectCipher.RVIA_CONNECT_KEY);
 			pLog.debug("Contenido descifrado. Token: " + strDesToken);
-			
+			pLogC.addLog("Debug", "Contenido descifrado. Token: " + strDesToken);
 			/* se obtienen las variables recibidas */
 			strParameters = strDesToken.split("&");
 			for(int i =0; i < strParameters.length; i++)
@@ -114,6 +117,7 @@ public class SessionRviaData
 		else
 		{
 			pLog.debug("La información no viene cifrada, se procede a leerla directamente de parámetros");
+			pLogC.addLog("Debug", "La información no viene cifrada, se procede a leerla directamente de parámetros");
 			strNodeRvia = request.getParameter("node");
 			strRviaSessionId = request.getParameter("RVIASESION");
 			strIsumUserProfile = request.getParameter("isumProfile");
@@ -134,13 +138,14 @@ public class SessionRviaData
 				pAddressRviaProp.load(this.getClass().getResourceAsStream("/RuralviaAddress.properties"));
 			
 			pLog.debug("Se carga el fichero de resolución de direcciones");
-			
+			pLogC.addLog("Debug", "Se carga el fichero de resolución de direcciones");
 			/* se obtiene la maquina y puerto en la que existe la sesi´ñon del usuario */
 			pUriRvia = new URI(pAddressRviaProp.getProperty(strNodeRvia));
 		}
 		catch (Exception ex)
 		{
 			pLog.error("Fallo al cargar las propiedades de conexión con ruralvia", ex);
+			pLogC.addLog("Error", "Fallo al cargar las propiedades de conexión con ruralvia: " + ex);
 		}
 	}
 }
