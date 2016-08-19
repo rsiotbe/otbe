@@ -34,7 +34,7 @@ public class TemplateManager
 			else
 			{
 				strReturn = readTemplate(strPathToTemplate);
-				strReturn = translateXhtml(strReturn, strLanguage);
+				//strReturn = translateXhtml(strReturn, strLanguage);
 				htCacheTemplate.put(strCacheKey, strReturn);
 			}
 			strReturn = includeJsonData(strReturn, strDataJson);
@@ -52,8 +52,11 @@ public class TemplateManager
 	{
 		if(strJsonData == null || strJsonData.trim().isEmpty() )
 			return strXhtml;
-		else
-			return strXhtml.replace(JSON_DATA_TAG, strJsonData);
+		else{
+			pLog.info("RESULTADO: " + strJsonData.replace("\"", "\\\""));
+			return strXhtml.replace(JSON_DATA_TAG, strJsonData.replaceAll("\"", "\\\""));
+			
+		}
 	}
 	
 	private static String translateXhtml(String strXhtml, String strLanguage)

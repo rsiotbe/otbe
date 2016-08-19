@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+      <meta charset="utf-8"/>
+      <title>Cashier Sample</title>
+            <!-- Compiled and minified CSS -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css"/>
+
+      <!-- Compiled and minified JavaScript -->
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+       <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-2.2.4.min.js">    </script>
+</head>
+<body>
+<div id="contenido">
+
+</div>
+<script type="text/javascript">
+
+$(document).ready(function(){
+      function addContent(json) {
+      var strReturn = '';
+      strReturn += '<ul class="collection">';
+      var listCashier = json.EE_O_LocalizadorCajeros.Respuesta.ListaCajeros;
+      for (cajero in listCashier ) {
+            console.log(listCashier[cajero]);
+            strReturn += '<li class="collection-item">';
+            strReturn += '<span class="title">'+ listCashier[cajero].nombreEntidad +'</span>';
+            strReturn += '<p>';
+            strReturn += '<div class="chip">'+ listCashier[cajero].codigoEntidad +'</div><div class="chip">'+ listCashier[cajero].codigoCajeros +'</div>';
+            strReturn += '<div class="chip">'+ listCashier[cajero].direccion +'</div><div class="chip">'+ listCashier[cajero].codigoPostal +'</div>';
+            strReturn += '<div class="chip">'+ listCashier[cajero].indicadorCajero +'</div><div class="chip">'+ listCashier[cajero].indicadorComision +'</div>';
+            strReturn += '<div class="chip">'+ listCashier[cajero].longitud +'</div><div class="chip">'+ listCashier[cajero].latitud +'</div>';
+            strReturn += '<div class="chip">'+ listCashier[cajero].distancia +'</div><div class="chip">'+ listCashier[cajero].nombreLocalidad +'</div>';
+            strReturn += '</p>';
+            strReturn += '<span class="secondary-content">'+ listCashier[cajero].comision +'</span>';
+            strReturn += '</li>';
+      }
+      strReturn += '</ul>';
+      $("#contenido").text(strReturn);
+      }
+
+      var pJson = '__JSONDATA__';
+
+      addContent(pJson);
+});
+
+ 
+</script>
+</body>
+</html>

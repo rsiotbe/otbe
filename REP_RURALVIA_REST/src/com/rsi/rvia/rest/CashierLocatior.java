@@ -22,14 +22,14 @@ public class CashierLocatior
 	private static Logger	pLog	= LoggerFactory.getLogger(Cards.class);
 	private static LogController pLogC = new LogController();
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_HTML)
 	public Response getAllUserCards(@Context HttpServletRequest request, @Context UriInfo pUriInfo) throws Exception
 	{
 		pLog.info("Se recibe una peticion de cashierLocatior");
 		pLogC.addLog("Info", "Se recibe una peticion de cashierLocatior");
 		String data = "";
 		SessionRviaData pSessionRviaData = new SessionRviaData(request);
-		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.TEXT_PLAIN_TYPE);
+		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.APPLICATION_XHTML_XML_TYPE);
 		// /??? La respuesta devuelve ahora mismo JSON para hacer pruebas. Deberia devolver un XHTML con los datos del
 		// JSON.
 		return p;

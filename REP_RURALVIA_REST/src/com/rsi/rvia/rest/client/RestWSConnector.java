@@ -82,6 +82,7 @@ public class RestWSConnector
 			strTemplate = rs.getString("miq_out_template");
 			nId_miq = rs.getInt("id_miq");
 		}
+		pLog.info("Template: " + strTemplate);
 		pLog.info("Preparando peticion para tipo " + strComponentType + " y endpoint " + strEndPoint + " # method: " + method);
 		pLogC.addLog("Info","Preparando peticion para tipo " + strComponentType + " y endpoint " + strEndPoint + " # method: " + method);
 		switch (method)
