@@ -28,6 +28,7 @@ public class TemplateManager
 		try
 		{
 			String strCacheKey = htCacheTemplate + "_" + strLanguage;
+			pLog.debug("strCacheKey: " + strCacheKey);
 			if(htCacheTemplate.containsKey(strCacheKey))
 				strReturn = htCacheTemplate.get(strCacheKey);
 			else

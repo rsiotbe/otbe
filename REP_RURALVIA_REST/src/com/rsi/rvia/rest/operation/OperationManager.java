@@ -44,7 +44,6 @@ public class OperationManager
 		String strPrimaryPath = pUtil.getPrimaryPath(pUriInfo);
 		
 		Response p = RestWSConnector.getData(pRequest, data, pSessionRviaData, strPrimaryPath);
-		
 		if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
 		{
 			String strPageResult = TemplateManager.processTemplate("/test/sample.xhtml", pSessionRviaData.getLanguage(), p.readEntity(String.class));

@@ -97,7 +97,7 @@ public class RestWSConnector
 				{
 					pLog.info("Solicitando peticióñn REST");
 					pLogC.addLog("Info","Solicitando petici�n GET REST");
-					pReturn = get(request, strEndPoint);
+					pReturn = get(request, strEndPoint, strPath, sesion_rvia);
 				}
 				break;
 			case "POST":
@@ -153,10 +153,12 @@ public class RestWSConnector
 			{
 				pLog.info("----------------- campo informado: " + e.getAttribute("name").toString() + ": "
 						+ e.getAttribute("value").toString());
-				pLogC.addLog("Info","----------------- campo informado: " + e.getAttribute("name").toString() + ": "
-						+ e.getAttribute("value").toString());
 				camposDeSession.add(e.getAttribute("name"), e.getAttribute("value"));
 				sessionParamNames.add(e.getAttribute("name"));
+			}
+			else{
+				pLog.info("----------------- campo NO informado: " + e.getAttribute("name").toString() + ": "
+					+ e.getAttribute("value").toString());
 			}
 		}
 		saveSenssionVarNames(id_miq, sessionParamNames);
@@ -178,7 +180,6 @@ public class RestWSConnector
 			}
 		}
 		pLog.info("URL ServletDirectoPortal: " + url.toString());
-		pLogC.addLog("Info","URL ServletDirectoPortal: " + url.toString());
 		target = client.target(UriBuilder.fromUri(url).build());
 		Response rp = target.request().post(Entity.form(camposDeSession));
 		
@@ -203,7 +204,6 @@ public class RestWSConnector
 					"and a.id_miq=" + id_miq + 
 					"and c.PARAMNAME='" + nombres.get(i) + "'";
 			pLog.info(q);
-			pLogC.addLog("Info","Query: " + q);
 			ps = p3.prepareStatement(q);
 			rs = ps.executeQuery();
 			if (rs.next())
@@ -217,7 +217,6 @@ public class RestWSConnector
 			q = "select a.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS a where a.PARAMNAME = '" + nombres.get(i)
 					+ "'";
 			pLog.info(q);
-			pLogC.addLog("Info","Query: " + q);
 			ps = p3.prepareStatement(q);
 			rs = ps.executeQuery();
 			if (!rs.next())
@@ -228,7 +227,6 @@ public class RestWSConnector
 						+ "  (select count(*) from BEL.BDPTB225_MIQ_SESSION_PARAMS) +1  " + " , '" + nombres.get(i) + "' "
 						+ " , ''" + " , ''" + " , 'SESION'" + " from dual ";
 				pLog.info(q);
-				pLogC.addLog("Info","Query: " + q);
 				ps = p3.prepareStatement(q);
 				rs = ps.executeQuery();
 			}
@@ -236,7 +234,6 @@ public class RestWSConnector
 			rs.close();
 			q = " select h.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS h where h.PARAMNAME='" + nombres.get(i) + "'";
 			pLog.info(q);
-			pLogC.addLog("Info","Query: " + q);
 			ps = p3.prepareStatement(q);
 			rs = ps.executeQuery();
 			rs.next();
@@ -245,7 +242,6 @@ public class RestWSConnector
 			rs.close();
 			q = " insert into BEL.BDPTB226_MIQ_QUEST_RL_SESSION values(" + id_miq + ", " + id_miq_param + " , '')";
 			pLog.info(q);
-			pLogC.addLog("Info","Query: " + q);
 			ps = p3.prepareStatement(q);
 			rs = ps.executeQuery();
 			ps.close();
@@ -277,13 +273,28 @@ public class RestWSConnector
 	/** Verbo get. Recibe HttpServletRequest de contexto para derivar a RESTfull
 	 * 
 	 * @return Response con el objeto respuesta */
-	private static Response get(HttpServletRequest request, String endp) throws Exception
+	private static Response get(HttpServletRequest request, String strEndPoint, String strPathRest, SessionRviaData sesion_rvia) throws Exception
 	{
+		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client client = CustomRSIClient.getClient();
 		String strQueryParams = request.getQueryString();
-		WebTarget target = client.target(getBaseWSEndPoint(endp) + "?" + strQueryParams);
-		pLog.info("END_POINT:" + endp + "?" + strQueryParams);
-		pLogC.addLog("Info","END_POINT:" + endp + "?" + strQueryParams);
+		String strAliasNames = getOperationParameters(strPathRest,"aliasname");
+		String strSessionNames = getOperationParameters(strPathRest,"paramname");
+		
+		//htDatesParameters = getParameterRviaSession(strSessionNames, sesion_rvia);
+
+		
+		MultivaluedMap<String, String> camposDeSession = new MultivaluedHashMap<String, String>();
+		camposDeSession.add("idInternoPe", "104955");
+		camposDeSession.add("codEntidad", "3076");
+		
+		WebTarget target = client.target(getBaseWSEndPoint(strEndPoint) + "?" + strQueryParams) ;
+		
+		target=target.queryParam("idInternoPe", "104955");
+		target=target.queryParam("codEntidad", "3076");
+		//target=target.queryParam("token", strQueryParams);
+		
+		pLog.info("END_POINT:" + strPathRest );
 		Response rp = target.request()
 								  .header("CODSecEnt", "18")
 								  .header("CODSecUser", "")
@@ -291,10 +302,11 @@ public class RestWSConnector
 								  .header("CODTerminal", "18")
 								  .header("CODApl", "BDP")
 								  .header("CODCanal", "18")
-								  .header("CODSecIp", "10.1.245.2")
-								  .accept(MediaType.APPLICATION_JSON).get();
+								  .header("CODSecIp", "10.1.245.2")							
+								  .accept(MediaType.APPLICATION_JSON)
+								  .get();
+		
 		pLog.info("GET: " + rp.toString());
-		pLogC.addLog("Info","GET: " + rp.toString());
 		return rp;
 	}
 
@@ -305,7 +317,7 @@ public class RestWSConnector
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client client = CustomRSIClient.getClient();
-		String strParameters = getOperationParameters(strPathRest);
+		String strParameters = getOperationParameters(strPathRest,"paramname");
 		pLog.info("Query Params: " + strParameters);
 		pLogC.addLog("Info","Query Params: " + strParameters);
 		if (!strParameters.isEmpty())
@@ -342,7 +354,7 @@ public class RestWSConnector
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client client = CustomRSIClient.getClient();
-		String strParameters = getOperationParameters(strPathRest);
+		String strParameters = getOperationParameters(strPathRest,"paramname");
 		pLog.info("Query Params: " + strParameters);
 		pLogC.addLog("Info","Query Params: " + strParameters);
 		if (!strParameters.isEmpty())
@@ -383,16 +395,16 @@ public class RestWSConnector
 		return rp;
 	}
 
-	private static String getOperationParameters(String strPathRest)
+	private static String getOperationParameters(String strPathRest, String campo)
 	{
 		String strReturn = "";
-		String strQuery = "select c.paramname from " + 
-								"BEL.BDPTB222_MIQ_QUESTS a, " + 
-								"BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, " +
-								"BEL.BDPTB225_MIQ_SESSION_PARAMS c " + 
-								"where a.id_miq=b.id_miq " + 
-								"and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " +
-								"and a.path_rest='" + strPathRest + "'";
+		String strQuery = "select c." + campo + " campo from " + 
+								" BEL.BDPTB222_MIQ_QUESTS a, " + 
+								" BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, " +
+								" BEL.BDPTB225_MIQ_SESSION_PARAMS c " + 
+								" where a.id_miq=b.id_miq " + 
+								" and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " +
+								" and a.path_rest='" + strPathRest + "' order by c.ID_MIQ_PARAM";
 		DDBBConnection pDDBBTranslate = DDBBFactory.getDDBB(DDBBProvider.Oracle);
 		PreparedStatement pPS;
 		try
@@ -400,10 +412,9 @@ public class RestWSConnector
 			pPS = pDDBBTranslate.prepareStatement(strQuery);
 			ResultSet pQueryResult = pPS.executeQuery();
 			pLog.debug("Query BBDD Params bien ejecutada");
-			pLogC.addLog("Info","Query BBDD Params bien ejecutada.");
 			while (pQueryResult.next())
 			{
-				String strInputName = (String) pQueryResult.getString("paramname");
+				String strInputName = (String) pQueryResult.getString("campo");
 				if (!strReturn.isEmpty())
 				{
 					strReturn += ";";
@@ -414,7 +425,6 @@ public class RestWSConnector
 		catch (Exception ex)
 		{
 			pLog.error("Error al recuperar los nombres de parametros Path_Rest(" + strPathRest + "): " + ex);
-			pLogC.addLog("Error","Error al recuperar los nombres de parametros Path_Rest(" + strPathRest + "): " + ex);
 			strReturn = "";
 		}
 		return strReturn;
