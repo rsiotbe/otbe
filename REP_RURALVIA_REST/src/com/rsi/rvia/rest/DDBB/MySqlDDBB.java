@@ -32,6 +32,10 @@ public class MySqlDDBB extends AbstractDDBB
 		}
 		return _pDDBB;
 	}
-	
+	public synchronized static DDBBConnection getInstance(String prefix)
+	{
+		schemaPrefix = prefix;
+		return getInstance();
+	}		
 
 }

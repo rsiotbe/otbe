@@ -7,7 +7,7 @@ package com.rsi.rvia.rest.DDBB;
 public class DDBBFactory
 {
 	/**
-	 * Enumeraciónq ue contiene los diferentes tipos de BBDD implementados en la aplicación
+	 * Enumeraciï¿½nq ue contiene los diferentes tipos de BBDD implementados en la aplicaciï¿½n
 	 *
 	 */
 	public enum DDBBProvider
@@ -16,9 +16,9 @@ public class DDBBFactory
 	}
 
 	/**
-	 * Obtiene la clase que gestiona la conexión con base de datos
+	 * Obtiene la clase que gestiona la conexiï¿½n con base de datos
 	 * @param pDDBBProvider Tipo de base de datos a instanciar
-	 * @return Conexión con la base de datos seleccionar
+	 * @return Conexiï¿½n con la base de datos seleccionar
 	 */
 	public static DDBBConnection getDDBB(DDBBProvider pDDBBProvider)
 	{
@@ -37,4 +37,21 @@ public class DDBBFactory
 		}
 		return pReturn;
 	}
+	public static DDBBConnection getDDBB(DDBBProvider pDDBBProvider, String prefix)
+	{
+		DDBBConnection pReturn = null;
+		if (pDDBBProvider != null)
+		{
+			switch (pDDBBProvider)
+			{
+				case Oracle:
+					pReturn = OracleDDBB.getInstance(prefix);
+					break;
+				case MySql:
+					pReturn = MySqlDDBB.getInstance(prefix);
+					break;
+			}
+		}
+		return pReturn;
+	}		
 }

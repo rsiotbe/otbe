@@ -14,8 +14,16 @@ public class OracleDDBB extends AbstractDDBB
 		pLog.trace("Se crea una nueva instancia de DDBB de Oracle");
 	}
 	
-	public synchronized static DDBBConnection getInstance()
+	public synchronized static DDBBConnection getInstance() 
 	{
+		if (_pDDBB != null){
+			try{
+				_pDDBB.BBDD_Disconnect();				
+			}
+			catch(Exception ex){}
+			_pDDBB=null;
+		}
+		
 		if (_pDDBB == null)
 		{
 			try
