@@ -24,7 +24,7 @@ public class TranslateService extends HttpServlet
 		super();
 	}
 
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	protected void service(HttpServletRequest pRequest, HttpServletResponse pResponse) throws ServletException,
 			IOException
 	{
 		String strJSONReturn;
@@ -32,18 +32,18 @@ public class TranslateService extends HttpServlet
 		String strlanguage;
 		String[] astrIds;
 		Hashtable<String, String> htTranslates;
-		strIds = request.getParameter(IDS_PARAM);
-		strlanguage = request.getParameter(LANGUAGE_PARAM);
+		strIds = pRequest.getParameter(IDS_PARAM);
+		strlanguage = pRequest.getParameter(LANGUAGE_PARAM);
 		if (IDS_PARAM == null || IDS_PARAM.trim().isEmpty())
 		{
-			response.sendError(HttpServletResponse.SC_NO_CONTENT);
+			pResponse.sendError(HttpServletResponse.SC_NO_CONTENT);
 			return;
 		}
 		astrIds = strIds.split(IDS_PARAM_SEP);
 		htTranslates = TranslateProcessor.processIds(astrIds, strlanguage);
 		strJSONReturn = getJsonResult(htTranslates);
-		response.setContentType("application/json;charset=UTF-8");
-		response.getWriter().print(strJSONReturn);
+		pResponse.setContentType("application/json;charset=UTF-8");
+		pResponse.getWriter().print(strJSONReturn);
 	}
 
 	private String getJsonResult(Hashtable<String, String> htTranslates)
@@ -58,8 +58,8 @@ public class TranslateService extends HttpServlet
 				fFirstElement = false;
 			else
 				pSB.append(",");
-			Map.Entry<String, String> pair = (Entry<String, String>) pIterator.next();
-			pSB.append("\"" + pair.getKey() + "\":\"" + pair.getValue().replace("\"", "\\\"") + "\"");
+			Map.Entry<String, String> pPair = (Entry<String, String>) pIterator.next();
+			pSB.append("\"" + pPair.getKey() + "\":\"" + pPair.getValue().replace("\"", "\\\"") + "\"");
 		}
 		pSB.append("}");
 		return pSB.toString();

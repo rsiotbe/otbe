@@ -35,16 +35,16 @@ public class TranslateProcessor
 	 * @param strLanguage
 	 *           String con el idioma (es_ES)
 	 * @return hastable con parejas identificador y su traducción. */
-	public static Hashtable<String, String> processIds(String[] astrIds, String strLanguage)
+	public static Hashtable<String, String> processIds(String[] pStrIds, String strLanguage)
 	{
 		ArrayList<String> alIdsTrans;
 		Hashtable<String, String> htReturn;
 		Hashtable<String, TranslateEntry> htTransData;
 		htTransData = new Hashtable<String, TranslateEntry>();
 		htReturn = new Hashtable<String, String>();
-		alIdsTrans = new ArrayList<String>(Arrays.asList(astrIds));
-		pLog.debug("Se reciben los siguientes ids para traducir. astrIds:" + astrIds);
-		pLogC.addLog("Debug", "Se reciben los siguientes ids para traducir. astrIds:" + astrIds);
+		alIdsTrans = new ArrayList<String>(Arrays.asList(pStrIds));
+		pLog.debug("Se reciben los siguientes ids para traducir. astrIds:" + pStrIds);
+		pLogC.addLog("Debug", "Se reciben los siguientes ids para traducir. astrIds:" + pStrIds);
 		try
 		{
 			htTransData = getTranslations(alIdsTrans);
@@ -65,9 +65,9 @@ public class TranslateProcessor
 				pLog.warn("No se ha definido idioma de la traduccion, se asigna el espanol");
 				pLogC.addLog("Warning", "No se ha definido idioma de la traduccion, se asigna el espanol");
 			}
-			for (int i = 0; i < astrIds.length; i++)
+			for (int i = 0; i < pStrIds.length; i++)
 			{
-				String strAuxId = astrIds[i];
+				String strAuxId = pStrIds[i];
 				if ((strAuxId == null) || (strAuxId.trim().isEmpty()))
 				{
 					continue;
@@ -90,18 +90,18 @@ public class TranslateProcessor
 	 * @return String con el HTML con la nueva traducción ya aplicada. */
 	public static String processXHTML(String strXHTML, String strLanguage)
 	{
-		Document doc = null;
+		Document pDoc = null;
 		String strReturn = null;
 		ArrayList<String> alIdsTrans = null;
 		Hashtable<String, TranslateEntry> htTransData = new Hashtable<String, TranslateEntry>();
 		if (!strXHTML.isEmpty())
 		{
-			doc = strToDocumentParser(strXHTML);
+			pDoc = strToDocumentParser(strXHTML);
 			pLog.debug("String XHTML parseado a Documento correctamente.");
 			pLogC.addLog("Info", "String XHTML parseado a Documento correctamente.");
-			if (doc != null)
+			if (pDoc != null)
 			{
-				alIdsTrans = extractIdsFromDocument(doc);
+				alIdsTrans = extractIdsFromDocument(pDoc);
 				pLog.debug("IDs de traducciones extraidos correctamente.");
 				pLogC.addLog("Info", "IDs de traducciones extraidos correctamente.");
 				pLog.debug("alIdsTrans lenght: " + alIdsTrans.size());
@@ -128,14 +128,14 @@ public class TranslateProcessor
 				{
 					strLanguage = "es_ES";
 				}
-				pLog.debug("Documento premodificación null: " + (doc == null));
-				pLogC.addLog("Info", "Documento premodificación null: " + (doc == null));
-				doc = modifyDocument(doc, htTransData, strLanguage);
+				pLog.debug("Documento premodificación null: " + (pDoc == null));
+				pLogC.addLog("Info", "Documento premodificación null: " + (pDoc == null));
+				pDoc = modifyDocument(pDoc, htTransData, strLanguage);
 				pLog.debug("Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
 				pLogC.addLog("Info", "Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
-				if (doc != null)
+				if (pDoc != null)
 				{
-					strReturn = documentToString(doc);
+					strReturn = documentToString(pDoc);
 				}
 				else
 				{
@@ -177,24 +177,24 @@ public class TranslateProcessor
 		if (!strNewsIds.equals(""))
 		{
 			DDBBConnection pDDBBTranslate = DDBBFactory.getDDBB(DDBBProvider.Oracle);
-			PreparedStatement pPS = pDDBBTranslate.prepareStatement(strQuery);
-			ResultSet pQueryResult = pPS.executeQuery();
-			while (pQueryResult.next())
+			PreparedStatement pPreparedStatement = pDDBBTranslate.prepareStatement(strQuery);
+			ResultSet pResultSet = pPreparedStatement.executeQuery();
+			while (pResultSet.next())
 			{
-				String strCodigo = (String) pQueryResult.getString("codigo");
-				String strIdioma = (String) pQueryResult.getString("idioma");
-				String strTraduccion = (String) pQueryResult.getString("traduccion");
-				if (!htResult.containsKey(strCodigo))
+				String strCode = (String) pResultSet.getString("codigo");
+				String strIdiom = (String) pResultSet.getString("idioma");
+				String strTraduction = (String) pResultSet.getString("traduccion");
+				if (!htResult.containsKey(strCode))
 				{
-					TranslateEntry pTrans = new TranslateEntry(strCodigo);
-					htResult.put(strCodigo, pTrans);
-					if (!htCacheData.containsKey(strCodigo))
+					TranslateEntry pTrans = new TranslateEntry(strCode);
+					htResult.put(strCode, pTrans);
+					if (!htCacheData.containsKey(strCode))
 					{
-						htCacheData.put(strCodigo, pTrans);
+						htCacheData.put(strCode, pTrans);
 					}
 				}
-				htResult.get(strCodigo).addTranslate(strIdioma, strTraduccion);
-				htCacheData.get(strCodigo).addTranslate(strIdioma, strTraduccion);
+				htResult.get(strCode).addTranslate(strIdiom, strTraduction);
+				htCacheData.get(strCode).addTranslate(strIdiom, strTraduction);
 			}
 		}
 		return htResult;
@@ -207,8 +207,8 @@ public class TranslateProcessor
 	 * @return Documento bien formado */
 	private static Document strToDocumentParser(String strData)
 	{
-		Document doc = (Document) Jsoup.parse(strData, "", Parser.xmlParser());
-		return doc;
+		Document pDoc = (Document) Jsoup.parse(strData, "", Parser.xmlParser());
+		return pDoc;
 	}
 
 	/** Función que extrae todos los IDs de data-translate dado un Document(Jsoup)
@@ -219,10 +219,10 @@ public class TranslateProcessor
 	private static ArrayList<String> extractIdsFromDocument(Document pDocument)
 	{
 		ArrayList<String> alIdsTranslate = new ArrayList<String>();
-		Elements eListDataTranslate = pDocument.getElementsByAttribute("data-translate");
-		for (Element eItem : eListDataTranslate)
+		Elements pListDataTranslate = pDocument.getElementsByAttribute("data-translate");
+		for (Element pItem : pListDataTranslate)
 		{
-			String strId = eItem.attr("data-translate");
+			String strId = pItem.attr("data-translate");
 			if (strId != null)
 			{
 				alIdsTranslate.add(strId);
@@ -240,30 +240,30 @@ public class TranslateProcessor
 	 * @param strLanguage
 	 *           String con el idioma al que se quiere traducir.
 	 * @return Document(Jsoup) con la traducción ya puesta. */
-	private static Document modifyDocument(Document doc, Hashtable<String, TranslateEntry> htData, String strLanguage)
+	private static Document modifyDocument(Document pDoc, Hashtable<String, TranslateEntry> htData, String strLanguage)
 	{
-		Enumeration<String> enumHTData = htData.keys();
-		while (enumHTData.hasMoreElements())
+		Enumeration<String> pEnumHTData = htData.keys();
+		while (pEnumHTData.hasMoreElements())
 		{
-			String strHTKey = (String) enumHTData.nextElement();
-			Elements pListIDsTrans = doc.select("[data-translate=\"" + strHTKey + "\"]");
-			for (Element eItem : pListIDsTrans)
+			String strHTKey = (String) pEnumHTData.nextElement();
+			Elements pListIDsTrans = pDoc.select("[data-translate=\"" + strHTKey + "\"]");
+			for (Element pItem : pListIDsTrans)
 			{
-				if (eItem != null)
+				if (pItem != null)
 				{
 					TranslateEntry pTrans = (TranslateEntry) htData.get(strHTKey);
 					String strTraduccion = pTrans.getTranslate(strLanguage);
 					if (strTraduccion != null)
 					{
-						eItem.text(strTraduccion);
+						pItem.text(strTraduccion);
 					}
 				}
 			}
 		}
 		
 		/* se añade el atributo lang a la etiqueta html para poder manejar el idioma dentro de la página */
-		doc.getElementsByTag("html").attr("lang", strLanguage.replace("_", "-"));	
-		return doc;
+		pDoc.getElementsByTag("html").attr("lang", strLanguage.replace("_", "-"));	
+		return pDoc;
 	}
 
 	/** Función para parsear un Document(Jsoup) a String
