@@ -4,7 +4,7 @@
 		 com.rsi.rvia.rest.DDBB.DDBBFactory,
 		 com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider,
 		 com.rsi.rvia.rest.DDBB.OracleDDBB, 
-		 com.rsi.rvia.utils.Resultset2JSONConverter,		 
+		 com.rsi.rvia.rest.tool.Resultset2JSONConverter,		 
 		 java.sql.PreparedStatement,
 		 java.sql.ResultSet,
 		 org.json.JSONArray,
