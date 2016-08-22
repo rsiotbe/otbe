@@ -16,6 +16,7 @@ public class OracleDDBB extends AbstractDDBB
 	
 	public synchronized static DDBBConnection getInstance() 
 	{
+		/*
 		if (_pDDBB != null){
 			try{
 				_pDDBB.BBDD_Disconnect();				
@@ -23,7 +24,7 @@ public class OracleDDBB extends AbstractDDBB
 			catch(Exception ex){}
 			_pDDBB=null;
 		}
-		
+		*/
 		if (_pDDBB == null)
 		{
 			try

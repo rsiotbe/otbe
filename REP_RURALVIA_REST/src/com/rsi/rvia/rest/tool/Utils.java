@@ -1,4 +1,4 @@
-package com.rsi.rvia.utils;
+package com.rsi.rvia.rest.tool;
 
 import java.util.Iterator;
 import javax.ws.rs.core.MultivaluedMap;

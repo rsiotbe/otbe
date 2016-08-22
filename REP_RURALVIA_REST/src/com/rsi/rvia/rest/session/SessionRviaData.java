@@ -6,8 +6,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.rsi.rvia.rest.RviaConnectCipher;
 import com.rsi.rvia.rest.tool.LogController;
+import com.rsi.rvia.rest.tool.RviaConnectCipher;
 
 public class SessionRviaData
 {

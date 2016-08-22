@@ -36,7 +36,7 @@ public class RestWSConnector
 {
 	private static Logger	pLog		= LoggerFactory.getLogger(RestWSConnector.class);
 	private static String	strRviaXML	= "http://localhost:8080";
-	private static String	strTemplate;
+	private static String	strTemplate = "";
 	private static LogController pLogC = new LogController();
 	
 	public String getTemplate()
@@ -54,51 +54,53 @@ public class RestWSConnector
 		return UriBuilder.fromUri("http://localhost:8080/api/").build();
 	}
 
-	private static URI getBaseWSEndPoint(String endp)
+	private static URI getBaseWSEndPoint(String strEndPoint)
 	{
-		return UriBuilder.fromUri(endp).build();
+		return UriBuilder.fromUri(strEndPoint).build();
 	}
 	
-	public static Response getData(HttpServletRequest request, String strData, SessionRviaData sesion_rvia,
+	public static Response getData(HttpServletRequest pRequest, String strData, SessionRviaData pSessionRvia,
 			String strPrimaryPath) throws Exception
 	{
 		String strComponentType = "";
 		String strEndPoint = "";
-		int nId_miq = 0;
-		DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.Oracle);
 		String strPath = strPrimaryPath;
+		String strMethod = pRequest.getMethod();
+		int nIdMiq = 0;
+		Response pReturn = null;
+		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.Oracle);
 		pLog.debug("Path Rest: " + strPrimaryPath);
 		pLogC.addLog("Info","Path Rest: " + strPrimaryPath);
-		PreparedStatement ps = p3.prepareStatement("select * from bdptb222_miq_quests where path_rest = '" + strPath + "'");
-		ResultSet rs = p3.executeQuery(ps);
+		PreparedStatement pPreparedStament = pDBConection.prepareStatement("select * from bdptb222_miq_quests where path_rest = '" + strPath + "'");
+		ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
 		pLog.info("Query Ejecutada!");
 		pLogC.addLog("Info","Query Ejecutada!");
-		String method = request.getMethod();
-		Response pReturn = null;
-		while (rs.next())
+		
+		
+		while (pResultSet.next())
 		{
-			strComponentType = rs.getString("component_type");
-			strEndPoint = rs.getString("end_point");
-			strTemplate = rs.getString("miq_out_template");
-			nId_miq = rs.getInt("id_miq");
+			strComponentType = pResultSet.getString("component_type");
+			strEndPoint = pResultSet.getString("end_point");
+			strTemplate = pResultSet.getString("miq_out_template");
+			nIdMiq = pResultSet.getInt("id_miq");
 		}
 		pLog.info("Template: " + strTemplate);
-		pLog.info("Preparando peticion para tipo " + strComponentType + " y endpoint " + strEndPoint + " # method: " + method);
-		pLogC.addLog("Info","Preparando peticion para tipo " + strComponentType + " y endpoint " + strEndPoint + " # method: " + method);
-		switch (method)
+		pLog.info("Preparando peticion para tipo " + strComponentType + " y endpoint " + strEndPoint + " # method: " + strMethod);
+		pLogC.addLog("Info","Preparando peticion para tipo " + strComponentType + " y endpoint " + strEndPoint + " # method: " + strMethod);
+		switch (strMethod)
 		{
 			case "GET":
 				if ("RVIA".equals(strComponentType))
 				{
 					pLog.info("Derivando peticion a Ruralvía");
 					pLogC.addLog("Info","Derivando peticion GET a Ruralvía");
-					pReturn = rviaPost(request, strComponentType, strEndPoint, nId_miq, sesion_rvia, strData);
+					pReturn = rviaPost(pRequest, strComponentType, strEndPoint, nIdMiq, pSessionRvia, strData);
 				}
 				else
 				{
 					pLog.info("Solicitando peticiÃ³Ã±n REST");
 					pLogC.addLog("Info","Solicitando petición GET REST");
-					pReturn = get(request, strEndPoint, strPath, sesion_rvia);
+					pReturn = get(pRequest, strEndPoint, strPath, pSessionRvia);
 				}
 				break;
 			case "POST":
@@ -106,85 +108,85 @@ public class RestWSConnector
 				{
 					pLog.info("Derivando petición a Ruralvía");
 					pLogC.addLog("Info","Derivando petición POST a Ruralvía");
-					pReturn = rviaPost(request, strComponentType, strEndPoint, nId_miq, sesion_rvia, strData);
+					pReturn = rviaPost(pRequest, strComponentType, strEndPoint, nIdMiq, pSessionRvia, strData);
 				}
 				else
 				{
 					pLog.info("Solicitando peticiÃ³Ã±n REST");
 					pLogC.addLog("Info","Solicitando petición POST REST");
-					pReturn = post(request, strPath, sesion_rvia, strData, strEndPoint);
+					pReturn = post(pRequest, strPath, pSessionRvia, strData, strEndPoint);
 				}
 				break;
 			case "PUT":
 				pLogC.addLog("Info","Solicitando petición PUT REST");
-				pReturn = put(request, strPath, sesion_rvia, strData, strEndPoint);
+				pReturn = put(pRequest, strPath, pSessionRvia, strData, strEndPoint);
 				break;
 			case "PATCH":
 				pLogC.addLog("Info","Solicitando petición PATCH REST");
 				break;
 			case "DELETE":
 				pLogC.addLog("Info","Solicitando petición DELETE REST");
-				pReturn = delete(request);
+				pReturn = delete(pRequest);
 				break;
 		}
 		return pReturn;
 	}
 
 
-	private static Response performRviaConnection(HttpServletRequest req, String endp, int id_miq,
-			SessionRviaData sesion_rvia, String data) throws Exception
+	private static Response performRviaConnection(HttpServletRequest pRequest, String strEndPoint, int nIdMiq,
+			SessionRviaData pSessionRvia, String strData) throws Exception
 	{
-		SessionRviaData sesiFoo = sesion_rvia;
-		String sesId = sesiFoo.getRviaSessionId();
-		String host = sesiFoo.getUriRvia().toString();
-		String url = host + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + sesId + "?clavePagina=" + endp;
+		SessionRviaData pSesiFoo = pSessionRvia;
+		String strSesId = pSesiFoo.getRviaSessionId();
+		String strHost = pSesiFoo.getUriRvia().toString();
+		String strUrl = strHost + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + strSesId + "?clavePagina=" + strEndPoint;
 																																					
-		Client client = CustomRSIClient.getClient();
-		WebTarget target = client.target(getBaseRviaXML());
-		Document doc = InterrogateRvia.getXmlDatAndUserInfo(req, endp);
-		NodeList nodos = doc.getElementsByTagName("field");
-		Vector<String> sessionParamNames = new Vector();
-		MultivaluedMap<String, String> camposDeSession = new MultivaluedHashMap<String, String>();
+		Client pClient = CustomRSIClient.getClient();
+		WebTarget pTarget = pClient.target(getBaseRviaXML());
+		Document pDoc = InterrogateRvia.getXmlDatAndUserInfo(pRequest, strEndPoint);
+		NodeList pNodos = pDoc.getElementsByTagName("field");
+		Vector<String> pSessionParamNames = new Vector();
+		MultivaluedMap<String, String> pCamposDeSession = new MultivaluedHashMap<String, String>();
 		// Datos existentes en la session
-		for (int i = 0; i < nodos.getLength(); i++)
+		for (int i = 0; i < pNodos.getLength(); i++)
 		{
-			Element e = (Element) nodos.item(i);
-			String value = e.getAttribute("value");
-			if (!value.isEmpty())
+			Element pElement = (Element) pNodos.item(i);
+			String strValue = pElement.getAttribute("value");
+			if (!strValue.isEmpty())
 			{
-				pLog.info("----------------- campo informado: " + e.getAttribute("name").toString() + ": "
-						+ e.getAttribute("value").toString());
-				camposDeSession.add(e.getAttribute("name"), e.getAttribute("value"));
-				sessionParamNames.add(e.getAttribute("name"));
+				pLog.info("----------------- campo informado: " + pElement.getAttribute("name").toString() + ": "
+						+ strValue.toString());
+				pCamposDeSession.add(pElement.getAttribute("name"), strValue.toString());
+				pSessionParamNames.add(pElement.getAttribute("name"));
 			}
 			else{
-				pLog.info("----------------- campo NO informado: " + e.getAttribute("name").toString() + ": "
-					+ e.getAttribute("value").toString());
+				pLog.info("----------------- campo NO informado: " + pElement.getAttribute("name").toString() + ": "
+					+ strValue.toString());
 			}
 		}
-		saveSenssionVarNames(id_miq, sessionParamNames);
-		camposDeSession.add("clavePagina", endp);
+		saveSenssionVarNames(nIdMiq, pSessionParamNames);
+		pCamposDeSession.add("clavePagina", strEndPoint);
 		// Datos llegados por post
-		String[] arr = data.split("&");
-		if (!data.trim().isEmpty())
+		String[] pArr = strData.split("&");
+		if (!strData.trim().isEmpty())
 		{
-			for (int i = 0; i < arr.length; i++)
+			for (int i = 0; i < pArr.length; i++)
 			{
-				if (arr[i].trim().isEmpty())
+				if (pArr[i].trim().isEmpty())
 					continue;
-				String[] arr2 = arr[i].split("=");
-				if (arr2.length < 2)
+				String[] pArr2 = pArr[i].split("=");
+				if (pArr2.length < 2)
 					continue;
-				if (arr2[0].trim().isEmpty() || arr2[1].trim().isEmpty())
+				if (pArr2[0].trim().isEmpty() || pArr2[1].trim().isEmpty())
 					continue;
-				camposDeSession.add(arr2[0], arr2[1]);
+				pCamposDeSession.add(pArr2[0], pArr2[1]);
 			}
 		}
-		pLog.info("URL ServletDirectoPortal: " + url.toString());
-		target = client.target(UriBuilder.fromUri(url).build());
-		Response rp = target.request().post(Entity.form(camposDeSession));
+		pLog.info("URL ServletDirectoPortal: " + strUrl.toString());
+		pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
+		Response pReturn = pTarget.request().post(Entity.form(pCamposDeSession));
 		
-		return rp;
+		return pReturn;
 	}
 
 	private static void saveSenssionVarNames(int id_miq, Vector<String> nombres) throws Exception

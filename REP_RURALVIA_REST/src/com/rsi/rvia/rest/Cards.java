@@ -15,47 +15,34 @@ import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.template.TemplateManager;
 import com.rsi.rvia.rest.tool.LogController;
 
-
-
-
-/**
- * Clase que responde a las peticiones REST para las acciones sobre una coleccion de tarjetas
- *
- */
+/** Clase que responde a las peticiones REST para las acciones sobre una coleccion de tarjetas */
 @Path("/cards")
 public class Cards
 {
-	private static Logger pLog = LoggerFactory.getLogger(Cards.class);
-	private static LogController pLogC = new LogController();
-	
-	/**
-	 * Obtiene el listado completo de tarjetas de un usuario
+	private static Logger			pLog	= LoggerFactory.getLogger(Cards.class);
+	private static LogController	pLogC	= new LogController();
+
+	/** Obtiene el listado completo de tarjetas de un usuario
+	 * 
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
-	 * @throws Exception 
-	 */
+	 * @throws Exception */
 	@GET
-   @Produces(MediaType.APPLICATION_XHTML_XML)
+	@Produces(MediaType.APPLICATION_XHTML_XML)
 	public Response getAllUserCards(@Context HttpServletRequest request) throws Exception
 	{
-		SessionRviaData pSessionRviaData = new SessionRviaData (request);
-
+		SessionRviaData pSessionRviaData = new SessionRviaData(request);
 		String strReturn = TemplateManager.processTemplate("/test/sample.xhtml", pSessionRviaData.getLanguage());
-		
-		
 		return Response.ok(strReturn).build();
 	}
-	
-	/**
-	 * Fija el estado de bloqueo de una tarjeta
-	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
-	 */
+
+	/** Fija el estado de bloqueo de una tarjeta
+	 * 
+	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas */
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response setCardLockStatus(@Context HttpServletRequest request)
 	{
-		
 		return Response.ok().entity("{\"info\":\"todo OK\"}").build();
 	}
-
 }

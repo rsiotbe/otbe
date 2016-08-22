@@ -1,27 +1,24 @@
 package com.rsi.rvia.rest;
 
-import java.util.Iterator;
-import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.tool.LogController;
+import com.rsi.rvia.rest.tool.Utils;
 import com.rsi.rvia.translates.TranslateProcessor;
-import com.rsi.rvia.utils.Utils;
 
 @Path("/translate/{id}/{list}")
 public class Translate
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(Translate.class);
-	private static LogController pLogC = new LogController();
+	private static Logger			pLog	= LoggerFactory.getLogger(Translate.class);
+	private static LogController	pLogC	= new LogController();
 	@Context
-	UriInfo						uriInfo;
+	UriInfo								uriInfo;
 
 	@GET
 	@Produces(MediaType.TEXT_HTML)

@@ -1,4 +1,4 @@
-package com.rsi.rvia.rest.operation;
+package com.rsi.rvia.rest.client;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,24 +14,23 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.isum.IsumValidation;
-import com.rsi.rvia.rest.RviaConnectCipher;
 import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
-import com.rsi.rvia.rest.client.RestWSConnector;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.template.TemplateManager;
 import com.rsi.rvia.rest.tool.LogController;
+import com.rsi.rvia.rest.tool.RviaConnectCipher;
+import com.rsi.rvia.rest.tool.Utils;
 import com.rsi.rvia.translates.TranslateEntry;
 import com.rsi.rvia.translates.TranslateProcessor;
-import com.rsi.rvia.utils.Utils;
 
 public class OperationManager
 {
 	private static HttpSession	pSession;
 	private static Logger		pLog	= LoggerFactory.getLogger(TranslateProcessor.class);
 	private static LogController pLogC = new LogController();
-	public static Response proccesFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String data,
+	public static Response proccesFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String strData,
 			MediaType pMediaType) throws Exception
 	{
 		String strPageResult = null;
@@ -46,27 +45,25 @@ public class OperationManager
 		String strPrimaryPath = pUtil.getPrimaryPath(pUriInfo);
 		RestWSConnector pRestConnector = new RestWSConnector();
 		
-		Response p = pRestConnector.getData(pRequest, data, pSessionRviaData, strPrimaryPath);
+		pReturn = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath);
 		if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
 		{
 			String strTemplate = pRestConnector.getTemplate();
 			if(strTemplate != null){
-				strPageResult = TemplateManager.processTemplate(strTemplate, pSessionRviaData.getLanguage(), p.readEntity(String.class));
+				strPageResult = TemplateManager.processTemplate(strTemplate, pSessionRviaData.getLanguage(), pReturn.readEntity(String.class));
 			}
-			//"/test/cashierexample.xhtml"
-			//p = Response.ok(strPageResult).build();
 		}
 		NewCookie pCookieToken = new NewCookie("token", pSessionRviaData.getToken());
-		pLog.info("Se Crea la Cookie con el Token.");
-		pLogC.addLog("Info", "Se Crea la Cookie con el Token.");
+
 		if(strPageResult != null){
 			pReturn = Response.ok(strPageResult).cookie(pCookieToken).build();
 		}else{
-			pReturn = Response.ok(p.getEntity()).cookie(pCookieToken).build();
+			pReturn = Response.ok(pReturn.getEntity()).cookie(pCookieToken).build();
 		}
 		
 		pLog.info("Se Añade la Cookie con el Token a la respuesta.");
 		pLogC.addLog("Info", "Se Añade la Cookie con el Token a la respuesta.");
+		
 		return pReturn;
 	
 	}

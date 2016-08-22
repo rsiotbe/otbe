@@ -13,36 +13,29 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.rsi.rvia.rest.DDBB.DDBBConnection;
-import com.rsi.rvia.rest.DDBB.DDBBFactory;
-import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.*;
-import com.rsi.rvia.rest.operation.OperationManager;
-import com.rsi.rvia.rest.template.TemplateManager;
 import com.rsi.rvia.rest.tool.LogController;
-import com.rsi.rvia.utils.Utils;
 
 /** Clase que responde a las peticiones REST para las acciones sobre una coleccion de tarjetas */
 @Path("/periodictransfers")
 public class PeriodicTransfers
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(Cards.class);
-	private static LogController pLogC = new LogController();
+	private static Logger			pLog	= LoggerFactory.getLogger(Cards.class);
+	private static LogController	pLogC	= new LogController();
+
 	/** Obtiene el listado completo de tarjetas de un usuario
 	 * 
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
 	 * @throws Exception */
 	@POST
-	//@Produces(MediaType.TEXT_PLAIN)
-	public Response getAllUserPeriodicTransfers(@Context HttpServletRequest request, @Context UriInfo pUriInfo,
-			String data) throws Exception
+	// @Produces(MediaType.TEXT_PLAIN)
+	public Response getAllUserPeriodicTransfers(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+			String strData) throws Exception
 	{
-		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.TEXT_PLAIN_TYPE);
+		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Se recibe una peticion de listado de transferencias periodicas");
 		pLogC.addLog("Info", "Se recibe una peticion de listado de transferencias periodicas");
-		//return Response.ok(p.getEntity()).build();
-		//return Response.ok().entity(p.getEntity()).build();
-		return p;
+		return pReturn;
 	}
 
 	/** Obtiene el listado completo de tarjetas de un usuario
@@ -51,13 +44,13 @@ public class PeriodicTransfers
 	 * @throws Exception */
 	@GET
 	@Produces(MediaType.APPLICATION_XHTML_XML)
-	public Response getAllUserPeriodicTransfersXhtml(@Context HttpServletRequest request, @Context UriInfo pUriInfo,
-			String data) throws Exception
+	public Response getAllUserPeriodicTransfersXhtml(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+			String strData) throws Exception
 	{
-		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.APPLICATION_XHTML_XML_TYPE);
+		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);
 		pLog.info("Se recibe unsa peticion de listado de transferencias periÃ³dicas");
 		pLogC.addLog("Info", "Se recibe unsa peticion de listado de transferencias periódicas");
-		return p;
+		return pReturn;
 	}
 
 	/** Fija el estado de bloqueo de unatarjeta
