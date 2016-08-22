@@ -198,54 +198,58 @@ public class RestWSConnector
 		ResultSet pResultSet;
 		for (i = 0; i < pNombres.size(); i++)
 		{
-			strQuery = "select a.id_miq from " + "BEL.BDPTB222_MIQ_QUESTS a, " + "BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, "
-					+ "BEL.BDPTB225_MIQ_SESSION_PARAMS c " + "where a.id_miq=b.id_miq "
-					+ "and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " + "and a.id_miq=" + nIdMiq + "and c.PARAMNAME='"
-					+ pNombres.get(i) + "'";
-			pLog.info(strQuery);
-			pPreparedStatement = pDBConnection.prepareStatement(strQuery);
-			pResultSet = pPreparedStatement.executeQuery();
-			if (pResultSet.next())
+			if (!pNombres.get(i).isEmpty())
 			{
-				pPreparedStatement.close();
-				pResultSet.close();
-				continue;
-			}
-			pPreparedStatement.close();
-			pResultSet.close();
-			strQuery = "select a.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS a where a.PARAMNAME = '"
-					+ pNombres.get(i) + "'";
-			pLog.info(strQuery);
-			pPreparedStatement = pDBConnection.prepareStatement(strQuery);
-			pResultSet = pPreparedStatement.executeQuery();
-			if (!pResultSet.next())
-			{
-				pPreparedStatement.close();
-				pResultSet.close();
-				strQuery = " insert into BEL.BDPTB225_MIQ_SESSION_PARAMS" + " select"
-						+ "  (select count(*) from BEL.BDPTB225_MIQ_SESSION_PARAMS) +1  " + " , '" + pNombres.get(i) + "' "
-						+ " , ''" + " , ''" + " , 'SESION'" + " from dual ";
-				pLog.info(strQuery);
+				strQuery = "select a.id_miq from " + "BEL.BDPTB222_MIQ_QUESTS a, "
+						+ "BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, " + "BEL.BDPTB225_MIQ_SESSION_PARAMS c "
+						+ "where a.id_miq=b.id_miq " + "and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " + "and a.id_miq=" + nIdMiq
+						+ "and c.PARAMNAME='" + pNombres.get(i) + "'";
+				// pLog.info(strQuery);
 				pPreparedStatement = pDBConnection.prepareStatement(strQuery);
 				pResultSet = pPreparedStatement.executeQuery();
+				if (pResultSet.next())
+				{
+					pPreparedStatement.close();
+					pResultSet.close();
+					continue;
+				}
+				pPreparedStatement.close();
+				pResultSet.close();
+				strQuery = "select a.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS a where a.PARAMNAME = '"
+						+ pNombres.get(i) + "'";
+				// pLog.info(strQuery);
+				pPreparedStatement = pDBConnection.prepareStatement(strQuery);
+				pResultSet = pPreparedStatement.executeQuery();
+				if (!pResultSet.next())
+				{
+					pPreparedStatement.close();
+					pResultSet.close();
+					strQuery = " insert into BEL.BDPTB225_MIQ_SESSION_PARAMS" + " select"
+							+ "  (select count(*) from BEL.BDPTB225_MIQ_SESSION_PARAMS) +1  " + " , '" + pNombres.get(i)
+							+ "' " + " , ''" + " , ''" + " , 'SESION'" + ", ''" + ", ''" + " from dual ";
+					// pLog.info(strQuery);
+					pPreparedStatement = pDBConnection.prepareStatement(strQuery);
+					pResultSet = pPreparedStatement.executeQuery();
+				}
+				pPreparedStatement.close();
+				pResultSet.close();
+				strQuery = " select h.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS h where h.PARAMNAME='"
+						+ pNombres.get(i) + "'";
+				// pLog.info(strQuery);
+				pPreparedStatement = pDBConnection.prepareStatement(strQuery);
+				pResultSet = pPreparedStatement.executeQuery();
+				pResultSet.next();
+				nIdMiqParam = pResultSet.getInt("ID_MIQ_PARAM");
+				pPreparedStatement.close();
+				pResultSet.close();
+				strQuery = " insert into BEL.BDPTB226_MIQ_QUEST_RL_SESSION values(" + nIdMiq + ", " + nIdMiqParam
+						+ " , '')";
+				// pLog.info(strQuery);
+				pPreparedStatement = pDBConnection.prepareStatement(strQuery);
+				pResultSet = pPreparedStatement.executeQuery();
+				pPreparedStatement.close();
+				pResultSet.close();
 			}
-			pPreparedStatement.close();
-			pResultSet.close();
-			strQuery = " select h.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS h where h.PARAMNAME='"
-					+ pNombres.get(i) + "'";
-			pLog.info(strQuery);
-			pPreparedStatement = pDBConnection.prepareStatement(strQuery);
-			pResultSet = pPreparedStatement.executeQuery();
-			pResultSet.next();
-			nIdMiqParam = pResultSet.getInt("ID_MIQ_PARAM");
-			pPreparedStatement.close();
-			pResultSet.close();
-			strQuery = " insert into BEL.BDPTB226_MIQ_QUEST_RL_SESSION values(" + nIdMiq + ", " + nIdMiqParam + " , '')";
-			pLog.info(strQuery);
-			pPreparedStatement = pDBConnection.prepareStatement(strQuery);
-			pResultSet = pPreparedStatement.executeQuery();
-			pPreparedStatement.close();
-			pResultSet.close();
 		}
 	}
 
