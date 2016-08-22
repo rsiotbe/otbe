@@ -1,5 +1,7 @@
 package com.rsi.rvia.rest;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -11,11 +13,16 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.rvia.rest.DDBB.DDBBConnection;
+import com.rsi.rvia.rest.DDBB.DDBBFactory;
+import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.OperationManager;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.tool.LogController;
+import com.rsi.rvia.rest.tool.Utils;
 
 @Path("/putprueba")
 public class PutPrueba
@@ -64,6 +71,28 @@ public class PutPrueba
 		pLogC.addLog("Info", "Se recibe una peticion de cashierLocatior, POST");
 		SessionRviaData pSessionRviaData = new SessionRviaData(pRequest);
 		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+		return pReturn;
+	}
+	
+	@Path("/getddbb")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getDDBBInfo(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+			throws Exception
+	{
+		pLog.info("Se recibe una peticion de cashierLocatior, GET");
+		pLogC.addLog("Info", "Se recibe una peticion de cashierLocatior, GET");
+		//SessionRviaData pSessionRviaData = new SessionRviaData(pRequest);
+		
+		String strClavePagina = pRequest.getParameter("clavePagina");
+		
+		
+		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.Oracle);
+		PreparedStatement pPreparedStament = pDBConection.prepareStatement("select * from belts100 where clave_pagina = '"+strClavePagina+"'");
+		ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
+		JSONArray jsonArray = new JSONArray();
+		jsonArray = Utils.convertResultSet2JSON(pResultSet);
+		Response pReturn = Response.ok(jsonArray.toString()).build();
 		return pReturn;
 	}
 }
