@@ -189,116 +189,116 @@ public class RestWSConnector
 		return pReturn;
 	}
 
-	private static void saveSenssionVarNames(int id_miq, Vector<String> nombres) throws Exception
+	private static void saveSenssionVarNames(int nIdMiq, Vector<String> pNombres) throws Exception
 	{
-		int id_miq_param, i;
-		String q;
-		DDBBConnection p3 = OracleDDBB.getInstance();
-		PreparedStatement ps;
-		ResultSet rs;
-		for (i = 0; i < nombres.size(); i++)
+		int nIdMiqParam, i;
+		String strQuery;
+		DDBBConnection pDBConnection = OracleDDBB.getInstance();
+		PreparedStatement pPreparedStatement;
+		ResultSet pResultSet;
+		for (i = 0; i < pNombres.size(); i++)
 		{
-			q = 	"select a.id_miq from " +
+			strQuery = 	"select a.id_miq from " +
 					"BEL.BDPTB222_MIQ_QUESTS a, " +
 					"BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, " +
 					"BEL.BDPTB225_MIQ_SESSION_PARAMS c " +
 					"where a.id_miq=b.id_miq " + 
 					"and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " +
-					"and a.id_miq=" + id_miq + 
-					"and c.PARAMNAME='" + nombres.get(i) + "'";
-			pLog.info(q);
-			ps = p3.prepareStatement(q);
-			rs = ps.executeQuery();
-			if (rs.next())
+					"and a.id_miq=" + nIdMiq + 
+					"and c.PARAMNAME='" + pNombres.get(i) + "'";
+			pLog.info(strQuery);
+			pPreparedStatement = pDBConnection.prepareStatement(strQuery);
+			pResultSet = pPreparedStatement.executeQuery();
+			if (pResultSet.next())
 			{
-				ps.close();
-				rs.close();
+				pPreparedStatement.close();
+				pResultSet.close();
 				continue;
 			}
-			ps.close();
-			rs.close();
-			q = "select a.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS a where a.PARAMNAME = '" + nombres.get(i)
+			pPreparedStatement.close();
+			pResultSet.close();
+			strQuery = "select a.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS a where a.PARAMNAME = '" + pNombres.get(i)
 					+ "'";
-			pLog.info(q);
-			ps = p3.prepareStatement(q);
-			rs = ps.executeQuery();
-			if (!rs.next())
+			pLog.info(strQuery);
+			pPreparedStatement = pDBConnection.prepareStatement(strQuery);
+			pResultSet = pPreparedStatement.executeQuery();
+			if (!pResultSet.next())
 			{
-				ps.close();
-				rs.close();
-				q = " insert into BEL.BDPTB225_MIQ_SESSION_PARAMS" + " select"
-						+ "  (select count(*) from BEL.BDPTB225_MIQ_SESSION_PARAMS) +1  " + " , '" + nombres.get(i) + "' "
+				pPreparedStatement.close();
+				pResultSet.close();
+				strQuery = " insert into BEL.BDPTB225_MIQ_SESSION_PARAMS" + " select"
+						+ "  (select count(*) from BEL.BDPTB225_MIQ_SESSION_PARAMS) +1  " + " , '" + pNombres.get(i) + "' "
 						+ " , ''" + " , ''" + " , 'SESION'" + " from dual ";
-				pLog.info(q);
-				ps = p3.prepareStatement(q);
-				rs = ps.executeQuery();
+				pLog.info(strQuery);
+				pPreparedStatement = pDBConnection.prepareStatement(strQuery);
+				pResultSet = pPreparedStatement.executeQuery();
 			}
-			ps.close();
-			rs.close();
-			q = " select h.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS h where h.PARAMNAME='" + nombres.get(i) + "'";
-			pLog.info(q);
-			ps = p3.prepareStatement(q);
-			rs = ps.executeQuery();
-			rs.next();
-			id_miq_param = rs.getInt("ID_MIQ_PARAM");
-			ps.close();
-			rs.close();
-			q = " insert into BEL.BDPTB226_MIQ_QUEST_RL_SESSION values(" + id_miq + ", " + id_miq_param + " , '')";
-			pLog.info(q);
-			ps = p3.prepareStatement(q);
-			rs = ps.executeQuery();
-			ps.close();
-			rs.close();
+			pPreparedStatement.close();
+			pResultSet.close();
+			strQuery = " select h.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS h where h.PARAMNAME='" + pNombres.get(i) + "'";
+			pLog.info(strQuery);
+			pPreparedStatement = pDBConnection.prepareStatement(strQuery);
+			pResultSet = pPreparedStatement.executeQuery();
+			pResultSet.next();
+			nIdMiqParam = pResultSet.getInt("ID_MIQ_PARAM");
+			pPreparedStatement.close();
+			pResultSet.close();
+			strQuery = " insert into BEL.BDPTB226_MIQ_QUEST_RL_SESSION values(" + nIdMiq + ", " + nIdMiqParam + " , '')";
+			pLog.info(strQuery);
+			pPreparedStatement = pDBConnection.prepareStatement(strQuery);
+			pResultSet = pPreparedStatement.executeQuery();
+			pPreparedStatement.close();
+			pResultSet.close();
 		}
 	}
 
-	private static Response rviaPost(@Context HttpServletRequest request, String ct, String endp, int id_miq,
-			SessionRviaData sesion_rvia, String data) throws Exception
+	private static Response rviaPost(@Context HttpServletRequest pRequest, String strComponentType, String strEndPoint, int nIdMiq,
+			SessionRviaData pSessionRvia, String strData) throws Exception
 	{
-		Client client = CustomRSIClient.getClient();
-		URI targetxml = getBaseRviaXML();
-		pLog.info("RVIA_POST: " + targetxml.toString());
-		pLogC.addLog("Info","RVIA_POST: " + targetxml.toString());
-		WebTarget target = client.target(getBaseRviaXML());
-		Response rp = null;
-		pLog.info(endp);
-		pLogC.addLog("Info",endp);
-		pLog.info(ct);
-		pLogC.addLog("Info",ct);
-		pLog.info("xmldat: " + targetxml.toString());
-		pLogC.addLog("Info","xmldat: " + targetxml.toString());
-		pLog.info("clave_pagina: " + endp);
-		pLogC.addLog("Info","clave_pagina: " + endp);
-		rp = performRviaConnection(request, endp, id_miq, sesion_rvia, data);
-		return rp;
+		Client pClient = CustomRSIClient.getClient();
+		URI pTargetXML = getBaseRviaXML();
+		pLog.info("RVIA_POST: " + pTargetXML.toString());
+		pLogC.addLog("Info","RVIA_POST: " + pTargetXML.toString());
+		WebTarget pTarget = pClient.target(getBaseRviaXML());
+		Response pReturn = null;
+		pLog.info(strEndPoint);
+		pLogC.addLog("Info",strEndPoint);
+		pLog.info(strComponentType);
+		pLogC.addLog("Info",strComponentType);
+		pLog.info("xmldat: " + pTargetXML.toString());
+		pLogC.addLog("Info","xmldat: " + pTargetXML.toString());
+		pLog.info("clave_pagina: " + strEndPoint);
+		pLogC.addLog("Info","clave_pagina: " + strEndPoint);
+		pReturn = performRviaConnection(pRequest, strEndPoint, nIdMiq, pSessionRvia, strData);
+		return pReturn;
 	}
 
 	/** Verbo get. Recibe HttpServletRequest de contexto para derivar a RESTfull
 	 * 
 	 * @return Response con el objeto respuesta */
-	private static Response get(HttpServletRequest request, String strEndPoint, String strPathRest, SessionRviaData sesion_rvia) throws Exception
+	private static Response get(HttpServletRequest pRequest, String strEndPoint, String strPathRest, SessionRviaData pSessionRvia) throws Exception
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
-		Client client = CustomRSIClient.getClient();
-		String strQueryParams = request.getQueryString();
+		Client pClient = CustomRSIClient.getClient();
+		String strQueryParams = pRequest.getQueryString();
 		String strAliasNames = getOperationParameters(strPathRest,"aliasname");
 		String strSessionNames = getOperationParameters(strPathRest,"paramname");
 		
 		//htDatesParameters = getParameterRviaSession(strSessionNames, sesion_rvia);
 
 		
-		MultivaluedMap<String, String> camposDeSession = new MultivaluedHashMap<String, String>();
-		camposDeSession.add("idInternoPe", "104955");
-		camposDeSession.add("codEntidad", "3076");
+		MultivaluedMap<String, String> pCamposDeSession = new MultivaluedHashMap<String, String>();
+		pCamposDeSession.add("idInternoPe", "104955");
+		pCamposDeSession.add("codEntidad", "3076");
 		
-		WebTarget target = client.target(getBaseWSEndPoint(strEndPoint) + "?" + strQueryParams) ;
+		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint) + "?" + strQueryParams) ;
 		
-		target=target.queryParam("idInternoPe", "104955");
-		target=target.queryParam("codEntidad", "3076");
+		pTarget = pTarget.queryParam("idInternoPe", "104955");
+		pTarget = pTarget.queryParam("codEntidad", "3076");
 		//target=target.queryParam("token", strQueryParams);
 		
 		pLog.info("END_POINT:" + strPathRest );
-		Response rp = target.request()
+		Response pReturn = pTarget.request()
 								  .header("CODSecEnt", "18")
 								  .header("CODSecUser", "")
 								  .header("CODSecTrans", "")
@@ -309,37 +309,37 @@ public class RestWSConnector
 								  .accept(MediaType.APPLICATION_JSON)
 								  .get();
 		
-		pLog.info("GET: " + rp.toString());
-		return rp;
+		pLog.info("GET: " + pReturn.toString());
+		return pReturn;
 	}
 
 	/** Verbo post. Recibe HttpServletRequest de contexto para derivar a RESTfull
 	 * 
 	 * @return Response con el objeto respuesta */
-	private static Response post(@Context HttpServletRequest request, String strPathRest, SessionRviaData sesion_rvia, String strJsonData, String strEndPoint) throws Exception
+	private static Response post(@Context HttpServletRequest pRequest, String strPathRest, SessionRviaData pSessionRvia, String strJsonData, String strEndPoint) throws Exception
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
-		Client client = CustomRSIClient.getClient();
+		Client pClient = CustomRSIClient.getClient();
 		String strParameters = getOperationParameters(strPathRest,"paramname");
 		pLog.info("Query Params: " + strParameters);
 		pLogC.addLog("Info","Query Params: " + strParameters);
 		if (!strParameters.isEmpty())
 		{
-			htDatesParameters = getParameterRviaSession(strParameters, sesion_rvia);
+			htDatesParameters = getParameterRviaSession(strParameters, pSessionRvia);
 		}
 		
 		ObjectMapper pMapper = new ObjectMapper();
 		ObjectNode pJson = (ObjectNode) pMapper.readTree(strJsonData);
-		Enumeration enumHTAttrs = htDatesParameters.keys();
-		while (enumHTAttrs.hasMoreElements())
+		Enumeration pEnum = htDatesParameters.keys();
+		while (pEnum.hasMoreElements())
 		{
-			String strTableKey = (String) enumHTAttrs.nextElement();
+			String strTableKey = (String) pEnum.nextElement();
 			pJson.put(strTableKey,(String) htDatesParameters.get(strTableKey).toString());
 		}
 		strJsonData = pJson.toString();
-		WebTarget target = client.target(getBaseWSEndPoint(strEndPoint));
+		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint));
 		
-		Response rp = target.request()
+		Response pReturn = pTarget.request()
 				.header("CODSecEnt","3008")
 				.header("CODSecTrans", "")
 				.header("CODSecUser", "")
@@ -347,35 +347,35 @@ public class RestWSConnector
 				.header("CODTerminal", "")
 				.header("CODSecIp", "111.11.11.1")
 				.post(Entity.json(strJsonData));
-		pLog.info("Respose POST: " + rp.toString());
-		pLogC.addLog("Info","Respose POST: " + rp.toString());
-		return rp;
+		pLog.info("Respose POST: " + pReturn.toString());
+		pLogC.addLog("Info","Respose POST: " + pReturn.toString());
+		return pReturn;
 	}
 
-	private static Response put(@Context HttpServletRequest request, String strPathRest, SessionRviaData sesion_rvia, String strJsonData, String strEndPoint)
+	private static Response put(@Context HttpServletRequest pRequest, String strPathRest, SessionRviaData pSessionRvia, String strJsonData, String strEndPoint)
 			throws Exception
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
-		Client client = CustomRSIClient.getClient();
+		Client pClient = CustomRSIClient.getClient();
 		String strParameters = getOperationParameters(strPathRest,"paramname");
 		pLog.info("Query Params: " + strParameters);
 		pLogC.addLog("Info","Query Params: " + strParameters);
 		if (!strParameters.isEmpty())
 		{
-			htDatesParameters = getParameterRviaSession(strParameters, sesion_rvia);
+			htDatesParameters = getParameterRviaSession(strParameters, pSessionRvia);
 		}
 		
 		ObjectMapper pMapper = new ObjectMapper();
 		ObjectNode pJson = (ObjectNode) pMapper.readTree(strJsonData);
-		Enumeration enumHTAttrs = htDatesParameters.keys();
-		while (enumHTAttrs.hasMoreElements())
+		Enumeration pEnum = htDatesParameters.keys();
+		while (pEnum.hasMoreElements())
 		{
-			String strTableKey = (String) enumHTAttrs.nextElement();
+			String strTableKey = (String) pEnum.nextElement();
 			pJson.put(strTableKey,(String) htDatesParameters.get(strTableKey).toString());
 		}
 		strJsonData = pJson.toString();
-		WebTarget target = client.target(getBaseWSEndPoint(strEndPoint));
-		Response rp = target.request()
+		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint));
+		Response pReturn = pTarget.request()
 				.header("CODSecEnt","3008")
 				.header("CODSecTrans", "")
 				.header("CODSecUser", "")
@@ -383,41 +383,41 @@ public class RestWSConnector
 				.header("CODTerminal", "")
 				.header("CODSecIp", "111.11.11.1")
 				.put(Entity.json(strJsonData));
-		pLog.info("Respose PUT: " + rp.toString());
-		pLogC.addLog("Info","Respose PUT: " + rp.toString());
-		return rp;
+		pLog.info("Respose PUT: " + pReturn.toString());
+		pLogC.addLog("Info","Respose PUT: " + pReturn.toString());
+		return pReturn;
 	}
 
-	private static Response delete(@Context HttpServletRequest request) throws Exception
+	private static Response delete(@Context HttpServletRequest pRequest) throws Exception
 	{
-		Client client = CustomRSIClient.getClient();
-		WebTarget target = client.target(getBaseRviaXML());
-		Response rp = target.path("rest").path("hello").request().accept(MediaType.TEXT_PLAIN).delete(Response.class);
-		pLog.info("DELETE: " + rp.toString());
-		pLogC.addLog("Info","DELETE: " + rp.toString());
-		return rp;
+		Client pClient = CustomRSIClient.getClient();
+		WebTarget pTarget = pClient.target(getBaseRviaXML());
+		Response pReturn = pTarget.path("rest").path("hello").request().accept(MediaType.TEXT_PLAIN).delete(Response.class);
+		pLog.info("DELETE: " + pReturn.toString());
+		pLogC.addLog("Info","DELETE: " + pReturn.toString());
+		return pReturn;
 	}
 
-	private static String getOperationParameters(String strPathRest, String campo)
+	private static String getOperationParameters(String strPathRest, String strCampo)
 	{
 		String strReturn = "";
-		String strQuery = "select c." + campo + " campo from " + 
+		String strQuery = "select c." + strCampo + " campo from " + 
 								" BEL.BDPTB222_MIQ_QUESTS a, " + 
 								" BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, " +
 								" BEL.BDPTB225_MIQ_SESSION_PARAMS c " + 
 								" where a.id_miq=b.id_miq " + 
 								" and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " +
 								" and a.path_rest='" + strPathRest + "' order by c.ID_MIQ_PARAM";
-		DDBBConnection pDDBBTranslate = DDBBFactory.getDDBB(DDBBProvider.Oracle);
-		PreparedStatement pPS;
+		DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.Oracle);
+		PreparedStatement pPreparedStatement;
 		try
 		{
-			pPS = pDDBBTranslate.prepareStatement(strQuery);
-			ResultSet pQueryResult = pPS.executeQuery();
+			pPreparedStatement = pDDBBConnection.prepareStatement(strQuery);
+			ResultSet pResultSet = pPreparedStatement.executeQuery();
 			pLog.debug("Query BBDD Params bien ejecutada");
-			while (pQueryResult.next())
+			while (pResultSet.next())
 			{
-				String strInputName = (String) pQueryResult.getString("campo");
+				String strInputName = (String) pResultSet.getString("campo");
 				if (!strReturn.isEmpty())
 				{
 					strReturn += ";";
@@ -433,9 +433,9 @@ public class RestWSConnector
 		return strReturn;
 	}
 
-	private static Hashtable<String, String> getParameterRviaSession(String strParameters, SessionRviaData sesion_rvia)
+	private static Hashtable<String, String> getParameterRviaSession(String strParameters, SessionRviaData pSessionRvia)
 	{
-		SessionRviaData pSesiFoo = sesion_rvia;
+		SessionRviaData pSesiFoo = pSessionRvia;
 		String strSesId = pSesiFoo.getRviaSessionId();
 		String strHost = pSesiFoo.getUriRvia().toString();
 		String strHTML = "";
@@ -445,8 +445,8 @@ public class RestWSConnector
 		try
 		{
 			// Forzamos que sea Document del tipo: org.jsoup.nodes.Document
-			org.jsoup.nodes.Document docResp = Jsoup.connect(url).get();
-			strHTML = docResp.html();
+			org.jsoup.nodes.Document pDocResp = Jsoup.connect(url).get();
+			strHTML = pDocResp.html();
 			strDatosParam = strHTML.split(";");
 			if (strDatosParam != null)
 			{

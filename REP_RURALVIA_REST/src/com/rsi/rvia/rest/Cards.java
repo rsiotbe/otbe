@@ -28,9 +28,9 @@ public class Cards
 	 * @throws Exception */
 	@GET
 	@Produces(MediaType.APPLICATION_XHTML_XML)
-	public Response getAllUserCards(@Context HttpServletRequest request) throws Exception
+	public Response getAllUserCards(@Context HttpServletRequest pRequest) throws Exception
 	{
-		SessionRviaData pSessionRviaData = new SessionRviaData(request);
+		SessionRviaData pSessionRviaData = new SessionRviaData(pRequest);
 		String strReturn = TemplateManager.processTemplate("/test/sample.xhtml", pSessionRviaData.getLanguage());
 		return Response.ok(strReturn).build();
 	}
@@ -41,7 +41,7 @@ public class Cards
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response setCardLockStatus(@Context HttpServletRequest request)
+	public Response setCardLockStatus(@Context HttpServletRequest pRequest)
 	{
 		return Response.ok().entity("{\"info\":\"todo OK\"}").build();
 	}
