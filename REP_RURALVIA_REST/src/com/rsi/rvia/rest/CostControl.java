@@ -1,4 +1,4 @@
-package com.rsi.rvia.rest.costcontrol;
+package com.rsi.rvia.rest;
 
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,23 +36,23 @@ public class CostControl
 	@GET
 	@Path("/contracts") 
    @Produces(MediaType.APPLICATION_JSON)
-	public Response do1(@Context HttpServletRequest request, @Context UriInfo pUriInfo,
-			String data) throws Exception
+	public Response do1(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+			String strData) throws Exception
 	{	
 		//return Response.ok("Lista de contratos").build();
-		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.TEXT_PLAIN_TYPE);
+		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Lista de contratos");
-		return p;		
+		return pReturn;		
 	}
 	@GET
 	@Path("/contracts/{c_number}") 
    @Produces(MediaType.APPLICATION_JSON)
-	public Response do2(@Context HttpServletRequest request, @Context UriInfo pUriInfo,
-			String data) throws Exception
+	public Response do2(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+			String strData) throws Exception
 	{	
 		//return Response.ok("Movimientos de un contrato").build();
-		Response p = OperationManager.proccesFromRvia(request, pUriInfo, data, MediaType.TEXT_PLAIN_TYPE);
+		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Movimientos de un contrato");
-		return p;	
+		return pReturn;	
 	}
 }

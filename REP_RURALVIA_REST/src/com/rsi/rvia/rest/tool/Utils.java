@@ -7,28 +7,28 @@ import javax.ws.rs.core.UriInfo;
 public class Utils
 {
 	/* Nombre temporal. Podeis cambiarlo a uno mas descriptivo */
-	public String getPrimaryPath(UriInfo uriInfo)
+	public String getPrimaryPath(UriInfo pUriInfo)
 	{
 		String strKeys = "";
-		MultivaluedMap<String, String> pListParameters = uriInfo.getPathParameters();
-		Iterator<String> it = pListParameters.keySet().iterator();
-		while (it.hasNext())
+		MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
+		Iterator<String> pIterator = pListParameters.keySet().iterator();
+		while (pIterator.hasNext())
 		{
-			String strKeyName = (String) it.next();
+			String strKeyName = (String) pIterator.next();
 			strKeys += "/{";
 			strKeys += strKeyName;
 			strKeys += "}";
 		}
-		String strPath = uriInfo.getPath();
-		String[] lStrPathParts = strPath.split("/");
+		String strPath = pUriInfo.getPath();
+		String[] pStrPathParts = strPath.split("/");
 		strPath = "";
-		for (int i = 0; i <= (lStrPathParts.length - pListParameters.size()) - 1; i++)
+		for (int i = 0; i <= (pStrPathParts.length - pListParameters.size()) - 1; i++)
 		{
 			if (!strPath.isEmpty())
 			{
 				strPath += "/";
 			}
-			strPath += lStrPathParts[i];
+			strPath += pStrPathParts[i];
 		}
 		return ("/" + strPath + strKeys);
 	}
