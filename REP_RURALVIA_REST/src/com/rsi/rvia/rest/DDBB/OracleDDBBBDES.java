@@ -10,7 +10,7 @@ public class OracleDDBBBDES extends AbstractDDBB
 	{
 		pLog = LoggerFactory.getLogger(OracleDDBB.class);
 		Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
-		pAppProperties.load(this.getClass().getResourceAsStream("/OracleConfig{TEST}.properties"));		
+		pAppProperties.load(this.getClass().getResourceAsStream("/OracleConfig.properties"));		
 		pLog.trace("Se crea una nueva instancia de DDBB DES de Oracle");
 	}
 	

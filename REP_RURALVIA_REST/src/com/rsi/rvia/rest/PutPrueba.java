@@ -153,4 +153,29 @@ public class PutPrueba
 		pReturn = Response.ok(strHelp).build();
 		return pReturn;
 	}
+	
+	@Path("/checkddbb")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response checkDoubleDDBB(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+			throws Exception
+	{
+		Response pReturn;
+		String strReturn = "";
+		String strQuery = "select * from belts100 where clave_pagina = 'BDP_HC_NC_CLAUSULAS_P'";
+		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBTEST, "belt");
+		PreparedStatement pPreparedStament = pDBConection.prepareStatement(strQuery);
+		ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
+		JSONArray jsonArray = new JSONArray();
+		jsonArray = Utils.convertResultSet2JSON(pResultSet);
+
+		DDBBConnection pDBConection2 = DDBBFactory.getDDBB(DDBBProvider.OracleBDES, "beld");
+		PreparedStatement pPreparedStament2 = pDBConection2.prepareStatement(strQuery);
+		ResultSet pResultSet2 = pDBConection.executeQuery(pPreparedStament2);
+		JSONArray jsonArray2 = new JSONArray();
+		jsonArray2 = Utils.convertResultSet2JSON(pResultSet2);
+		strReturn = "{\"1\":" + jsonArray.toString() + ",\"2\":" + jsonArray2.toString() + "}";
+		pReturn = Response.ok(strReturn).build();
+		return pReturn;
+	}
 }
