@@ -122,7 +122,7 @@ public class PutPrueba
 		
 		if (strQuery != null)
 		{
-			DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.Oracle);
+			DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBDES);
 			PreparedStatement pPreparedStament = pDBConection.prepareStatement(strQuery);
 			ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
 			JSONArray jsonArray = new JSONArray();

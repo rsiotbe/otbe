@@ -193,6 +193,7 @@ public class RestWSConnector
 	{
 		int nIdMiqParam, i;
 		String strQuery;
+		///??? DDBBFactory.getDDBB(DDBBProvider.OracleBDES);
 		DDBBConnection pDBConnection = OracleDDBB.getInstance();
 		PreparedStatement pPreparedStatement;
 		ResultSet pResultSet;
