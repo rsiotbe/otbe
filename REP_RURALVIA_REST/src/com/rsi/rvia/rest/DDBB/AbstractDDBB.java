@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractDDBB implements DDBBConnection {
 	protected static Logger pLog = LoggerFactory.getLogger(AbstractDDBB.class);;
 	private Connection _pConnection = null;
-	protected static String schemaPrefix = "bel";
+	protected static String schemaPrefix = "beld";
 	protected Properties pAppProperties = new Properties();
 	
 	private synchronized void BBDD_Connect() throws Exception {
