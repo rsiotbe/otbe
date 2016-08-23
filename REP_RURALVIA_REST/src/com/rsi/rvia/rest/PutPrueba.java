@@ -73,26 +73,84 @@ public class PutPrueba
 		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		return pReturn;
 	}
-	
+
 	@Path("/getddbb")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getDDBBInfo(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
 			throws Exception
 	{
-		pLog.info("Se recibe una peticion de cashierLocatior, GET");
-		pLogC.addLog("Info", "Se recibe una peticion de cashierLocatior, GET");
-		//SessionRviaData pSessionRviaData = new SessionRviaData(pRequest);
+		String strQuery = null;
+		String strTabla = pRequest.getParameter("tabla");
+		String strParams = pRequest.getParameter("params");
+		String strWhereKey = pRequest.getParameter("wherekey");
+		String strWhereValue = pRequest.getParameter("wherevalue");
+		String strOther = pRequest.getParameter("other");
+		Response pReturn;
+		StringBuilder pSB = new StringBuilder();
+		pSB.append("select ");
+		if (strParams != null)
+		{
+			pSB.append(strParams);
+		}
+		else
+		{
+			pSB.append("*");
+		}
+		pSB.append(" from ");
+		if (strTabla != null)
+		{
+			pSB.append(strTabla);
+		}
+		else
+		{
+			strQuery = null;
+		}
+		if ((strWhereKey != null) && (strWhereValue != null))
+		{
+			pSB.append(" where " + strWhereKey + " = '" + strWhereValue + "'");
+			if (strOther != null)
+			{
+				pSB.append(" " + strOther);
+			}
+			strQuery = pSB.toString();
+		}
+		else
+		{
+			strQuery = pSB.toString();
+		}
 		
-		String strClavePagina = pRequest.getParameter("clavePagina");
-		
-		
-		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.Oracle);
-		PreparedStatement pPreparedStament = pDBConection.prepareStatement("select * from belts100 where clave_pagina = '"+strClavePagina+"'");
-		ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
-		JSONArray jsonArray = new JSONArray();
-		jsonArray = Utils.convertResultSet2JSON(pResultSet);
-		Response pReturn = Response.ok(jsonArray.toString()).build();
+		if (strQuery != null)
+		{
+			DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.Oracle);
+			PreparedStatement pPreparedStament = pDBConection.prepareStatement(strQuery);
+			ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
+			JSONArray jsonArray = new JSONArray();
+			jsonArray = Utils.convertResultSet2JSON(pResultSet);
+			pReturn = Response.ok(jsonArray.toString()).build();
+		}
+		else
+		{
+			pReturn = Response.ok("{\"Error\" : \"Query mal formada.\"}").build();
+		}
+		return pReturn;
+	}
+
+	@Path("/getddbb/help")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getDDBBhelp(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+			throws Exception
+	{
+
+		Response pReturn;
+		StringBuilder pSB = new StringBuilder();
+		String strHelp = "{\"Info\":\"Petición para devolver datos de la BBDD en formato JSON\","
+				+ "\"Lista de parametros\":{\"params\":\"Parametros separados por [,] a recuperar)\","
+				+ "\"tabla\":\"Nombre de la tabla.\",\"wherekey\":\"Nombre del campo para la sentencia where\","
+				+ "\"wherevalue\":\"Valor del campo para la sentencia where\","
+				+ "\"other\":\"Otra sentencia (añadir and si va despues del where)\"}" + "}";
+		pReturn = Response.ok(strHelp).build();
 		return pReturn;
 	}
 }
