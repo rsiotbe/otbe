@@ -52,6 +52,7 @@ public class OperationManager
 					strPageResult = TemplateManager.processTemplate(strTemplate, pSessionRviaData.getLanguage(), pReturn.readEntity(String.class));
 				}
 			}
+			
 			NewCookie pCookieToken = new NewCookie("token", pSessionRviaData.getToken());
 			if (strPageResult != null)
 			{

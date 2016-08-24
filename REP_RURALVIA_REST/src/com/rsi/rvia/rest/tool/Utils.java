@@ -1,5 +1,8 @@
 package com.rsi.rvia.rest.tool;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -9,9 +12,12 @@ import javax.ws.rs.core.UriInfo;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Utils
 {
+	private static Logger	pLog			= LoggerFactory.getLogger(Utils.class);
 	
 	/**
 	 * Dado el uriInfo, compone el path original (con el nombre del parametro, no el valor)
@@ -125,5 +131,38 @@ public class Utils
 			pJson.put(pJsonObj);
 		}
 		return pJson;
+	}
+	public static String getStringFromInputStream(InputStream is)
+	{
+		BufferedReader pBufferedReader = null;
+		StringBuilder pStringBuilder = new StringBuilder();
+		String strLine;
+		try
+		{
+			pBufferedReader = new BufferedReader(new InputStreamReader(is));
+			while ((strLine = pBufferedReader.readLine()) != null)
+			{
+				pStringBuilder.append(strLine);
+			}
+		}
+		catch (Exception ex)
+		{
+			pLog.error("No es posible leer el contenido del InooutStreamReader", ex);
+		}
+		finally
+		{
+			if (pBufferedReader != null)
+			{
+				try
+				{
+					pBufferedReader.close();
+				}
+				catch (Exception ex)
+				{
+					pLog.error("No es posible cerrar el StringBuilder", ex);
+				}
+			}
+		}
+		return pStringBuilder.toString();
 	}
 }

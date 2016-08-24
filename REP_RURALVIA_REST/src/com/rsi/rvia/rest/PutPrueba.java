@@ -23,28 +23,13 @@ import com.rsi.rvia.rest.client.OperationManager;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.tool.Utils;
 
-@Path("/putprueba")
+@Path("/prueba")
 public class PutPrueba
 {
 	private static Logger			pLog	= LoggerFactory.getLogger(Cards.class);
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAllUserCards(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
-	{
-		pLog.info("Se recibe una peticion de cashierLocatior");
-		String data = "{\"EE_I_ActivacionTarjetaBE\": {\"codigoEntidad\": \"3008\","
-				+ "\"usuarioBE\": \"32894488\",\"acuerdoBE\": \"1932504291\","
-				+ "\"acuerdo\": \"1932511486\",\"panToken\": \"4599846092220023\","
-				+ "\"DatosFirma\":{\"firma\": \"G\",\"telefonoMovil\": \"666666666\"}}}";
-		SessionRviaData pSessionRviaData = new SessionRviaData(pRequest);
-		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, data, MediaType.TEXT_PLAIN_TYPE);
-		// /??? La respuesta devuelve ahora mismo JSON para hacer pruebas. Deberia devolver un XHTML con los datos del
-		// JSON.
-		return pReturn;
-	}
-
 	@PUT
+	@Path("/put")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response updateThink(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
