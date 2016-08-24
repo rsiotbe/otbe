@@ -19,21 +19,12 @@
 
 <%
 
-
-private static boolean testForDate(final String dato, final String formato) {
-   final SimpleDateFormat ft = new SimpleDateFormat(formato);
-   Date fecha = null;
-   try {
-       fecha = ft.parse(dato);
-       return true;
-   }
-   catch (ParseException ex) {
-       return false;
-   }
-}
-	String formato = "yyyymmdd";
+	DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP,"cip");
+	String formato = "yyyy-mm-dd";
 	SimpleDateFormat ft = new SimpleDateFormat(formato);
-	Date fechaIni = ft.parse();
+	String dato = request.getParameter("fechaInicio").toString();
+	
+	Date fechaIni = ft.parse(dato);
 
 	String q =
 			" select" +
@@ -45,18 +36,18 @@ private static boolean testForDate(final String dato, final String formato) {
 			" from rdwc01.mi_ac_eco_gen" +
 			" where cod_nrbe_en=?" +
 			" and num_sec_ac =?" +				
-			" and mi_fecha_fin_mes >= to_date('20160101','yyyymmdd')" +
+			" and mi_fecha_fin_mes >=?" +
 			" and mi_fecha_fin_mes < to_date('31129999','ddmmyyyy')";
-
-					
 	JSONObject pp= new JSONObject();
 	pp.put("token", "sitio para el token");
 	Logger	pLog = LoggerFactory.getLogger("jsp");	
-	DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP,"cip");	
-	PreparedStatement ps = p3.prepareStatement(q);
+		
+	
+	PreparedStatement ps = p3.prepareStatement(q);	
+	int contrato = Integer.parseInt(request.getParameter("idContract"));	
 	ps.setString(1,request.getParameter("codEntidad"));
-	ps.setString(2, request.getParameter("numAcuerdo"));	
-	ps.setString(2, request.getParameter("fechaInicio"));
+	ps.setInt(2, contrato);
+	ps.setDate(3, java.sql.Date.valueOf(dato));
 
 	
 	ResultSet rs = p3.executeQuery(ps);	
