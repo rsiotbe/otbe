@@ -45,12 +45,13 @@ public class CostControl
 		return pReturn;		
 	}
 	@GET
-	@Path("/contracts/{c_number}") 
+	@Path("/contracts/{idContract}") 
    @Produces(MediaType.APPLICATION_JSON)
 	public Response do2(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			String strData) throws Exception
+			String strData, @PathParam("idContract") String idContract) throws Exception
 	{	
 		//return Response.ok("Movimientos de un contrato").build();
+		
 		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Movimientos de un contrato");
 		return pReturn;	

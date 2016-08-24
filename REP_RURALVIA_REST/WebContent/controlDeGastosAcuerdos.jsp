@@ -40,7 +40,6 @@
 		" 	AND t1.ID_INTERNO_PE =?" +
 		" 	and t2.mi_fecha_fin = (select MI_FECHA_PROCESO from rdwc01.ce_carga_tabla" +
 		" 		where nomtabla='MI_LINEA_GRUPO')" ;
-
 	JSONObject pp= new JSONObject();
 	pp.put("token", "sitio para el token");
 	Logger	pLog = LoggerFactory.getLogger("jsp");	
