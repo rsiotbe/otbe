@@ -3,6 +3,7 @@ package com.rsi.rvia.rest.client;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -40,10 +41,11 @@ public class OperationManager
 			pSession.setAttribute("token", pSessionRviaData.getToken());
 			if (!IsumValidation.IsValidService(pSessionRviaData))
 				throw new Exception("EL servicio solicitado no es permitido para este usuario por ISUM");
-			Utils pUtil = new Utils();
-			String strPrimaryPath = pUtil.getPrimaryPath(pUriInfo);
+
+			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
+			MultivaluedMap<String,String> pListParams = Utils.getParam4Path(pUriInfo);
 			RestWSConnector pRestConnector = new RestWSConnector();
-			pReturn = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath);
+			pReturn = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath,pListParams);
 			if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
 			{
 				String strTemplate = pRestConnector.getTemplate();

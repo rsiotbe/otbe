@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Client;
@@ -27,9 +28,9 @@ import org.w3c.dom.NodeList;
 import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
-import com.rsi.rvia.rest.DDBB.OracleDDBB;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.tool.Utils;
 
 public class RestWSConnector
 {
@@ -58,7 +59,7 @@ public class RestWSConnector
 	}
 
 	public static Response getData(HttpServletRequest pRequest, String strData, SessionRviaData pSessionRvia,
-			String strPrimaryPath) throws Exception
+			String strPrimaryPath, MultivaluedMap<String,String> pPathParams) throws Exception
 	{
 		String strComponentType = "";
 		String strEndPoint = "";
@@ -93,7 +94,7 @@ public class RestWSConnector
 				else
 				{
 					pLog.info("Solicitando peticióñn REST");
-					pReturn = get(pRequest, strEndPoint, strPath, pSessionRvia);
+					pReturn = get(pRequest, strEndPoint, strPath, pSessionRvia, pPathParams);
 				}
 				break;
 			case "POST":
@@ -105,11 +106,11 @@ public class RestWSConnector
 				else
 				{
 					pLog.info("Solicitando peticióñn REST");
-					pReturn = post(pRequest, strPath, pSessionRvia, strData, strEndPoint);
+					pReturn = post(pRequest, strPath, pSessionRvia, strData, strEndPoint, pPathParams);
 				}
 				break;
 			case "PUT":
-				pReturn = put(pRequest, strPath, pSessionRvia, strData, strEndPoint);
+				pReturn = put(pRequest, strPath, pSessionRvia, strData, strEndPoint, pPathParams);
 				break;
 			case "PATCH":
 				break;
@@ -260,21 +261,19 @@ public class RestWSConnector
 	 * 
 	 * @return Response con el objeto respuesta */
 	private static Response get(HttpServletRequest pRequest, String strEndPoint, String strPathRest,
-			SessionRviaData pSessionRvia) throws Exception
+			SessionRviaData pSessionRvia, MultivaluedMap<String,String> pPathParams) throws Exception
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = CustomRSIClient.getClient();
 		String strQueryParams = pRequest.getQueryString();
 		String strAliasNames = getOperationParameters(strPathRest, "aliasname");
 		String strSessionNames = getOperationParameters(strPathRest, "paramname");
-		// htDatesParameters = getParameterRviaSession(strSessionNames, sesion_rvia);
-		MultivaluedMap<String, String> pCamposDeSession = new MultivaluedHashMap<String, String>();
-		pCamposDeSession.add("idInternoPe", "104955");
-		pCamposDeSession.add("codEntidad", "3076");
-		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint) + "?" + strQueryParams);
-		pTarget = pTarget.queryParam("idInternoPe", "104955");
-		pTarget = pTarget.queryParam("codEntidad", "3076");
-		// target=target.queryParam("token", strQueryParams);
+		
+		String pathQueryParams = "";
+		pathQueryParams = Utils.multiValuedMap2QueryString(pPathParams);
+		
+		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint) + "?" + strQueryParams + pathQueryParams);
+		
 		pLog.info("END_POINT:" + strPathRest);
 		Response pReturn = pTarget.request().header("CODSecEnt", "18").header("CODSecUser", "").header("CODSecTrans", "").header("CODTerminal", "18").header("CODApl", "BDP").header("CODCanal", "18").header("CODSecIp", "10.1.245.2").accept(MediaType.APPLICATION_JSON).get();
 		pLog.info("GET: " + pReturn.toString());
@@ -285,7 +284,7 @@ public class RestWSConnector
 	 * 
 	 * @return Response con el objeto respuesta */
 	private static Response post(@Context HttpServletRequest pRequest, String strPathRest, SessionRviaData pSessionRvia,
-			String strJsonData, String strEndPoint) throws Exception
+			String strJsonData, String strEndPoint, MultivaluedMap<String,String> pPathParams) throws Exception
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = CustomRSIClient.getClient();
@@ -302,6 +301,12 @@ public class RestWSConnector
 		{
 			String strTableKey = (String) pEnum.nextElement();
 			pJson.put(strTableKey, (String) htDatesParameters.get(strTableKey).toString());
+		}
+		Iterator<String> pIterator = pPathParams.keySet().iterator();
+		while (pIterator.hasNext())
+		{
+			String strKey = (String) pIterator.next();
+			pJson.put(strKey, (String) pPathParams.get(strKey).toString());
 		}
 		strJsonData = pJson.toString();
 		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint));
@@ -311,7 +316,7 @@ public class RestWSConnector
 	}
 
 	private static Response put(@Context HttpServletRequest pRequest, String strPathRest, SessionRviaData pSessionRvia,
-			String strJsonData, String strEndPoint) throws Exception
+			String strJsonData, String strEndPoint, MultivaluedMap<String,String> pPathParams) throws Exception
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = CustomRSIClient.getClient();
@@ -328,6 +333,12 @@ public class RestWSConnector
 		{
 			String strTableKey = (String) pEnum.nextElement();
 			pJson.put(strTableKey, (String) htDatesParameters.get(strTableKey).toString());
+		}
+		Iterator<String> pIterator = pPathParams.keySet().iterator();
+		while (pIterator.hasNext())
+		{
+			String strKey = (String) pIterator.next();
+			pJson.put(strKey, (String) pPathParams.get(strKey).toString());
 		}
 		strJsonData = pJson.toString();
 		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint));

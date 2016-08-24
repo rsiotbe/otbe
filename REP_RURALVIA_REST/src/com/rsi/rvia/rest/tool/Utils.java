@@ -25,7 +25,7 @@ public class Utils
 	 * @param pUriInfo
 	 * @return
 	 */
-	public String getPrimaryPath(UriInfo pUriInfo)
+	public static String getPrimaryPath(UriInfo pUriInfo)
 	{
 		String strKeys = "";
 		MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
@@ -131,6 +131,29 @@ public class Utils
 			pJson.put(pJsonObj);
 		}
 		return pJson;
+	}
+	
+	public static MultivaluedMap<String,String> getParam4Path(UriInfo pUriInfo){
+		String strReturn = "";
+		
+		MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
+		
+		return pListParameters;
+	}
+	
+	public static String multiValuedMap2QueryString(MultivaluedMap<String,String> pMap){
+		String strReturn = "";
+		
+		Iterator<String> pIterator = pMap.keySet().iterator();
+		while (pIterator.hasNext())
+		{
+			String strKey = (String) pIterator.next();
+			if(pMap.get(strKey) != null){
+				strReturn += "&" + strKey + "=" + pMap.getFirst(strKey);
+			}
+		}
+		
+		return strReturn;
 	}
 	public static String getStringFromInputStream(InputStream is)
 	{
