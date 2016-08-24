@@ -8,7 +8,7 @@ public class OracleDDBBCIP extends AbstractDDBB
 	
 	private OracleDDBBCIP() throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException
 	{
-		pLog = LoggerFactory.getLogger(OracleDDBB.class);
+		pLog = LoggerFactory.getLogger(OracleDDBBCIP.class);
 		Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
 		pAppProperties.load(this.getClass().getResourceAsStream("/OracleConfig.properties"));		
 		pLog.trace("Se crea una nueva instancia de DDBB CIP de Oracle");

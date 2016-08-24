@@ -8,7 +8,7 @@ public class OracleDDBBBTEST extends AbstractDDBB
 	
 	private OracleDDBBBTEST() throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException
 	{
-		pLog = LoggerFactory.getLogger(OracleDDBB.class);
+		pLog = LoggerFactory.getLogger(OracleDDBBBTEST.class);
 		Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
 		pAppProperties.load(this.getClass().getResourceAsStream("/OracleConfig.properties"));		
 		pLog.trace("Se crea una nueva instancia de DDBB TEST de Oracle");

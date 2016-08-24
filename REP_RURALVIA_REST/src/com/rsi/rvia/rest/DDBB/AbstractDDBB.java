@@ -89,7 +89,7 @@ public abstract class AbstractDDBB implements DDBBConnection {
 			pStatement.close();
 			pLog.trace("Cierre OK");
 		} catch (Exception ex) {
-			pLog.error("Ha fallado la peticin de cerrar el statment. ERROR: "
+			pLog.error("Ha fallado la peticion de cerrar el statment. ERROR: "
 					+ ex.toString());
 		}
 	}

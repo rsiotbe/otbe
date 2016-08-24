@@ -21,21 +21,18 @@ import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.OperationManager;
 import com.rsi.rvia.rest.session.SessionRviaData;
-import com.rsi.rvia.rest.tool.LogController;
 import com.rsi.rvia.rest.tool.Utils;
 
 @Path("/putprueba")
 public class PutPrueba
 {
 	private static Logger			pLog	= LoggerFactory.getLogger(Cards.class);
-	private static LogController	pLogC	= new LogController();
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllUserCards(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
 	{
 		pLog.info("Se recibe una peticion de cashierLocatior");
-		pLogC.addLog("Info", "Se recibe una peticion de cashierLocatior");
 		String data = "{\"EE_I_ActivacionTarjetaBE\": {\"codigoEntidad\": \"3008\","
 				+ "\"usuarioBE\": \"32894488\",\"acuerdoBE\": \"1932504291\","
 				+ "\"acuerdo\": \"1932511486\",\"panToken\": \"4599846092220023\","
@@ -54,7 +51,7 @@ public class PutPrueba
 			throws Exception
 	{
 		pLog.info("Se recibe una peticion de cashierLocatior, PUT");
-		pLogC.addLog("Info", "Se recibe una peticion de cashierLocatior, PUT");
+	
 		SessionRviaData pSessionRviaData = new SessionRviaData(pRequest);
 		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		return pReturn;
@@ -68,7 +65,6 @@ public class PutPrueba
 			throws Exception
 	{
 		pLog.info("Se recibe una peticion de cashierLocatior, POST");
-		pLogC.addLog("Info", "Se recibe una peticion de cashierLocatior, POST");
 		SessionRviaData pSessionRviaData = new SessionRviaData(pRequest);
 		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		return pReturn;
@@ -122,7 +118,7 @@ public class PutPrueba
 		
 		if (strQuery != null)
 		{
-			DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBDES);
+			DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBDES,"beld");
 			PreparedStatement pPreparedStament = pDBConection.prepareStatement(strQuery);
 			ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
 			JSONArray jsonArray = new JSONArray();
@@ -163,6 +159,15 @@ public class PutPrueba
 		Response pReturn;
 		String strReturn = "";
 		String strQuery = "select * from belts100 where clave_pagina = 'BDP_HC_NC_CLAUSULAS_P'";
+		String strQueryCip = " SELECT" + 
+				" NUM_SEC_AC \"numAcuerdo\", id_interno_pe" +
+				" FROM rdwc01.mi_clte_rl_ac" +
+				" WHERE MI_FECHA_FIN=to_date('31/12/9999','dd/mm/yyyy')" +
+				" AND COD_NRBE_EN='3076'" +
+				" AND COD_RL_PERS_AC='01'" +
+				" AND NUM_RL_ORDEN=1" +
+				" AND COD_ECV_PERS_AC='2'" +
+				" AND ID_INTERNO_PE=16" ;
 		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBTEST, "belt");
 		PreparedStatement pPreparedStament = pDBConection.prepareStatement(strQuery);
 		ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
@@ -171,10 +176,45 @@ public class PutPrueba
 
 		DDBBConnection pDBConection2 = DDBBFactory.getDDBB(DDBBProvider.OracleBDES, "beld");
 		PreparedStatement pPreparedStament2 = pDBConection2.prepareStatement(strQuery);
-		ResultSet pResultSet2 = pDBConection.executeQuery(pPreparedStament2);
+		ResultSet pResultSet2 = pDBConection2.executeQuery(pPreparedStament2);
 		JSONArray jsonArray2 = new JSONArray();
 		jsonArray2 = Utils.convertResultSet2JSON(pResultSet2);
-		strReturn = "{\"1\":" + jsonArray.toString() + ",\"2\":" + jsonArray2.toString() + "}";
+		
+		DDBBConnection pDBConection3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP, "cip");
+		PreparedStatement pPreparedStament3 = pDBConection3.prepareStatement(strQueryCip);
+		ResultSet pResultSet3 = pDBConection3.executeQuery(pPreparedStament3);
+		JSONArray jsonArray3 = new JSONArray();
+		jsonArray3 = Utils.convertResultSet2JSON(pResultSet3);
+		
+		strReturn = "{\"1\":" + jsonArray.toString() + ",\"2\":" + jsonArray2.toString() + ",\"3\":" + jsonArray3.toString() + "}";
+		pReturn = Response.ok(strReturn).build();
+		return pReturn;
+	}
+	
+	@Path("/checkcip")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response checkCipDDBB(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+			throws Exception
+	{
+		Response pReturn;
+		String strReturn = "";
+		String strQueryCip = " SELECT" + 
+				" NUM_SEC_AC \"numAcuerdo\", id_interno_pe" +
+				" FROM rdwc01.mi_clte_rl_ac" +
+				" WHERE MI_FECHA_FIN=to_date('31/12/9999','dd/mm/yyyy')" +
+				" AND COD_NRBE_EN='3076'" +
+				" AND COD_RL_PERS_AC='01'" +
+				" AND NUM_RL_ORDEN=1" +
+				" AND COD_ECV_PERS_AC='2'" +
+				" AND ID_INTERNO_PE=20" ;
+		DDBBConnection pDBConection3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP, "cip");
+		PreparedStatement pPreparedStament3 = pDBConection3.prepareStatement(strQueryCip);
+		ResultSet pResultSet3 = pDBConection3.executeQuery(pPreparedStament3);
+		JSONArray jsonArray3 = new JSONArray();
+		jsonArray3 = Utils.convertResultSet2JSON(pResultSet3);
+		
+		strReturn = jsonArray3.toString();
 		pReturn = Response.ok(strReturn).build();
 		return pReturn;
 	}

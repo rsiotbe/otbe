@@ -30,14 +30,12 @@ import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.DDBB.OracleDDBB;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 import com.rsi.rvia.rest.session.SessionRviaData;
-import com.rsi.rvia.rest.tool.LogController;
 
 public class RestWSConnector
 {
-	private static Logger			pLog			= LoggerFactory.getLogger(RestWSConnector.class);
-	private static String			strRviaXML	= "http://localhost:8080";
-	private static String			strTemplate	= "";
-	private static LogController	pLogC			= new LogController();
+	private static Logger	pLog			= LoggerFactory.getLogger(RestWSConnector.class);
+	private static String	strRviaXML	= "http://localhost:8080";
+	private static String	strTemplate	= "";
 
 	public String getTemplate()
 	{
@@ -70,12 +68,10 @@ public class RestWSConnector
 		Response pReturn = null;
 		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.Oracle);
 		pLog.debug("Path Rest: " + strPrimaryPath);
-		pLogC.addLog("Info", "Path Rest: " + strPrimaryPath);
 		PreparedStatement pPreparedStament = pDBConection.prepareStatement("select * from bdptb222_miq_quests where path_rest = '"
 				+ strPath + "'");
 		ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
 		pLog.info("Query Ejecutada!");
-		pLogC.addLog("Info", "Query Ejecutada!");
 		while (pResultSet.next())
 		{
 			strComponentType = pResultSet.getString("component_type");
@@ -86,21 +82,17 @@ public class RestWSConnector
 		pLog.info("Template: " + strTemplate);
 		pLog.info("Preparando peticion para tipo " + strComponentType + " y endpoint " + strEndPoint + " # method: "
 				+ strMethod);
-		pLogC.addLog("Info", "Preparando peticion para tipo " + strComponentType + " y endpoint " + strEndPoint
-				+ " # method: " + strMethod);
 		switch (strMethod)
 		{
 			case "GET":
 				if ("RVIA".equals(strComponentType))
 				{
 					pLog.info("Derivando peticion a Ruralvía");
-					pLogC.addLog("Info", "Derivando peticion GET a Ruralvía");
 					pReturn = rviaPost(pRequest, strComponentType, strEndPoint, nIdMiq, pSessionRvia, strData);
 				}
 				else
 				{
 					pLog.info("Solicitando peticiÃ³Ã±n REST");
-					pLogC.addLog("Info", "Solicitando petición GET REST");
 					pReturn = get(pRequest, strEndPoint, strPath, pSessionRvia);
 				}
 				break;
@@ -108,25 +100,20 @@ public class RestWSConnector
 				if ("RVIA".equals(strComponentType))
 				{
 					pLog.info("Derivando petición a Ruralvía");
-					pLogC.addLog("Info", "Derivando petición POST a Ruralvía");
 					pReturn = rviaPost(pRequest, strComponentType, strEndPoint, nIdMiq, pSessionRvia, strData);
 				}
 				else
 				{
 					pLog.info("Solicitando peticiÃ³Ã±n REST");
-					pLogC.addLog("Info", "Solicitando petición POST REST");
 					pReturn = post(pRequest, strPath, pSessionRvia, strData, strEndPoint);
 				}
 				break;
 			case "PUT":
-				pLogC.addLog("Info", "Solicitando petición PUT REST");
 				pReturn = put(pRequest, strPath, pSessionRvia, strData, strEndPoint);
 				break;
 			case "PATCH":
-				pLogC.addLog("Info", "Solicitando petición PATCH REST");
 				break;
 			case "DELETE":
-				pLogC.addLog("Info", "Solicitando petición DELETE REST");
 				pReturn = delete(pRequest);
 				break;
 		}
@@ -193,7 +180,7 @@ public class RestWSConnector
 	{
 		int nIdMiqParam, i;
 		String strQuery;
-		///??? DDBBFactory.getDDBB(DDBBProvider.OracleBDES);
+		// /??? DDBBFactory.getDDBB(DDBBProvider.OracleBDES);
 		DDBBConnection pDBConnection = OracleDDBB.getInstance();
 		PreparedStatement pPreparedStatement;
 		ResultSet pResultSet;
@@ -260,17 +247,12 @@ public class RestWSConnector
 		Client pClient = CustomRSIClient.getClient();
 		URI pTargetXML = getBaseRviaXML();
 		pLog.info("RVIA_POST: " + pTargetXML.toString());
-		pLogC.addLog("Info", "RVIA_POST: " + pTargetXML.toString());
 		WebTarget pTarget = pClient.target(getBaseRviaXML());
 		Response pReturn = null;
 		pLog.info(strEndPoint);
-		pLogC.addLog("Info", strEndPoint);
 		pLog.info(strComponentType);
-		pLogC.addLog("Info", strComponentType);
 		pLog.info("xmldat: " + pTargetXML.toString());
-		pLogC.addLog("Info", "xmldat: " + pTargetXML.toString());
 		pLog.info("clave_pagina: " + strEndPoint);
-		pLogC.addLog("Info", "clave_pagina: " + strEndPoint);
 		pReturn = performRviaConnection(pRequest, strEndPoint, nIdMiq, pSessionRvia, strData);
 		return pReturn;
 	}
@@ -310,7 +292,6 @@ public class RestWSConnector
 		Client pClient = CustomRSIClient.getClient();
 		String strParameters = getOperationParameters(strPathRest, "paramname");
 		pLog.info("Query Params: " + strParameters);
-		pLogC.addLog("Info", "Query Params: " + strParameters);
 		if (!strParameters.isEmpty())
 		{
 			htDatesParameters = getParameterRviaSession(strParameters, pSessionRvia);
@@ -327,7 +308,6 @@ public class RestWSConnector
 		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint));
 		Response pReturn = pTarget.request().header("CODSecEnt", "3008").header("CODSecTrans", "").header("CODSecUser", "").header("CODApl", "BPC").header("CODTerminal", "").header("CODSecIp", "111.11.11.1").post(Entity.json(strJsonData));
 		pLog.info("Respose POST: " + pReturn.toString());
-		pLogC.addLog("Info", "Respose POST: " + pReturn.toString());
 		return pReturn;
 	}
 
@@ -338,7 +318,6 @@ public class RestWSConnector
 		Client pClient = CustomRSIClient.getClient();
 		String strParameters = getOperationParameters(strPathRest, "paramname");
 		pLog.info("Query Params: " + strParameters);
-		pLogC.addLog("Info", "Query Params: " + strParameters);
 		if (!strParameters.isEmpty())
 		{
 			htDatesParameters = getParameterRviaSession(strParameters, pSessionRvia);
@@ -355,7 +334,6 @@ public class RestWSConnector
 		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint));
 		Response pReturn = pTarget.request().header("CODSecEnt", "3008").header("CODSecTrans", "").header("CODSecUser", "").header("CODApl", "BPC").header("CODTerminal", "").header("CODSecIp", "111.11.11.1").put(Entity.json(strJsonData));
 		pLog.info("Respose PUT: " + pReturn.toString());
-		pLogC.addLog("Info", "Respose PUT: " + pReturn.toString());
 		return pReturn;
 	}
 
@@ -365,7 +343,6 @@ public class RestWSConnector
 		WebTarget pTarget = pClient.target(getBaseRviaXML());
 		Response pReturn = pTarget.path("rest").path("hello").request().accept(MediaType.TEXT_PLAIN).delete(Response.class);
 		pLog.info("DELETE: " + pReturn.toString());
-		pLogC.addLog("Info", "DELETE: " + pReturn.toString());
 		return pReturn;
 	}
 
@@ -431,7 +408,6 @@ public class RestWSConnector
 		catch (Exception ex)
 		{
 			pLog.error("Error al recuperar parametros de la sesion de Rvia: " + ex);
-			pLogC.addLog("Error", "Error al recuperar parametros de la sesion de Rvia: " + ex);
 			htReturn = null;
 		}
 		return htReturn;

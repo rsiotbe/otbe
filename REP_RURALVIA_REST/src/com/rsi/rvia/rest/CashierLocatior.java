@@ -12,20 +12,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
 import com.rsi.rvia.rest.session.SessionRviaData;
-import com.rsi.rvia.rest.tool.LogController;
 
 @Path("/cashierLocatior")
 public class CashierLocatior
 {
 	private static Logger			pLog	= LoggerFactory.getLogger(Cards.class);
-	private static LogController	pLogC	= new LogController();
 
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	public Response getAllUserCards(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
 	{
 		pLog.info("Se recibe una peticion de cashierLocatior");
-		pLogC.addLog("Info", "Se recibe una peticion de cashierLocatior");
 		String strData = "";
 		SessionRviaData pSessionRviaData = new SessionRviaData(pRequest);
 		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);

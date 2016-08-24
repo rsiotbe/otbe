@@ -8,7 +8,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.rsi.rvia.rest.tool.LogController;
 import com.rsi.rvia.rest.tool.Utils;
 import com.rsi.rvia.translates.TranslateProcessor;
 
@@ -16,7 +15,6 @@ import com.rsi.rvia.translates.TranslateProcessor;
 public class Translate
 {
 	private static Logger			pLog	= LoggerFactory.getLogger(Translate.class);
-	private static LogController	pLogC	= new LogController();
 	@Context
 	UriInfo								uriInfo;
 
@@ -27,7 +25,6 @@ public class Translate
 		Utils pUtil = new Utils();
 		String strPrimaryPath = pUtil.getPrimaryPath(uriInfo);
 		pLog.debug("uriInfo.getPath(): " + strPrimaryPath);
-		pLogC.addLog("Info", "uriInfo.getPath(): " + strPrimaryPath);
 		String strHTMLPruebas = "<html><head><meta charset=\"UTF-8\"/><title>Prueba HTML translator</title></head>"
 				+ "<body><div><h2>Bloque Traducción 1</h2><p data-translate=\"COMUN_Literal_Escribe_tu_nombre\">bla bla bla</p></div><div>"
 				+ "<h2>Bloque Traducción 2</h2><p data-translate=\"COMUN_Literal_Contratacion_-_Buscar_oficina_no_ofi\">bla</p></div><div>"

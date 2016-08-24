@@ -16,14 +16,12 @@ import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.template.TemplateManager;
-import com.rsi.rvia.rest.tool.LogController;
 
 /** Clase que responde a las peticiones REST para las acciones sobre una coleccion de tarjetas */
 @Path("/cards")
 public class Cards
 {
 	private static Logger			pLog	= LoggerFactory.getLogger(Cards.class);
-	private static LogController	pLogC	= new LogController();
 
 	/** Obtiene el listado completo de tarjetas de un usuario
 	 * 

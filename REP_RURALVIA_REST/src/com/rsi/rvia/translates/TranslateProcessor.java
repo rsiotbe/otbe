@@ -19,13 +19,12 @@ import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
-import com.rsi.rvia.rest.tool.LogController;
 
 /** Clase que gestiona el cambio de idioma en el contenido HTML de la web. */
 public class TranslateProcessor
 {
 	private static Logger										pLog			= LoggerFactory.getLogger(TranslateProcessor.class);
-	private static LogController pLogC = new LogController();
+	
 	public static Hashtable<String, TranslateEntry>	htCacheData	= new Hashtable<String, TranslateEntry>();
 
 	/** Función que recibe una serie de identificadores de traducción e idiona y obtien su traducción
@@ -44,17 +43,17 @@ public class TranslateProcessor
 		htReturn = new Hashtable<String, String>();
 		alIdsTrans = new ArrayList<String>(Arrays.asList(pStrIds));
 		pLog.debug("Se reciben los siguientes ids para traducir. astrIds:" + pStrIds);
-		pLogC.addLog("Debug", "Se reciben los siguientes ids para traducir. astrIds:" + pStrIds);
+		
 		try
 		{
 			htTransData = getTranslations(alIdsTrans);
 			pLog.debug("Traducciones recuperadas correctamente.");
-			pLogC.addLog("Debug", "Traducciones recuperadas correctamente.");
+			
 		}
 		catch (Exception ex)
 		{
 			pLog.error("Error al intentar recuperar las Traducciones de la BBDD", ex);
-			pLogC.addLog("Error", "Error al intentar recuperar las Traducciones de la BBDD"+ ex);
+			
 		}
 		if (htTransData != null)
 		{
@@ -63,7 +62,7 @@ public class TranslateProcessor
 			{
 				strLanguage = "es_ES";
 				pLog.warn("No se ha definido idioma de la traduccion, se asigna el espanol");
-				pLogC.addLog("Warning", "No se ha definido idioma de la traduccion, se asigna el espanol");
+			
 			}
 			for (int i = 0; i < pStrIds.length; i++)
 			{
@@ -77,7 +76,7 @@ public class TranslateProcessor
 			}
 		}
 		pLog.debug("datos a devolver por el metodo. htReturn: " + htReturn);
-		pLogC.addLog("Debug", "Datos a devolver por el metodo. htReturn: " + htReturn);
+		
 		return htReturn;
 	}
 
@@ -98,14 +97,14 @@ public class TranslateProcessor
 		{
 			pDoc = strToDocumentParser(strXHTML);
 			pLog.debug("String XHTML parseado a Documento correctamente.");
-			pLogC.addLog("Info", "String XHTML parseado a Documento correctamente.");
+		
 			if (pDoc != null)
 			{
 				alIdsTrans = extractIdsFromDocument(pDoc);
 				pLog.debug("IDs de traducciones extraidos correctamente.");
-				pLogC.addLog("Info", "IDs de traducciones extraidos correctamente.");
+				
 				pLog.debug("alIdsTrans lenght: " + alIdsTrans.size());
-				pLogC.addLog("Info", "alIdsTrans lenght: " + alIdsTrans.size());
+				
 			}
 			if (alIdsTrans != null)
 			{
@@ -113,13 +112,13 @@ public class TranslateProcessor
 				{
 					htTransData = getTranslations(alIdsTrans);
 					pLog.debug("Traducciones recuperadas correctamente.");
-					pLogC.addLog("Info", "Traducciones recuperadas correctamente.");
+					
 					
 				}
 				catch (Exception ex)
 				{
 					pLog.error("Error al intentar recuperar las Traducciones de la BBDD", ex);
-					pLogC.addLog("Error", "Error al intentar recuperar las Traducciones de la BBDD: " + ex);
+					
 				}
 			}
 			if (htTransData != null)
@@ -129,10 +128,10 @@ public class TranslateProcessor
 					strLanguage = "es_ES";
 				}
 				pLog.debug("Documento premodificación null: " + (pDoc == null));
-				pLogC.addLog("Info", "Documento premodificación null: " + (pDoc == null));
+				
 				pDoc = modifyDocument(pDoc, htTransData, strLanguage);
 				pLog.debug("Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
-				pLogC.addLog("Info", "Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
+				
 				if (pDoc != null)
 				{
 					strReturn = documentToString(pDoc);
@@ -140,7 +139,7 @@ public class TranslateProcessor
 				else
 				{
 					pLog.debug("Doc null en último paso.");
-					pLogC.addLog("Info", "Doc null en último paso.");
+					
 				}
 			}
 		}
@@ -282,7 +281,7 @@ public class TranslateProcessor
 		else
 		{
 			pLog.error("El documento a convertir en nulo");
-			pLogC.addLog("Error", "El documento a convertir en nulo");
+			
 		}
 		return strReturn;
 	}
