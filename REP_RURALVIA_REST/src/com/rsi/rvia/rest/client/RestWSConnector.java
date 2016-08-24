@@ -272,9 +272,6 @@ public class RestWSConnector
 		pCamposDeSession.add("idInternoPe", "104955");
 		pCamposDeSession.add("codEntidad", "3076");
 		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint) + "?" + strQueryParams);
-		pTarget = pTarget.queryParam("idInternoPe", "104955");
-		pTarget = pTarget.queryParam("codEntidad", "3076");
-		// target=target.queryParam("token", strQueryParams);
 		pLog.info("END_POINT:" + strPathRest);
 		Response pReturn = pTarget.request().header("CODSecEnt", "18").header("CODSecUser", "").header("CODSecTrans", "").header("CODTerminal", "18").header("CODApl", "BDP").header("CODCanal", "18").header("CODSecIp", "10.1.245.2").accept(MediaType.APPLICATION_JSON).get();
 		pLog.info("GET: " + pReturn.toString());
