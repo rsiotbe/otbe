@@ -17,7 +17,7 @@ public class IsumValidation
 		boolean fReturn = false;
 		String strUserIsumProfile = pSessionRviaData.getIsumUserProfile();
 		String strServiceIsumId = pSessionRviaData.getIsumServiceId();
-		DDBBConnection pDDBBIsum = DDBBFactory.getDDBB(DDBBProvider.Oracle);
+		DDBBConnection pDDBBIsum = DDBBFactory.getDDBB(DDBBProvider.OracleBDES);
 		PreparedStatement pPS = pDDBBIsum.prepareStatement(strQuery);
 		pPS.setString(1, strUserIsumProfile);
 		pPS.setString(2, strServiceIsumId);

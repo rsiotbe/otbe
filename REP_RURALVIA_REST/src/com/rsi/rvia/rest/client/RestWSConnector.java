@@ -66,7 +66,7 @@ public class RestWSConnector
 		String strMethod = pRequest.getMethod();
 		int nIdMiq = 0;
 		Response pReturn = null;
-		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.Oracle);
+		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBDES);
 		pLog.debug("Path Rest: " + strPrimaryPath);
 		PreparedStatement pPreparedStament = pDBConection.prepareStatement("select * from bdptb222_miq_quests where path_rest = '"
 				+ strPath + "'");
@@ -87,7 +87,7 @@ public class RestWSConnector
 			case "GET":
 				if ("RVIA".equals(strComponentType))
 				{
-					pLog.info("Derivando peticion a Ruralvía");
+					pLog.info("Derivando peticion a Ruralvï¿½a");
 					pReturn = rviaPost(pRequest, strComponentType, strEndPoint, nIdMiq, pSessionRvia, strData);
 				}
 				else
@@ -99,7 +99,7 @@ public class RestWSConnector
 			case "POST":
 				if ("RVIA".equals(strComponentType))
 				{
-					pLog.info("Derivando petición a Ruralvía");
+					pLog.info("Derivando peticiï¿½n a Ruralvï¿½a");
 					pReturn = rviaPost(pRequest, strComponentType, strEndPoint, nIdMiq, pSessionRvia, strData);
 				}
 				else
@@ -180,8 +180,7 @@ public class RestWSConnector
 	{
 		int nIdMiqParam, i;
 		String strQuery;
-		// /??? DDBBFactory.getDDBB(DDBBProvider.OracleBDES);
-		DDBBConnection pDBConnection = OracleDDBB.getInstance();
+		DDBBConnection pDBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleBDES);
 		PreparedStatement pPreparedStatement;
 		ResultSet pResultSet;
 		for (i = 0; i < pNombres.size(); i++)
@@ -353,7 +352,7 @@ public class RestWSConnector
 				+ " BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, " + " BEL.BDPTB225_MIQ_SESSION_PARAMS c "
 				+ " where a.id_miq=b.id_miq " + " and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " + " and a.path_rest='" + strPathRest
 				+ "' order by c.ID_MIQ_PARAM";
-		DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.Oracle);
+		DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleBDES);
 		PreparedStatement pPreparedStatement;
 		try
 		{
