@@ -277,6 +277,7 @@ public class RestWSConnector
 		pLog.info("GET: " + pReturn.toString());
 		return pReturn;
 	}
+	
 
 	/** Verbo post. Recibe HttpServletRequest de contexto para derivar a RESTfull
 	 * 
