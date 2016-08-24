@@ -4,7 +4,7 @@
 		 com.rsi.rvia.rest.DDBB.DDBBFactory,
 		 com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider,
 		 com.rsi.rvia.rest.DDBB.OracleDDBB, 
-		 com.rsi.rvia.rest.tool.Utils,		 
+		 com.rsi.rvia.rest.tool.Utils, 
 		 java.sql.PreparedStatement,
 		 java.sql.ResultSet,
 		 org.json.JSONArray,
@@ -15,6 +15,16 @@
 %>
 
 <%
+
+/*
+select mi_fecha_fin_mes,mi_sdo_ac_p, mi_sdo_dispble_p,mi_sdo_acr_p, mi_sdo_deu_p 
+from rdwc01.mi_ac_eco_gen
+where cod_nrbe_en='3076'
+and mi_fecha_fin_mes < '31.12.9999'
+and mi_fecha_fin_mes > '31.12.2015'
+and num_sec_ac = 2407056379
+*/
+
 	String q =
 		" SELECT" +   
 		" 	t1.NUM_SEC_AC \"numeroAcuerdo\", trim(t2.NOMB_GRP_PD) \"nombreGrupo\"," +
