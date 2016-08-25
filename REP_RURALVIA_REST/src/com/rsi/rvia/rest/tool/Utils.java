@@ -12,19 +12,21 @@ import javax.ws.rs.core.UriInfo;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Utils
 {
-	private static Logger	pLog			= LoggerFactory.getLogger(Utils.class);
-	
-	/**
-	 * Dado el uriInfo, compone el path original (con el nombre del parametro, no el valor)
-	 * Ejemplo de salida: /cards/{id}
+	private static Logger	pLog	= LoggerFactory.getLogger(Utils.class);
+
+	/** Dado el uriInfo, compone el path original (con el nombre del parametro, no el valor) Ejemplo de salida:
+	 * /cards/{id}
+	 * 
 	 * @param pUriInfo
-	 * @return
-	 */
+	 * @return */
 	public static String getPrimaryPath(UriInfo pUriInfo)
 	{
 		String strKeys = "";
@@ -50,16 +52,13 @@ public class Utils
 		}
 		return ("/" + strPath + strKeys);
 	}
-	
-	
-	
-	/**
-	 * Convierte un Result Set a un Json bien formado
+
+	/** Convierte un Result Set a un Json bien formado
+	 * 
 	 * @param pResultSet
 	 * @return
 	 * @throws SQLException
-	 * @throws JSONException
-	 */
+	 * @throws JSONException */
 	public static JSONArray convertResultSet2JSON(ResultSet pResultSet) throws SQLException, JSONException
 	{
 		JSONArray pJson = new JSONArray();
@@ -132,29 +131,29 @@ public class Utils
 		}
 		return pJson;
 	}
-	
-	public static MultivaluedMap<String,String> getParam4Path(UriInfo pUriInfo){
+
+	public static MultivaluedMap<String, String> getParam4Path(UriInfo pUriInfo)
+	{
 		String strReturn = "";
-		
 		MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
-		
 		return pListParameters;
 	}
-	
-	public static String multiValuedMap2QueryString(MultivaluedMap<String,String> pMap){
+
+	public static String multiValuedMap2QueryString(MultivaluedMap<String, String> pMap)
+	{
 		String strReturn = "";
-		
 		Iterator<String> pIterator = pMap.keySet().iterator();
 		while (pIterator.hasNext())
 		{
 			String strKey = (String) pIterator.next();
-			if(pMap.get(strKey) != null){
+			if (pMap.get(strKey) != null)
+			{
 				strReturn += "&" + strKey + "=" + pMap.getFirst(strKey);
 			}
 		}
-		
 		return strReturn;
 	}
+
 	public static String getStringFromInputStream(InputStream is)
 	{
 		BufferedReader pBufferedReader = null;
@@ -187,5 +186,66 @@ public class Utils
 			}
 		}
 		return pStringBuilder.toString();
+	}
+
+	public static String getJsonFormRviaError(String strHtml) throws JSONException
+	{
+		String strReturn = "";
+		String strCode = "";
+		String strMessage = "";
+		String strDescription = "";
+		Element pError = null;
+		Document pDoc = Jsoup.parse(strHtml);
+		if(pDoc.getElementsByClass("txtaviso").size() > 0){
+			pError = pDoc.getElementsByClass("txtaviso").get(0);
+		}
+		if (pError != null)
+		{
+			String[] pStrPartes = pError.text().split(":");
+			if ((pStrPartes != null) && (pStrPartes.length > 1))
+			{
+				strCode = pStrPartes[1].trim();
+			}
+			else
+			{
+				strCode = "0";
+			}
+			pStrPartes = strHtml.split("<!-- TEXTO DE ERROR ORIGINAL ");
+			if ((pStrPartes != null) && (pStrPartes.length > 1))
+			{
+				String[] pStrPartes2 = pStrPartes[1].split("-->");
+				if ((pStrPartes2 != null) && (pStrPartes2.length > 1))
+				{
+					strMessage = pStrPartes2[0];
+				}
+			}
+			else
+			{
+				strMessage = "Error rvia";
+			}
+			strDescription = "Error Rvia: " + strMessage;
+			strReturn = getJsonError(strCode,strMessage,strDescription);
+		}
+		else
+		{
+			strReturn = "{}";
+		}
+		return strReturn;
+	}
+	public static String getJsonError(String strCode,String strMessage, String strDescription){
+		String strReturn = "";
+		JSONObject pJson;
+		try{
+			pJson = new JSONObject();
+			pJson.put("code", strCode);
+			pJson.put("message", strMessage);
+			pJson.put("description", strDescription);
+			
+			strReturn = pJson.toString();
+		}catch (JSONException ex){
+			pLog.error("Error al formar el JSON de Error");
+			strReturn = "{}";
+		}
+		return strReturn;
 	}
 }
