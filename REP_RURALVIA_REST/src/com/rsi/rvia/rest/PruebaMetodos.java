@@ -24,7 +24,7 @@ import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.tool.Utils;
 
 @Path("/prueba")
-public class PutPrueba
+public class PruebaMetodos
 {
 	private static Logger			pLog	= LoggerFactory.getLogger(Cards.class);
 

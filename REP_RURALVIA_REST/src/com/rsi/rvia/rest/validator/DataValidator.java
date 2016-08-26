@@ -1,4 +1,4 @@
-package com.rsi.rvia.rest.tool;
+package com.rsi.rvia.rest.validator;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -53,7 +53,7 @@ public class DataValidator
 			
 			if (strParamName == null)
 			{
-				break;
+				continue;
 			}
 			switch (strParamDataType)
 			{
@@ -81,6 +81,7 @@ public class DataValidator
 					break;
 			}
 		}
+		//Si check es falso ha dado un error en algun lado.
 		if(!fCheck){
 			JSONObject pJson = new JSONObject();
 			for(JSONObject pItem : alError){
