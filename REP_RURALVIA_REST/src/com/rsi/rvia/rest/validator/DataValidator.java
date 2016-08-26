@@ -7,12 +7,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 
 public class DataValidator
 {
+	private static Logger	pLog	= LoggerFactory.getLogger(DataValidator.class);
 	public DataValidator()
 	{
 	}
@@ -26,10 +29,13 @@ public class DataValidator
 				+ "bel.bdptb225_miq_session_params a," + "BEL.BDPTB228_MIQ_PARAM_VALIDATION b" + "where z.path_rest='"
 				+ strPathRest + "'" + "and z.id_miq=x.id_miq" + "and x.id_miq_param= a.id_miq_param"
 				+ "and a.id_miq_param=b.id_miq_param";
+		
 		DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleBDES, "beld");
 		PreparedStatement pPreparedStatement = pDDBBConnection.prepareStatement(strQuery);
+		pLog.info("Se prepara la Query para la validación: " + pPreparedStatement.toString());
 		ResultSet pResultSet = pPreparedStatement.executeQuery();
-		while ((pResultSet.next()) && (fCheck))
+		pLog.info("Query ejecutada con exito.");
+		while (pResultSet.next())
 		{
 			int nParamLong = 0;
 			int nParamMin = 0;
@@ -55,6 +61,7 @@ public class DataValidator
 			catch (Exception ex)
 			{
 				fCheck = false;
+				continue;
 			}
 			JSONObject pJsonObj = new JSONObject();
 			pJsonObj.put("ParamName", strParamName);
@@ -72,6 +79,7 @@ public class DataValidator
 			{
 				case "date":
 					String strValue = htParams.get(strParamName);
+					pLog.info("Validan Date: " + strValue);
 					if (!validateDate(strValue, strParamMask))
 					{
 						fCheck = false;
@@ -79,6 +87,7 @@ public class DataValidator
 					break;
 				case "integer":
 					strValue = htParams.get(strParamName);
+					pLog.info("Validan Integer: " + strValue);
 					if (!validateInteger(strValue, nParamMin, nParamMax, nParamLong))
 					{
 						fCheck = false;
@@ -86,14 +95,16 @@ public class DataValidator
 					break;
 				case "entidad":
 					strValue = htParams.get(strParamName);
+					pLog.info("Validan Entida: " + strValue);
 					if (!validateEntidad(strValue))
 					{
 						fCheck = false;
 					}
 					break;
-				case "varchar":
+				case "string":
 					strValue = htParams.get(strParamName);
-					if (!validateVarchar(strValue, nParamMin, nParamMax, nParamLong))
+					pLog.info("Validan String: " + strValue);
+					if (!validateString(strValue, nParamMin, nParamMax, nParamLong))
 					{
 						fCheck = false;
 					}
@@ -105,6 +116,7 @@ public class DataValidator
 		// Si fCheck es falso ha dado un error en algun lado.
 		if (!fCheck)
 		{
+			pLog.info("Validacion fallida. Devolviendo JSON con información de los campos.");
 			JSONObject pJson = new JSONObject();
 			for (JSONObject pItem : alError)
 			{
@@ -180,7 +192,7 @@ public class DataValidator
 		return fReturn;
 	}
 	
-	private static boolean validateVarchar(String strValue, int nMin, int nMax, int nLong)
+	private static boolean validateString(String strValue, int nMin, int nMax, int nLong)
 	{
 		boolean fReturn = true;
 		try

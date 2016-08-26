@@ -4,13 +4,12 @@ import java.io.InputStream;
 import java.util.Hashtable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.rsi.rvia.rest.DDBB.OracleDDBB;
 import com.rsi.rvia.rest.tool.Utils;
 import com.rsi.rvia.translates.TranslateProcessor;
 
 public class TemplateManager
 {
-	static Logger	pLog	= LoggerFactory.getLogger(OracleDDBB.class);
+	static Logger	pLog	= LoggerFactory.getLogger(TemplateManager.class);
 	public static String JSON_DATA_TAG = "'__JSONDATA__'";
 	public static Hashtable<String, String> htCacheTemplate = new Hashtable<String, String>();
 	
@@ -31,7 +30,7 @@ public class TemplateManager
 			else
 			{
 				strReturn = readTemplate(strPathToTemplate);
-				//strReturn = translateXhtml(strReturn, strLanguage);
+				strReturn = translateXhtml(strReturn, strLanguage);
 				htCacheTemplate.put(strCacheKey, strReturn);
 			}
 			strReturn = includeJsonData(strReturn, strDataJson);

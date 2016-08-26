@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
 import com.rsi.rvia.rest.session.SessionRviaData;
-import com.rsi.rvia.rest.template.TemplateManager;
 
 /** Clase que responde a las peticiones REST para las acciones sobre una coleccion de tarjetas */
 @Path("/cards")
