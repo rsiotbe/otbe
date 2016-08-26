@@ -1,10 +1,7 @@
 package com.rsi.rvia.rest;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -15,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
 import com.rsi.rvia.rest.session.SessionRviaData;
-import com.rsi.rvia.rest.template.TemplateManager;
 
 /** Clase que responde a las peticiones REST para las acciones sobre una coleccion de tarjetas */
 @Path("/accountname")
