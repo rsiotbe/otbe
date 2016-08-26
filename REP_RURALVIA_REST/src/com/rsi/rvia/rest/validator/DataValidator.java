@@ -2,7 +2,6 @@ package com.rsi.rvia.rest.validator;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +10,6 @@ import org.json.JSONObject;
 import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
-import com.rsi.rvia.translates.TranslateEntry;
 
 public class DataValidator
 {
@@ -19,11 +17,10 @@ public class DataValidator
 	{
 	}
 
-	public String validation(String strPathRest, Hashtable<String, String> htParams) throws Exception
+	public static String validation(String strPathRest, Hashtable<String, String> htParams) throws Exception
 	{
 		boolean fCheck = true;
 		ArrayList<JSONObject> alError = new ArrayList();
-		
 		String strReturn = "{}";
 		String strQuery = "select * from" + "bel.bdptb222_miq_quests z," + "bel.bdptb226_miq_quest_rl_session x,"
 				+ "bel.bdptb225_miq_session_params a," + "BEL.BDPTB228_MIQ_PARAM_VALIDATION b" + "where z.path_rest='"
@@ -34,13 +31,31 @@ public class DataValidator
 		ResultSet pResultSet = pPreparedStatement.executeQuery();
 		while ((pResultSet.next()) && (fCheck))
 		{
-			int nParamLong = (int) pResultSet.getInt("paramlong");
-			int nParamMin = (int) Integer.parseInt((String) pResultSet.getString("parammin"));
-			int nParamMax = (int) Integer.parseInt((String) pResultSet.getString("parammax"));
-			String strParamMask = (String) pResultSet.getString("parammask");
-			String strParamDataType = (String) pResultSet.getString("paramdatatype");
-			String strParamName = (String) pResultSet.getString("paramname");
-			
+			int nParamLong = 0;
+			int nParamMin = 0;
+			int nParamMax = 0;
+			String strParamMask = null;
+			String strParamDataType = null;
+			String strParamName = null;
+			try
+			{
+				nParamLong = (int) pResultSet.getInt("paramlong");
+				if ((String) pResultSet.getString("parammin") != null)
+				{
+					nParamMin = (int) Integer.parseInt((String) pResultSet.getString("parammin"));
+				}
+				if ((String) pResultSet.getString("parammax") != null)
+				{
+					nParamMax = (int) Integer.parseInt((String) pResultSet.getString("parammax"));
+				}
+				strParamMask = (String) pResultSet.getString("parammask");
+				strParamDataType = (String) pResultSet.getString("paramdatatype");
+				strParamName = (String) pResultSet.getString("paramname");
+			}
+			catch (Exception ex)
+			{
+				fCheck = false;
+			}
 			JSONObject pJsonObj = new JSONObject();
 			pJsonObj.put("ParamName", strParamName);
 			pJsonObj.put("ParamType:", strParamDataType);
@@ -48,9 +63,7 @@ public class DataValidator
 			pJsonObj.put("ParamLong", nParamLong);
 			pJsonObj.put("ParamMin", nParamMin);
 			pJsonObj.put("ParamMax", nParamMax);
-			
 			alError.add(pJsonObj);
-			
 			if (strParamName == null)
 			{
 				continue;
@@ -73,7 +86,15 @@ public class DataValidator
 					break;
 				case "entidad":
 					strValue = htParams.get(strParamName);
-					if(!validateEntidad(strValue)){
+					if (!validateEntidad(strValue))
+					{
+						fCheck = false;
+					}
+					break;
+				case "varchar":
+					strValue = htParams.get(strParamName);
+					if (!validateVarchar(strValue, nParamMin, nParamMax, nParamLong))
+					{
 						fCheck = false;
 					}
 					break;
@@ -81,10 +102,12 @@ public class DataValidator
 					break;
 			}
 		}
-		//Si check es falso ha dado un error en algun lado.
-		if(!fCheck){
+		// Si check es falso ha dado un error en algun lado.
+		if (!fCheck)
+		{
 			JSONObject pJson = new JSONObject();
-			for(JSONObject pItem : alError){
+			for (JSONObject pItem : alError)
+			{
 				pJson.put(pItem.getString("ParamName"), pItem);
 			}
 			strReturn = pJson.toString();
@@ -92,7 +115,7 @@ public class DataValidator
 		return strReturn;
 	}
 
-	private boolean validateDate(String strValue, String strMask)
+	private static boolean validateDate(String strValue, String strMask)
 	{
 		boolean fReturn = true;
 		SimpleDateFormat pDateFormat = new SimpleDateFormat(strMask);
@@ -113,7 +136,7 @@ public class DataValidator
 		return fReturn;
 	}
 
-	private boolean validateInteger(String strValue, int nMin, int nMax, int nLong)
+	private static boolean validateInteger(String strValue, int nMin, int nMax, int nLong)
 	{
 		boolean fReturn = true;
 		try
@@ -132,7 +155,7 @@ public class DataValidator
 		return fReturn;
 	}
 
-	private boolean validateEntidad(String strValue)
+	private static boolean validateEntidad(String strValue)
 	{
 		boolean fReturn = true;
 		try
@@ -148,6 +171,27 @@ public class DataValidator
 			}
 			pResultSet.close();
 			pPreparedStatement.close();
+		}
+		catch (Exception ex)
+		{
+			fReturn = false;
+			return fReturn;
+		}
+		return fReturn;
+	}
+	
+	private static boolean validateVarchar(String strValue, int nMin, int nMax, int nLong)
+	{
+		boolean fReturn = true;
+		try
+		{
+			if(nLong != 0){
+				if ((strValue.length() <= nMin) || (strValue.length() >= nMax) || (strValue.length() != nLong))
+				{
+					fReturn = false;
+				}
+			}
+			
 		}
 		catch (Exception ex)
 		{
