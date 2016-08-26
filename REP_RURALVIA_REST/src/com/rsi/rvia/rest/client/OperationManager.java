@@ -7,6 +7,11 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.isum.IsumValidation;
@@ -41,20 +46,25 @@ public class OperationManager
 			pSession.setAttribute("token", pSessionRviaData.getToken());
 			if (!IsumValidation.IsValidService(pSessionRviaData))
 				throw new Exception("EL servicio solicitado no es permitido para este usuario por ISUM");
-
 			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
-			MultivaluedMap<String,String> pListParams = Utils.getParam4Path(pUriInfo);
+			MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
 			RestWSConnector pRestConnector = new RestWSConnector();
-			pReturn = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath,pListParams);
+			pReturn = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath, pListParams);
+			int nStatusCode = pReturn.getStatus();
+			String strEntity = pReturn.readEntity(String.class);
+			if ((strEntity != null) && ((!strEntity.startsWith("{")) || (!strEntity.endsWith("}"))))
+			{
+				pLog.error("Error recibido de RVIA, se procede a procesarlo.");
+				strEntity = Utils.getJsonFormRviaError(strEntity);
+			}
 			if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
 			{
 				String strTemplate = pRestConnector.getTemplate();
 				if (strTemplate != null)
 				{
-					strPageResult = TemplateManager.processTemplate(strTemplate, pSessionRviaData.getLanguage(), pReturn.readEntity(String.class));
+					strPageResult = TemplateManager.processTemplate(strTemplate, pSessionRviaData.getLanguage(), strEntity);
 				}
 			}
-			
 			NewCookie pCookieToken = new NewCookie("token", pSessionRviaData.getToken());
 			if (strPageResult != null)
 			{
@@ -62,11 +72,14 @@ public class OperationManager
 			}
 			else
 			{
-				pReturn = Response.ok(pReturn.getEntity()).cookie(pCookieToken).build();
+				pReturn = Response.ok(strEntity).status(nStatusCode).cookie(pCookieToken).build();
 			}
 			pLog.info("Se Añade la Cookie con el Token a la respuesta.");
-		}else{
-			pReturn = Response.serverError().build();
+		}
+		else
+		{
+			String strError = Utils.getJsonError("500","Sesion mal recuperada","Ha habido un error con la sesion de RVIA.");
+			pReturn = Response.ok(strError).status(500).build();
 		}
 		return pReturn;
 	}
