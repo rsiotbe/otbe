@@ -10,10 +10,7 @@
 		 org.json.JSONArray,
 		 org.json.JSONObject,
 		 org.slf4j.Logger,
-		 org.slf4j.LoggerFactory,
-		java.util.Date,
-		java.text.ParseException,
-		java.text.SimpleDateFormat		 		 
+		 org.slf4j.LoggerFactory	 		 
 "
 %>
 
@@ -21,52 +18,9 @@
 
 	JSONObject jsonError = new JSONObject();
 	DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP,"cip");
-	
-
-	// Validación de forma de número de acuerdo
-	int contrato = 0;
-	try{
-		contrato = Integer.parseInt(request.getParameter("idContract"));	
-		if(contrato <= 0){
-			jsonError.put("idContract", "Identificador de acuerdo <=  0");
-		}
-	} 
-	catch(Exception ex){
-		jsonError.put("idContract", "Identificador de acuerdo no numérico");		
-	}
-	
-	// Validación de existencia de entidad
+	int contrato = Integer.parseInt(request.getParameter("idContract"));
 	String entidad = request.getParameter("codEntidad");
 	String q =
-		" select cod_nrbe_en from prox01.sx_entidad " +
-		" where cod_nrbe_en=?";
-	
-	PreparedStatement ps = p3.prepareStatement(q);	
-	ps.setString(1,entidad);
-	ResultSet rs = p3.executeQuery(ps);		
-	if(!rs.next()){
-		jsonError.put("codEntidad", "Código de entidad no válido");
-	}
-	rs.close();
-	ps.close();
-	
-	// Validación de fecha en formato y forma
-	String formato = "yyyy-mm-dd";
-	SimpleDateFormat ft = new SimpleDateFormat(formato);
-	String dato = request.getParameter("fechaInicio").toString();
-	if(dato.trim().equals("")){
-		jsonError.put("fechaInicio", "Fecha de inicio inexistente o inválida");
-	}	
-	Date fechaIni;
-	try{
-		fechaIni = ft.parse(dato);
-	}
-	catch(Exception ex){
-		jsonError.put("fechaInicio", "Fecha de inicio no ajusta a formato yyyy-mm-dd");
-	}
-	
-	// Query si todo en orden
-	q =
 			" select" +
 			" 	mi_fecha_fin_mes \"finMes\"," +
 			" 	mi_sdo_ac_p \"sdoPuntual\"," +
@@ -79,11 +33,11 @@
 			" and mi_fecha_fin_mes >=?" +
 			" and mi_fecha_fin_mes < to_date('31129999','ddmmyyyy')";
 	
-			
+	PreparedStatement ps = p3.prepareStatement(q);	
+	ResultSet rs = p3.executeQuery(ps);					
 	ps = p3.prepareStatement(q);			
 	ps.setString(1,entidad);
-	ps.setInt(2, contrato);
-	ps.setDate(3, java.sql.Date.valueOf(dato));
+
 	
 	rs = p3.executeQuery(ps);		
 	JSONObject jsonExit= new JSONObject();

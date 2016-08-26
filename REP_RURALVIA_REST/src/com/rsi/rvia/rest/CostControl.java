@@ -36,7 +36,7 @@ public class CostControl
 	@GET
 	@Path("/contracts") 
    @Produces(MediaType.APPLICATION_JSON)
-	public Response do1(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+	public Response listaDeContratos(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
 	{	
 		//return Response.ok("Lista de contratos").build();
@@ -47,7 +47,7 @@ public class CostControl
 	@GET
 	@Path("/contracts/{idContract}") 
    @Produces(MediaType.APPLICATION_JSON)
-	public Response do2(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+	public Response saldosDeUnContrato(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
 	{	
 		//return Response.ok("Movimientos de un contrato").build();
