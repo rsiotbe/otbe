@@ -102,7 +102,7 @@ public class DataValidator
 					break;
 			}
 		}
-		// Si check es falso ha dado un error en algun lado.
+		// Si fCheck es falso ha dado un error en algun lado.
 		if (!fCheck)
 		{
 			JSONObject pJson = new JSONObject();
