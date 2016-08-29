@@ -30,6 +30,7 @@ import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.tool.GettersRequestParams;
 import com.rsi.rvia.rest.tool.Utils;
 
 public class RestWSConnector
@@ -269,6 +270,14 @@ public class RestWSConnector
 		String strAliasNames = getOperationParameters(strPathRest, "aliasname");
 		String strSessionNames = getOperationParameters(strPathRest, "paramname");
 		
+		String strCODSecEnt = GettersRequestParams.getCODSecEnt(pRequest);
+		String strCODSecUser = GettersRequestParams.getCODSecUser(pRequest);
+		String strCODSecTrans = GettersRequestParams.getCODSecTrans(pRequest);
+		String strCODTerminal = GettersRequestParams.getCODTerminal(pRequest);
+		String strCODApl = GettersRequestParams.getCODApl(pRequest);
+		String strCODCanal = GettersRequestParams.getCODCanal(pRequest);
+		String strCODSecIp = GettersRequestParams.getCODSecIp(pRequest);
+		
 		String pathQueryParams = "";
 		pathQueryParams = Utils.multiValuedMap2QueryString(pPathParams);
 
@@ -278,7 +287,14 @@ public class RestWSConnector
 		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint) + "?" + strQueryParams + pathQueryParams);
 		
 		pLog.info("END_POINT:" + strEndPoint);
-		Response pReturn = pTarget.request().header("CODSecEnt", "18").header("CODSecUser", "").header("CODSecTrans", "").header("CODTerminal", "18").header("CODApl", "BDP").header("CODCanal", "18").header("CODSecIp", "10.1.245.2").accept(MediaType.APPLICATION_JSON).get();
+		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt)
+														.header("CODSecUser", strCODSecUser)
+														.header("CODSecTrans", strCODSecTrans)
+														.header("CODTerminal", strCODTerminal)
+														.header("CODApl", strCODApl)
+														.header("CODCanal", strCODCanal)
+														.header("CODSecIp", strCODSecIp)
+														.accept(MediaType.APPLICATION_JSON).get();
 		pLog.info("GET: " + pReturn.toString());
 		return pReturn;
 	}
@@ -291,8 +307,18 @@ public class RestWSConnector
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = CustomRSIClient.getClient();
+		
+		String strCODSecEnt = GettersRequestParams.getCODSecEnt(pRequest);
+		String strCODSecUser = GettersRequestParams.getCODSecUser(pRequest);
+		String strCODSecTrans = GettersRequestParams.getCODSecTrans(pRequest);
+		String strCODTerminal = GettersRequestParams.getCODTerminal(pRequest);
+		String strCODApl = GettersRequestParams.getCODApl(pRequest);
+		String strCODCanal = GettersRequestParams.getCODCanal(pRequest);
+		String strCODSecIp = GettersRequestParams.getCODSecIp(pRequest);
+		
 		String strParameters = getOperationParameters(strPathRest, "paramname");
 		pLog.info("Query Params: " + strParameters);
+		
 		if (!strParameters.isEmpty())
 		{
 			htDatesParameters = getParameterRviaSession(strParameters, pSessionRvia);
@@ -311,9 +337,17 @@ public class RestWSConnector
 			String strKey = (String) pIterator.next();
 			pJson.put(strKey, (String) pPathParams.get(strKey).toString());
 		}
+		
+		
 		strJsonData = pJson.toString();
 		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint));
-		Response pReturn = pTarget.request().header("CODSecEnt", "3008").header("CODSecTrans", "").header("CODSecUser", "").header("CODApl", "BPC").header("CODTerminal", "").header("CODSecIp", "111.11.11.1").post(Entity.json(strJsonData));
+		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt)
+				.header("CODSecUser", strCODSecUser)
+				.header("CODSecTrans", strCODSecTrans)
+				.header("CODTerminal", strCODTerminal)
+				.header("CODApl", strCODApl)
+				.header("CODCanal", strCODCanal)
+				.header("CODSecIp", strCODSecIp).post(Entity.json(strJsonData));
 		pLog.info("Respose POST: " + pReturn.toString());
 		return pReturn;
 	}
@@ -323,6 +357,15 @@ public class RestWSConnector
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = CustomRSIClient.getClient();
+		
+		String strCODSecEnt = GettersRequestParams.getCODSecEnt(pRequest);
+		String strCODSecUser = GettersRequestParams.getCODSecUser(pRequest);
+		String strCODSecTrans = GettersRequestParams.getCODSecTrans(pRequest);
+		String strCODTerminal = GettersRequestParams.getCODTerminal(pRequest);
+		String strCODApl = GettersRequestParams.getCODApl(pRequest);
+		String strCODCanal = GettersRequestParams.getCODCanal(pRequest);
+		String strCODSecIp = GettersRequestParams.getCODSecIp(pRequest);
+		
 		String strParameters = getOperationParameters(strPathRest, "paramname");
 		pLog.info("Query Params: " + strParameters);
 		if (!strParameters.isEmpty())
@@ -345,7 +388,13 @@ public class RestWSConnector
 		}
 		strJsonData = pJson.toString();
 		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint));
-		Response pReturn = pTarget.request().header("CODSecEnt", "3008").header("CODSecTrans", "").header("CODSecUser", "").header("CODApl", "BPC").header("CODTerminal", "").header("CODSecIp", "111.11.11.1").put(Entity.json(strJsonData));
+		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt)
+				.header("CODSecUser", strCODSecUser)
+				.header("CODSecTrans", strCODSecTrans)
+				.header("CODTerminal", strCODTerminal)
+				.header("CODApl", strCODApl)
+				.header("CODCanal", strCODCanal)
+				.header("CODSecIp", strCODSecIp).put(Entity.json(strJsonData));
 		pLog.info("Respose PUT: " + pReturn.toString());
 		return pReturn;
 	}
