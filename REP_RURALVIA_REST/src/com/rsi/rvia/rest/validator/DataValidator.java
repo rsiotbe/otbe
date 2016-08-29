@@ -43,20 +43,26 @@ public class DataValidator
 			String strParamMask = null;
 			String strParamDataType = null;
 			String strParamName = null;
+			String strAliasName = null;
 			try
 			{
 				nParamLong = (int) pResultSet.getInt("paramlong");
 				if ((String) pResultSet.getString("parammin") != null)
 				{
 					nParamMin = (int) Integer.parseInt((String) pResultSet.getString("parammin"));
+				}else{
+					nParamMin = -1;
 				}
 				if ((String) pResultSet.getString("parammax") != null)
 				{
 					nParamMax = (int) Integer.parseInt((String) pResultSet.getString("parammax"));
+				}else{
+					nParamMin = -1;
 				}
 				strParamMask = (String) pResultSet.getString("parammask");
 				strParamDataType = (String) pResultSet.getString("paramdatatype");
 				strParamName = (String) pResultSet.getString("paramname");
+				strAliasName = (String) pResultSet.getString("aliasname");
 			}
 			catch (Exception ex)
 			{
@@ -77,32 +83,44 @@ public class DataValidator
 			}
 			switch (strParamDataType)
 			{
-				case "date":
+				case "Date":
 					String strValue = htParams.get(strParamName);
+					if(strValue == null){
+						strValue = htParams.get(strAliasName);
+					}
 					pLog.info("Validan Date: " + strValue);
 					if (!validateDate(strValue, strParamMask))
 					{
 						fCheck = false;
 					}
 					break;
-				case "integer":
+				case "Integer":
 					strValue = htParams.get(strParamName);
+					if(strValue == null){
+						strValue = htParams.get(strAliasName);
+					}
 					pLog.info("Validan Integer: " + strValue);
 					if (!validateInteger(strValue, nParamMin, nParamMax, nParamLong))
 					{
 						fCheck = false;
 					}
 					break;
-				case "entidad":
+				case "Entidad":
 					strValue = htParams.get(strParamName);
+					if(strValue == null){
+						strValue = htParams.get(strAliasName);
+					}
 					pLog.info("Validan Entida: " + strValue);
 					if (!validateEntidad(strValue))
 					{
 						fCheck = false;
 					}
 					break;
-				case "string":
+				case "String":
 					strValue = htParams.get(strParamName);
+					if(strValue == null){
+						strValue = htParams.get(strAliasName);
+					}
 					pLog.info("Validan String: " + strValue);
 					if (!validateString(strValue, nParamMin, nParamMax, nParamLong))
 					{
@@ -131,7 +149,7 @@ public class DataValidator
 	{
 		boolean fReturn = true;
 		SimpleDateFormat pDateFormat = new SimpleDateFormat(strMask);
-		if ((strValue != null) && (strValue.trim().isEmpty()))
+		if ((strValue != null) || (strValue.trim().isEmpty()))
 		{
 			fReturn = false;
 		}
@@ -143,7 +161,6 @@ public class DataValidator
 		catch (Exception ex)
 		{
 			fReturn = false;
-			return fReturn;
 		}
 		return fReturn;
 	}
@@ -154,15 +171,20 @@ public class DataValidator
 		try
 		{
 			int nValue = Integer.parseInt(strValue);
-			if ((nValue <= nMin) || (nValue >= nMax))
-			{
-				fReturn = false;
+			if((nMin != -1)){
+				if(nValue <= nMin){
+					fReturn = false;
+				}
+			}
+			if(nMax != -1){
+				if(nValue >= nMax){
+					fReturn = false;
+				}
 			}
 		}
 		catch (Exception ex)
 		{
 			fReturn = false;
-			return fReturn;
 		}
 		return fReturn;
 	}
@@ -187,7 +209,6 @@ public class DataValidator
 		catch (Exception ex)
 		{
 			fReturn = false;
-			return fReturn;
 		}
 		return fReturn;
 	}

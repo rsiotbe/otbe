@@ -47,9 +47,9 @@ public class OperationManager
 			pReturn = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath, pListParams);
 			int nStatusCode = pReturn.getStatus();
 			String strEntity = pReturn.readEntity(String.class);
-			if ((strEntity != null) && ((!strEntity.startsWith("{")) || (!strEntity.endsWith("}"))))
+			if ((strEntity != null) && ((!strEntity.trim().startsWith("{")) || (!strEntity.trim().endsWith("}"))))
 			{
-				pLog.error("Error recibido de RVIA, se procede a procesarlo.");
+				pLog.error("Error recibido de RVIA, se procede a procesarlo: " + strEntity);
 				strEntity = Utils.getJsonFormRviaError(strEntity);
 			}
 			if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
