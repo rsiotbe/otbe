@@ -270,6 +270,7 @@ public class RestWSConnector
 		String strAliasNames = getOperationParameters(strPathRest, "aliasname");
 		String strSessionNames = getOperationParameters(strPathRest, "paramname");
 		
+		//Headers
 		String strCODSecEnt = GettersRequestParams.getCODSecEnt(pRequest);
 		String strCODSecUser = GettersRequestParams.getCODSecUser(pRequest);
 		String strCODSecTrans = GettersRequestParams.getCODSecTrans(pRequest);
@@ -280,9 +281,6 @@ public class RestWSConnector
 		
 		String pathQueryParams = "";
 		pathQueryParams = Utils.multiValuedMap2QueryString(pPathParams);
-
-		String hh = pRequest.getRequestURL().toString();
-		String ira = getBaseWSEndPoint(strEndPoint).toString() ;
 		
 		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint) + "?" + strQueryParams + pathQueryParams);
 		
@@ -308,6 +306,7 @@ public class RestWSConnector
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = CustomRSIClient.getClient();
 		
+		//Headers
 		String strCODSecEnt = GettersRequestParams.getCODSecEnt(pRequest);
 		String strCODSecUser = GettersRequestParams.getCODSecUser(pRequest);
 		String strCODSecTrans = GettersRequestParams.getCODSecTrans(pRequest);
@@ -358,6 +357,7 @@ public class RestWSConnector
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = CustomRSIClient.getClient();
 		
+		//Headers
 		String strCODSecEnt = GettersRequestParams.getCODSecEnt(pRequest);
 		String strCODSecUser = GettersRequestParams.getCODSecUser(pRequest);
 		String strCODSecTrans = GettersRequestParams.getCODSecTrans(pRequest);
@@ -386,6 +386,7 @@ public class RestWSConnector
 			String strKey = (String) pIterator.next();
 			pJson.put(strKey, (String) pPathParams.get(strKey).toString());
 		}
+		
 		strJsonData = pJson.toString();
 		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint));
 		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt)
