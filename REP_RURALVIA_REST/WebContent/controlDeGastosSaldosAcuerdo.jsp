@@ -2,8 +2,7 @@
     pageEncoding="UTF-8"
  	import="com.rsi.rvia.rest.DDBB.DDBBConnection,
 		 com.rsi.rvia.rest.DDBB.DDBBFactory,
-		 com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider,
-		 com.rsi.rvia.rest.DDBB.OracleDDBBCIP, 
+		 com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider,com.rsi.rvia.rest.DDBB.CIPOracleDDBB, 
 		 com.rsi.rvia.rest.tool.Utils, 
 		 com.rsi.rvia.rest.validator.DataValidator,
 		 java.sql.PreparedStatement,

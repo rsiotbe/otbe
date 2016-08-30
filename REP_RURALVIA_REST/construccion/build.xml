@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="tomcat-demo" default="war" basedir=".">
+<project name="REP_RURALVIA_REST" default="war" basedir=".">
+	<property file="build.scm.properties" />
 	<property name="project-name" value="REP_RUALVIA_REST" />
 	<property name="war-file-name" value="${project-name}.war" />
 	<property name="base-directory" value=".." />

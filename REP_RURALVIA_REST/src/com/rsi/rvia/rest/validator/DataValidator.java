@@ -30,9 +30,9 @@ public class DataValidator
 				+ strPathRest + "'" + "and z.id_miq=x.id_miq" + "and x.id_miq_param= a.id_miq_param"
 				+ "and a.id_miq_param=b.id_miq_param";
 		
-		DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleBDES, "beld");
+		DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
 		PreparedStatement pPreparedStatement = pDDBBConnection.prepareStatement(strQuery);
-		pLog.info("Se prepara la Query para la validación: " + pPreparedStatement.toString());
+		pLog.info("Se prepara la Query para la validaciï¿½n: " + pPreparedStatement.toString());
 		ResultSet pResultSet = pPreparedStatement.executeQuery();
 		pLog.info("Query ejecutada con exito.");
 		while (pResultSet.next())
@@ -134,7 +134,7 @@ public class DataValidator
 		// Si fCheck es falso ha dado un error en algun lado.
 		if (!fCheck)
 		{
-			pLog.info("Validacion fallida. Devolviendo JSON con información de los campos.");
+			pLog.info("Validacion fallida. Devolviendo JSON con informaciï¿½n de los campos.");
 			JSONObject pJson = new JSONObject();
 			for (JSONObject pItem : alError)
 			{
@@ -195,7 +195,7 @@ public class DataValidator
 		try
 		{
 			String strQuery = "select cod_nrbe_en from prox01.sx_entidad " + " where cod_nrbe_en=?";
-			DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleCIP, "cip");
+			DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleCIP);
 			PreparedStatement pPreparedStatement = pDDBBConnection.prepareStatement(strQuery);
 			pPreparedStatement.setString(1, strValue);
 			ResultSet pResultSet = pPreparedStatement.executeQuery();

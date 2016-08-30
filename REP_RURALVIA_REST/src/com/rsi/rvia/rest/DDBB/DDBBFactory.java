@@ -12,7 +12,7 @@ public class DDBBFactory
 	 */
 	public enum DDBBProvider
 	{
-		Oracle, MySql, OracleBDES, OracleBTEST, OracleCIP;
+		OracleBanca, MySql, OracleCIP;
 	}
 
 	/**
@@ -27,17 +27,11 @@ public class DDBBFactory
 		{
 			switch (pDDBBProvider)
 			{
-				case Oracle:
-					pReturn = OracleDDBB.getInstance();
-					break;
-				case OracleBDES:
-					pReturn = OracleDDBBBDES.getInstance();
-					break;
-				case OracleBTEST:
-					pReturn = OracleDDBBBTEST.getInstance();
+				case OracleBanca:
+					pReturn = BancaOracleDDBB.getInstance();
 					break;
 				case OracleCIP:
-					pReturn = OracleDDBBCIP.getInstance();
+					pReturn = CIPOracleDDBB.getInstance();
 					break;
 				case MySql:
 					pReturn = MySqlDDBB.getInstance();
@@ -46,30 +40,4 @@ public class DDBBFactory
 		}
 		return pReturn;
 	}
-	public static DDBBConnection getDDBB(DDBBProvider pDDBBProvider, String prefix)
-	{
-		DDBBConnection pReturn = null;
-		if (pDDBBProvider != null)
-		{
-			switch (pDDBBProvider)
-			{
-				case Oracle:
-					pReturn = OracleDDBB.getInstance(prefix);
-					break;
-				case OracleBDES:
-					pReturn = OracleDDBBBDES.getInstance(prefix);
-					break;
-				case OracleBTEST:
-					pReturn = OracleDDBBBTEST.getInstance(prefix);
-					break;
-				case OracleCIP:
-					pReturn = OracleDDBBCIP.getInstance(prefix);
-					break;
-				case MySql:
-					pReturn = MySqlDDBB.getInstance(prefix);
-					break;
-			}
-		}
-		return pReturn;
-	}		
 }

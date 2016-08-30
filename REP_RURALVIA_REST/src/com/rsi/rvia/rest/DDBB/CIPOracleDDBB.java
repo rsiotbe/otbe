@@ -2,15 +2,15 @@ package com.rsi.rvia.rest.DDBB;
 import java.io.IOException;
 import org.slf4j.LoggerFactory;
 
-public class OracleDDBBCIP extends AbstractDDBB
+public class CIPOracleDDBB extends AbstractDDBB
 {
 	private static DDBBConnection _pDDBB = null;
 	
-	private OracleDDBBCIP() throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException
+	private CIPOracleDDBB() throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException
 	{
-		pLog = LoggerFactory.getLogger(OracleDDBBCIP.class);
+		pLog = LoggerFactory.getLogger(CIPOracleDDBB.class);
 		Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
-		pAppProperties.load(this.getClass().getResourceAsStream("/OracleConfig.properties"));		
+		pAppProperties.load(this.getClass().getResourceAsStream("/CIP.OracleConfig.properties"));		
 		pLog.trace("Se crea una nueva instancia de DDBB CIP de Oracle");
 	}
 	
@@ -20,7 +20,7 @@ public class OracleDDBBCIP extends AbstractDDBB
 		{
 			try
 			{
-				_pDDBB = new OracleDDBBCIP();	
+				_pDDBB = new CIPOracleDDBB();	
 			}
 			catch(Exception ex)
 			{
@@ -29,11 +29,4 @@ public class OracleDDBBCIP extends AbstractDDBB
 		}
 		return _pDDBB;
 	}
-	
-	public synchronized static DDBBConnection getInstance(String prefix)
-	{
-		schemaPrefix = prefix;
-		return getInstance();
-	}	
-
 }

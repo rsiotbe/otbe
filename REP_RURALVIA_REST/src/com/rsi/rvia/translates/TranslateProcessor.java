@@ -1,4 +1,4 @@
-/************************************************************************ CREACION: REFERENCIA: P000008956 FECHA: 02-08-2016 AUTOR: Victor Muñoz Descripción: Clase procesadora de traducciones
+/************************************************************************ CREACION: REFERENCIA: P000008956 FECHA: 02-08-2016 AUTOR: Victor Muï¿½oz Descripciï¿½n: Clase procesadora de traducciones
  * en HTML MODIFICACIONES: ************************************************************************/
 package com.rsi.rvia.translates;
 
@@ -27,13 +27,13 @@ public class TranslateProcessor
 	
 	public static Hashtable<String, TranslateEntry>	htCacheData	= new Hashtable<String, TranslateEntry>();
 
-	/** Función que recibe una serie de identificadores de traducción e idiona y obtien su traducción
+	/** Funciï¿½n que recibe una serie de identificadores de traducciï¿½n e idiona y obtien su traducciï¿½n
 	 * 
 	 * @param processIds
 	 *           Array de String con los identificadores
 	 * @param strLanguage
 	 *           String con el idioma (es_ES)
-	 * @return hastable con parejas identificador y su traducción. */
+	 * @return hastable con parejas identificador y su traducciï¿½n. */
 	public static Hashtable<String, String> processIds(String[] pStrIds, String strLanguage)
 	{
 		ArrayList<String> alIdsTrans;
@@ -80,13 +80,13 @@ public class TranslateProcessor
 		return htReturn;
 	}
 
-	/** Función Principal, recibe el XHTML y el Idioma y traduce este XHTML
+	/** Funciï¿½n Principal, recibe el XHTML y el Idioma y traduce este XHTML
 	 * 
 	 * @param strXHTML
 	 *           String con el XHTML
 	 * @param strLanguage
 	 *           String con el idioma (es_ES)
-	 * @return String con el HTML con la nueva traducción ya aplicada. */
+	 * @return String con el HTML con la nueva traducciï¿½n ya aplicada. */
 	public static String processXHTML(String strXHTML, String strLanguage)
 	{
 		Document pDoc = null;
@@ -127,10 +127,10 @@ public class TranslateProcessor
 				{
 					strLanguage = "es_ES";
 				}
-				pLog.debug("Documento premodificación null: " + (pDoc == null));
+				pLog.debug("Documento premodificaciï¿½n null: " + (pDoc == null));
 				
 				pDoc = modifyDocument(pDoc, htTransData, strLanguage);
-				pLog.debug("Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
+				pLog.debug("Documento modificado Correctamente. Tamaï¿½o de htTransData: " + htTransData.size());
 				
 				if (pDoc != null)
 				{
@@ -138,7 +138,7 @@ public class TranslateProcessor
 				}
 				else
 				{
-					pLog.debug("Doc null en último paso.");
+					pLog.debug("Doc null en ï¿½ltimo paso.");
 					
 				}
 			}
@@ -146,7 +146,7 @@ public class TranslateProcessor
 		return strReturn;
 	}
 
-	/** Función para recuperar las traducciones dada una lista de IDs.
+	/** Funciï¿½n para recuperar las traducciones dada una lista de IDs.
 	 * 
 	 * @param alIdsTrans
 	 *           ArrayList<String> con los IDs de las traducciones.
@@ -175,7 +175,7 @@ public class TranslateProcessor
 		strQuery += strNewsIds + ")";
 		if (!strNewsIds.equals(""))
 		{
-			DDBBConnection pDDBBTranslate = DDBBFactory.getDDBB(DDBBProvider.Oracle);
+			DDBBConnection pDDBBTranslate = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
 			PreparedStatement pPreparedStatement = pDDBBTranslate.prepareStatement(strQuery);
 			ResultSet pResultSet = pPreparedStatement.executeQuery();
 			while (pResultSet.next())
@@ -199,7 +199,7 @@ public class TranslateProcessor
 		return htResult;
 	}
 
-	/** Función que procesa el String que contiene el HTML en un Document(Jsoup)
+	/** FunciÃ³n que procesa el String que contiene el HTML en un Document(Jsoup)
 	 * 
 	 * @param strData
 	 *           HTML inicial
@@ -211,7 +211,7 @@ public class TranslateProcessor
 		return pDoc;
 	}
 
-	/** Función que extrae todos los IDs de data-translate dado un Document(Jsoup)
+	/** Funciï¿½n que extrae todos los IDs de data-translate dado un Document(Jsoup)
 	 * 
 	 * @param pDocument
 	 *           Document(Jsoup) con el HTML parseado.
@@ -231,7 +231,7 @@ public class TranslateProcessor
 		return alIdsTranslate;
 	}
 
-	/** Función que modifica sus etiquetas data-translate con las nuevas traducciones.
+	/** Funciï¿½n que modifica sus etiquetas data-translate con las nuevas traducciones.
 	 * 
 	 * @param doc
 	 *           Document(Jsoup) a modificar.
@@ -239,7 +239,7 @@ public class TranslateProcessor
 	 *           Hashtable con los IDs data.translate y las traducciones.
 	 * @param strLanguage
 	 *           String con el idioma al que se quiere traducir.
-	 * @return Document(Jsoup) con la traducción ya puesta. */
+	 * @return Document(Jsoup) con la traducciï¿½n ya puesta. */
 	private static Document modifyDocument(Document pDoc, Hashtable<String, TranslateEntry> htData, String strLanguage)
 	{
 		Enumeration<String> pEnumHTData = htData.keys();
@@ -261,12 +261,12 @@ public class TranslateProcessor
 			}
 		}
 		
-		/* se añade el atributo lang a la etiqueta html para poder manejar el idioma dentro de la página */
+		/* se aï¿½ade el atributo lang a la etiqueta html para poder manejar el idioma dentro de la pï¿½gina */
 		pDoc.getElementsByTag("html").attr("lang", strLanguage.replace("_", "-"));	
 		return pDoc;
 	}
 
-	/** Función para parsear un Document(Jsoup) a String
+	/** Funciï¿½n para parsear un Document(Jsoup) a String
 	 * 
 	 * @param pDoc
 	 *           Document(Jsoup) para parsear a string

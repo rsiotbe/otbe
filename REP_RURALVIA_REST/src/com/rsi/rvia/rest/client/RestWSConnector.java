@@ -35,9 +35,9 @@ import com.rsi.rvia.rest.tool.Utils;
 
 public class RestWSConnector
 {
-	private static Logger	pLog			= LoggerFactory.getLogger(RestWSConnector.class);
-	private static String	strRviaXML	= "http://localhost:8080";
-	private static String	strTemplate	= "";
+	private Logger	pLog			= LoggerFactory.getLogger(RestWSConnector.class);
+	private static String		= "http://localhost:8080";
+	private String	strTemplate	= "";
 
 	public String getTemplate()
 	{
@@ -49,17 +49,12 @@ public class RestWSConnector
 		return UriBuilder.fromUri(strRviaXML).build();
 	}
 
-	private static URI getBaseWSURI()
-	{
-		return UriBuilder.fromUri("http://localhost:8080/api/").build();
-	}
-
 	private static URI getBaseWSEndPoint(String strEndPoint)
 	{
 		return UriBuilder.fromUri(strEndPoint).build();
 	}
 
-	public static Response getData(HttpServletRequest pRequest, String strData, SessionRviaData pSessionRvia,
+	public Response getData(HttpServletRequest pRequest, String strData, SessionRviaData pSessionRvia,
 			String strPrimaryPath, MultivaluedMap<String,String> pPathParams) throws Exception
 	{
 		String strComponentType = "";
@@ -68,7 +63,7 @@ public class RestWSConnector
 		String strMethod = pRequest.getMethod();
 		int nIdMiq = 0;
 		Response pReturn = null;
-		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBDES);
+		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
 		pLog.debug("Path Rest: " + strPrimaryPath);
 		PreparedStatement pPreparedStament = pDBConection.prepareStatement("select * from bdptb222_miq_quests where path_rest = '"
 				+ strPath + "'");
@@ -89,24 +84,24 @@ public class RestWSConnector
 			case "GET":
 				if ("RVIA".equals(strComponentType))
 				{
-					pLog.info("Derivando peticion a Ruralv�a");
+					pLog.info("Derivando peticion a Ruralvï¿½a");
 					pReturn = rviaPost(pRequest, strComponentType, strEndPoint, nIdMiq, pSessionRvia, strData);
 				}
 				else
 				{
-					pLog.info("Solicitando peticióñn REST");
+					pLog.info("Solicitando peticiÃ³Ã±n REST");
 					pReturn = get(pRequest, strEndPoint, strPath, pSessionRvia, pPathParams);
 				}
 				break;
 			case "POST":
 				if ("RVIA".equals(strComponentType))
 				{
-					pLog.info("Derivando petici�n a Ruralv�a");
+					pLog.info("Derivando peticiï¿½n a Ruralvï¿½a");
 					pReturn = rviaPost(pRequest, strComponentType, strEndPoint, nIdMiq, pSessionRvia, strData);
 				}
 				else
 				{
-					pLog.info("Solicitando peticióñn REST");
+					pLog.info("Solicitando peticiÃ³Ã±n REST");
 					pReturn = post(pRequest, strPath, pSessionRvia, strData, strEndPoint, pPathParams);
 				}
 				break;
@@ -182,7 +177,7 @@ public class RestWSConnector
 	{
 		int nIdMiqParam, i;
 		String strQuery;
-		DDBBConnection pDBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleBDES);
+		DDBBConnection pDBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
 		PreparedStatement pPreparedStatement;
 		ResultSet pResultSet;
 		for (i = 0; i < pNombres.size(); i++)
@@ -416,7 +411,7 @@ public class RestWSConnector
 				+ " BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, " + " BEL.BDPTB225_MIQ_SESSION_PARAMS c "
 				+ " where a.id_miq=b.id_miq " + " and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " + " and a.path_rest='" + strPathRest
 				+ "' order by c.ID_MIQ_PARAM";
-		DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleBDES);
+		DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
 		PreparedStatement pPreparedStatement;
 		try
 		{

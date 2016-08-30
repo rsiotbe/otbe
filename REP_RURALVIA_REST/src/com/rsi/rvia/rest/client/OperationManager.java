@@ -23,6 +23,7 @@ public class OperationManager
 	public static Response proccesFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String strData,
 			MediaType pMediaType) throws Exception
 	{
+		RestWSConnector pRestConnector;
 		String strPageResult = null;
 		Response pReturn = null;
 		SessionRviaData pSessionRviaData = null;
@@ -40,10 +41,10 @@ public class OperationManager
 		{
 			pSession.setAttribute("token", pSessionRviaData.getToken());
 			if (!IsumValidation.IsValidService(pSessionRviaData))
-				throw new Exception("EL servicio solicitado no es permitido para este usuario por ISUM");
+				throw new Exception("El servicio solicitado no es permitido para este usuario por ISUM");
 			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
 			MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
-			RestWSConnector pRestConnector = new RestWSConnector();
+			pRestConnector = new RestWSConnector();
 			pReturn = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath, pListParams);
 			int nStatusCode = pReturn.getStatus();
 			String strEntity = pReturn.readEntity(String.class);
@@ -69,7 +70,7 @@ public class OperationManager
 			{
 				pReturn = Response.ok(strEntity).status(nStatusCode).cookie(pCookieToken).build();
 			}
-			pLog.info("Se Añade la Cookie con el Token a la respuesta.");
+			pLog.info("Se AÃ±ade la Cookie con el Token a la respuesta.");
 		}
 		else
 		{

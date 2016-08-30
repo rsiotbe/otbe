@@ -103,7 +103,7 @@ public class PruebaMetodos
 		
 		if (strQuery != null)
 		{
-			DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBDES,"beld");
+			DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
 			PreparedStatement pPreparedStament = pDBConection.prepareStatement(strQuery);
 			ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
 			JSONArray jsonArray = new JSONArray();
@@ -126,11 +126,11 @@ public class PruebaMetodos
 
 		Response pReturn;
 		StringBuilder pSB = new StringBuilder();
-		String strHelp = "{\"Info\":\"Petición para devolver datos de la BBDD en formato JSON\","
+		String strHelp = "{\"Info\":\"Peticiï¿½n para devolver datos de la BBDD en formato JSON\","
 				+ "\"Lista de parametros\":{\"params\":\"Parametros separados por [,] a recuperar)\","
 				+ "\"tabla\":\"Nombre de la tabla.\",\"wherekey\":\"Nombre del campo para la sentencia where\","
 				+ "\"wherevalue\":\"Valor del campo para la sentencia where\","
-				+ "\"other\":\"Otra sentencia (añadir and si va despues del where)\"}" + "}";
+				+ "\"other\":\"Otra sentencia (aï¿½adir and si va despues del where)\"}" + "}";
 		pReturn = Response.ok(strHelp).build();
 		return pReturn;
 	}
@@ -153,25 +153,19 @@ public class PruebaMetodos
 				" AND NUM_RL_ORDEN=1" +
 				" AND COD_ECV_PERS_AC='2'" +
 				" AND ID_INTERNO_PE=16" ;
-		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBTEST, "belt");
+		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
 		PreparedStatement pPreparedStament = pDBConection.prepareStatement(strQuery);
 		ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
 		JSONArray jsonArray = new JSONArray();
 		jsonArray = Utils.convertResultSet2JSON(pResultSet);
-
-		DDBBConnection pDBConection2 = DDBBFactory.getDDBB(DDBBProvider.OracleBDES, "beld");
-		PreparedStatement pPreparedStament2 = pDBConection2.prepareStatement(strQuery);
-		ResultSet pResultSet2 = pDBConection2.executeQuery(pPreparedStament2);
-		JSONArray jsonArray2 = new JSONArray();
-		jsonArray2 = Utils.convertResultSet2JSON(pResultSet2);
 		
-		DDBBConnection pDBConection3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP, "cip");
+		DDBBConnection pDBConection3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP);
 		PreparedStatement pPreparedStament3 = pDBConection3.prepareStatement(strQueryCip);
 		ResultSet pResultSet3 = pDBConection3.executeQuery(pPreparedStament3);
 		JSONArray jsonArray3 = new JSONArray();
 		jsonArray3 = Utils.convertResultSet2JSON(pResultSet3);
 		
-		strReturn = "{\"1\":" + jsonArray.toString() + ",\"2\":" + jsonArray2.toString() + ",\"3\":" + jsonArray3.toString() + "}";
+		strReturn = "{\"1\":" + jsonArray.toString() + ",\"2\":" + ",\"3\":" + jsonArray3.toString() + "}";
 		pReturn = Response.ok(strReturn).build();
 		return pReturn;
 	}
@@ -193,7 +187,7 @@ public class PruebaMetodos
 				" AND NUM_RL_ORDEN=1" +
 				" AND COD_ECV_PERS_AC='2'" +
 				" AND ID_INTERNO_PE=20" ;
-		DDBBConnection pDBConection3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP, "cip");
+		DDBBConnection pDBConection3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP);
 		PreparedStatement pPreparedStament3 = pDBConection3.prepareStatement(strQueryCip);
 		ResultSet pResultSet3 = pDBConection3.executeQuery(pPreparedStament3);
 		JSONArray jsonArray3 = new JSONArray();
