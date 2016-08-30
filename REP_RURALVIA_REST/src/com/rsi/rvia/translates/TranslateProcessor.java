@@ -207,6 +207,7 @@ public class TranslateProcessor
 	private static Document strToDocumentParser(String strData)
 	{
 		Document pDoc = (Document) Jsoup.parse(strData, "", Parser.xmlParser());
+		pDoc.outputSettings().prettyPrint(false);
 		return pDoc;
 	}
 
