@@ -6,13 +6,24 @@
     
     <%
     	boolean fCheckStatus = false;
-    	try{
-    		TranslateProcessor.htCacheData = null;
-    		TemplateManager.htCacheTemplate = null;
-    		fCheckStatus = true;
-   		}catch (NullPointerException ex){
-   	 		fCheckStatus = false;
-    	}
+    	String strCleanAll = (String) request.getParameter("clean");
+    	switch (strCleanAll)
+		{
+			case "all":
+				try{
+       				TranslateProcessor.htCacheData = null;
+       				TemplateManager.htCacheTemplate = null;
+       				fCheckStatus = true;
+      			}catch (NullPointerException ex){
+      	 			fCheckStatus = false;
+       			}
+				break;
+			case "template":
+				break;
+			case "translate":
+				break;
+		}
+    	
     	
     	
     %>
