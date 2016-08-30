@@ -4,9 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
+/** Clase destinada getters de parametos en el request. Busca un request determinado por funcion. */
 public class GettersRequestParams
 {
-	public static String getCODSecEnt(HttpServletRequest pRequest){
+	/** Busca dentro del pRequest con diferentes convinaciones de letras y palabras el parametro CODSecEnt. Si no lo
+	 * encuentra devuelve uno por defecto.
+	 * 
+	 * @param pRequest
+	 * @return String con parametro o el parametro por defecto. */
+	public static String getCODSecEnt(HttpServletRequest pRequest)
+	{
 		String strReturn = null;
 		List<String> listPosibilities = new ArrayList();
 		listPosibilities.add("codEntidad");
@@ -26,13 +33,20 @@ public class GettersRequestParams
 				break;
 			}
 		}
-		if(strReturn == null){
+		if (strReturn == null)
+		{
 			strReturn = "3008";
 		}
 		return strReturn;
 	}
-	
-	public static String getCODSecUser(HttpServletRequest pRequest){
+
+	/** Busca dentro del pRequest con diferentes convinaciones de letras y palabras el parametro CODSecUser. Si no lo
+	 * encuentra devuelve uno por defecto.
+	 * 
+	 * @param pRequest
+	 * @return String con parametro o el parametro por defecto. */
+	public static String getCODSecUser(HttpServletRequest pRequest)
+	{
 		String strReturn = null;
 		List<String> listPosibilities = new ArrayList();
 		listPosibilities.add("CODSecUser");
@@ -49,13 +63,20 @@ public class GettersRequestParams
 				break;
 			}
 		}
-		if(strReturn == null){
+		if (strReturn == null)
+		{
 			strReturn = "";
 		}
 		return strReturn;
 	}
-	
-	public static String getCODSecTrans(HttpServletRequest pRequest){
+
+	/** Busca dentro del pRequest con diferentes convinaciones de letras y palabras el parametro CODSecTrans. Si no lo
+	 * encuentra devuelve uno por defecto.
+	 * 
+	 * @param pRequest
+	 * @return String con parametro o el parametro por defecto. */
+	public static String getCODSecTrans(HttpServletRequest pRequest)
+	{
 		String strReturn = null;
 		List<String> listPosibilities = new ArrayList();
 		listPosibilities.add("CODSecTrans");
@@ -72,13 +93,20 @@ public class GettersRequestParams
 				break;
 			}
 		}
-		if(strReturn == null){
+		if (strReturn == null)
+		{
 			strReturn = "";
 		}
 		return strReturn;
 	}
-	
-	public static String getCODTerminal(HttpServletRequest pRequest){
+
+	/** Busca dentro del pRequest con diferentes convinaciones de letras y palabras el parametro CODTerminal. Si no lo
+	 * encuentra devuelve uno por defecto.
+	 * 
+	 * @param pRequest
+	 * @return String con parametro o el parametro por defecto. */
+	public static String getCODTerminal(HttpServletRequest pRequest)
+	{
 		String strReturn = null;
 		List<String> listPosibilities = new ArrayList();
 		listPosibilities.add("CODTerminal");
@@ -95,13 +123,20 @@ public class GettersRequestParams
 				break;
 			}
 		}
-		if(strReturn == null){
+		if (strReturn == null)
+		{
 			strReturn = "18";
 		}
 		return strReturn;
 	}
-	
-	public static String getCODApl(HttpServletRequest pRequest){
+
+	/** Busca dentro del pRequest con diferentes convinaciones de letras y palabras el parametro CODApl. Si no lo
+	 * encuentra devuelve uno por defecto.
+	 * 
+	 * @param pRequest
+	 * @return String con parametro o el parametro por defecto. */
+	public static String getCODApl(HttpServletRequest pRequest)
+	{
 		String strReturn = null;
 		List<String> listPosibilities = new ArrayList();
 		listPosibilities.add("CODApl");
@@ -117,13 +152,20 @@ public class GettersRequestParams
 				break;
 			}
 		}
-		if(strReturn == null){
+		if (strReturn == null)
+		{
 			strReturn = "BDP";
 		}
 		return strReturn;
 	}
-	
-	public static String getCODCanal(HttpServletRequest pRequest){
+
+	/** Busca dentro del pRequest con diferentes convinaciones de letras y palabras el parametro CODCanal. Si no lo
+	 * encuentra devuelve uno por defecto.
+	 * 
+	 * @param pRequest
+	 * @return String con parametro o el parametro por defecto. */
+	public static String getCODCanal(HttpServletRequest pRequest)
+	{
 		String strReturn = null;
 		List<String> listPosibilities = new ArrayList();
 		listPosibilities.add("CODCanal");
@@ -141,13 +183,20 @@ public class GettersRequestParams
 				break;
 			}
 		}
-		if(strReturn == null){
+		if (strReturn == null)
+		{
 			strReturn = "18";
 		}
 		return strReturn;
 	}
-	
-	public static String getCODSecIp(HttpServletRequest pRequest){
+
+	/** Busca dentro del pRequest con diferentes convinaciones de letras y palabras el parametro CODSecIp. Si no lo
+	 * encuentra devuelve uno por defecto.
+	 * 
+	 * @param pRequest
+	 * @return String con parametro o el parametro por defecto. */
+	public static String getCODSecIp(HttpServletRequest pRequest)
+	{
 		String strReturn = null;
 		List<String> listPosibilities = new ArrayList();
 		listPosibilities.add("CODSecIp");
@@ -165,11 +214,10 @@ public class GettersRequestParams
 				break;
 			}
 		}
-		if(strReturn == null){
+		if (strReturn == null)
+		{
 			strReturn = "10.1.245.2";
 		}
 		return strReturn;
 	}
-	
-	
 }

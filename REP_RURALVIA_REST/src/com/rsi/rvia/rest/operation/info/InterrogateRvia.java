@@ -17,16 +17,16 @@ import org.xml.sax.InputSource;
 import com.rsi.rvia.rest.session.SessionRviaData;
 
 /** Clase que gestiona el interrogatoria a ruralvia para conocer los datos de la operativa y los valores que el usuario
- * tiene para ellos dentro de al sesi髇 */
+ * tiene para ellos dentro de al sesi贸n */
 public class InterrogateRvia
 {
 	public static final String	URI_INTERROGATE_SERVICE	= "/portal_rvia/rviaRestInfo?clave_pagina=";
 	private static Logger		pLog							= LoggerFactory.getLogger(InterrogateRvia.class);
 
-	/** Obtiene un documento de tipo XML con la informaci髇, es simmilar al fichero xml.dat de la operativa
+	/** Obtiene un documento de tipo XML con la informaci贸n, es simmilar al fichero xml.dat de la operativa
 	 * 
 	 * @param pRequest
-	 *           Petici髇 original
+	 *           Petici贸n original
 	 * @param strClavepagina
 	 *           Clave pagina de la operativa a preguntar
 	 * @return Documento Xml que contiene toda la info
@@ -36,10 +36,10 @@ public class InterrogateRvia
 		return getXmlDatAndUserInfo(new SessionRviaData(pRequest), strClavepagina);
 	}
 
-	/** Obtiene un documento de tipo XML con la informaci髇, es simmilar al fichero xml.dat de la operativa
+	/** Obtiene un documento de tipo XML con la informaci贸n, es simmilar al fichero xml.dat de la operativa
 	 * 
 	 * @param pSessionRviaData
-	 *           Objeto que contiene la informaci髇 extraida de la sesi髇 de ruralvia
+	 *           Objeto que contiene la informaci贸n extraida de la sesi贸n de ruralvia
 	 * @param strClavepagina
 	 *           Clave pagina de la operativa a preguntar
 	 * @return Documento Xml que contiene toda la info
@@ -58,35 +58,35 @@ public class InterrogateRvia
 		DocumentBuilder pDocumentBuilder;
 		try
 		{
-			/* se compone la url a invocar, para ello se accede a la inforamci髇 de la sesii髇 */
+			/* se compone la url a invocar, para ello se accede a la inforamci贸n de la sesi贸n */
 			strURL = pSessionRviaData.getUriRvia() + URI_INTERROGATE_SERVICE + strClavepagina;
 			pLog.info("se compone la URL para interrogar a RVIA. URL: " + strURL);
 			/* se utiliza el objeto cliente de peticiones http de Jersey */
 			pClient = ClientBuilder.newClient(new ClientConfig());
 			pWebTarget = pClient.target(strURL);
-			/* se a馻de la cookie recuperada de la sesi髇 para poder obtener los datos del usuario */
+			/* se a帽ade la cookie recuperada de la sesi贸n para poder obtener los datos del usuario */
 			pCookieRvia = new Cookie("RVIASESION", pSessionRviaData.getRviaSessionId());
-			pLog.debug("se procede a invocar a la url con los datos de sesi髇");
+			pLog.debug("se procede a invocar a la url con los datos de sesi贸n");
 			pResponseService = pWebTarget.request().cookie(pCookieRvia).get();
 			pLog.debug("El servidor ha respondido");
 		}
 		catch (Exception ex)
 		{
-			pLog.error("Error al realizar la petici髇 al servicio de intearrogar ruralvia", ex);
+			pLog.error("Error al realizar la petici贸n al servicio de intearrogar ruralvia", ex);
 		}
-		/* en caso que el servidor no haya respondido una contenido correcto se lanza una excepci髇 */
+		/* en caso que el servidor no haya respondido una contenido correcto se lanza una excepci贸n */
 		if (pResponseService == null || pResponseService.getStatus() != 200)
 		{
 			if (pResponseService == null)
 			{
-				pLog.error("No se ha podido procesar el objeto ResponseService que devuelve la invocaci髇, el elemento es nulo");
+				pLog.error("No se ha podido procesar el objeto ResponseService que devuelve la invocaci贸n, el elemento es nulo");
 			}
 			else
 			{
 				pLog.error("El servidor ha respondido un codigo http " + pResponseService.getStatus()
-						+ " al realizar la petici髇 al servicio de intearrogar ruralvia");
+						+ " al realizar la petici贸n al servicio de intearrogar ruralvia");
 			}
-			throw new Exception("No se ha podido obtener la informaci髇 del xml.dat y la informaci髇 del usuario de ruralvia");
+			throw new Exception("No se ha podido obtener la informaci贸n del xml.dat y la informaci贸n del usuario de ruralvia");
 		}
 		try
 		{

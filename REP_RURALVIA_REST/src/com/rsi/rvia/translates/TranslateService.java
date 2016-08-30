@@ -9,6 +9,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.JSONException;
+import org.json.JSONObject;
+import com.rsi.rvia.rest.tool.Utils;
 
 /** Servlet implementation class translateService */
 public class TranslateService extends HttpServlet
@@ -24,6 +27,10 @@ public class TranslateService extends HttpServlet
 		super();
 	}
 
+	/*
+	 * Servlet dado una serie de IDs de parametros busca sus traducciones y las devuelve en formato JSON La respuesta
+	 * vendra como {idTraduccion:traduccion}
+	 */
 	protected void service(HttpServletRequest pRequest, HttpServletResponse pResponse) throws ServletException,
 			IOException
 	{
@@ -41,27 +48,15 @@ public class TranslateService extends HttpServlet
 		}
 		astrIds = strIds.split(IDS_PARAM_SEP);
 		htTranslates = TranslateProcessor.processIds(astrIds, strlanguage);
-		strJSONReturn = getJsonResult(htTranslates);
+		try
+		{
+			strJSONReturn = Utils.hashTable2Json(htTranslates);
+		}
+		catch (JSONException e)
+		{
+			strJSONReturn = "{\"Error\":\"Fallo al obtener JSON\"}";
+		}
 		pResponse.setContentType("application/json;charset=UTF-8");
 		pResponse.getWriter().print(strJSONReturn);
-	}
-
-	private String getJsonResult(Hashtable<String, String> htTranslates)
-	{
-		boolean fFirstElement = true;
-		StringBuffer pSB = new StringBuffer();
-		pSB.append("{");
-		Iterator<Entry<String, String>> pIterator = htTranslates.entrySet().iterator();
-		while (pIterator.hasNext())
-		{
-			if (fFirstElement)
-				fFirstElement = false;
-			else
-				pSB.append(",");
-			Map.Entry<String, String> pPair = (Entry<String, String>) pIterator.next();
-			pSB.append("\"" + pPair.getKey() + "\":\"" + pPair.getValue().replace("\"", "\\\"") + "\"");
-		}
-		pSB.append("}");
-		return pSB.toString();
 	}
 }

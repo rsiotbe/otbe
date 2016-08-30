@@ -13,13 +13,23 @@ import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 
+/** Clase destinada a las validaciones de datos censados en la tabla bdptb228 */
 public class DataValidator
 {
 	private static Logger	pLog	= LoggerFactory.getLogger(DataValidator.class);
+
 	public DataValidator()
 	{
 	}
 
+	/** Realiza una validación de los datos que recibe en un Hashtable, siguiendo el un criterio censado en la tabla
+	 * bdptb228_miq_param_validation y el pathRest - Para añadir nuevas validaciones crear un nuevo metodo
+	 * validate"BLaBLa"() y añadirlo como caso en la función validation.
+	 * 
+	 * @param strPathRest
+	 * @param htParams
+	 * @return
+	 * @throws Exception */
 	public static String validation(String strPathRest, Hashtable<String, String> htParams) throws Exception
 	{
 		boolean fCheck = true;
@@ -29,10 +39,9 @@ public class DataValidator
 				+ "bel.bdptb225_miq_session_params a," + "BEL.BDPTB228_MIQ_PARAM_VALIDATION b" + "where z.path_rest='"
 				+ strPathRest + "'" + "and z.id_miq=x.id_miq" + "and x.id_miq_param= a.id_miq_param"
 				+ "and a.id_miq_param=b.id_miq_param";
-		
 		DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
 		PreparedStatement pPreparedStatement = pDDBBConnection.prepareStatement(strQuery);
-		pLog.info("Se prepara la Query para la validaci�n: " + pPreparedStatement.toString());
+		pLog.info("Se prepara la Query para la validación: " + pPreparedStatement.toString());
 		ResultSet pResultSet = pPreparedStatement.executeQuery();
 		pLog.info("Query ejecutada con exito.");
 		while (pResultSet.next())
@@ -50,13 +59,17 @@ public class DataValidator
 				if ((String) pResultSet.getString("parammin") != null)
 				{
 					nParamMin = (int) Integer.parseInt((String) pResultSet.getString("parammin"));
-				}else{
+				}
+				else
+				{
 					nParamMin = -1;
 				}
 				if ((String) pResultSet.getString("parammax") != null)
 				{
 					nParamMax = (int) Integer.parseInt((String) pResultSet.getString("parammax"));
-				}else{
+				}
+				else
+				{
 					nParamMin = -1;
 				}
 				strParamMask = (String) pResultSet.getString("parammask");
@@ -85,7 +98,8 @@ public class DataValidator
 			{
 				case "Date":
 					String strValue = htParams.get(strParamName);
-					if(strValue == null){
+					if (strValue == null)
+					{
 						strValue = htParams.get(strAliasName);
 					}
 					pLog.info("Validan Date: " + strValue);
@@ -96,18 +110,20 @@ public class DataValidator
 					break;
 				case "Integer":
 					strValue = htParams.get(strParamName);
-					if(strValue == null){
+					if (strValue == null)
+					{
 						strValue = htParams.get(strAliasName);
 					}
 					pLog.info("Validan Integer: " + strValue);
-					if (!validateInteger(strValue, nParamMin, nParamMax, nParamLong))
+					if (!validateInteger(strValue, nParamMin, nParamMax))
 					{
 						fCheck = false;
 					}
 					break;
 				case "Entidad":
 					strValue = htParams.get(strParamName);
-					if(strValue == null){
+					if (strValue == null)
+					{
 						strValue = htParams.get(strAliasName);
 					}
 					pLog.info("Validan Entida: " + strValue);
@@ -118,7 +134,8 @@ public class DataValidator
 					break;
 				case "String":
 					strValue = htParams.get(strParamName);
-					if(strValue == null){
+					if (strValue == null)
+					{
 						strValue = htParams.get(strAliasName);
 					}
 					pLog.info("Validan String: " + strValue);
@@ -145,6 +162,13 @@ public class DataValidator
 		return strReturn;
 	}
 
+	/** Validación de una fecha dato una mascara
+	 * 
+	 * @param strValue
+	 *           Fecha
+	 * @param strMask
+	 *           Formato en forma de mascara
+	 * @return True si la validación es positiva, false si es negativa */
 	private static boolean validateDate(String strValue, String strMask)
 	{
 		boolean fReturn = true;
@@ -165,19 +189,34 @@ public class DataValidator
 		return fReturn;
 	}
 
-	private static boolean validateInteger(String strValue, int nMin, int nMax, int nLong)
+	/** Validación de un entero segun su longitud, máximo y mínimo.
+	 * 
+	 * @param strValue
+	 *           entero en formato de String
+	 * @param nMin
+	 *           mínimo posible para el entero.
+	 * @param nMax
+	 *           máximo posible para el entero.
+	 * @param nLong
+	 *           longitud máxima para el entero
+	 * @return True si la validación es positiva, false si es negativa */
+	private static boolean validateInteger(String strValue, int nMin, int nMax)
 	{
 		boolean fReturn = true;
 		try
 		{
 			int nValue = Integer.parseInt(strValue);
-			if((nMin != -1)){
-				if(nValue <= nMin){
+			if ((nMin != -1))
+			{
+				if (nValue <= nMin)
+				{
 					fReturn = false;
 				}
 			}
-			if(nMax != -1){
-				if(nValue >= nMax){
+			if (nMax != -1)
+			{
+				if (nValue >= nMax)
+				{
 					fReturn = false;
 				}
 			}
@@ -189,6 +228,11 @@ public class DataValidator
 		return fReturn;
 	}
 
+	/** Valida si una entidad existe. Para ello ejecuta una query contra el CIP-
+	 * 
+	 * @param strValue
+	 *           entidad a consultar
+	 * @return True si la validación es positiva, false si es negativa */
 	private static boolean validateEntidad(String strValue)
 	{
 		boolean fReturn = true;
@@ -212,19 +256,30 @@ public class DataValidator
 		}
 		return fReturn;
 	}
-	
+
+	/** Validación de un string segun su longitud, máximo y mínimo.
+	 * 
+	 * @param strValue
+	 *           string entrante
+	 * @param nMin
+	 *           mínimo número de caracteres
+	 * @param nMax
+	 *           máximo número de caracteres
+	 * @param nLong
+	 *           número fijo de caracteres
+	 * @return True si la validación es positiva, false si es negativa */
 	private static boolean validateString(String strValue, int nMin, int nMax, int nLong)
 	{
 		boolean fReturn = true;
 		try
 		{
-			if(nLong != 0){
+			if (nLong != 0)
+			{
 				if ((strValue.length() <= nMin) || (strValue.length() >= nMax) || (strValue.length() != nLong))
 				{
 					fReturn = false;
 				}
 			}
-			
 		}
 		catch (Exception ex)
 		{

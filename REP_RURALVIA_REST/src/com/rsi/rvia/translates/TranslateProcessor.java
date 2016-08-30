@@ -1,4 +1,4 @@
-/************************************************************************ CREACION: REFERENCIA: P000008956 FECHA: 02-08-2016 AUTOR: Victor Mu�oz Descripci�n: Clase procesadora de traducciones
+/************************************************************************ CREACION: REFERENCIA: P000008956 FECHA: 02-08-2016 AUTOR: Victor Muñoz Descripción: Clase procesadora de traducciones
  * en HTML MODIFICACIONES: ************************************************************************/
 package com.rsi.rvia.translates;
 
@@ -23,17 +23,16 @@ import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 /** Clase que gestiona el cambio de idioma en el contenido HTML de la web. */
 public class TranslateProcessor
 {
-	private static Logger										pLog			= LoggerFactory.getLogger(TranslateProcessor.class);
-	
+	private static Logger									pLog			= LoggerFactory.getLogger(TranslateProcessor.class);
 	public static Hashtable<String, TranslateEntry>	htCacheData	= new Hashtable<String, TranslateEntry>();
 
-	/** Funci�n que recibe una serie de identificadores de traducci�n e idiona y obtien su traducci�n
+	/** Función que recibe una serie de identificadores de traducción e idioma y obtien su traducción
 	 * 
 	 * @param processIds
 	 *           Array de String con los identificadores
 	 * @param strLanguage
 	 *           String con el idioma (es_ES)
-	 * @return hastable con parejas identificador y su traducci�n. */
+	 * @return hastable con parejas identificador y su traducción. */
 	public static Hashtable<String, String> processIds(String[] pStrIds, String strLanguage)
 	{
 		ArrayList<String> alIdsTrans;
@@ -43,17 +42,14 @@ public class TranslateProcessor
 		htReturn = new Hashtable<String, String>();
 		alIdsTrans = new ArrayList<String>(Arrays.asList(pStrIds));
 		pLog.debug("Se reciben los siguientes ids para traducir. astrIds:" + pStrIds);
-		
 		try
 		{
 			htTransData = getTranslations(alIdsTrans);
 			pLog.debug("Traducciones recuperadas correctamente.");
-			
 		}
 		catch (Exception ex)
 		{
 			pLog.error("Error al intentar recuperar las Traducciones de la BBDD", ex);
-			
 		}
 		if (htTransData != null)
 		{
@@ -61,8 +57,7 @@ public class TranslateProcessor
 			if (strLanguage == null || strLanguage.trim().isEmpty())
 			{
 				strLanguage = "es_ES";
-				pLog.warn("No se ha definido idioma de la traduccion, se asigna el espanol");
-			
+				pLog.warn("No se ha definido idioma de la traduccion, se asigna el español");
 			}
 			for (int i = 0; i < pStrIds.length; i++)
 			{
@@ -76,17 +71,16 @@ public class TranslateProcessor
 			}
 		}
 		pLog.debug("datos a devolver por el metodo. htReturn: " + htReturn);
-		
 		return htReturn;
 	}
 
-	/** Funci�n Principal, recibe el XHTML y el Idioma y traduce este XHTML
+	/** Función Principal, recibe el XHTML y el Idioma y traduce este XHTML
 	 * 
 	 * @param strXHTML
 	 *           String con el XHTML
 	 * @param strLanguage
 	 *           String con el idioma (es_ES)
-	 * @return String con el HTML con la nueva traducci�n ya aplicada. */
+	 * @return String con el HTML con la nueva traducción ya aplicada. */
 	public static String processXHTML(String strXHTML, String strLanguage)
 	{
 		Document pDoc = null;
@@ -97,14 +91,11 @@ public class TranslateProcessor
 		{
 			pDoc = strToDocumentParser(strXHTML);
 			pLog.debug("String XHTML parseado a Documento correctamente.");
-		
 			if (pDoc != null)
 			{
 				alIdsTrans = extractIdsFromDocument(pDoc);
 				pLog.debug("IDs de traducciones extraidos correctamente.");
-				
 				pLog.debug("alIdsTrans lenght: " + alIdsTrans.size());
-				
 			}
 			if (alIdsTrans != null)
 			{
@@ -112,13 +103,10 @@ public class TranslateProcessor
 				{
 					htTransData = getTranslations(alIdsTrans);
 					pLog.debug("Traducciones recuperadas correctamente.");
-					
-					
 				}
 				catch (Exception ex)
 				{
 					pLog.error("Error al intentar recuperar las Traducciones de la BBDD", ex);
-					
 				}
 			}
 			if (htTransData != null)
@@ -128,25 +116,22 @@ public class TranslateProcessor
 					strLanguage = "es_ES";
 				}
 				pLog.debug("Documento premodificaci�n null: " + (pDoc == null));
-				
 				pDoc = modifyDocument(pDoc, htTransData, strLanguage);
-				pLog.debug("Documento modificado Correctamente. Tama�o de htTransData: " + htTransData.size());
-				
+				pLog.debug("Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
 				if (pDoc != null)
 				{
 					strReturn = documentToString(pDoc);
 				}
 				else
 				{
-					pLog.debug("Doc null en �ltimo paso.");
-					
+					pLog.debug("Doc null en último paso.");
 				}
 			}
 		}
 		return strReturn;
 	}
 
-	/** Funci�n para recuperar las traducciones dada una lista de IDs.
+	/** Función para recuperar las traducciones dada una lista de IDs.
 	 * 
 	 * @param alIdsTrans
 	 *           ArrayList<String> con los IDs de las traducciones.
@@ -211,7 +196,7 @@ public class TranslateProcessor
 		return pDoc;
 	}
 
-	/** Funci�n que extrae todos los IDs de data-translate dado un Document(Jsoup)
+	/** Función que extrae todos los IDs de data-translate dado un Document(Jsoup)
 	 * 
 	 * @param pDocument
 	 *           Document(Jsoup) con el HTML parseado.
@@ -231,7 +216,7 @@ public class TranslateProcessor
 		return alIdsTranslate;
 	}
 
-	/** Funci�n que modifica sus etiquetas data-translate con las nuevas traducciones.
+	/** Función que modifica sus etiquetas data-translate con las nuevas traducciones.
 	 * 
 	 * @param doc
 	 *           Document(Jsoup) a modificar.
@@ -239,7 +224,7 @@ public class TranslateProcessor
 	 *           Hashtable con los IDs data.translate y las traducciones.
 	 * @param strLanguage
 	 *           String con el idioma al que se quiere traducir.
-	 * @return Document(Jsoup) con la traducci�n ya puesta. */
+	 * @return Document(Jsoup) con la traducción ya puesta. */
 	private static Document modifyDocument(Document pDoc, Hashtable<String, TranslateEntry> htData, String strLanguage)
 	{
 		Enumeration<String> pEnumHTData = htData.keys();
@@ -260,9 +245,8 @@ public class TranslateProcessor
 				}
 			}
 		}
-		
-		/* se a�ade el atributo lang a la etiqueta html para poder manejar el idioma dentro de la p�gina */
-		pDoc.getElementsByTag("html").attr("lang", strLanguage.replace("_", "-"));	
+		/* se añade el atributo lang a la etiqueta html para poder manejar el idioma dentro de la página */
+		pDoc.getElementsByTag("html").attr("lang", strLanguage.replace("_", "-"));
 		return pDoc;
 	}
 
@@ -282,7 +266,6 @@ public class TranslateProcessor
 		else
 		{
 			pLog.error("El documento a convertir en nulo");
-			
 		}
 		return strReturn;
 	}

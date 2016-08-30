@@ -1,16 +1,10 @@
-/************************************************************************ 
- * CREACION: REFERENCIA: P000008956 
- * FECHA: 02-08-2016 
- * AUTOR: Victor Mu駉z Descripci髇: 
- * Clase contenedora de traducciones por idioma 
- * 
- * MODIFICACIONES: 
- * ************************************************************************/
+/************************************************************************ CREACION: REFERENCIA: P000008956 FECHA: 02-08-2016 AUTOR: Victor Mu帽oz Descripci贸n: Clase contenedora de traducciones
+ * por idioma MODIFICACIONES: ************************************************************************/
 package com.rsi.rvia.translates;
 
 import java.util.Hashtable;
 
-/** Clase para guardar las diferentes traducciones en funcion del c骴igo de la traducci髇. */
+/** Clase para guardar las diferentes traducciones en funcion del c贸digo de la traducci贸n. */
 public class TranslateEntry
 {
 	private final String						strCode;
@@ -19,14 +13,14 @@ public class TranslateEntry
 	/** Constructor de la clase.
 	 * 
 	 * @param strCode
-	 *           Codigo de la traducci髇. */
+	 *           Codigo de la traducci贸n. */
 	public TranslateEntry(String strCode)
 	{
 		this.strCode = strCode;
 		this.htTranslates = new Hashtable<String, String>();
 	}
 
-	/** @return Codigo de la traducci髇. */
+	/** @return Codigo de la traducci贸n. */
 	public String getCode()
 	{
 		return strCode;
@@ -38,11 +32,11 @@ public class TranslateEntry
 		return htTranslates;
 	}
 
-	/** Devuelve una traducci髇 concreta dado un idioma.
+	/** Devuelve una traducci贸n concreta dado un idioma.
 	 * 
 	 * @param strLanguage
-	 *           Idioma del que se quiere la traducci髇.
-	 * @return String con la traducci髇 en el idioma dado. */
+	 *           Idioma del que se quiere la traducci贸n.
+	 * @return String con la traducci贸n en el idioma dado. */
 	public String getTranslate(String strLanguage)
 	{
 		if (this.htTranslates.containsKey(strLanguage))
@@ -51,12 +45,12 @@ public class TranslateEntry
 			return null;
 	}
 
-	/** A馻de una nueva traducci髇 al Hashtable de traducciones.
+	/** A帽ade una nueva traducci贸n al Hashtable de traducciones.
 	 * 
 	 * @param strIdioma
-	 *           Idioma de la nueva traducci髇.
+	 *           Idioma de la nueva traducci贸n.
 	 * @param strTraduccion
-	 *           Traducci髇 nueva. */
+	 *           Traducci贸n nueva. */
 	public void addTranslate(String strLanguage, String strTranslate)
 	{
 		if (!htTranslates.containsKey(strLanguage))

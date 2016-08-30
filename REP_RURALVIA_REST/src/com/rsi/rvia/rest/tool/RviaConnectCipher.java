@@ -10,6 +10,13 @@ public class RviaConnectCipher
 	public static String		RVIA_CONNECT_KEY	= "rsi12345RSI12345";	// 128 bit key
 	private static String	ENCRYPT_MODE_RVIA	= "AES";
 
+	/** Cifra un texto en funcion de una clave que se le pasa
+	 * 
+	 * @param strText
+	 *           Texto sin cifrar
+	 * @param strSecretKey
+	 *           Clave para cifrar el texto
+	 * @return String texto cifrado en base a la clave. */
 	public static String symmetricEncrypt(String strText, String strSecretKey)
 	{
 		byte[] bRaw;
@@ -33,6 +40,13 @@ public class RviaConnectCipher
 		return strEncryptedString;
 	}
 
+	/** Descifra una cadena de texto en funcion de una clave
+	 * 
+	 * @param strText
+	 *           String cifrado
+	 * @param strSecretKey
+	 *           String con la clave
+	 * @return String con la cadena de texto descifrada */
 	public static String symmetricDecrypt(String strText, String strSecretKey)
 	{
 		Cipher pCipher;
@@ -57,6 +71,12 @@ public class RviaConnectCipher
 		return pEncryptedString;
 	}
 
+	/** Cifra una cadena de datos usando el esquema 'AES' y como clave utiliza el valor de la constante 'RVIA_CONNECT_KEY'
+	 * 
+	 * @param strData
+	 *           Cadena de datos inicialmente descifrado
+	 * @return String Datos cifrados
+	 * @throws Exception */
 	public static String cipherUserData(String strData) throws Exception
 	{
 		String strReturn;
@@ -68,6 +88,13 @@ public class RviaConnectCipher
 		return strReturn;
 	}
 
+	/** Descifra la cadena de datos usando como clave el contenido de la constante 'RVIA_CONNECT_KEY' y usando el esquema
+	 * 'AES'.
+	 * 
+	 * @param strData
+	 *           Cadena de datos inicialmente cifrada
+	 * @return String con cadena de texto descifrada
+	 * @throws Exception */
 	public static String decipherUserData(String strData) throws Exception
 	{
 		String strReturn;

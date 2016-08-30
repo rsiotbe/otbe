@@ -6,7 +6,10 @@ import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import org.json.JSONArray;
@@ -196,7 +199,8 @@ public class Utils
 		String strDescription = "";
 		Element pError = null;
 		Document pDoc = Jsoup.parse(strHtml);
-		if(pDoc.getElementsByClass("txtaviso").size() > 0){
+		if (pDoc.getElementsByClass("txtaviso").size() > 0)
+		{
 			pError = pDoc.getElementsByClass("txtaviso").get(0);
 		}
 		if (pError != null)
@@ -224,7 +228,7 @@ public class Utils
 				strMessage = "Error rvia";
 			}
 			strDescription = "Error Rvia: " + strMessage;
-			strReturn = getJsonError(strCode,strMessage,strDescription);
+			strReturn = getJsonError(strCode, strMessage, strDescription);
 		}
 		else
 		{
@@ -232,20 +236,38 @@ public class Utils
 		}
 		return strReturn;
 	}
-	public static String getJsonError(String strCode,String strMessage, String strDescription){
+
+	public static String getJsonError(String strCode, String strMessage, String strDescription)
+	{
 		String strReturn = "";
 		JSONObject pJson;
-		try{
+		try
+		{
 			pJson = new JSONObject();
 			pJson.put("code", strCode);
 			pJson.put("message", strMessage);
 			pJson.put("description", strDescription);
-			
 			strReturn = pJson.toString();
-		}catch (JSONException ex){
+		}
+		catch (JSONException ex)
+		{
 			pLog.error("Error al formar el JSON de Error");
 			strReturn = "{}";
 		}
+		return strReturn;
+	}
+
+	public static String hashTable2Json(Hashtable<String, String> htData) throws JSONException
+	{
+		String strReturn = "{}";
+		JSONObject pJson = new JSONObject();
+		Iterator<Entry<String, String>> pIterator = htData.entrySet().iterator();
+		while (pIterator.hasNext())
+		{
+			Map.Entry<String, String> pPair = (Entry<String, String>) pIterator.next();
+			pJson.put(pPair.getKey(), pPair.getValue());
+		}
+		strReturn = pJson.toString();
 		return strReturn;
 	}
 }

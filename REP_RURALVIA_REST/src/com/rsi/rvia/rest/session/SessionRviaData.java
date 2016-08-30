@@ -65,13 +65,13 @@ public class SessionRviaData
 	{
 		String[] strParameters;
 		String strDesToken = "";
-		pLog.debug("Se procede a cargar la configuraci髇 de la conexi髇 con ruralvia");
-		/* se coprueba si el contenido viene encriptado enel par醡etro token */
+		pLog.debug("Se procede a cargar la configuraci贸n de la conexi贸n con ruralvia");
+		/* se comprueba si el contenido viene encriptado enel par谩metro token */
 		strToken = request.getParameter("token");
 		if (strToken != null)
 		{
-			pLog.debug("La informaci髇 viene cifrada, se procede a descifrarla");
-			/* se desencipta la informaci髇 */
+			pLog.debug("La informaci贸n viene cifrada, se procede a descifrarla");
+			/* se desencipta la informaci贸n */
 			strDesToken = RviaConnectCipher.symmetricDecrypt(strToken, RviaConnectCipher.RVIA_CONNECT_KEY);
 			pLog.debug("Contenido descifrado. Token: " + strDesToken);
 			/* se obtienen las variables recibidas */
@@ -112,7 +112,7 @@ public class SessionRviaData
 		}
 		else
 		{
-			pLog.debug("La informaci髇 no viene cifrada, se procede a leerla directamente de par醡etros");
+			pLog.debug("La informaci贸n no viene cifrada, se procede a leerla directamente de par谩metros");
 			strNodeRvia = request.getParameter("node");
 			strRviaSessionId = request.getParameter("RVIASESION");
 			strIsumUserProfile = request.getParameter("isumProfile");
@@ -120,23 +120,26 @@ public class SessionRviaData
 			strLanguage = request.getParameter("lang");
 		}
 		pCookiesRviaData = request.getCookies();
-		/* se precargan las proiedades de comunicaci髇 con RVIA */
+		/* se precargan las propiedades de comunicaci贸n con RVIA */
 		loadProperties();
 	}
 
+	/**
+	 * Caraga las propiedades de ruralvia
+	 */
 	private void loadProperties()
 	{
 		try
 		{
 			if (pAddressRviaProp.isEmpty())
 				pAddressRviaProp.load(this.getClass().getResourceAsStream("/RuralviaAddress.properties"));
-			pLog.debug("Se carga el fichero de resoluci髇 de direcciones");
-			/* se obtiene la maquina y puerto en la que existe la sesi瘩on del usuario */
+			pLog.debug("Se carga el fichero de resoluci贸n de direcciones");
+			/* se obtiene la maquina y puerto en la que existe la sesi贸n del usuario */
 			pUriRvia = new URI(pAddressRviaProp.getProperty(strNodeRvia));
 		}
 		catch (Exception ex)
 		{
-			pLog.error("Fallo al cargar las propiedades de conexi髇 con ruralvia", ex);
+			pLog.error("Fallo al cargar las propiedades de conexi贸n con ruralvia", ex);
 		}
 	}
 }
