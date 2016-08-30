@@ -2,6 +2,9 @@ package com.rsi.rvia.rest.template;
 
 import java.io.InputStream;
 import java.util.Hashtable;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.tool.Utils;
@@ -33,6 +36,7 @@ public class TemplateManager
 				strReturn = translateXhtml(strReturn, strLanguage);
 				htCacheTemplate.put(strCacheKey, strReturn);
 			}
+			strReturn = includeIframeScript(strReturn);
 			strReturn = includeJsonData(strReturn, strDataJson);
 		}
 		catch (Exception ex)
@@ -41,6 +45,15 @@ public class TemplateManager
 			pLog.error("No ha sido posible procesar la plantilla xhtml", ex);
 		}
 		return strReturn;
+	}
+	private static String includeIframeScript(String strReturn){
+		Document pHtml = Jsoup.parse(strReturn);
+		pHtml.outputSettings().prettyPrint(false);
+		Element pScript = pHtml.createElement("script");
+		pScript.attr("src","http://cdn.jsdelivr.net/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js");
+		pHtml.body().appendChild(pScript);
+		
+		return pHtml.html();
 	}
 	
 	private static String includeJsonData(String strXhtml, String strJsonData)
