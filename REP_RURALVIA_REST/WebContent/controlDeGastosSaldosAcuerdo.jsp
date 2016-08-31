@@ -2,7 +2,8 @@
     pageEncoding="UTF-8"
  	import="com.rsi.rvia.rest.DDBB.DDBBConnection,
 		 com.rsi.rvia.rest.DDBB.DDBBFactory,
-		 com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider,com.rsi.rvia.rest.DDBB.CIPOracleDDBB, 
+		 com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider,
+		 com.rsi.rvia.rest.DDBB.CIPOracleDDBB, 
 		 com.rsi.rvia.rest.tool.Utils, 
 		 com.rsi.rvia.rest.validator.DataValidator,
 		 java.sql.PreparedStatement,
@@ -94,7 +95,7 @@
 				" and mi_fecha_fin_mes >=?" +
 				" and mi_fecha_fin_mes < to_date('31129999','ddmmyyyy')";
 		
-		DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleCIP,"cip");
+		DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleCIP);
 		PreparedStatement pPreparedStatement = pDDBBConnection.prepareStatement(strQuery);			
 		
 		pPreparedStatement.setString(1,strEntidad);

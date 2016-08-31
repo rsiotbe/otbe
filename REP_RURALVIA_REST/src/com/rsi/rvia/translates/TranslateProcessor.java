@@ -26,6 +26,18 @@ public class TranslateProcessor
 	private static Logger									pLog			= LoggerFactory.getLogger(TranslateProcessor.class);
 	public static Hashtable<String, TranslateEntry>	htCacheData	= new Hashtable<String, TranslateEntry>();
 
+	
+	/**
+	 * Devuelve el tamaño de la cache
+	 * @return int con el tamaño de la cache
+	 */ 
+	public static int getSizeCache(){
+		int nReturn = 0;
+		if(htCacheData != null){
+			nReturn = htCacheData.size();
+		}
+		return nReturn;
+	}
 	/** Función que recibe una serie de identificadores de traducción e idioma y obtien su traducción
 	 * 
 	 * @param processIds
