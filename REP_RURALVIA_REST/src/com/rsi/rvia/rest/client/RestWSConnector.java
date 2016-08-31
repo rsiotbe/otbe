@@ -1,6 +1,5 @@
 package com.rsi.rvia.rest.client;
 
-import java.net.URI;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Enumeration;
@@ -28,6 +27,7 @@ import org.w3c.dom.NodeList;
 import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
+import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.tool.GettersRequestParams;
@@ -37,22 +37,18 @@ import com.rsi.rvia.rest.tool.Utils;
 public class RestWSConnector
 {
 	private static Logger	pLog			= LoggerFactory.getLogger(RestWSConnector.class);
-	private String				strTemplate	= "";
+	private MiqQuests			pMiqQuests;
 
-	public String getTemplate()
+	/**
+	 * Devuelve el objeto MiqQuests asociado a la petición
+	 * @return Objeto MiqQuests
+	 */
+	public MiqQuests getMiqQuests()
 	{
-		return this.strTemplate;
+		return this.pMiqQuests;
 	}
 
-	/** Obtiene un obejto URI a partir de un string que lo representa
-	 * 
-	 * @param strEndPoint
-	 *           String que contiene la uri
-	 * @return Objeto URI */
-	private static URI getBaseWSEndPoint(String strEndPoint)
-	{
-		return UriBuilder.fromUri(strEndPoint).build();
-	}
+
 
 	/** Realiza la llamada al proveedor de datos para obtener el resultado de la operación
 	 * 
@@ -71,12 +67,8 @@ public class RestWSConnector
 	public Response getData(HttpServletRequest pRequest, String strData, SessionRviaData pSessionRvia,
 			String strPrimaryPath, MultivaluedMap<String, String> pPathParams) throws Exception
 	{
-		String strComponentType = null;
-		String strEndPoint = null;
-		String strMethod;
-		int nIdMiq = 0;
 		Response pReturn = null;
-		strMethod = pRequest.getMethod();
+		String strMethod = pRequest.getMethod();
 		
 		/* se obtiene la configuración de la operativa desde base de datos */
 		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -86,45 +78,42 @@ public class RestWSConnector
 		ResultSet pResultSet = pDBConection.executeQuery(pPreparedStatement);
 		while (pResultSet.next())
 		{
-			strComponentType = pResultSet.getString("component_type");
-			strEndPoint = pResultSet.getString("end_point");
-			strTemplate = pResultSet.getString("miq_out_template");
-			nIdMiq = pResultSet.getInt("id_miq");
+			pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("component_type"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"));
 		}
 		pResultSet.close();
 		pPreparedStatement.close();
-		pLog.info("Se obtiene la configuración de la base de datos. Tipo de componente: " + strComponentType + " - EndPoint: " + strEndPoint + " - Template: " + strTemplate + " - IdMiq:" + nIdMiq);
-		pLog.info("Se recibe una petición con tipo de metodo : " +strMethod);
+		pLog.info("Se obtiene la configuración de la base de datos. MiqQuest: " + pMiqQuests);
+		pLog.info("Se recibe una petición con tipo de metodo : " + strMethod);
 		
 		/* se invoca al tipo de petición leido desde configuracón */
 		switch (strMethod)
 		{
 			case "GET":
-				if ("RVIA".equals(strComponentType))
+				if ("RVIA".equals(pMiqQuests.getComponentType()))
 				{
 					pLog.trace("Derivando petición a ruralvía");
-					pReturn = performRviaConnection(pRequest, strEndPoint, nIdMiq, pSessionRvia, strData);
+					pReturn = performRviaConnection(pRequest, pMiqQuests, pSessionRvia, strData);
 				}
 				else
 				{
 					pLog.trace("Solicitando petición REST");
-					pReturn = get(pRequest, strEndPoint, strPrimaryPath, pSessionRvia, pPathParams);
+					pReturn = get(pRequest, pMiqQuests, strPrimaryPath, pSessionRvia, pPathParams);
 				}
 				break;
 			case "POST":
-				if ("RVIA".equals(strComponentType))
+				if ("RVIA".equals(pMiqQuests.getComponentType()))
 				{
 					pLog.trace("Derivando petición a ruralvía");
-					pReturn = performRviaConnection(pRequest, strEndPoint, nIdMiq, pSessionRvia, strData);
+					pReturn = performRviaConnection(pRequest, pMiqQuests, pSessionRvia, strData);
 				}
 				else
 				{
 					pLog.trace("Solicitando petición REST");
-					pReturn = post(pRequest, strPrimaryPath, pSessionRvia, strData, strEndPoint, pPathParams);
+					pReturn = post(pRequest, strPrimaryPath, pSessionRvia, strData, pMiqQuests, pPathParams);
 				}
 				break;
 			case "PUT":
-				pReturn = put(pRequest, strPrimaryPath, pSessionRvia, strData, strEndPoint, pPathParams);
+				pReturn = put(pRequest, strPrimaryPath, pSessionRvia, strData, pMiqQuests, pPathParams);
 				break;
 			case "PATCH":
 				pLog.warn("No existe nbinguna acción para este método");
@@ -140,22 +129,21 @@ public class RestWSConnector
 	 * 
 	 * @param pRequest
 	 *           petición del cliente
-	 * @param strClavePagina
-	 *           clavePagina de la operativa a ser procesada por ruralvia
-	 * @param nIdMiq
-	 *           identificar de operativa interna
+	 * @param pMiqQuests
+	 *           Objeto MiqQuests con la información de la operativa
 	 * @param pSessionRvia
 	 *           datos de la petición recibida desde ruralvia
 	 * @param strData
 	 *           datos a enviar al proveedor
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception */
-	private static Response performRviaConnection(HttpServletRequest pRequest, String strClavePagina, int nIdMiq,
+	private static Response performRviaConnection(HttpServletRequest pRequest, MiqQuests pMiqQuests,
 			SessionRviaData pSessionRvia, String strData) throws Exception
 	{
 		WebTarget pTarget;
 		String strSesId = pSessionRvia.getRviaSessionId();
 		String strHost = pSessionRvia.getUriRvia().toString();
+		String strClavePagina = pMiqQuests.getEndPoint();
 		String strUrl = strHost + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + strSesId + "?clavePagina="
 				+ strClavePagina;
 		pLog.trace("Se compone la url a invocar a ruralvia: " + strUrl);
@@ -183,7 +171,7 @@ public class RestWSConnector
 			}
 		}
 		pLog.trace("Se procede a censar los nombres del los campos de la opereativa");
-		saveSenssionVarNames(nIdMiq, pSessionParamNames);
+		saveSenssionVarNames(pMiqQuests.getIdMiq(), pSessionParamNames);
 		pSessionFields.add("clavePagina", strClavePagina);
 		
 		/* Se evaluan los datos que llegan en ñla parte de datos */
@@ -310,6 +298,8 @@ public class RestWSConnector
 	 *           petición del cliente
 	 * @param strPathRest
 	 *           path de la petición
+	 * @param pMiqQuests
+	 *           Objeto MiqQuests con la información de la operativa
 	 * @param pSessionRvia
 	 *           datos de la petición recibida desde ruralvia
 	 * @param strJsonData
@@ -320,7 +310,7 @@ public class RestWSConnector
 	 *           Parámetros asociados al path
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception */
-	private static Response get(HttpServletRequest pRequest, String strEndPoint, String strPathRest,
+	private static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests, String strPathRest,
 			SessionRviaData pSessionRvia, MultivaluedMap<String, String> pPathParams) throws Exception
 	{
 		Client pClient = CustomRSIClient.getClient();
@@ -335,8 +325,8 @@ public class RestWSConnector
 		String strCODSecIp = GettersRequestParams.getCODSecIp(pRequest);
 		String pathQueryParams = "";
 		pathQueryParams = Utils.multiValuedMap2QueryString(pPathParams);
-		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint) + "?" + strQueryParams + pathQueryParams);
-		pLog.info("END_POINT:" + strEndPoint);
+		WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint() + "?" + strQueryParams + pathQueryParams);
+		pLog.info("END_POINT:" + pMiqQuests.getEndPoint());
 		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
 		pLog.info("GET: " + pReturn.toString());
 		return pReturn;
@@ -352,14 +342,14 @@ public class RestWSConnector
 	 *           Datos de la petición recibida desde ruralvia
 	 * @param strJsonData
 	 *           Datos a enviar
-	 * @param strEndPoint
-	 *           Endpoint del proveedor de datos
+	 * @param pMiqQuests
+	 *           Objeto MiqQuests con la información de la operativa
 	 * @param pPathParams
 	 *           Parámetros asociados al path
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception */
 	private static Response post(@Context HttpServletRequest pRequest, String strPathRest, SessionRviaData pSessionRvia,
-			String strJsonData, String strEndPoint, MultivaluedMap<String, String> pPathParams) throws Exception
+			String strJsonData, MiqQuests pMiqQuests, MultivaluedMap<String, String> pPathParams) throws Exception
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = CustomRSIClient.getClient();
@@ -392,7 +382,7 @@ public class RestWSConnector
 			pJson.put(strKey, (String) pPathParams.get(strKey).toString());
 		}
 		strJsonData = pJson.toString();
-		WebTarget pTarget = pClient.target(getBaseWSEndPoint(strEndPoint));
+		WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint());
 		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).post(Entity.json(strJsonData));
 		pLog.info("Respose POST: " + pReturn.toString());
 		return pReturn;
@@ -408,21 +398,21 @@ public class RestWSConnector
 	 *           Datos de la petición recibida desde ruralvia
 	 * @param strJsonData
 	 *           Datos a enviar
-	 * @param strEndPoint
-	 *           Endpoint del proveedor de datos
+	 * @param pMiqQuests
+	 *           Objeto MiqQuests con la información de la operativa
 	 * @param pPathParams
 	 *           Parámetros asociados al path
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception */
 	private static Response put(@Context HttpServletRequest pRequest, String strPathRest, SessionRviaData pSessionRvia,
-			String strJsonData, String strEndPoint, MultivaluedMap<String, String> pPathParams) throws Exception
+			String strJsonData, MiqQuests pMiqQuests, MultivaluedMap<String, String> pPathParams) throws Exception
 	{
 		/*
 		 * se reutiliza la petición post puesto que es similar, en caso de una implementación diferente, es necesario
 		 * definir este método desde cero
 		 */
 		pLog.warn("Se recibe un método PUT, pero se trata como si fuera un POST");
-		return post(pRequest, strPathRest, pSessionRvia, strJsonData, strEndPoint, pPathParams);
+		return post(pRequest, strPathRest, pSessionRvia, strJsonData, pMiqQuests, pPathParams);
 	}
 
 	/** Realiza una petición de tipo delete restFull al proveedor de datos (Ruralvia o WS dependiendo de la configuración)

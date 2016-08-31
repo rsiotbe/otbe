@@ -55,7 +55,7 @@ public class OperationManager
 			}
 			if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
 			{
-				String strTemplate = pRestConnector.getTemplate();
+				String strTemplate = pRestConnector.getMiqQuests().getTemplate();
 				if (strTemplate != null && !strTemplate.trim().isEmpty())
 				{
 					strPageResult = TemplateManager.processTemplate(strTemplate, pSessionRviaData.getLanguage(), strEntity);
