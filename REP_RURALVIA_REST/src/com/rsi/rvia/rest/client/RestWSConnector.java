@@ -54,7 +54,7 @@ public class RestWSConnector
 		return UriBuilder.fromUri(strEndPoint).build();
 	}
 
-	/** Realiza la llamda al proveedor de datos para obtener el resultado de la operación
+	/** Realiza la llamada al proveedor de datos para obtener el resultado de la operación
 	 * 
 	 * @param pRequest
 	 *           petición del cliente
@@ -77,13 +77,13 @@ public class RestWSConnector
 		int nIdMiq = 0;
 		Response pReturn = null;
 		strMethod = pRequest.getMethod();
+		
 		/* se obtiene la configuración de la operativa desde base de datos */
 		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
-		pLog.debug("Path Rest: " + strPrimaryPath);
-		PreparedStatement pPreparedStament = pDBConection.prepareStatement("select * from bdptb222_miq_quests where path_rest = '"
-				+ strPrimaryPath + "'");
-		ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
-		pLog.info("Query Ejecutada!");
+		pLog.debug("Path Rest solicitado: " + strPrimaryPath);
+		PreparedStatement pPreparedStatement = pDBConection.prepareStatement("select * from bdptb222_miq_quests where path_rest = ?");
+		pPreparedStatement.setString(1, strPrimaryPath);
+		ResultSet pResultSet = pDBConection.executeQuery(pPreparedStatement);
 		while (pResultSet.next())
 		{
 			strComponentType = pResultSet.getString("component_type");
@@ -91,33 +91,35 @@ public class RestWSConnector
 			strTemplate = pResultSet.getString("miq_out_template");
 			nIdMiq = pResultSet.getInt("id_miq");
 		}
-		pLog.info("Se obtiene la configuración de la base de datos. Template: " + strTemplate);
-		pLog.info("Preparando peticion para tipo " + strComponentType + " y endpoint " + strEndPoint + " # method: "
-				+ strMethod);
+		pResultSet.close();
+		pPreparedStatement.close();
+		pLog.info("Se obtiene la configuración de la base de datos. Tipo de componente: " + strComponentType + " - EndPoint: " + strEndPoint + " - Template: " + strTemplate + " - IdMiq:" + nIdMiq);
+		pLog.info("Se recibe una petición con tipo de metodo : " +strMethod);
+		
 		/* se invoca al tipo de petición leido desde configuracón */
 		switch (strMethod)
 		{
 			case "GET":
 				if ("RVIA".equals(strComponentType))
 				{
-					pLog.info("Derivando petición a ruralvía");
+					pLog.trace("Derivando petición a ruralvía");
 					pReturn = performRviaConnection(pRequest, strEndPoint, nIdMiq, pSessionRvia, strData);
 				}
 				else
 				{
-					pLog.info("Solicitando petición REST");
+					pLog.trace("Solicitando petición REST");
 					pReturn = get(pRequest, strEndPoint, strPrimaryPath, pSessionRvia, pPathParams);
 				}
 				break;
 			case "POST":
 				if ("RVIA".equals(strComponentType))
 				{
-					pLog.info("Derivando petición a ruralvía");
+					pLog.trace("Derivando petición a ruralvía");
 					pReturn = performRviaConnection(pRequest, strEndPoint, nIdMiq, pSessionRvia, strData);
 				}
 				else
 				{
-					pLog.info("Solicitando petición REST");
+					pLog.trace("Solicitando petición REST");
 					pReturn = post(pRequest, strPrimaryPath, pSessionRvia, strData, strEndPoint, pPathParams);
 				}
 				break;
@@ -125,6 +127,7 @@ public class RestWSConnector
 				pReturn = put(pRequest, strPrimaryPath, pSessionRvia, strData, strEndPoint, pPathParams);
 				break;
 			case "PATCH":
+				pLog.warn("No existe nbinguna acción para este método");
 				break;
 			case "DELETE":
 				pReturn = delete(pRequest);
@@ -155,30 +158,35 @@ public class RestWSConnector
 		String strHost = pSessionRvia.getUriRvia().toString();
 		String strUrl = strHost + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + strSesId + "?clavePagina="
 				+ strClavePagina;
+		pLog.trace("Se compone la url a invocar a ruralvia: " + strUrl);
 		Client pClient = CustomRSIClient.getClient();
 		Document pDoc = InterrogateRvia.getXmlDatAndUserInfo(pRequest, strClavePagina);
+		pLog.trace("Se obtiene el xml de configuración desde ruralvia y se procede a evaluar su contenido");
 		NodeList pNodos = pDoc.getElementsByTagName("field");
 		Vector<String> pSessionParamNames = new Vector<String>();
-		MultivaluedMap<String, String> pCamposDeSession = new MultivaluedHashMap<String, String>();
-		// Datos existentes en la session
+		MultivaluedMap<String, String> pSessionFields = new MultivaluedHashMap<String, String>();
+		
+		/* Se leen los datos de sesión recibidos en la configuración de la operativa de ruralvia para este usuario */
 		for (int i = 0; i < pNodos.getLength(); i++)
 		{
 			Element pElement = (Element) pNodos.item(i);
 			String strValue = pElement.getAttribute("value");
 			if (!strValue.isEmpty())
 			{
-				pLog.info(" - campo informado: " + pElement.getAttribute("name").toString() + ": " + strValue.toString());
-				pCamposDeSession.add(pElement.getAttribute("name"), strValue.toString());
+				pLog.info("campo " + pElement.getAttribute("name").toString() + "\t:\t" + strValue.toString());
+				pSessionFields.add(pElement.getAttribute("name"), strValue.toString());
 				pSessionParamNames.add(pElement.getAttribute("name"));
 			}
 			else
 			{
-				pLog.info(" X campo NO informado: " + pElement.getAttribute("name").toString() + ": " + strValue.toString());
+				pLog.info("campo " + pElement.getAttribute("name").toString() + "\t:\t<<NO INFORMADO>>");
 			}
 		}
+		pLog.trace("Se procede a censar los nombres del los campos de la opereativa");
 		saveSenssionVarNames(nIdMiq, pSessionParamNames);
-		pCamposDeSession.add("clavePagina", strClavePagina);
-		// Datos llegados por post
+		pSessionFields.add("clavePagina", strClavePagina);
+		
+		/* Se evaluan los datos que llegan en ñla parte de datos */
 		String[] pArr = strData.split("&");
 		if (!strData.trim().isEmpty())
 		{
@@ -191,12 +199,13 @@ public class RestWSConnector
 					continue;
 				if (pArr2[0].trim().isEmpty() || pArr2[1].trim().isEmpty())
 					continue;
-				pCamposDeSession.add(pArr2[0], pArr2[1]);
+				pSessionFields.add(pArr2[0], pArr2[1]);
 			}
 		}
-		pLog.info("URL ServletDirectoPortal: " + strUrl.toString());
+		pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
 		pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
-		Response pReturn = pTarget.request().post(Entity.form(pCamposDeSession));
+		Response pReturn = pTarget.request().post(Entity.form(pSessionFields));
+		pLog.trace("Respuesra obtenida desde ruralvia: " + pReturn);
 		return pReturn;
 	}
 
@@ -220,6 +229,8 @@ public class RestWSConnector
 			strParamName = aParamNames.get(i);
 			if (!strParamName.trim().isEmpty())
 			{
+				pLog.trace("Se evalua el campo " + strParamName + " para su censo en la operativa con id " + nIdMiq);
+				
 				/* se comprueba si ya existe este parámetro y está realacionado con la operativa */
 				strQuery = "select a.id_miq from  BEL.BDPTB222_MIQ_QUESTS a, "
 						+ "BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, BEL.BDPTB225_MIQ_SESSION_PARAMS c "
@@ -231,12 +242,14 @@ public class RestWSConnector
 				if (pResultSet.next())
 				{
 					/* el parametro existe y está relacionado, se pasa al siguiente parámetro */
-					pPreparedStatement.close();
 					pResultSet.close();
+					pPreparedStatement.close();
+					pLog.trace("El campo " + strParamName + " ya se encuentra censado para esta operativa");
 					continue;
 				}
-				pPreparedStatement.close();
 				pResultSet.close();
+				pPreparedStatement.close();
+
 				/* si el parámetro no existe, se comprueba si está definido como parámetro de culaquier otra opertativa */
 				strQuery = "select a.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS a where a.PARAMNAME = ?";
 				pPreparedStatement = pDBConnection.prepareStatement(strQuery);
@@ -246,14 +259,15 @@ public class RestWSConnector
 				{
 					/* si el parámetro ya está definido se obtiene su ID */
 					nIdMiqParam = pResultSet.getInt("ID_MIQ_PARAM");
-					pPreparedStatement.close();
 					pResultSet.close();
+					pPreparedStatement.close();
 				}
 				else
 				{
 					/* si el parámetro no está definido todavia se da de alta y se recupera su ID */
-					pPreparedStatement.close();
 					pResultSet.close();
+					pPreparedStatement.close();
+					
 					/* se obtiene el siguiente id de la tabla parámetros */
 					strQuery = "select (select * from (select ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS order by ID_MIQ_PARAM desc)	where rownum = 1) + 1 ID_MIQ_PARAM from dual;";
 					pPreparedStatement = pDBConnection.prepareStatement(strQuery);
@@ -262,13 +276,13 @@ public class RestWSConnector
 					{
 						/* se lee el nuevo id */
 						nIdMiqParam = pResultSet.getInt("ID_MIQ_PARAM");
-						pPreparedStatement.close();
 						pResultSet.close();
+						pPreparedStatement.close();
 					}
 					else
 					{
-						pPreparedStatement.close();
 						pResultSet.close();
+						pPreparedStatement.close();
 						throw new Exception("No se ha podido generar un id de secuencia para el campo ID_MIQ_PARAM de la tabla BEL.BDPTB225_MIQ_SESSION_PARAMS");
 					}
 					/* se procede a dar de alta el nuevo parámetro en la tabla */
@@ -407,6 +421,7 @@ public class RestWSConnector
 		 * se reutiliza la petición post puesto que es similar, en caso de una implementación diferente, es necesario
 		 * definir este método desde cero
 		 */
+		pLog.warn("Se recibe un método PUT, pero se trata como si fuera un POST");
 		return post(pRequest, strPathRest, pSessionRvia, strJsonData, strEndPoint, pPathParams);
 	}
 
@@ -418,9 +433,9 @@ public class RestWSConnector
 	 * @throws Exception */
 	private static Response delete(@Context HttpServletRequest pRequest) throws Exception
 	{
-		Response pReturn = null;
 		// /??? falta por implementar el método delete
-		return pReturn;
+		pLog.error("El método delete no está implementado");
+		throw new Exception("Se ha recibido una petición de tipo DELETE y no existe ningún método que implemente este tipo de peticiones");
 	}
 
 	/** Obtiene los parámetros necesarios para poder ejecutar una operación. Los datos se leen desde la base de datos de

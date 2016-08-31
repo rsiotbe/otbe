@@ -19,6 +19,7 @@ public class SessionRviaData
 	private String					strIsumUserProfile	= "";
 	private String					strIsumServiceId		= "";
 	private String					strLanguage				= "";
+	private String					strNRBE					= "";
 	private String					strToken					= "";
 
 	public String getNodeRvia()
@@ -56,6 +57,10 @@ public class SessionRviaData
 		return strLanguage;
 	}
 
+	public String getNRBE()
+	{
+		return strNRBE;
+	}
 	public String getToken()
 	{
 		return strToken;
@@ -108,6 +113,11 @@ public class SessionRviaData
 					if (strValue != null)
 						strLanguage = strValue;
 				}
+				else if ("NRBE".equals(strName))
+				{
+					if (strValue != null)
+						strNRBE = strValue;
+				}				
 			}
 		}
 		else
@@ -118,6 +128,7 @@ public class SessionRviaData
 			strIsumUserProfile = request.getParameter("isumProfile");
 			strIsumServiceId = request.getParameter("isumServiceId");
 			strLanguage = request.getParameter("lang");
+			strNRBE = request.getParameter("NRBE");
 		}
 		pCookiesRviaData = request.getCookies();
 		/* se precargan las propiedades de comunicación con RVIA */
@@ -141,5 +152,29 @@ public class SessionRviaData
 		{
 			pLog.error("Fallo al cargar las propiedades de conexión con ruralvia", ex);
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString ()
+	{
+		StringBuilder pSb = new StringBuilder();
+		pSb.append("NodeRvia        :" + strNodeRvia 			+ "\n");
+		pSb.append("URI             :" + pUriRvia 				+ "\n");
+		pSb.append("RviaSessionId   :" + strRviaSessionId 		+ "\n");
+		pSb.append("IsumUserProfile :" + strIsumUserProfile 	+ "\n");
+		pSb.append("Language        :" + strLanguage 			+ "\n");
+		pSb.append("NRBE            :" + strNRBE 					+ "\n");
+		pSb.append("Token           :" + strToken 				+ "\n");
+		pSb.append("Cookie          :" + strToken 				+ "\n");
+		if(pCookiesRviaData != null)
+		{
+			for(int i = 0; i < pCookiesRviaData.length; i++)
+			{
+				pSb.append("Cookie " + (i+1) + "         :" + pCookiesRviaData[i].getName() + " -> " + pCookiesRviaData[i].getValue()+ pCookiesRviaData[i-1].getValue()+ "\n");
+			}
+		}
+		return pSb.toString();
 	}
 }
