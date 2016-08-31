@@ -56,7 +56,7 @@ public class OperationManager
 			if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
 			{
 				String strTemplate = pRestConnector.getTemplate();
-				if (strTemplate != null)
+				if (strTemplate != null && !strTemplate.trim().isEmpty())
 				{
 					strPageResult = TemplateManager.processTemplate(strTemplate, pSessionRviaData.getLanguage(), strEntity);
 				}
