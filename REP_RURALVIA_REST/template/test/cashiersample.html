@@ -8,16 +8,68 @@
 
       <!-- Compiled and minified JavaScript -->
        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
-       <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-2.2.4.min.js">    </script>
+       <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+       <script src="/api/js/manageRequestRviaRest.js"></script>
 </head>
 <body>
 <div id="contenido">
 
 </div>
+<div id="botonera">
+      <a onclick="refrescar();" class="waves-effect waves-light btn">Refrescar</a>
+      <a onclick="ajaxGenerico();" class="waves-effect waves-light btn">Ajax Generico</a>
+      <a onclick="ajaxNormal();" class="waves-effect waves-light btn">Ajax Normal</a>
+      <a onclick="peticionAjax();" class="waves-effect waves-light btn">PRUEBAS</a>
+
+</div>
+
+<hr>
+
+<div id="ajaxNormal"></div>
+
+<hr>
+
+<div id="ajaxGenerico"></div>
 <script type="text/javascript">
 
-$(document).ready(function(){
-      function addContent(json) {
+function refrescar() {
+      var strUrl = "/api/rest/cashierLocatior?codigoEntidad=3016&longitud=-5.659779&latitud=42.573584&radio=19";
+      pageQuery(strUrl,callback);
+}
+function callback(){
+      console.log("callbacK llamado:");
+}
+
+function ajaxNormal() {
+      $.ajax({
+            url : '/api/rest/prueba/getddbb/help',
+            type : 'GET',
+            dataType : 'json',
+            success : ajaxNormalAction,
+            error : function(xhr, status) {
+                  console.log("Error al procesar la llamada ajaxNormal. xhr" + xhr + " - status: " + status);
+            }
+      });
+      console.log("Llamada ajax normal terminada.");
+}
+function ajaxNormalAction(respuesta) {
+      console.log("Ajax Normal Action - Respuesta: " + respuesta);
+      $("#ajaxNormal").text(respuesta);
+}
+
+function ajaxGenerico(){
+      var params = {};
+      params.type = 'GET';
+      params.url = '/api/rest/prueba/getddbb/help';
+      genericAjax(params,null,ajaxGenericoAction,null);
+      console.log("Llamada ajax generico terminada.");
+}
+function ajaxGenericoAction(respuesta){
+      console.log("Ajax Generico Action - Respuesta: " + respuesta);
+      $("#ajaxGenerico").text(respuesta);
+}
+
+function addContent(json) {
       var strReturn = '';
       strReturn += '<ul class="collection">';
       var listCashier = json.EE_O_LocalizadorCajeros.Respuesta.ListaCajeros;
@@ -35,13 +87,17 @@ $(document).ready(function(){
             strReturn += '<span class="secondary-content">'+ listCashier[cajero].comision +'</span>';
             strReturn += '</li>';
       }
-      strReturn += '</ul>';
-      $("#contenido").html(strReturn);
+            strReturn += '</ul>';
+            return strReturn;
       }
 
+$(document).ready(function(){
+      
+      
       var pJson = '__JSONDATA__';
 
-      addContent(pJson);
+      var strList = addContent(pJson);
+      $("#contenido").html(strList);
 });
 
  

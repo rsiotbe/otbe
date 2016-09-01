@@ -4,12 +4,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.isum.IsumValidation;
+import com.rsi.rvia.rest.error.ErrorManager;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.template.TemplateManager;
 import com.rsi.rvia.rest.tool.Utils;
@@ -51,7 +51,7 @@ public class OperationManager
 			if ((strEntity != null) && ((!strEntity.trim().startsWith("{")) || (!strEntity.trim().endsWith("}"))))
 			{
 				pLog.error("Error recibido de RVIA, se procede a procesarlo: " + strEntity);
-				strEntity = Utils.getJsonFormRviaError(strEntity);
+				strEntity = ErrorManager.getJsonFormRviaError(strEntity);
 			}
 			if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
 			{
@@ -72,7 +72,7 @@ public class OperationManager
 		}
 		else
 		{
-			String strError = Utils.getJsonError("500","Sesion mal recuperada","Ha habido un error con la sesion de RVIA.");
+			String strError = ErrorManager.getJsonError("500","Sesion mal recuperada","Ha habido un error con la sesion de RVIA.");
 			pReturn = Response.ok(strError).status(500).build();
 		}
 		return pReturn;
