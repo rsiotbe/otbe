@@ -17,12 +17,25 @@ public class TemplateManager
 	static Logger										pLog					= LoggerFactory.getLogger(TemplateManager.class);
 	public static String								JSON_DATA_TAG		= "'__JSONDATA__'";
 	public static Hashtable<String, String>	htCacheTemplate	= new Hashtable<String, String>();
-
+	
+	
+	/**
+	 * Devuelve el tamaño de la cache
+	 * @return int con el tamaño de la cache
+	 */ 
+	public static int getSizeCache(){
+		int nReturn = 0;
+		if(htCacheTemplate != null){
+			nReturn = htCacheTemplate.size();
+		}
+		return nReturn;
+	}
+	
 	public static String processTemplate(String strPathToTemplate, String strLanguage)
 	{
 		return processTemplate(strPathToTemplate, strLanguage, "{}");
 	}
-
+	
 	/** Busca el template y lo lee. Carga las traducciones. Inyecta el script para ajustar el iframe e inyecta los datos
 	 * en json.
 	 * 
@@ -38,7 +51,7 @@ public class TemplateManager
 		String strReturn;
 		try
 		{
-			String strCacheKey = htCacheTemplate + "_" + strLanguage;
+			String strCacheKey = strPathToTemplate + "_" + strLanguage;
 			pLog.debug("strCacheKey: " + strCacheKey);
 			if (htCacheTemplate.containsKey(strCacheKey))
 				strReturn = htCacheTemplate.get(strCacheKey);

@@ -2,7 +2,8 @@
     pageEncoding="UTF-8"
  	import="com.rsi.rvia.rest.DDBB.DDBBConnection,
 		 com.rsi.rvia.rest.DDBB.DDBBFactory,
-		 com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider,com.rsi.rvia.rest.DDBB.CIPOracleDDBB, 
+		 com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider,
+		 com.rsi.rvia.rest.DDBB.CIPOracleDDBB, 
 		 com.rsi.rvia.rest.tool.Utils, 
 		 java.sql.PreparedStatement,
 		 java.sql.ResultSet,
@@ -16,7 +17,7 @@
 <%
 
 	JSONObject jsonError = new JSONObject();
-	DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP,"cip");
+	DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP);
 	int contrato = Integer.parseInt(request.getParameter("idContract"));
 	String entidad = request.getParameter("codEntidad");
 	String q =

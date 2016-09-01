@@ -1,39 +1,91 @@
-<%@page import="com.rsi.rvia.rest.template.TemplateManager"%>
-<%@page import="com.rsi.rvia.translates.TranslateProcessor"%>
-<%@page import="java.lang.NullPointerException"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-    
-    <%
-    	boolean fCheckStatus = false;
-    	String strCleanAll = (String) request.getParameter("clean");
-    	switch (strCleanAll)
+<%@page
+	import="com.rsi.rvia.rest.template.TemplateManager,
+				com.rsi.rvia.translates.TranslateProcessor,
+				com.rsi.rvia.translates.TranslateEntry,
+				javax.servlet.http.HttpServletRequest,
+				org.slf4j.Logger,
+				org.slf4j.LoggerFactory,
+				java.util.Hashtable,
+				org.json.JSONObject;
+
+				"%><%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="UTF-8"%><%
+	Logger pLog = LoggerFactory.getLogger("CleanCache.jsp");
+	boolean fCheckStatus = false;
+
+	JSONObject pJson = new JSONObject();
+	String strResponse = "";
+	String strCleanAll = (String) request.getParameter("clean");
+	pLog.trace("StrCleanAll: " + strCleanAll);
+	String[] pStrPartes;
+	if (!strCleanAll.trim().isEmpty())
+	{
+		pStrPartes = strCleanAll.split(",");
+		for (String strItem : pStrPartes)
 		{
-			case "all":
-				try{
-       				TranslateProcessor.htCacheData = null;
-       				TemplateManager.htCacheTemplate = null;
-       				fCheckStatus = true;
-      			}catch (NullPointerException ex){
-      	 			fCheckStatus = false;
-       			}
-				break;
-			case "template":
-				break;
-			case "translate":
-				break;
+			pLog.trace("strItem: " + strItem);
+			if ("all".equals(strItem))
+			{
+				try
+				{
+					
+					TranslateProcessor.htCacheData =  new Hashtable<String, TranslateEntry>();
+					
+					TemplateManager.htCacheTemplate =  new Hashtable<String, String>();
+					
+					fCheckStatus = true;
+					JSONObject pJsonTrans = new JSONObject();
+					pJsonTrans.put("clean", fCheckStatus);
+					pJsonTrans.put("size", TranslateProcessor.getSizeCache());
+					pJson.put("translate", pJsonTrans);
+					JSONObject pJsonTemplate = new JSONObject();
+					pJsonTemplate.put("clean", fCheckStatus);
+					pJsonTemplate.put("size", TemplateManager.getSizeCache());
+					pJson.put("template", pJsonTemplate);
+					JSONObject pJsonAll = new JSONObject();
+					pJsonAll.put("clean", fCheckStatus);
+					pJsonAll.put("size", TemplateManager.getSizeCache() + TranslateProcessor.getSizeCache());
+					pJson.put("all", pJsonAll);
+				}
+				catch (Exception ex)
+				{
+					fCheckStatus = false;
+				}
+			}
+			if ("template".equals(strItem))
+			{
+				try
+				{
+					TemplateManager.htCacheTemplate = new Hashtable<String, String>();
+					fCheckStatus = true;
+					JSONObject pJsonTemplate = new JSONObject();
+					pJsonTemplate.put("clean", fCheckStatus);
+					pJsonTemplate.put("size", TemplateManager.getSizeCache());
+					pJson.put("template", pJsonTemplate);
+				}
+				catch (Exception ex)
+				{
+					fCheckStatus = false;
+				}
+			}
+			if ("translate".equals(strItem))
+			{
+				try
+				{
+					TranslateProcessor.htCacheData =  new Hashtable<String, TranslateEntry>();
+					fCheckStatus = true;
+					JSONObject pJsonTrans = new JSONObject();
+					pJsonTrans.put("clean", fCheckStatus);
+					pJsonTrans.put("size", TranslateProcessor.getSizeCache());
+					pJson.put("translate", pJsonTrans);
+				}
+				catch (Exception ex)
+				{
+					fCheckStatus = false;
+				}
+			}
 		}
-    	
-    	
-    	
-    %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
-</head>
-<body>
-	<h2>Caches liberadas: <%= fCheckStatus%></h2>
-</body>
-</html>
+	}
+
+	strResponse = pJson.toString();
+%><%=strResponse%>

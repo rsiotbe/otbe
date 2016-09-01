@@ -3,7 +3,7 @@
  	import="com.rsi.rvia.rest.DDBB.DDBBConnection,
 		 com.rsi.rvia.rest.DDBB.DDBBFactory,
 		 com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider,
-		 com.rsi.rvia.rest.DDBB.OracleDDBB, 
+		 com.rsi.rvia.rest.DDBB.CIPOracleDDBB,  
 		 com.rsi.rvia.rest.tool.Utils,		 
 		 java.sql.PreparedStatement,
 		 java.sql.ResultSet,
@@ -43,7 +43,7 @@
 	JSONObject pp= new JSONObject();
 	pp.put("token", "sitio para el token");
 	Logger	pLog = LoggerFactory.getLogger("jsp");	
-	DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.Oracle,"cip");	
+	DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP);	
 	PreparedStatement ps = p3.prepareStatement(q);
 	ps.setString(1,request.getParameter("codEntidad"));
 	ps.setString(2, request.getParameter("idInternoPe"));
