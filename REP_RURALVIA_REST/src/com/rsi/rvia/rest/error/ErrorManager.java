@@ -167,4 +167,25 @@ public class ErrorManager
 		}
 		return strReturn;
 	}
+	
+	public static boolean isJsonError(String strJson) throws JSONException{
+		boolean fReturn = false;
+		
+		JSONObject pJson = new JSONObject(strJson);
+		String strCodeStatus = pJson.getString("code");
+		if(strCodeStatus != null){
+			fReturn = true;
+		}
+		return fReturn;
+	}
+	public static String getCodeError(String strJson) throws JSONException{
+		String strReturn = "0";
+		
+		JSONObject pJson = new JSONObject(strJson);
+		String strCodeStatus = pJson.getString("code");
+		if(strCodeStatus != null){
+			strReturn = strCodeStatus;
+		}
+		return strReturn;
+	}
 }

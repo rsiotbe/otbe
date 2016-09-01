@@ -24,56 +24,51 @@ public class OperationManager
 			MediaType pMediaType) throws Exception
 	{
 		RestWSConnector pRestConnector;
-		String strPageResult = null;
+		String strEntity = "";
+		String strTemplate = "";
 		Response pReturn = null;
 		SessionRviaData pSessionRviaData = null;
 		pSession = pRequest.getSession(true);
 		try
 		{
 			pSessionRviaData = new SessionRviaData(pRequest);
-		}
-		catch (Exception ex)
-		{
-			pLog.error("Error la iniciar un nuevo SessionRviaData: ", ex);
-			pSessionRviaData = null;
-		}
-		if (pSessionRviaData != null)
-		{
-			pSession.setAttribute("token", pSessionRviaData.getToken());
-			if (!IsumValidation.IsValidService(pSessionRviaData))
-				throw new Exception("El servicio solicitado no es permitido para este usuario por ISUM");
-			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
-			MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
-			pRestConnector = new RestWSConnector();
-			pReturn = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath, pListParams);
-			int nStatusCode = pReturn.getStatus();
-			String strEntity = pReturn.readEntity(String.class);
-			if ((strEntity != null) && ((!strEntity.trim().startsWith("{")) || (!strEntity.trim().endsWith("}"))))
+			if (pSessionRviaData != null)
 			{
-				pLog.error("Error recibido de RVIA, se procede a procesarlo: " + strEntity);
-				strEntity = ErrorManager.getJsonFormRviaError(strEntity);
+				pSession.setAttribute("token", pSessionRviaData.getToken());
+				if (!IsumValidation.IsValidService(pSessionRviaData))
+					throw new Exception("El servicio solicitado no es permitido para este usuario por ISUM");
+				String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
+				MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
+				pRestConnector = new RestWSConnector();
+				pReturn = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath, pListParams);
+				int nStatusCode = pReturn.getStatus();
+				strTemplate = pRestConnector.getMiqQuests().getTemplate();
+				strEntity = pReturn.readEntity(String.class);
+				pLog.info("Respuesta recuperada del conector, se va a procesar.");
+				strEntity = ResponseManager.processResponse(strEntity, nStatusCode);
+				pLog.info("Respuesta procesada correctamente.");
 			}
-			if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
+			if (ErrorManager.isJsonError(strEntity))
 			{
-				String strTemplate = pRestConnector.getMiqQuests().getTemplate();
-				if (strTemplate != null && !strTemplate.trim().isEmpty())
-				{
-					strPageResult = TemplateManager.processTemplate(strTemplate, pSessionRviaData.getLanguage(), strEntity);
-				}
-			}
-			if (strPageResult != null)
-			{
-				pReturn = Response.ok(strPageResult).build();
+				pLog.info("La respuesta ha sido un error.");
+				int nNewStatusCode = Integer.parseInt(ErrorManager.getCodeError(strEntity));
+				//TODO Aqui se meteria el error en la plantilla de Error
+				pReturn = Response.ok(strEntity).status(nNewStatusCode).build();
 			}
 			else
 			{
-				pReturn = Response.ok(strEntity).status(nStatusCode).build();
+				if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
+				{
+					pLog.info("Se ha encontrado plantilla para la respuesta.");
+					strEntity = TemplateManager.processTemplate(strTemplate, pSessionRviaData.getLanguage(), strEntity);
+				}
+				pReturn = Response.ok(strEntity).build();
+				
 			}
 		}
-		else
+		catch (Exception ex)
 		{
-			String strError = ErrorManager.getJsonError("500","Sesion mal recuperada","Ha habido un error con la sesion de RVIA.");
-			pReturn = Response.ok(strError).status(500).build();
+			// TODO añadir las excepciones.
 		}
 		return pReturn;
 	}

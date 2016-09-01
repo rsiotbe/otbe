@@ -1,8 +1,6 @@
 package com.rsi.rvia.rest.error.exceptions;
 
-import org.json.JSONObject;
 import com.rsi.rvia.rest.error.ErrorManager;
-import com.rsi.rvia.rest.tool.Utils;
 
 public class SessionException extends RviaRestException
 {
