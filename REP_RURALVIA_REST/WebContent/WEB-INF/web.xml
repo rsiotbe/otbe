@@ -26,4 +26,12 @@
     <servlet-name>translation servlet</servlet-name>
     <url-pattern>/translate/*</url-pattern>
   </servlet-mapping> 
+  <session-config>
+    <cookie-config>
+        <name>APIREST</name>
+        <path>/api</path>
+        <http-only>true</http-only>
+        <!--<secure>true</secure>-->
+    </cookie-config>
+</session-config>
 </web-app>

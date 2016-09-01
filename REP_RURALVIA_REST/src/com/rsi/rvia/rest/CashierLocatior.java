@@ -24,7 +24,6 @@ public class CashierLocatior
 	{
 		pLog.info("Se recibe una peticion de cashierLocatior");
 		String strData = "";
-		SessionRviaData pSessionRviaData = new SessionRviaData(pRequest);
 		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);
 		return pReturn;
 	}

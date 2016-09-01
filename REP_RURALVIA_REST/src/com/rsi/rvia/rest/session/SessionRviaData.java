@@ -61,6 +61,7 @@ public class SessionRviaData
 	{
 		return strNRBE;
 	}
+
 	public String getToken()
 	{
 		return strToken;
@@ -73,6 +74,12 @@ public class SessionRviaData
 		pLog.debug("Se procede a cargar la configuración de la conexión con ruralvia");
 		/* se comprueba si el contenido viene encriptado enel parámetro token */
 		strToken = request.getParameter("token");
+		if (strToken == null)
+		{
+			/* se comprueba si el token esta inicializado en la sesión de la aplicación */
+			strToken = (String) request.getSession(false).getAttribute("token");
+			pLog.info("Se lee el token de la sesión del usuario. Token: " + strToken);
+		}
 		if (strToken != null)
 		{
 			pLog.debug("La información viene cifrada, se procede a descifrarla");
@@ -117,11 +124,12 @@ public class SessionRviaData
 				{
 					if (strValue != null)
 						strNRBE = strValue;
-				}				
+				}
 			}
 		}
 		else
 		{
+			/* se intenta leer la información sin cifrar */
 			pLog.debug("La información no viene cifrada, se procede a leerla directamente de parámetros");
 			strNodeRvia = request.getParameter("node");
 			strRviaSessionId = request.getParameter("RVIASESION");
@@ -135,9 +143,7 @@ public class SessionRviaData
 		loadProperties();
 	}
 
-	/**
-	 * Caraga las propiedades de ruralvia
-	 */
+	/** Caraga las propiedades de ruralvia */
 	private void loadProperties()
 	{
 		try
@@ -153,26 +159,28 @@ public class SessionRviaData
 			pLog.error("Fallo al cargar las propiedades de conexión con ruralvia", ex);
 		}
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString ()
+	public String toString()
 	{
 		StringBuilder pSb = new StringBuilder();
-		pSb.append("NodeRvia        :" + strNodeRvia 			+ "\n");
-		pSb.append("URI             :" + pUriRvia 				+ "\n");
-		pSb.append("RviaSessionId   :" + strRviaSessionId 		+ "\n");
-		pSb.append("IsumUserProfile :" + strIsumUserProfile 	+ "\n");
-		pSb.append("Language        :" + strLanguage 			+ "\n");
-		pSb.append("NRBE            :" + strNRBE 					+ "\n");
-		pSb.append("Token           :" + strToken 				+ "\n");
-		pSb.append("Cookie          :" + strToken 				+ "\n");
-		if(pCookiesRviaData != null)
+		pSb.append("NodeRvia        :" + strNodeRvia + "\n");
+		pSb.append("URI             :" + pUriRvia + "\n");
+		pSb.append("RviaSessionId   :" + strRviaSessionId + "\n");
+		pSb.append("IsumUserProfile :" + strIsumUserProfile + "\n");
+		pSb.append("Language        :" + strLanguage + "\n");
+		pSb.append("NRBE            :" + strNRBE + "\n");
+		pSb.append("Token           :" + strToken + "\n");
+		pSb.append("Cookie          :" + strToken + "\n");
+		if (pCookiesRviaData != null)
 		{
-			for(int i = 0; i < pCookiesRviaData.length; i++)
+			for (int i = 0; i < pCookiesRviaData.length; i++)
 			{
-				pSb.append("Cookie " + (i+1) + "         :" + pCookiesRviaData[i].getName() + " -> " + pCookiesRviaData[i].getValue()+ pCookiesRviaData[i-1].getValue()+ "\n");
+				pSb.append("Cookie " + (i + 1) + "         :" + pCookiesRviaData[i].getName() + " -> "
+						+ pCookiesRviaData[i].getValue() + pCookiesRviaData[i - 1].getValue() + "\n");
 			}
 		}
 		return pSb.toString();

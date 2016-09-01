@@ -61,16 +61,14 @@ public class OperationManager
 					strPageResult = TemplateManager.processTemplate(strTemplate, pSessionRviaData.getLanguage(), strEntity);
 				}
 			}
-			NewCookie pCookieToken = new NewCookie("token", pSessionRviaData.getToken());
 			if (strPageResult != null)
 			{
-				pReturn = Response.ok(strPageResult).cookie(pCookieToken).build();
+				pReturn = Response.ok(strPageResult).build();
 			}
 			else
 			{
-				pReturn = Response.ok(strEntity).status(nStatusCode).cookie(pCookieToken).build();
+				pReturn = Response.ok(strEntity).status(nStatusCode).build();
 			}
-			pLog.info("Se Añade la Cookie con el Token a la respuesta.");
 		}
 		else
 		{

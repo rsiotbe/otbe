@@ -2,11 +2,9 @@
 //loadPage( url [, data ] [, callbackFunction ] )
 function pageQuery(url, data, callbackFunction)
 {
-	/* se comprueba que existe la funci髇 antes de invocarla */
-	if (typeof parent.updateSessionIsumRvia === "function") { 
-		parent.updateSessionIsumRvia();
-		console.log('Refresco de sesi髇 ISUM-RVIA solicitado');
-	}
+	/* se comprueba que existe la funci贸n antes de invocarla */
+	updateSessionIsumRvia();
+	console.log('Refresco de sesi贸n ISUM-RVIA solicitado');
 	if(jQuery.isFunction(data))
 	{
 		callbackFunction = data;
@@ -15,7 +13,7 @@ function pageQuery(url, data, callbackFunction)
 	$('html').load(url, data,callbackFunction);	
 }
 
-/* Funci髇 gen閞ica para las llamadas AJAX  */
+/* Funci贸n gen茅rica para las llamadas AJAX  */
 function genericAjax (jParameters, beforeSendCallback, successCallback, errorCallback ) 
 {
 	var result = ""; 
@@ -51,13 +49,23 @@ function genericAjax (jParameters, beforeSendCallback, successCallback, errorCal
 	return result ;
 };
 
-/* se captuaran todos los eventos de peticiones ajax para mantener la sesi髇 de ISUM y RVIA */
+function updateSessionIsumRvia() 
+{
+	$.ajax({
+		url : '/isum/srv.BDP_RVIA05_SOLICITAR_TARJ_PAR.BDP_RVIA05_SERV_CAM_CLA_CONTRA',
+		type : 'POST',
+		success : function(){
+			console.log('Session ISUM updated OK');	
+		},
+		error : function(xhr, status) {
+			console.error('Session ISUM updated KO. Status:' + status);	
+		}
+	});
+}
+
+/* se captuaran todos los eventos de peticiones ajax para mantener la sesi贸n de ISUM y RVIA */
 $(document).ajaxSend(function(event,request, settings) 
 {
-	/* se compruba que existe la funci髇 antes de invocarla */
-	if (typeof parent.updateSessionIsumRvia === "function") { 
-		parent.updateSessionIsumRvia();
-		console.log('Refresco de sesi髇 ISUM-RVIA solicitado');
-	}
- ;
+	updateSessionIsumRvia();
+	console.log('Refresco de sesi锟絥 ISUM-RVIA solicitado');
 });
