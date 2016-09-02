@@ -44,8 +44,10 @@ public class OperationManager
 				int nStatusCode = pReturn.getStatus();
 				strTemplate = pRestConnector.getMiqQuests().getTemplate();
 				strEntity = pReturn.readEntity(String.class);
+				pLog.trace("StrEntity preProcesado: " + strEntity);
 				pLog.info("Respuesta recuperada del conector, se va a procesar.");
 				strEntity = ResponseManager.processResponse(strEntity, nStatusCode);
+				pLog.trace("StrEntity posProcesado: " + strEntity);
 				pLog.info("Respuesta procesada correctamente.");
 			}
 			if (ErrorManager.isJsonError(strEntity))

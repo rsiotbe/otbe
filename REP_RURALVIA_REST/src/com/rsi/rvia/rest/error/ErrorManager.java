@@ -68,25 +68,32 @@ public class ErrorManager
 		return (nStatusCode != 200);
 	}
 
-	public static boolean isWSError(String strHtml) throws JSONException
+	public static boolean isWSError(String strHtml)
 	{
 		boolean fReturn = false;
 		String strPrimaryKey = "";
-		JSONObject pJsonReader = new JSONObject(strHtml);
-		Iterator<String> pKeys = pJsonReader.keys();
-		if (pKeys.hasNext())
+		try
 		{
-			strPrimaryKey = (String) pKeys.next();
-		}
-		if (!strPrimaryKey.trim().isEmpty())
-		{
-			JSONObject pJsonContent = new JSONObject();
-			pJsonContent = pJsonReader.getJSONObject(strPrimaryKey);
-			String strStatusResponse = (String) pJsonContent.get("codigoRetorno");
-			if ("0".equals(strStatusResponse))
+			JSONObject pJsonReader = new JSONObject(strHtml);
+			Iterator<String> pKeys = pJsonReader.keys();
+			if (pKeys.hasNext())
 			{
-				fReturn = true;
+				strPrimaryKey = (String) pKeys.next();
 			}
+			if (!strPrimaryKey.trim().isEmpty())
+			{
+				JSONObject pJsonContent = new JSONObject();
+				pJsonContent = pJsonReader.getJSONObject(strPrimaryKey);
+				String strStatusResponse = (String) pJsonContent.get("codigoRetorno");
+				if ("0".equals(strStatusResponse))
+				{
+					fReturn = true;
+				}
+			}
+		}
+		catch (JSONException ex)
+		{
+			pLog.error("No es un error de WS.");
 		}
 		return fReturn;
 	}
@@ -95,11 +102,58 @@ public class ErrorManager
 	{
 		boolean fReturn = false;
 		Document pDoc = Jsoup.parse(strHtml);
-		if ((pDoc.getElementsByClass("txtaviso") != null) && (pDoc.getElementsByClass("txtaviso").size() > 0))
+		try
+		{
+			if ((pDoc.getElementsByClass("txtaviso") != null) && (pDoc.getElementsByClass("txtaviso").size() > 0))
+			{
+				fReturn = true;
+			}
+		}
+		catch (Exception ex)
+		{
+			pLog.error("Error al procesar la respuesta como HTML.");
+		}
+		return fReturn;
+	}
+
+	public static boolean isJsonError(String strJson)
+	{
+		boolean fReturn = false;
+		String strCodeStatus = "";
+		try
+		{
+			JSONObject pJson = new JSONObject(strJson);
+			strCodeStatus = pJson.getString("code");
+		}
+		catch (JSONException ex)
+		{
+			pLog.error("No existe el arbol 'code' en el JSON, no se trata de un error.");
+		}
+		if (!strCodeStatus.trim().isEmpty())
 		{
 			fReturn = true;
 		}
 		return fReturn;
+	}
+
+	public static String getCodeError(String strJson)
+	{
+		String strReturn = "0";
+		String strCodeStatus = "";
+		try
+		{
+			JSONObject pJson = new JSONObject(strJson);
+			strCodeStatus = pJson.getString("code");
+		}
+		catch (JSONException ex)
+		{
+			pLog.error("No se encuentra la etiqueda 'code' dentro del JSON.");
+		}
+		if (!strCodeStatus.trim().isEmpty())
+		{
+			strReturn = strCodeStatus;
+		}
+		return strReturn;
 	}
 
 	public static String getJsonFormRviaError(String strHtml) throws JSONException
@@ -164,27 +218,6 @@ public class ErrorManager
 		{
 			pLog.error("Error al formar el JSON de Error");
 			strReturn = "{}";
-		}
-		return strReturn;
-	}
-	
-	public static boolean isJsonError(String strJson) throws JSONException{
-		boolean fReturn = false;
-		
-		JSONObject pJson = new JSONObject(strJson);
-		String strCodeStatus = pJson.getString("code");
-		if(strCodeStatus != null){
-			fReturn = true;
-		}
-		return fReturn;
-	}
-	public static String getCodeError(String strJson) throws JSONException{
-		String strReturn = "0";
-		
-		JSONObject pJson = new JSONObject(strJson);
-		String strCodeStatus = pJson.getString("code");
-		if(strCodeStatus != null){
-			strReturn = strCodeStatus;
 		}
 		return strReturn;
 	}
