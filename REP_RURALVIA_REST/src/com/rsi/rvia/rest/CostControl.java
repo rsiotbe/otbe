@@ -2,10 +2,8 @@ package com.rsi.rvia.rest;
 
 
 import javax.servlet.http.HttpServletRequest;
-//import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -13,10 +11,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.rsi.rvia.rest.DDBB.DDBBConnection;
-import com.rsi.rvia.rest.DDBB.DDBBFactory;
-import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
-import com.rsi.rvia.rest.client.*;
+import com.rsi.rvia.rest.client.OperationManager;
+//import javax.ws.rs.Consumes;
 
 
 /**

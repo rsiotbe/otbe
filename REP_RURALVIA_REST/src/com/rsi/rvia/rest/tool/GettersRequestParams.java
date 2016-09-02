@@ -15,7 +15,7 @@ public class GettersRequestParams
 	public static String getCODSecEnt(HttpServletRequest pRequest)
 	{
 		String strReturn = null;
-		List<String> listPosibilities = new ArrayList();
+		List<String> listPosibilities = new ArrayList<String>();
 		listPosibilities.add("codEntidad");
 		listPosibilities.add("codigoEntidad");
 		listPosibilities.add("CodigoEntidad");
@@ -35,7 +35,7 @@ public class GettersRequestParams
 		}
 		if (strReturn == null)
 		{
-			strReturn = "3008";
+			strReturn = "";
 		}
 		return strReturn;
 	}
@@ -48,7 +48,7 @@ public class GettersRequestParams
 	public static String getCODSecUser(HttpServletRequest pRequest)
 	{
 		String strReturn = null;
-		List<String> listPosibilities = new ArrayList();
+		List<String> listPosibilities = new ArrayList<String>();
 		listPosibilities.add("CODSecUser");
 		listPosibilities.add("codigoUsuario");
 		listPosibilities.add("userCode");
@@ -78,7 +78,7 @@ public class GettersRequestParams
 	public static String getCODSecTrans(HttpServletRequest pRequest)
 	{
 		String strReturn = null;
-		List<String> listPosibilities = new ArrayList();
+		List<String> listPosibilities = new ArrayList<String>();
 		listPosibilities.add("CODSecTrans");
 		listPosibilities.add("codigoTransaccion");
 		listPosibilities.add("CodTransaccion");
@@ -108,7 +108,7 @@ public class GettersRequestParams
 	public static String getCODTerminal(HttpServletRequest pRequest)
 	{
 		String strReturn = null;
-		List<String> listPosibilities = new ArrayList();
+		List<String> listPosibilities = new ArrayList<String>();
 		listPosibilities.add("CODTerminal");
 		listPosibilities.add("codigoTerminal");
 		listPosibilities.add("codTerminal");
@@ -138,7 +138,7 @@ public class GettersRequestParams
 	public static String getCODApl(HttpServletRequest pRequest)
 	{
 		String strReturn = null;
-		List<String> listPosibilities = new ArrayList();
+		List<String> listPosibilities = new ArrayList<String>();
 		listPosibilities.add("CODApl");
 		listPosibilities.add("codigoApl");
 		listPosibilities.add("CodigoAplicacion");
@@ -167,7 +167,7 @@ public class GettersRequestParams
 	public static String getCODCanal(HttpServletRequest pRequest)
 	{
 		String strReturn = null;
-		List<String> listPosibilities = new ArrayList();
+		List<String> listPosibilities = new ArrayList<String>();
 		listPosibilities.add("CODCanal");
 		listPosibilities.add("canal");
 		listPosibilities.add("codigoCanal");
@@ -198,7 +198,7 @@ public class GettersRequestParams
 	public static String getCODSecIp(HttpServletRequest pRequest)
 	{
 		String strReturn = null;
-		List<String> listPosibilities = new ArrayList();
+		List<String> listPosibilities = new ArrayList<String>();
 		listPosibilities.add("CODSecIp");
 		listPosibilities.add("codigoIP");
 		listPosibilities.add("codigoIp");
