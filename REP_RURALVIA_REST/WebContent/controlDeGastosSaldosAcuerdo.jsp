@@ -34,7 +34,9 @@
 	try{
 		strJsonError = DataValidator.validation(strPathRest, htParams);
 	}catch(Exception ex){
-		strJsonError = "{\"Error\":\"Error al validar los datos.\"}";
+		
+		strJsonError = "{\"Error\":\""+ ex.getMessage() +"\"}";
+		ex.printStackTrace();
 	}
 	/*int contrato = 0;
 	try{
@@ -103,7 +105,8 @@
 		pPreparedStatement.setInt(2, nContrato);
 		pPreparedStatement.setDate(3, java.sql.Date.valueOf(strDate));
 		
-		ResultSet pResultSet = pDDBBConnection.executeQuery(pPreparedStatement);		
+		ResultSet pResultSet = pDDBBConnection.executeQuery(pPreparedStatement);
+		JSONObject pJson = new JSONObject();
 		JSONObject pJsonExit= new JSONObject();
 		pJsonExit.put("token", "sitio para el token");
 		Logger	pLog = LoggerFactory.getLogger("jsp");	
@@ -112,8 +115,9 @@
 		pResultSet.close();
 		pPreparedStatement.close();
 		pDDBBConnection.BBDD_Disconnect();
-		pJsonExit.put("output", json);	
-		strResponse = pJsonExit.toString();
+		pJsonExit.put("output", json);
+		pJson.put("response", pJsonExit);
+		strResponse = pJson.toString();
 	}else{
 		strResponse = strJsonError;
 	}

@@ -16,7 +16,7 @@ import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 /** Clase destinada a las validaciones de datos censados en la tabla bdptb228 */
 public class DataValidator
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(DataValidator.class);
+	private static Logger pLog = LoggerFactory.getLogger(DataValidator.class);
 
 	public DataValidator()
 	{
@@ -35,10 +35,10 @@ public class DataValidator
 		boolean fCheck = true;
 		ArrayList<JSONObject> alError = new ArrayList();
 		String strReturn = "{}";
-		String strQuery = "select * from" + "bel.bdptb222_miq_quests z," + "bel.bdptb226_miq_quest_rl_session x,"
-				+ "bel.bdptb225_miq_session_params a," + "BEL.BDPTB228_MIQ_PARAM_VALIDATION b" + "where z.path_rest='"
-				+ strPathRest + "'" + "and z.id_miq=x.id_miq" + "and x.id_miq_param= a.id_miq_param"
-				+ "and a.id_miq_param=b.id_miq_param";
+		String strQuery = "select * from " + " bel.bdptb222_miq_quests z," + " bel.bdptb226_miq_quest_rl_session x,"
+				+ " bel.bdptb225_miq_session_params a," + " BEL.BDPTB228_MIQ_PARAM_VALIDATION b" + " where z.path_rest='"
+				+ strPathRest + "'" + " and z.id_miq=x.id_miq" + " and x.id_miq_param= a.id_miq_param"
+				+ " and a.id_miq_param=b.id_miq_param";
 		DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
 		PreparedStatement pPreparedStatement = pDDBBConnection.prepareStatement(strQuery);
 		pLog.info("Se prepara la Query para la validación: " + pPreparedStatement.toString());
@@ -94,58 +94,70 @@ public class DataValidator
 			{
 				continue;
 			}
-			switch (strParamDataType)
+			if (fCheck)
 			{
-				case "Date":
-					String strValue = htParams.get(strParamName);
-					if (strValue == null)
-					{
-						strValue = htParams.get(strAliasName);
-					}
-					pLog.info("Validan Date: " + strValue);
-					if (!validateDate(strValue, strParamMask))
-					{
-						fCheck = false;
-					}
-					break;
-				case "Integer":
-					strValue = htParams.get(strParamName);
-					if (strValue == null)
-					{
-						strValue = htParams.get(strAliasName);
-					}
-					pLog.info("Validan Integer: " + strValue);
-					if (!validateInteger(strValue, nParamMin, nParamMax))
-					{
-						fCheck = false;
-					}
-					break;
-				case "Entidad":
-					strValue = htParams.get(strParamName);
-					if (strValue == null)
-					{
-						strValue = htParams.get(strAliasName);
-					}
-					pLog.info("Validan Entida: " + strValue);
-					if (!validateEntidad(strValue))
-					{
-						fCheck = false;
-					}
-					break;
-				case "String":
-					strValue = htParams.get(strParamName);
-					if (strValue == null)
-					{
-						strValue = htParams.get(strAliasName);
-					}
-					pLog.info("Validan String: " + strValue);
-					if (!validateString(strValue, nParamMin, nParamMax, nParamLong))
-					{
-						fCheck = false;
-					}
-					break;
-				default:
-					break;
+				switch (strParamDataType)
+				{
+					case "Date":
+						String strValue = htParams.get(strParamName);
+						if (strValue == null)
+						{
+							strValue = htParams.get(strAliasName);
+						}
+						pLog.info("Validan Date: " + strValue);
+						if (!validateDate(strValue, strParamMask))
+						{
+							fCheck = false;
+						}else{
+							pLog.trace("Validacion Date Correcta.");
+						}
+						
+						break;
+					case "Integer":
+						strValue = htParams.get(strParamName);
+						if (strValue == null)
+						{
+							strValue = htParams.get(strAliasName);
+						}
+						pLog.info("Validan Integer: " + strValue);
+						if (!validateInteger(strValue, nParamMin, nParamMax))
+						{
+							fCheck = false;
+						}else{
+							pLog.trace("Validacion Integer Correcta.");
+						}
+						break;
+					case "Entidad":
+						strValue = htParams.get(strParamName);
+						if (strValue == null)
+						{
+							strValue = htParams.get(strAliasName);
+						}
+						pLog.info("Validan Entida: " + strValue);
+						if (!validateEntidad(strValue))
+						{
+							fCheck = false;
+						}else{
+							pLog.trace("Validacion Entidad Correcta.");
+						}
+						break;
+					case "String":
+						strValue = htParams.get(strParamName);
+						if (strValue == null)
+						{
+							strValue = htParams.get(strAliasName);
+						}
+						pLog.info("Validan String: " + strValue);
+						if (!validateString(strValue, nParamMin, nParamMax, nParamLong))
+						{
+							fCheck = false;
+						}else{
+							pLog.trace("Validacion String Correcta.");
+						}
+						break;
+					default:
+						break;
+				}
 			}
 		}
 		// Si fCheck es falso ha dado un error en algun lado.
@@ -173,7 +185,7 @@ public class DataValidator
 	{
 		boolean fReturn = true;
 		SimpleDateFormat pDateFormat = new SimpleDateFormat(strMask);
-		if ((strValue != null) || (strValue.trim().isEmpty()))
+		if ((strValue == null) || (strValue.trim().isEmpty()))
 		{
 			fReturn = false;
 		}
@@ -213,7 +225,7 @@ public class DataValidator
 					fReturn = false;
 				}
 			}
-			if (nMax != -1)
+			if (nMax > 0)
 			{
 				if (nValue >= nMax)
 				{

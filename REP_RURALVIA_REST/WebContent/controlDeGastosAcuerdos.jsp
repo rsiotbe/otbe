@@ -41,6 +41,7 @@
 		" 	and t2.mi_fecha_fin = (select MI_FECHA_PROCESO from rdwc01.ce_carga_tabla" +
 		" 		where nomtabla='MI_LINEA_GRUPO')" ;
 	JSONObject pp= new JSONObject();
+	JSONObject pJson = new JSONObject();
 	pp.put("token", "sitio para el token");
 	Logger	pLog = LoggerFactory.getLogger("jsp");	
 	DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP);	
@@ -53,7 +54,8 @@
 	ps.close();
 	p3.BBDD_Disconnect();
 	pp.put("output", json);	
-	String respuesta=pp.toString();
+	pJson.put("response",pp);
+	String respuesta=pJson.toString();
 	response.setHeader("content-type", "application/json");
 	//pLog.info("------------------------------- " + json.toString());
 %>

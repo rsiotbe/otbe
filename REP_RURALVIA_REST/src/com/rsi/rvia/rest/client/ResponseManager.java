@@ -30,6 +30,7 @@ public class ResponseManager
 			pLog.info("Respuesta sin errores.");
 			if(!strEntity.trim().isEmpty()){
 				JSONObject pJsonReader = new JSONObject(strEntity);
+
 				String strPrimaryKey = "";
 				Iterator<String> pKeys = pJsonReader.keys();
 				if(pKeys.hasNext() ){
@@ -37,15 +38,20 @@ public class ResponseManager
 				}
 				
 				if(!strPrimaryKey.trim().isEmpty()){
-					JSONObject pJsonContent = new JSONObject();
-					pJsonContent = pJsonReader.getJSONObject(strPrimaryKey);
-					String strStatusResponse = (String) pJsonContent.get("codigoRetorno");
-					if("1".equals(strStatusResponse)){
-						pJson.put("response", pJsonContent.get("Respuesta"));
-						strReturn = pJson.toString();
+					if("response".equals(strPrimaryKey)){
+						strReturn = strEntity;
 					}else{
-						strReturn = ErrorManager.processError(strEntity, nStatus);
+						JSONObject pJsonContent = new JSONObject();
+						pJsonContent = pJsonReader.getJSONObject(strPrimaryKey);
+						String strStatusResponse = (String) pJsonContent.get("codigoRetorno");
+						if("1".equals(strStatusResponse)){
+							pJson.put("response", pJsonContent.get("Respuesta"));
+							strReturn = pJson.toString();
+						}else{
+							strReturn = ErrorManager.processError(strEntity, nStatus);
+						}
 					}
+					
 					
 				}
 			}

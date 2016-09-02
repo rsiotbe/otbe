@@ -45,6 +45,7 @@
 	
 	rs = p3.executeQuery(ps);		
 	JSONObject jsonExit= new JSONObject();
+	JSONObject pJson = new JSONObject();
 	jsonExit.put("token", "sitio para el token");
 	Logger	pLog = LoggerFactory.getLogger("jsp");	
 	
@@ -53,7 +54,8 @@
 	ps.close();
 	p3.BBDD_Disconnect();
 	jsonExit.put("output", json);	
-	String respuesta=jsonExit.toString();
+	pJson.put("response", jsonExit);
+	String respuesta=pJson.toString();
 	response.setHeader("content-type", "application/json");
 	//pLog.info("------------------------------- " + json.toString());
 %>
