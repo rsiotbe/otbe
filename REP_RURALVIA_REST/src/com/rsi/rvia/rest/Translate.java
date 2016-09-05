@@ -22,15 +22,14 @@ public class Translate
 	@Produces(MediaType.TEXT_HTML)
 	public String translateHTML()
 	{
-		Utils pUtil = new Utils();
-		String strPrimaryPath = pUtil.getPrimaryPath(uriInfo);
+		String strPrimaryPath = Utils.getPrimaryPath(uriInfo);
 		pLog.debug("uriInfo.getPath(): " + strPrimaryPath);
 		String strHTMLPruebas = "<html><head><meta charset=\"UTF-8\"/><title>Prueba HTML translator</title></head>"
-				+ "<body><div><h2>Bloque Traducci髇 1</h2><p data-translate=\"COMUN_Literal_Escribe_tu_nombre\">bla bla bla</p></div><div>"
-				+ "<h2>Bloque Traducci髇 2</h2><p data-translate=\"COMUN_Literal_Contratacion_-_Buscar_oficina_no_ofi\">bla</p></div><div>"
-				+ "<h2>Bloque Traducci髇 2</h2><p data-translate=\"COMUN_Literal_Contratacion_-_Buscar_oficina_no_ofi\">bla</p></div><div>"
-				+ "<h2>Bloque Traducci髇 2</h2><p data-translate=\"COMUN_Literal_Contratacion_-_Buscar_oficina_no_ofi\">bla</p></div><div>"
-				+ "<h2>Bloque Traducci髇 3</h2><p data-translate=\"HC_comun_ClienteClau4\">bla bla bla</p></div></body></html>";
+				+ "<body><div><h2>Bloque Traducci贸n 1</h2><p data-translate=\"COMUN_Literal_Escribe_tu_nombre\">bla bla bla</p></div><div>"
+				+ "<h2>Bloque Traducci贸n 2</h2><p data-translate=\"COMUN_Literal_Contratacion_-_Buscar_oficina_no_ofi\">bla</p></div><div>"
+				+ "<h2>Bloque Traducci贸n 2</h2><p data-translate=\"COMUN_Literal_Contratacion_-_Buscar_oficina_no_ofi\">bla</p></div><div>"
+				+ "<h2>Bloque Traducci贸n 2</h2><p data-translate=\"COMUN_Literal_Contratacion_-_Buscar_oficina_no_ofi\">bla</p></div><div>"
+				+ "<h2>Bloque Traducci贸n 3</h2><p data-translate=\"HC_comun_ClienteClau4\">bla bla bla</p></div></body></html>";
 		String strReturn = "";
 		strReturn = TranslateProcessor.processXHTML(strHTMLPruebas, "es_ES");
 		return strReturn;

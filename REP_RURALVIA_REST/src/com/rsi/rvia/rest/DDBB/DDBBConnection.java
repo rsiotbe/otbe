@@ -4,13 +4,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 /**
- * Interfaz que tiene los métodos minimos de una conexión a base de datos
+ * Interfaz que tiene los mÃ©todos minimos de una conexiÃ³n a base de datos
  *
  */
 public interface DDBBConnection
 {
 	/**
-	 * Prepara la ejecución de una consulta sobre la base de datos
+	 * Prepara la ejecuciÃ³n de una consulta sobre la base de datos
 	 * @param strSQL Sql a ejecutar
 	 * @return Objeto asociado a la consulta
 	 * @throws Exception

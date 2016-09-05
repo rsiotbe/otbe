@@ -15,32 +15,50 @@
 	<property name="dist-directory" value="${base-directory}/dist" />
 	
 	<target name="clean">
+		<echo message="Se procede a eliminar las rutas build y dist" />
     	<rmdir dir="${build-directory}"/>
     	<rmdir dir="${dist-directory}" />
 	</target>	
 	<target name="init">
+		<echo message="project-name       : ${project-name}"/>
+		<echo message="war-file-name      : ${war-file-name}"/>
+		<echo message="base-directory     : ${base-directory}"/>
+		<echo message="source-directory   : ${source-directory}"/>
+		<echo message="template-directory : ${template-directory}"/>
+		<echo message="web-directory      : ${web-directory}"/>
+		<echo message="web-xml-file       : ${web-xml-file}"/>
+		<echo message="lib-directory      : ${lib-directory}"/>
+		<echo message="build-directory    : ${build-directory}"/>
+		<echo message="classes-directory  : ${classes-directory}"/>
+		<echo message="configurations-directory :${configurations-directory}"/>
+		<echo message="dist-directory     :  ${dist-directory}"/>
+		<echo message="Se crean los directorio build, classes y dist"/>
     	<mkdir dir="${build-directory}"/>
     	<mkdir dir="${classes-directory}"/>
     	<mkdir dir="${dist-directory}" />
 	</target>
 	<path id="compile.classpath">
-    	<fileset dir="WebContent/WEB-INF/lib">
+    	<fileset dir="${lib-directory}">
         	<include name="*.jar"/>
    		 </fileset>
 	</path>	
 	<target name="compile" depends="init" >
-    	<javac destdir="${classes-directory}" debug="true" srcdir="${source-directory}">
+		<echo message="Se procede a compilar las clases"/>
+	   	<javac destdir="${classes-directory}" debug="true" srcdir="${source-directory}">
         	<classpath refid="compile.classpath"/>
    	 	</javac>
 	</target>
 	<target name="war" depends="compile">
+		<echo message="Se procede a empaquetar todo en el war"/>
+		<echo message="Se elimina el posible war anterior"/>
 		<delete file="${dist-directory}/${war-file-name}" />
+		<echo message="Se genera el nuevo war"/>
 		<war warfile="${dist-directory}/${war-file-name}" webxml="${web-xml-file}">
 			<classes dir="${classes-directory}" />
 			<classes dir="${configurations-directory}" />
 			<fileset dir="${web-directory}">
 				<!-- Need to exclude it since webxml is an attribute of the war tag above -->
-				<exclude name="WEB-INF/web.xml" />
+				<exclude name="${web-xml-file}" />
 			</fileset>
 			<lib dir="${lib-directory}"/>
 			<fileset dir="${template-directory}"></fileset>	
