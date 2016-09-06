@@ -35,7 +35,7 @@ public class IsumValidation
 		}
 		catch(Exception ex)
 		{
-			throw ISUMException(500, ex);
+			throw new ISUMException(500, ex);
 		}
 		return fReturn;
 	}

@@ -8,13 +8,15 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.rvia.rest.error.exceptions.RVIAException;
 import com.rsi.rvia.rest.error.exceptions.RviaRestException;
+import com.rsi.rvia.rest.error.exceptions.WSException;
 
 public class ErrorManager
 {
 	private static Logger pLog = LoggerFactory.getLogger(ErrorManager.class);
 
-	public static String processError(String strEntity, int nStatusCode) throws JSONException
+	public static String processError(String strEntity, int nStatusCode) throws Exception
 	{
 		String strReturn = getJsonError("500", "Error interno en el servidor", "Error en el manejor de la respuesta.");
 		if (isWebError(strEntity))
@@ -46,7 +48,8 @@ public class ErrorManager
 						String strCode = pJsonErrors.getString("codigoMostrar");
 						String strMessage = pJsonErrors.getString("mensajeMostrar");
 						String strDescription = pJsonErrors.getString("solucion");
-						strReturn = getJsonError(strCode, strMessage, strDescription);
+						int nCode = Integer.parseInt(strCode);
+						throw new WSException(nCode,strMessage,strDescription);
 					}
 				}
 			}
@@ -157,7 +160,7 @@ public class ErrorManager
 		return strReturn;
 	}
 
-	public static String getJsonFormRviaError(String strHtml) throws JSONException
+	public static String getJsonFormRviaError(String strHtml) throws JSONException, RVIAException
 	{
 		String strReturn = "";
 		String strCode = "";
@@ -194,7 +197,8 @@ public class ErrorManager
 				strMessage = "Error rvia";
 			}
 			strDescription = "Error Rvia: " + strMessage;
-			strReturn = getJsonError(strCode, strMessage, strDescription);
+			int nCode = Integer.parseInt(strCode);
+			throw new RVIAException(nCode,strMessage,strDescription);
 		}
 		else
 		{
@@ -223,16 +227,16 @@ public class ErrorManager
 		return strReturn;
 	}
 	
-	public static String getJsonError(String strCode, RviaRestException ex)
+	public static String getJsonError(RviaRestException ex)
 	{
 		String strReturn = "";
 		JSONObject pJson;
 		try
 		{
 			pJson = new JSONObject();
-			pJson.put("code", strCode);
+			pJson.put("code", ex.getErrorCode());
 			pJson.put("message", ex.getMessage());
-			pJson.put("description", ex.getMessage());
+			pJson.put("description", ex.getDescription());
 			strReturn = pJson.toString();
 		}
 		catch (JSONException ex2)

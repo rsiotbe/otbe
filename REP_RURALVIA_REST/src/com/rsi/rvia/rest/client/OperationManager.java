@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.rsi.isum.IsumValidation;
 import com.rsi.rvia.rest.error.ErrorManager;
 import com.rsi.rvia.rest.error.exceptions.ISUMException;
+import com.rsi.rvia.rest.error.exceptions.RVIAException;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.template.TemplateManager;
 import com.rsi.rvia.rest.tool.Utils;
@@ -22,10 +23,11 @@ public class OperationManager
 	private static Logger		pLog	= LoggerFactory.getLogger(TranslateProcessor.class);
 
 	public static Response proccesFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String strData,
-			MediaType pMediaType) throws Exception
+			MediaType pMediaType)
 	{
 		RestWSConnector pRestConnector;
 		String strEntity = "";
+		int nStatusCodeFinal = 200;
 		String strTemplate = "";
 		Response pReturn = null;
 		SessionRviaData pSessionRviaData = null;
@@ -69,9 +71,18 @@ public class OperationManager
 				
 			}
 		}
-		catch (Exception ex)
+		catch (ISUMException exISUM)
 		{
-			// TODO añadir las excepciones.
+			strEntity = ErrorManager.getJsonError(exISUM);
+			nStatusCodeFinal = exISUM.getErrorCode();
+		}
+		catch (RVIAException exRVIA)
+		{
+			strEntity = ErrorManager.getJsonError(exRVIA);
+			nStatusCodeFinal = exRVIA.getErrorCode();
+		}
+		catch(Exception ex){
+			
 		}
 		return pReturn;
 	}
