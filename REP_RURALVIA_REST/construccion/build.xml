@@ -2,7 +2,12 @@
 <project name="REP_RURALVIA_REST" default="war" basedir=".">
 	<property file="build.scm.properties" />
 	<property name="project-name" value="REP_RUALVIA_REST" />
-	<property name="war-file-name" value="${project-name}.war" />
+	<property name="deploy-name" value="api" />
+	<tstamp>
+		<format property="timestamp" pattern="yyyyMMdd_HHmm" />
+	</tstamp>
+	
+	<property name="war-file-name" value="${deploy-name}##${timestamp}.war" />
 	<property name="base-directory" value=".." />
 	<property name="source-directory" value="${base-directory}/src" />
 	<property name="template-directory" value="${base-directory}/template" />
