@@ -3,6 +3,9 @@ package com.rsi.rvia.test;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -12,43 +15,107 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.json.JSONArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.rsi.rvia.rest.PruebaMetodos;
 import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.tool.Utils;
 
-@Path("/pooltest")
 public class DDBBPoolTest
 {
-	
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response checkDoubleDDBB(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
-			throws Exception
-	{
-		Response pReturn;
-		String strReturn = "";
-		String strQuery = "select * from belts100 where clave_pagina = 'BDP_HC_NC_CLAUSULAS_P'";
-		String strQueryCip = " SELECT" + 
-				" NUM_SEC_AC \"numAcuerdo\", id_interno_pe" +
-				" FROM rdwc01.mi_clte_rl_ac" +
-				" WHERE MI_FECHA_FIN=to_date('31/12/9999','dd/mm/yyyy')" +
-				" AND COD_NRBE_EN='3076'" +
-				" AND COD_RL_PERS_AC='01'" +
-				" AND NUM_RL_ORDEN=1" +
-				" AND COD_ECV_PERS_AC='2'" +
-				" AND ID_INTERNO_PE=16" ;
-		
-		Connection pConection = DDBBPoolFactory.getDDBB(DDBBProvider. OracleBanca);
-		PreparedStatement pPreparedStament = pConection.prepareStatement(strQuery);
-		ResultSet pResultSet = pPreparedStament.executeQuery();
-		JSONArray jsonArray = new JSONArray();
-		jsonArray = Utils.convertResultSet2JSON(pResultSet);
-		
+	private static Logger pLog = LoggerFactory.getLogger(DDBBPoolTest.class);
 
+	public enum QueryType
+	{
+		QuerySlow, QueryFast
+	}
+
+	public static void checkPoolDDBB(int nMax, QueryType pQueryType, ThreadPoolExecutor executor) throws Exception
+	{
 		
-		strReturn = "hola";
-		pReturn = Response.ok(strReturn).build();
-		return pReturn;
+		for (int i = 0; i <= nMax; i++)
+		{
+			switch (pQueryType)
+			{
+				case QuerySlow:
+					executor.execute(new Runnable() {
+						@Override
+						public void run()
+						{
+							String strQueryLong = "SELECT codigo,idioma,traduccion FROM bdptb079_idioma";
+							Connection pConection = null;
+							ResultSet  pResultSet = null;
+							try
+							{
+								pLog.trace("Entrando en una ejecución de traducciones");
+								long time_start, time_end;
+								time_start = System.currentTimeMillis();
+								pConection = DDBBPoolFactory.getDDBB(com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider.OracleBanca);
+								PreparedStatement pPreparedStament = pConection.prepareStatement(strQueryLong);
+								pResultSet = pPreparedStament.executeQuery();
+								pResultSet.close();
+								pConection.close();
+								time_end = System.currentTimeMillis();
+								pLog.trace("Peticion BBDD Lenta: Completada con exito. La tare ha durado " + (time_end - time_start) + " millisegundos");
+							}
+							catch (Exception e)
+							{
+								try
+								{
+									pResultSet.close();
+									pConection.close();
+								}
+								catch (SQLException e1)
+								{
+									pLog.error("Error al cerrar las conexiones de la BBDD.");
+								}
+								
+								pLog.error("Error en Thread bbdd.");
+							}
+						}
+					});
+					break;
+				case QueryFast:
+					executor.execute(new Runnable() {
+						@Override
+						public void run()
+						{
+							String strQueryFast = "select * from bdptb222_miq_quests";
+							Connection pConection = null;
+							ResultSet pResultSet = null;
+							try
+							{
+								pLog.trace("Entrando en una ejecución rapida");
+								long time_start, time_end;
+								time_start = System.currentTimeMillis();
+								pConection = DDBBPoolFactory.getDDBB(com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider.OracleBanca);
+								PreparedStatement pPreparedStament = pConection.prepareStatement(strQueryFast);
+								pResultSet = pPreparedStament.executeQuery();
+								pResultSet.close();
+								pConection.close();
+								time_end = System.currentTimeMillis();
+								pLog.trace("Peticion BBDD Fast: Completada con exito. La tare ha durado " + (time_end - time_start) + " millisegundos");
+							}
+							catch (Exception e)
+							{
+								try
+								{
+									pResultSet.close();
+									pConection.close();
+								}
+								catch (SQLException e1)
+								{
+									pLog.error("Error al cerrar las conexiones de la BBDD.");
+								}
+								pLog.error("Error en Thread bbdd.");
+							}
+						}
+					});
+					break;
+			}
+		}
+		
 	}
 }

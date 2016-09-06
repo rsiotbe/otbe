@@ -16,7 +16,7 @@ public class ErrorManager
 {
 	private static Logger pLog = LoggerFactory.getLogger(ErrorManager.class);
 
-	public static String processError(String strEntity, int nStatusCode) throws Exception
+	public static String processError(String strEntity, int nStatusCode) throws JSONException, RviaRestException
 	{
 		String strReturn = getJsonError("500", "Error interno en el servidor", "Error en el manejor de la respuesta.");
 		if (isWebError(strEntity))
@@ -60,7 +60,9 @@ public class ErrorManager
 					String strCode = String.valueOf(nStatusCode);
 					String strMessage = "Error " + nStatusCode;
 					String strDescription = "Error " + nStatusCode;
-					strReturn = getJsonError(strCode, strMessage, strDescription);
+					int nCode = Integer.parseInt(strCode);
+					throw new RviaRestException(nCode,strMessage,strDescription);
+					
 				}
 			}
 		}

@@ -27,6 +27,7 @@ import org.w3c.dom.NodeList;
 import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
+import com.rsi.rvia.rest.error.exceptions.RviaRestException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 import com.rsi.rvia.rest.session.SessionRviaData;
@@ -63,11 +64,13 @@ public class RestWSConnector
 	 * @param pPathParams
 	 *           parámetros asociados al path
 	 * @return Respuesta del proveedor de datos
+	 * @throws RviaRestException 
 	 * @throws Exception */
 	public Response getData(HttpServletRequest pRequest, String strData, SessionRviaData pSessionRvia,
-			String strPrimaryPath, MultivaluedMap<String, String> pPathParams) throws Exception
+			String strPrimaryPath, MultivaluedMap<String, String> pPathParams) throws RviaRestException
 	{
 		Response pReturn = null;
+		try{
 		String strMethod = pRequest.getMethod();
 		
 		/* se obtiene la configuración de la operativa desde base de datos */
@@ -121,6 +124,9 @@ public class RestWSConnector
 			case "DELETE":
 				pReturn = delete(pRequest);
 				break;
+		}
+		}catch(Exception ex){
+			throw new RviaRestException(500);
 		}
 		return pReturn;
 	}

@@ -1,7 +1,10 @@
 package com.rsi.rvia.rest;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -18,16 +21,44 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBConnection;
 import com.rsi.rvia.rest.DDBB.DDBBFactory;
+import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.OperationManager;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.tool.Utils;
+import com.rsi.rvia.test.DDBBPoolTest;
+import com.rsi.rvia.test.DDBBPoolTest.QueryType;
 
 @Path("/prueba")
 public class PruebaMetodos
 {
-	private static Logger			pLog	= LoggerFactory.getLogger(Cards.class);
+	private static Logger			pLog	= LoggerFactory.getLogger(PruebaMetodos.class);
+	
+	@GET
+	@Path("/pooltest")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response get(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+			throws Exception
+	{
+		Response pReturn;
+		String strReturn = "{}";
+		
+		/*DDBBPoolTest.checkPoolDDBB(5, QueryType.QueryFast);
+		
+		DDBBPoolTest.checkPoolDDBB(1, QueryType.QuerySlow);
 
+		DDBBPoolTest.checkPoolDDBB(5, QueryType.QueryFast);
+		DDBBPoolTest.checkPoolDDBB(1, QueryType.QuerySlow);
+		DDBBPoolTest.checkPoolDDBB(5, QueryType.QueryFast);
+		DDBBPoolTest.checkPoolDDBB(1, QueryType.QuerySlow);
+		DDBBPoolTest.checkPoolDDBB(1, QueryType.QuerySlow);*/
+		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+		DDBBPoolTest.checkPoolDDBB(5, QueryType.QueryFast, executor);
+		executor.shutdown();
+		pReturn = Response.ok(strReturn).build();
+		return pReturn;
+	}
+	
 	@PUT
 	@Path("/put")
 	@Consumes(MediaType.APPLICATION_JSON)
