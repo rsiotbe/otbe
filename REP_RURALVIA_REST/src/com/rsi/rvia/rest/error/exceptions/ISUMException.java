@@ -1,19 +1,20 @@
 package com.rsi.rvia.rest.error.exceptions;
 
-import com.rsi.rvia.rest.error.ErrorManager;
 
 public class ISUMException extends RviaRestException
 {
-	private static final String MESSAGE_EXCEPTION = "El servicio solicitado no es permitido para este usuario por ISUM.";
-
-	public String getMessage()
+	private static final long	serialVersionUID	= 1L;
+	
+	public ISUMException ()
 	{
-		return MESSAGE_EXCEPTION;
+		super();
+		MESSAGE_EXCEPTION = "El servicio solicitado no es permitido para este usuario por ISUM.";
 	}
-
-	public String getJsonError()
+	
+	public ISUMException (Exception ex)
 	{
-		String strReturn = ErrorManager.getJsonError("403", MESSAGE_EXCEPTION, MESSAGE_EXCEPTION);
-		return strReturn;
+		super();
+		MESSAGE_EXCEPTION = "El servicio solicitado no es permitido para este usuario por ISUM.";
+		pInnerException = ex;
 	}
 }

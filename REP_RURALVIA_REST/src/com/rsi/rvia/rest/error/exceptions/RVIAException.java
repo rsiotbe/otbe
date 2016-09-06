@@ -1,19 +1,21 @@
 package com.rsi.rvia.rest.error.exceptions;
 
-import com.rsi.rvia.rest.error.ErrorManager;
 
 public class RVIAException extends RviaRestException
 {
-	private static final String MESSAGE_EXCEPTION = "La petición a RuralVia no ha funcionado correctamente.";
-
-	public String getMessage()
+	private static final long	serialVersionUID	= 1L;
+	
+	public RVIAException()
 	{
-		return MESSAGE_EXCEPTION;
+		super();
+		MESSAGE_EXCEPTION = "La petición a RuralVia no ha funcionado correctamente.";
 	}
 
-	public String getJsonError()
+	public RVIAException(Exception ex)
 	{
-		String strReturn = ErrorManager.getJsonError("406", MESSAGE_EXCEPTION, MESSAGE_EXCEPTION);
-		return strReturn;
+		super();
+		MESSAGE_EXCEPTION = "La petición a RuralVia no ha funcionado correctamente.";
+		pInnerException = ex;
 	}
+
 }

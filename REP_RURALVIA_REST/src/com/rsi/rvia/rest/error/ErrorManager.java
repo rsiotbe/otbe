@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.rvia.rest.error.exceptions.RviaRestException;
 
 public class ErrorManager
 {
@@ -215,6 +216,26 @@ public class ErrorManager
 			strReturn = pJson.toString();
 		}
 		catch (JSONException ex)
+		{
+			pLog.error("Error al formar el JSON de Error");
+			strReturn = "{}";
+		}
+		return strReturn;
+	}
+	
+	public static String getJsonError(String strCode, RviaRestException ex)
+	{
+		String strReturn = "";
+		JSONObject pJson;
+		try
+		{
+			pJson = new JSONObject();
+			pJson.put("code", strCode);
+			pJson.put("message", ex.getMessage());
+			pJson.put("description", ex.getMessage());
+			strReturn = pJson.toString();
+		}
+		catch (JSONException ex2)
 		{
 			pLog.error("Error al formar el JSON de Error");
 			strReturn = "{}";

@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.isum.IsumValidation;
 import com.rsi.rvia.rest.error.ErrorManager;
+import com.rsi.rvia.rest.error.exceptions.ISUMException;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.template.TemplateManager;
 import com.rsi.rvia.rest.tool.Utils;
@@ -36,7 +37,7 @@ public class OperationManager
 			{
 				pSession.setAttribute("token", pSessionRviaData.getToken());
 				if (!IsumValidation.IsValidService(pSessionRviaData))
-					throw new Exception("El servicio solicitado no es permitido para este usuario por ISUM");
+					throw new ISUMException(401);
 				String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
 				MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
 				pRestConnector = new RestWSConnector();
