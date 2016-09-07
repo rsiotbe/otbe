@@ -23,7 +23,7 @@ public abstract class AbstractDDBB implements DDBBConnection
 			{
 				strURI = pAppProperties.getProperty("urlDriver");
 				pLog.trace("Se inicia la conexion con la BBDD con el driver:  " + strURI);
-				_pConnection = DriverManager.getConnection(strURI, pAppProperties.getProperty("user"), pAppProperties.getProperty("pass"));
+				_pConnection = DriverManager.getConnection(strURI, pAppProperties.getProperty("user"), pAppProperties.getProperty("password"));
 				pLog.trace("Se conecta con la BBDD OK");
 			}
 			else
