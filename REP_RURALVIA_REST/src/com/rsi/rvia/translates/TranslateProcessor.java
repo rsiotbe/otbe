@@ -99,7 +99,9 @@ public class TranslateProcessor
 		String strReturn = null;
 		ArrayList<String> alIdsTrans = null;
 		Hashtable<String, TranslateEntry> htTransData = new Hashtable<String, TranslateEntry>();
-		if (!strXHTML.isEmpty())
+		if (strXHTML == null || strXHTML.trim().isEmpty())
+			pLog.warn("El contenido de XHTML es nulo o vacio");
+		else 
 		{
 			pDoc = strToDocumentParser(strXHTML);
 			pLog.debug("String XHTML parseado a Documento correctamente.");
@@ -139,7 +141,7 @@ public class TranslateProcessor
 					pLog.debug("Doc null en último paso.");
 				}
 			}
-		}
+		}		
 		return strReturn;
 	}
 

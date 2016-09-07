@@ -7,6 +7,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.rvia.multibank.CssMultiBankProcessor;
+import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.tool.Utils;
 import com.rsi.rvia.translates.TranslateProcessor;
 
@@ -14,54 +16,62 @@ import com.rsi.rvia.translates.TranslateProcessor;
  * etiquetas del template. */
 public class TemplateManager
 {
-	static Logger										pLog					= LoggerFactory.getLogger(TemplateManager.class);
-	public static String								JSON_DATA_TAG		= "'__JSONDATA__'";
-	public static Hashtable<String, String>	htCacheTemplate	= new Hashtable<String, String>();
-	
-	
-	/**
-	 * Devuelve el tamaño de la cache
-	 * @return int con el tamaño de la cache
-	 */ 
-	public static int getSizeCache(){
+	static Logger										pLog							= LoggerFactory.getLogger(TemplateManager.class);
+	public final static String						JSON_DATA_TAG				= "'__JSONDATA__'";
+	private final static String					IFRAME_SCRIPT_ADAPTER	= "http://cdn.jsdelivr.net/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js";
+	public static Hashtable<String, String>	htCacheTemplate			= new Hashtable<String, String>();
+
+	/** Devuelve el tamaño de la cache
+	 * 
+	 * @return int con el tamaño de la cache */
+	public static int getSizeCache()
+	{
 		int nReturn = 0;
-		if(htCacheTemplate != null){
+		if (htCacheTemplate != null)
+		{
 			nReturn = htCacheTemplate.size();
 		}
 		return nReturn;
 	}
-	
-	public static String processTemplate(String strPathToTemplate, String strLanguage)
+
+	/** Busca el template y lo lee, carga las traducciones, inyecta el script para ajustar el iframe, ajusta los estilos
+	 * para multicanalidad
+	 * 
+	 * @param strPathToTemplate
+	 * @param pSessionRviaData
+	 * @return */
+	public static String processTemplate(String strPathToTemplate, SessionRviaData pSessionRviaData)
 	{
-		return processTemplate(strPathToTemplate, strLanguage, "{}");
+		return processTemplate(strPathToTemplate, pSessionRviaData, "{}");
 	}
-	
-	/** Busca el template y lo lee. Carga las traducciones. Inyecta el script para ajustar el iframe e inyecta los datos
-	 * en json.
+
+	/** Busca el template y lo lee, carga las traducciones, inyecta el script para ajustar el iframe, ajusta los estilos
+	 * para multicanalidad e inyecta los datos en json.
 	 * 
 	 * @param strPathToTemplate
 	 *           Ruta del template
-	 * @param strLanguage
-	 *           Idioma
+	 * @param pSessionRviaData
+	 *           Objeto datos de sesion ruralvia
 	 * @param strDataJson
 	 *           Datos en formato JSON.
 	 * @return Template procesado. */
-	public static String processTemplate(String strPathToTemplate, String strLanguage, String strDataJson)
+	public static String processTemplate(String strPathToTemplate, SessionRviaData pSessionRviaData, String strDataJson)
 	{
 		String strReturn;
 		try
 		{
-			String strCacheKey = strPathToTemplate + "_" + strLanguage;
+			String strCacheKey = strPathToTemplate + "_" + pSessionRviaData.getLanguage();
 			pLog.debug("strCacheKey: " + strCacheKey);
 			if (htCacheTemplate.containsKey(strCacheKey))
 				strReturn = htCacheTemplate.get(strCacheKey);
 			else
 			{
 				strReturn = readTemplate(strPathToTemplate);
-				strReturn = translateXhtml(strReturn, strLanguage);
+				strReturn = translateXhtml(strReturn, pSessionRviaData.getLanguage());
 				htCacheTemplate.put(strCacheKey, strReturn);
 			}
 			strReturn = includeIframeScript(strReturn);
+			strReturn = adjustCssMultiBank(strReturn, pSessionRviaData.getNRBE());
 			strReturn = includeJsonData(strReturn, strDataJson);
 		}
 		catch (Exception ex)
@@ -81,7 +91,7 @@ public class TemplateManager
 		Document pHtml = Jsoup.parse(strReturn);
 		pHtml.outputSettings().prettyPrint(false);
 		Element pScript = pHtml.createElement("script");
-		pScript.attr("src", "http://cdn.jsdelivr.net/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js");
+		pScript.attr("src", IFRAME_SCRIPT_ADAPTER);
 		pHtml.body().appendChild(pScript);
 		return pHtml.html();
 	}
@@ -105,7 +115,9 @@ public class TemplateManager
 	/** Añade el contenido de las traducciones al HTML
 	 * 
 	 * @param strXhtml
+	 *           Codigo xhtml evaluado hasta entonces
 	 * @param strLanguage
+	 *           Idioma seleccionado por el usuario
 	 * @return HTML con las traducciones */
 	private static String translateXhtml(String strXhtml, String strLanguage)
 	{
@@ -122,5 +134,17 @@ public class TemplateManager
 		InputStream pInputStream = (TemplateManager.class.getResourceAsStream(strPathToTemplate));
 		strReturn = Utils.getStringFromInputStream(pInputStream);
 		return strReturn;
+	}
+
+	/** Comprueba si es necesario modificar los css para adaptarlos a multientidad
+	 * 
+	 * @param strXhtml
+	 *           Codigo xhtml evaluado hasta entonces
+	 * @param strNRBE
+	 *           Codigo de entidad del usuario
+	 * @return */
+	private static String adjustCssMultiBank(String strXhtml, String strNRBE)
+	{
+		return CssMultiBankProcessor.processXHTML(strXhtml, strNRBE);
 	}
 }

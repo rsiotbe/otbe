@@ -16,18 +16,18 @@ public class ErrorManager
 {
 	private static Logger pLog = LoggerFactory.getLogger(ErrorManager.class);
 
-	public static String processError(String strEntity, int nStatusCode) throws JSONException, RviaRestException
+	public static String processError(String strJsonData, int nStatusCode) throws JSONException, RviaRestException
 	{
 		String strReturn = getJsonError("500", "Error interno en el servidor", "Error en el manejor de la respuesta.");
-		if (isWebError(strEntity))
+		if (isWebError(strJsonData))
 		{
-			strReturn = getJsonFormRviaError(strEntity);
+			strReturn = getJsonFormRviaError(strJsonData);
 		}
 		else
 		{
-			if (isWSError(strEntity))
+			if (isWSError(strJsonData))
 			{
-				JSONObject pJsonReader = new JSONObject(strEntity);
+				JSONObject pJsonReader = new JSONObject(strJsonData);
 				String strPrimaryKey = "";
 				Iterator<String> pKeys = pJsonReader.keys();
 				if (pKeys.hasNext())

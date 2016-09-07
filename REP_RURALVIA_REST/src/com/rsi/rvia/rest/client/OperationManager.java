@@ -28,7 +28,7 @@ public class OperationManager
 			MediaType pMediaType)
 	{
 		RestWSConnector pRestConnector;
-		String strEntity = "";
+		String strJsonData = "";
 		int nStatusCode = 200;
 		String strTemplate = "";
 		Response pReturn = null;
@@ -48,43 +48,43 @@ public class OperationManager
 				pReturn = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath, pListParams);
 				nStatusCode = pReturn.getStatus();
 				strTemplate = pRestConnector.getMiqQuests().getTemplate();
-				strEntity = pReturn.readEntity(String.class);
-				pLog.trace("StrEntity preProcesado: " + strEntity);
+				strJsonData = pReturn.readEntity(String.class);
+				pLog.trace("strJsonData preProcesado: " + strJsonData);
 				pLog.info("Respuesta recuperada del conector, se va a procesar.");
-				strEntity = ResponseManager.processResponse(strEntity, nStatusCode);
-				pLog.trace("StrEntity posProcesado: " + strEntity);
+				strJsonData = ResponseManager.processResponse(strJsonData, nStatusCode);
+				pLog.trace("strJsonData posProcesado: " + strJsonData);
 				pLog.info("Respuesta procesada correctamente.");
 			}
 		}
 		catch (RviaRestException exRVIARest)
 		{
 			pLog.error("Rvia Rest error: " + exRVIARest.getMessage());
-			strEntity = ErrorManager.getJsonError(exRVIARest);
+			strJsonData = ErrorManager.getJsonError(exRVIARest);
 			nStatusCode = exRVIARest.getErrorCode();
 		}
 		catch (Exception ex)
 		{
 			pLog.error("Internal error: " + ex.getMessage());
-			strEntity = ErrorManager.getJsonError("500", "Error interno RviaRest", "Error Interno RviaRest");
+			strJsonData = ErrorManager.getJsonError("500", "Error interno RviaRest", "Error Interno RviaRest");
 			nStatusCode = 500;
 		}
 		
 		/* Se añaden los datos la template */
-		if (ErrorManager.isJsonError(strEntity))
+		if (ErrorManager.isJsonError(strJsonData))
 		{
 			pLog.info("La respuesta ha sido un error.");
-			int nNewStatusCode = Integer.parseInt(ErrorManager.getCodeError(strEntity));
+			int nNewStatusCode = Integer.parseInt(ErrorManager.getCodeError(strJsonData));
 			// TODO Aqui se meteria el error en la plantilla de Error
-			pReturn = Response.ok(strEntity).status(nNewStatusCode).build();
+			pReturn = Response.ok(strJsonData).status(nNewStatusCode).build();
 		}
 		else
 		{
 			if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
 			{
 				pLog.info("Se ha encontrado plantilla para la respuesta.");
-				strEntity = TemplateManager.processTemplate(strTemplate, pSessionRviaData.getLanguage(), strEntity);
+				strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
 			}
-			pReturn = Response.ok(strEntity).build();
+			pReturn = Response.ok(strJsonData).build();
 		}
 		return pReturn;
 	}

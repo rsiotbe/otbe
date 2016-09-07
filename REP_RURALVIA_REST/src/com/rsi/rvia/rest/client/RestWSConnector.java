@@ -389,7 +389,9 @@ public class RestWSConnector
 		}
 		strJsonData = pJson.toString();
 		WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint());
-		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).post(Entity.json(strJsonData));
+		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans)
+				.header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp)
+				.post(Entity.json(strJsonData));
 		pLog.info("Respose POST: " + pReturn.toString());
 		return pReturn;
 	}

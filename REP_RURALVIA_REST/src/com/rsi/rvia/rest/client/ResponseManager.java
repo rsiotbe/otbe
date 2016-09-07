@@ -15,24 +15,24 @@ public class ResponseManager
 {
 	private static Logger pLog = LoggerFactory.getLogger(ResponseManager.class);
 
-	public static String processResponse(String strEntity, int nStatus) throws Exception
+	public static String processResponse(String strJsonData, int nStatus) throws Exception
 	{
 		String strReturn = "{}";
 		try
 		{
 			JSONObject pJson = new JSONObject();
-			if ((nStatus != 200) || (ErrorManager.isWebError(strEntity)))
+			if ((nStatus != 200) || (ErrorManager.isWebError(strJsonData)))
 			{
 				pLog.info("Respuesta con errores.");
-				strReturn = ErrorManager.processError(strEntity, nStatus);
+				strReturn = ErrorManager.processError(strJsonData, nStatus);
 			}
 			else
 			{
 				/* Respuesta sin errores */
 				pLog.info("Respuesta sin errores.");
-				if (!strEntity.trim().isEmpty())
+				if (!strJsonData.trim().isEmpty())
 				{
-					JSONObject pJsonReader = new JSONObject(strEntity);
+					JSONObject pJsonReader = new JSONObject(strJsonData);
 					String strPrimaryKey = "";
 					Iterator<String> pKeys = pJsonReader.keys();
 					if (pKeys.hasNext())
@@ -43,7 +43,7 @@ public class ResponseManager
 					{
 						if ("response".equals(strPrimaryKey))
 						{
-							strReturn = strEntity;
+							strReturn = strJsonData;
 						}
 						else
 						{
@@ -57,7 +57,7 @@ public class ResponseManager
 							}
 							else
 							{
-								strReturn = ErrorManager.processError(strEntity, nStatus);
+								strReturn = ErrorManager.processError(strJsonData, nStatus);
 							}
 						}
 					}

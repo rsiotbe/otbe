@@ -1,13 +1,13 @@
+<%@page import="com.rsi.rvia.multibank.CssMultiBankProcessor"%>
 <%@page
-	import="com.rsi.rvia.rest.template.TemplateManager,
-				com.rsi.rvia.translates.TranslateProcessor
-				"%>
+	import="com.rsi.rvia.rest.template.TemplateManager,com.rsi.rvia.translates.TranslateProcessor"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 
 <%
 	int nTemplateSize = TemplateManager.getSizeCache();
 	int nTranslateSize = TranslateProcessor.getSizeCache();
+	int nCssMultibankSize = CssMultiBankProcessor.getSizeCache();
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"/>
 <html>
@@ -646,6 +646,12 @@ input:disabled+label {
 					<td><input id="translateCheck" class="largeCheckBox"
 						type="checkbox"></td>
 				</tr>
+				<tr class="lineaGris centered">
+					<td>Css Multientidad</td>
+					<td class="cacheSize" id="cacheCssMultibank"><%=nCssMultibankSize%></td>
+					<td><input id="cssMultibankCheck" class="largeCheckBox"
+						type="checkbox"></td>
+				</tr>				
 			</tbody>
 
 		</table>
@@ -661,6 +667,7 @@ input:disabled+label {
 			var fCheckAll = document.getElementById("allCheck");
 			var fCheckTemplate = document.getElementById("templateCheck");
 			var fCheckTranslate = document.getElementById("translateCheck");
+			var fCheckCssMultibank = document.getElementById("cssMultibankCheck");
 			var dataGet = {};
 			var pCacheSizes = document.getElementsByClassName("cacheSize");
 
@@ -677,6 +684,10 @@ input:disabled+label {
 				if (fCheckTranslate.checked) {
 					strParams += ',translate';
 					document.getElementById("cacheTranslate").innerHTML = pLoading;
+				}
+				if (fCheckCssMultibank.checked) {
+					strParams += ',cssMultibank';
+					document.getElementById("cacheCssMultibank").innerHTML = pLoading;
 				}
 			}
 			dataGet.clean = strParams;
@@ -703,7 +714,9 @@ input:disabled+label {
 			if (typeof pJsonResponse.translate !== "undefined") {
 				document.getElementById("cacheTranslate").innerHTML = pJsonResponse.translate.size;
 			}
-
+			if (typeof pJsonResponse.cssMultibank !== "undefined") {
+				document.getElementById("cacheCssMultibank").innerHTML = pJsonResponse.cssMultibank.size;
+			}
 		}
 	</script>
 </body>
