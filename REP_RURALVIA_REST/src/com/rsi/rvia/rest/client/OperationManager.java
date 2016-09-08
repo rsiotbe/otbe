@@ -41,7 +41,7 @@ public class OperationManager
 			{
 				pSession.setAttribute("token", pSessionRviaData.getToken());
 				if (!IsumValidation.IsValidService(pSessionRviaData))
-					throw new ISUMException(401);
+					throw new ISUMException(401,"Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.");
 				String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
 				MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
 				pRestConnector = new RestWSConnector();
@@ -58,7 +58,8 @@ public class OperationManager
 		}
 		catch (RviaRestException exRVIARest)
 		{
-			pLog.error("Rvia Rest error: " + exRVIARest.getMessage());
+			String strExceptionType = exRVIARest.getClass().getSimpleName();
+			pLog.error("Se genera una exception de tipo " + strExceptionType + ". Mensaje: " + exRVIARest.getMessage());
 			strJsonData = ErrorManager.getJsonError(exRVIARest);
 			nStatusCode = exRVIARest.getErrorCode();
 		}

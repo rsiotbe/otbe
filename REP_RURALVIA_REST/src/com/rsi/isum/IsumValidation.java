@@ -35,7 +35,7 @@ public class IsumValidation
 		}
 		catch(Exception ex)
 		{
-			throw new ISUMException(500, ex);
+			throw new ISUMException(500, "No ha sido posible validar el servicio contra ISUM", "Error al obtener obtener la información de los servicios de ISUM", ex);
 		}
 		return fReturn;
 	}

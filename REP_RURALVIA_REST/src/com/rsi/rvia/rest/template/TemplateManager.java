@@ -142,8 +142,9 @@ public class TemplateManager
 	 *           Codigo xhtml evaluado hasta entonces
 	 * @param strNRBE
 	 *           Codigo de entidad del usuario
-	 * @return */
-	private static String adjustCssMultiBank(String strXhtml, String strNRBE)
+	 * @return 
+	 * @throws Exception */
+	private static String adjustCssMultiBank(String strXhtml, String strNRBE) throws Exception
 	{
 		return CssMultiBankProcessor.processXHTML(strXhtml, strNRBE);
 	}

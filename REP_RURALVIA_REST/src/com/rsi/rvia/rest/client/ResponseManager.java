@@ -66,7 +66,7 @@ public class ResponseManager
 		}
 		catch (Exception ex)
 		{
-			throw new RviaRestException(500);
+			throw new RviaRestException(500, "Error al procesar el mensaje de respuesta del conector", ex);
 		}
 		return strReturn;
 	}

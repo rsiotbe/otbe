@@ -85,7 +85,7 @@ public class RestWSConnector
 		}
 		pResultSet.close();
 		pPreparedStatement.close();
-		pLog.info("Se obtiene la configuración de la base de datos. MiqQuest: " + pMiqQuests);
+		pLog.info("Se obtiene la configuración de la base de datos. valor de MiqQuest:\n" + pMiqQuests);
 		pLog.info("Se recibe una petición con tipo de metodo : " + strMethod);
 		
 		/* se invoca al tipo de petición leido desde configuracón */
@@ -126,7 +126,7 @@ public class RestWSConnector
 				break;
 		}
 		}catch(Exception ex){
-			throw new RviaRestException(500);
+			throw new RviaRestException(500, "Error al solicitar la información al proveedor de datos.", ex);
 		}
 		return pReturn;
 	}

@@ -147,7 +147,7 @@ public class SessionRviaData
 		}
 		catch (Exception ex)
 		{
-			throw new SessionException(500);
+			throw new SessionException(500, "Error al obtener datos de sesion desde Ruralvia" , ex);
 		}
 	}
 
