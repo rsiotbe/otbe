@@ -462,7 +462,7 @@ public class RestWSConnector
 			pLog.trace("Query BBDD Params bien ejecutada");
 			while (pResultSet.next())
 			{
-				String strInputName = (String) pResultSet.getString("campo");
+				String strInputName = (String) pResultSet.getString(strCampo);
 				if (!strReturn.isEmpty())
 				{
 					strReturn += ";";
