@@ -1,8 +1,6 @@
 package com.rsi.rvia.rest;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import javax.servlet.http.HttpServletRequest;
@@ -16,48 +14,19 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import org.json.JSONArray;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.rsi.rvia.rest.DDBB.DDBBConnection;
-import com.rsi.rvia.rest.DDBB.DDBBFactory;
-import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
-import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.OperationManager;
 import com.rsi.rvia.rest.session.SessionRviaData;
-import com.rsi.rvia.rest.tool.Utils;
-import com.rsi.rvia.test.DDBBPoolTest;
-import com.rsi.rvia.test.DDBBPoolTest.QueryType;
+
 
 @Path("/prueba")
 public class PruebaMetodos
 {
 	private static Logger			pLog	= LoggerFactory.getLogger(PruebaMetodos.class);
 	
-	@GET
-	@Path("/pooltest")
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response get(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
-			throws Exception
-	{
-		Response pReturn;
-		String strReturn = "{}";
-		
-		/*DDBBPoolTest.checkPoolDDBB(5, QueryType.QueryFast);
-		
-		DDBBPoolTest.checkPoolDDBB(1, QueryType.QuerySlow);
-
-		DDBBPoolTest.checkPoolDDBB(5, QueryType.QueryFast);
-		DDBBPoolTest.checkPoolDDBB(1, QueryType.QuerySlow);
-		DDBBPoolTest.checkPoolDDBB(5, QueryType.QueryFast);
-		DDBBPoolTest.checkPoolDDBB(1, QueryType.QuerySlow);
-		DDBBPoolTest.checkPoolDDBB(1, QueryType.QuerySlow);*/
-		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
-		DDBBPoolTest.checkPoolDDBB(5, QueryType.QueryFast, executor);
-		executor.shutdown();
-		pReturn = Response.ok(strReturn).build();
-		return pReturn;
-	}
+	
 	
 	@PUT
 	@Path("/put")
@@ -86,7 +55,7 @@ public class PruebaMetodos
 		return pReturn;
 	}
 
-	@Path("/getddbb")
+	/*@Path("/getddbb")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getDDBBInfo(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
@@ -134,19 +103,20 @@ public class PruebaMetodos
 		
 		if (strQuery != null)
 		{
-			DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
+			/*DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
 			PreparedStatement pPreparedStament = pDBConection.prepareStatement(strQuery);
 			ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
 			JSONArray jsonArray = new JSONArray();
 			jsonArray = Utils.convertResultSet2JSON(pResultSet);
 			pReturn = Response.ok(jsonArray.toString()).build();
+			pReu
 		}
 		else
 		{
 			pReturn = Response.ok("{\"Error\" : \"Query mal formada.\"}").build();
 		}
 		return pReturn;
-	}
+	}*/
 
 	@Path("/getddbb/help")
 	@GET
@@ -166,7 +136,7 @@ public class PruebaMetodos
 		return pReturn;
 	}
 	
-	@Path("/checkddbb")
+	/*@Path("/checkddbb")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response checkDoubleDDBB(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
@@ -199,9 +169,9 @@ public class PruebaMetodos
 		strReturn = "{\"1\":" + jsonArray.toString() + ",\"2\":" + ",\"3\":" + jsonArray3.toString() + "}";
 		pReturn = Response.ok(strReturn).build();
 		return pReturn;
-	}
+	}*/
 	
-	@Path("/checkcip")
+	/*@Path("/checkcip")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response checkCipDDBB(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
@@ -227,5 +197,5 @@ public class PruebaMetodos
 		strReturn = jsonArray3.toString();
 		pReturn = Response.ok(strReturn).build();
 		return pReturn;
-	}
+	}*/
 }

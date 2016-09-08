@@ -2,6 +2,7 @@
  * en HTML MODIFICACIONES: ************************************************************************/
 package com.rsi.rvia.translates;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -16,9 +17,8 @@ import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.rsi.rvia.rest.DDBB.DDBBConnection;
-import com.rsi.rvia.rest.DDBB.DDBBFactory;
-import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
+import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
+import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 
 /** Clase que gestiona el cambio de idioma en el contenido HTML de la web. */
 public class TranslateProcessor
@@ -144,7 +144,7 @@ public class TranslateProcessor
 		}		
 		return strReturn;
 	}
-
+	
 	/** Función para recuperar las traducciones dada una lista de IDs.
 	 * 
 	 * @param alIdsTrans
@@ -153,7 +153,6 @@ public class TranslateProcessor
 	 * @throws Exception */
 	private static Hashtable<String, TranslateEntry> getTranslations(ArrayList<String> alIdsTrans) throws Exception
 	{
-		String strQuery = "SELECT codigo,idioma,traduccion FROM bdptb079_idioma where codigo in (";
 		String strNewsIds = "";
 		Hashtable<String, TranslateEntry> htResult = new Hashtable<String, TranslateEntry>();
 		for (String strId : alIdsTrans)
@@ -171,32 +170,45 @@ public class TranslateProcessor
 				htResult.put(strId, (TranslateEntry) htCacheData.get(strId));
 			}
 		}
-		strQuery += strNewsIds + ")";
 		if (!strNewsIds.equals(""))
 		{
-			DDBBConnection pDDBBTranslate = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
-			PreparedStatement pPreparedStatement = pDDBBTranslate.prepareStatement(strQuery);
-			ResultSet pResultSet = pPreparedStatement.executeQuery();
-			while (pResultSet.next())
-			{
-				String strCode = (String) pResultSet.getString("codigo");
-				String strIdiom = (String) pResultSet.getString("idioma");
-				String strTraduction = (String) pResultSet.getString("traduccion");
-				if (!htResult.containsKey(strCode))
+			Connection pConnection = null;
+			PreparedStatement pPreparedStatement = null;
+			ResultSet pResultSet = null;
+			try{
+				String strQuery = "SELECT codigo,idioma,traduccion FROM bdptb079_idioma where codigo in (?)";
+				pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
+				pPreparedStatement = pConnection.prepareStatement(strQuery);
+				pPreparedStatement.setString(1, strNewsIds);
+				pResultSet = pPreparedStatement.executeQuery();
+				while (pResultSet.next())
 				{
-					TranslateEntry pTrans = new TranslateEntry(strCode);
-					htResult.put(strCode, pTrans);
-					if (!htCacheData.containsKey(strCode))
+					String strCode = (String) pResultSet.getString("codigo");
+					String strIdiom = (String) pResultSet.getString("idioma");
+					String strTraduction = (String) pResultSet.getString("traduccion");
+					if (!htResult.containsKey(strCode))
 					{
-						htCacheData.put(strCode, pTrans);
+						TranslateEntry pTrans = new TranslateEntry(strCode);
+						htResult.put(strCode, pTrans);
+						if (!htCacheData.containsKey(strCode))
+						{
+							htCacheData.put(strCode, pTrans);
+						}
 					}
+					htResult.get(strCode).addTranslate(strIdiom, strTraduction);
+					htCacheData.get(strCode).addTranslate(strIdiom, strTraduction);
 				}
-				htResult.get(strCode).addTranslate(strIdiom, strTraduction);
-				htCacheData.get(strCode).addTranslate(strIdiom, strTraduction);
+			}catch(Exception ex){
+				pLog.error("Error al realizar la consulta a la BBDD.");
+			}finally{
+				pResultSet.close();
+				pPreparedStatement.close();
+				pConnection.close();
 			}
 		}
 		return htResult;
 	}
+	
 
 	/** Función que procesa el String que contiene el HTML en un Document(Jsoup)
 	 * 

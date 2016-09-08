@@ -1,5 +1,6 @@
 package com.rsi.rvia.multibank;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Hashtable;
@@ -11,9 +12,8 @@ import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.rsi.rvia.rest.DDBB.DDBBConnection;
-import com.rsi.rvia.rest.DDBB.DDBBFactory;
-import com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider;
+import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
+import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 
 /** Clase que gestiona el los CSS de multientidad para adaptar el estilo de la web. */
 public class CssMultiBankProcessor
@@ -37,22 +37,34 @@ public class CssMultiBankProcessor
 	/** Funcion que carga la cache desde base de datos
 	 * 
 	 * @throws Exception */
-	private static void loadCache() throws Exception
+	private static void loadDDBBCache() throws Exception
 	{
-		String strQuery = "SELECT * from bel.bdptb229_css_multibank";
-		DDBBConnection pDDBBCssMultibank = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
-		PreparedStatement pPreparedStatement = pDDBBCssMultibank.prepareStatement(strQuery);
-		ResultSet pResultSet = pPreparedStatement.executeQuery();
-		while (pResultSet.next())
-		{
-			String strLinkRvia = (String) pResultSet.getString("RURALVIA");
-			String strNRBE = (String) pResultSet.getString("NRBE");
-			String strNewLink = (String) pResultSet.getString("VALUE");
-			String strKey = strNRBE + "_" + strLinkRvia;
-			if (!htCacheData.containsKey(strKey))
-				htCacheData.put(strKey, strNewLink);
+		Connection pConnection = null;
+		PreparedStatement pPreparedStatement = null;
+		ResultSet pResultSet = null;
+		try{
+			String strQuery = "SELECT * from bel.bdptb229_css_multibank";
+			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
+			pPreparedStatement = pConnection.prepareStatement(strQuery);
+			pResultSet = pPreparedStatement.executeQuery();
+			while (pResultSet.next())
+			{
+				String strLinkRvia = (String) pResultSet.getString("RURALVIA");
+				String strNRBE = (String) pResultSet.getString("NRBE");
+				String strNewLink = (String) pResultSet.getString("VALUE");
+				String strKey = strNRBE + "_" + strLinkRvia;
+				if (!htCacheData.containsKey(strKey))
+					htCacheData.put(strKey, strNewLink);
+			}
+			pLog.debug("Se carga la cache de CssMultiBank con " + getSizeCache() + " elementos");
+		}catch(Exception ex){
+			pLog.error("Error al realizar la consulta a la BBDD.");
+		}finally{
+			pResultSet.close();
+			pPreparedStatement.close();
+			pConnection.close();
 		}
-		pLog.debug("Se carga la cache de CssMultiBank con " + getSizeCache() + " elementos");
+
 	}
 
 	/** Devuelve el valor de reemplazo del link css y si no lo encuentra devuelve el propio valor pasado
@@ -137,7 +149,7 @@ public class CssMultiBankProcessor
 		if (htCacheData == null || getSizeCache() < 1)
 		{
 			pLog.debug("La caché no está inicializada se procede a inicializarla");
-			loadCache();
+			loadDDBBCache();
 		}
 		for (Element pItem : pLinksCss)
 		{

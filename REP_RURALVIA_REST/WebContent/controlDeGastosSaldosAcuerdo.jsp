@@ -1,9 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
- 	import="com.rsi.rvia.rest.DDBB.DDBBConnection,
-		 com.rsi.rvia.rest.DDBB.DDBBFactory,
-		 com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider,
-		 com.rsi.rvia.rest.DDBB.CIPOracleDDBB, 
+ 	import="java.sql.Connection,
+		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
+		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider,
 		 com.rsi.rvia.rest.tool.Utils, 
 		 com.rsi.rvia.rest.validator.DataValidator,
 		 java.sql.PreparedStatement,
@@ -38,48 +37,7 @@
 		strJsonError = "{\"Error\":\""+ ex.getMessage() +"\"}";
 		ex.printStackTrace();
 	}
-	/*int contrato = 0;
-	try{
-		contrato = Integer.parseInt(request.getParameter("idContract"));
-		
-		if(contrato <= 0){
-			jsonError.put("idContract", "Identificador de acuerdo <=  0");
-		}
-	} 
-	catch(Exception ex){
-		jsonError.put("idContract", "Identificador de acuerdo no numérico");		
-	}
-	
-	// Validación de existencia de entidad
-	String entidad = request.getParameter("codEntidad");
-	String q =
-		" select cod_nrbe_en from prox01.sx_entidad " +
-		" where cod_nrbe_en=?";
-	
-	PreparedStatement ps = p3.prepareStatement(q);	
-	ps.setString(1,entidad);
-	ResultSet rs = p3.executeQuery(ps);		
-	if(!rs.next()){
-		jsonError.put("codEntidad", "Código de entidad no válido");
-	}
-	rs.close();
-	ps.close();
-	
-	// Validación de fecha en formato y forma
-	String formato = "yyyy-mm-dd";
-	SimpleDateFormat ft = new SimpleDateFormat(formato);
-	String dato = request.getParameter("fechaInicio").toString();
-	if(dato.trim().equals("")){
-		jsonError.put("fechaInicio", "Fecha de inicio inexistente o inválida");
-	}	
-	Date fechaIni;
-	try{
-		fechaIni = ft.parse(dato);
-	}
-	catch(Exception ex){
-		jsonError.put("fechaInicio", "Fecha de inicio no ajusta a formato yyyy-mm-dd");
-	}
-	*/
+
 	String strResponse = "{}";
 	if("{}".equals(strJsonError)){
 		
@@ -96,16 +54,18 @@
 				" and num_sec_ac =?" +				
 				" and mi_fecha_fin_mes >=?" +
 				" and mi_fecha_fin_mes < to_date('31129999','ddmmyyyy')";
-		
-		DDBBConnection pDDBBConnection = DDBBFactory.getDDBB(DDBBProvider.OracleCIP);
-		PreparedStatement pPreparedStatement = pDDBBConnection.prepareStatement(strQuery);			
-		
-		pPreparedStatement.setString(1,strEntidad);
+				
 		int nContrato = Integer.parseInt(strContrato);
+		Connection pConnection = null;
+		PreparedStatement pPreparedStatement = null;
+		ResultSet pResultSet = null;
+		pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleCIP);
+		pPreparedStatement = pConnection.prepareStatement(strQuery);
+		pPreparedStatement.setString(1, strEntidad);
 		pPreparedStatement.setInt(2, nContrato);
 		pPreparedStatement.setDate(3, java.sql.Date.valueOf(strDate));
-		
-		ResultSet pResultSet = pDDBBConnection.executeQuery(pPreparedStatement);
+		pResultSet = pPreparedStatement.executeQuery();
+
 		JSONObject pJson = new JSONObject();
 		JSONObject pJsonExit= new JSONObject();
 		pJsonExit.put("token", "sitio para el token");
@@ -114,7 +74,7 @@
 		JSONArray json = Utils.convertResultSet2JSON(pResultSet);
 		pResultSet.close();
 		pPreparedStatement.close();
-		pDDBBConnection.BBDD_Disconnect();
+		pConnection.close();
 		pJsonExit.put("output", json);
 		pJson.put("response", pJsonExit);
 		strResponse = pJson.toString();

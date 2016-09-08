@@ -1,20 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
- 	import="com.rsi.rvia.rest.DDBB.DDBBConnection,
-		 com.rsi.rvia.rest.DDBB.DDBBFactory,
-		 com.rsi.rvia.rest.DDBB.DDBBFactory.DDBBProvider,
-		 com.rsi.rvia.rest.DDBB.CIPOracleDDBB,  
+ 	import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
+		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider,
 		 com.rsi.rvia.rest.tool.Utils,		 
 		 java.sql.PreparedStatement,
 		 java.sql.ResultSet,
 		 org.json.JSONArray,
 		 org.json.JSONObject,
 		 org.slf4j.Logger,
-		 org.slf4j.LoggerFactory
+		 org.slf4j.LoggerFactory,
+		 java.sql.Connection
 "
-%>
-
-<%
+%><%
 	String q =
 		" SELECT" +   
 		" 	t1.NUM_SEC_AC \"numeroAcuerdo\", trim(t2.NOMB_GRP_PD) \"nombreGrupo\"," +
@@ -44,15 +41,20 @@
 	JSONObject pJson = new JSONObject();
 	pp.put("token", "sitio para el token");
 	Logger	pLog = LoggerFactory.getLogger("jsp");	
-	DDBBConnection p3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP);	
-	PreparedStatement ps = p3.prepareStatement(q);
-	ps.setString(1,request.getParameter("codEntidad"));
-	ps.setString(2, request.getParameter("idInternoPe"));
-	ResultSet rs = p3.executeQuery(ps);	
-	JSONArray json = Utils.convertResultSet2JSON(rs);
-	rs.close();
-	ps.close();
-	p3.BBDD_Disconnect();
+	
+	Connection pConnection = null;
+	PreparedStatement pPreparedStatement = null;
+	ResultSet pResultSet = null;
+	pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleCIP);
+	pPreparedStatement = pConnection.prepareStatement(q);
+	pPreparedStatement.setString(1, request.getParameter("codEntidad"));
+	pPreparedStatement.setString(2, request.getParameter("idInternoPe"));
+	pResultSet = pPreparedStatement.executeQuery();
+	
+	JSONArray json = Utils.convertResultSet2JSON(pResultSet);
+	pResultSet.close();
+	pPreparedStatement.close();
+	pConnection.close();
 	pp.put("output", json);	
 	pJson.put("response",pp);
 	String respuesta=pJson.toString();

@@ -37,7 +37,7 @@ public class TranslateService extends HttpServlet
 		String strJSONReturn;
 		String strIds;
 		String strlanguage;
-		String[] astrIds;
+		String[] astrIds = null;
 		Hashtable<String, String> htTranslates;
 		strIds = pRequest.getParameter(IDS_PARAM);
 		strlanguage = pRequest.getParameter(LANGUAGE_PARAM);
@@ -46,7 +46,10 @@ public class TranslateService extends HttpServlet
 			pResponse.sendError(HttpServletResponse.SC_NO_CONTENT);
 			return;
 		}
-		astrIds = strIds.split(IDS_PARAM_SEP);
+		if(strIds != null){
+			astrIds = strIds.split(IDS_PARAM_SEP);
+		}
+		
 		htTranslates = TranslateProcessor.processIds(astrIds, strlanguage);
 		try
 		{
