@@ -234,8 +234,6 @@ public class ErrorManager
 		String strReturn = "";
 		JSONObject pJson;
 		String strHttpCode;
-		String strHttpCode;
-		String strHttpCode;
 		
 		try
 		{
@@ -263,7 +261,7 @@ public class ErrorManager
 			strReturn = pJson.toString();
 			pLog.info("Se genera el JSON de error a partir del error detectado. JSON: " + strReturn);
 			pLog.error("Traza completa del error: \n" + 
-					"codigo http: " + + "\n");
+					"codigo http: " + "\n");
 			
 		}
 		catch (JSONException ex2)
