@@ -229,6 +229,51 @@ public class ErrorManager
 		return strReturn;
 	}
 	
+	public static String getJsonError(Exception pEx)
+	{
+		String strReturn = "";
+		JSONObject pJson;
+		String strHttpCode;
+		String strHttpCode;
+		String strHttpCode;
+		
+		try
+		{
+			pJson = new JSONObject();
+			
+			/* se evalua que tipo de excepción se ha capturado*/
+			if(pEx.getClass().isAssignableFrom(RviaRestException.class))
+			{
+				pLog.info("Se gestiona un error de tipo: " + pEx.getClass().getName());
+
+				/* si es una excepción de tipo RviaRestException o sus hijos */
+				pJson.put("code", ((RviaRestException)pEx).getErrorCode());
+				pJson.put("message", ((RviaRestException)pEx).getMessage());
+				pJson.put("description", ((RviaRestException)pEx).getDescription());				
+			}
+			else
+			{
+				pJson.put("code", "500");
+				pJson.put("message", "Error no controlado");
+				pJson.put("description", pEx.getMessage());		
+			}
+			pJson.put("code", "500");
+			pJson.put("message", "Error no controlado");
+			pJson.put("description", pEx.getMessage());	
+			strReturn = pJson.toString();
+			pLog.info("Se genera el JSON de error a partir del error detectado. JSON: " + strReturn);
+			pLog.error("Traza completa del error: \n" + 
+					"codigo http: " + + "\n");
+			
+		}
+		catch (JSONException ex2)
+		{
+			pLog.error("Error al formar el JSON de Error");
+			strReturn = "{}";
+		}
+		return strReturn;
+	}
+	
 	public static String getJsonError(RviaRestException ex)
 	{
 		String strReturn = "";
