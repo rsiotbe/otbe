@@ -72,7 +72,7 @@ function ajaxGenericoAction(respuesta){
 function addContent(json) {
       var strReturn = '';
       strReturn += '<ul class="collection">';
-      var listCashier = json.EE_O_LocalizadorCajeros.Respuesta.ListaCajeros;
+      var listCashier = json.response.ListaCajeros;
       for (cajero in listCashier ) {
             console.log(listCashier[cajero]);
             strReturn += '<li class="collection-item">';
@@ -94,7 +94,7 @@ function addContent(json) {
 $(document).ready(function(){
       
       
-      var pJson = '__JSONDATA__';
+      var pJson = {"response":{"ListaCajeros":[{"codigoPostal":"24008","distancia":"7.5265","direccion":"CRUZ ROJA, 1","indicadorComision":"S","latitud":"42.604615","indicadorCajero":"X","nombreLocalidad":"LEON","longitud":"-5.57807","codigoCajeros":"7732","codigoEntidad":"3085","comision":"0","nombreEntidad":"CAJA RURAL DE ZAMORA"},{"codigoPostal":"24003","distancia":"7.5431","direccion":"DE LAS CORTES LEONESAS,4","indicadorComision":"S","latitud":"42.5956199","indicadorCajero":"X","nombreLocalidad":"LEON","longitud":"-5.57264","codigoCajeros":"7740","codigoEntidad":"3085","comision":"0","nombreEntidad":"CAJA RURAL DE ZAMORA"},{"codigoPostal":"24005","distancia":"7.6360","direccion":"VELAZQUEZ, 10","indicadorComision":"S","latitud":"42.590147","indicadorCajero":"X","nombreLocalidad":"LEON","longitud":"-5.569267","codigoCajeros":"7734","codigoEntidad":"3085","comision":"0","nombreEntidad":"CAJA RURAL DE ZAMORA"},{"codigoPostal":"24002","distancia":"7.6668","direccion":"PADRE ISLA,18","indicadorComision":"S","latitud":"42.599817","indicadorCajero":"X","nombreLocalidad":"LEON","longitud":"-5.573173","codigoCajeros":"7733","codigoEntidad":"3085","comision":"0","nombreEntidad":"CAJA RURAL DE ZAMORA"},{"codigoPostal":"24007","distancia":"9.1652","direccion":"PLACIDO HERRERO DE PRADO C. VUELTA,0","indicadorComision":"S","latitud":"42.609647","indicadorCajero":"X","nombreLocalidad":"LEON","longitud":"-5.559103","codigoCajeros":"8073","codigoEntidad":"3085","comision":"0","nombreEntidad":"CAJA RURAL DE ZAMORA"}],"numeroRegistros":"5"}};
 
       var strList = addContent(pJson);
       $("#contenido").html(strList);
