@@ -44,7 +44,7 @@ public class DDBBPool
 	{
 		ConnectionFactory pConnFactory;
 		PoolableConnectionFactory pPoolableConnFactory;
-		GenericObjectPoolConfig pObjectPoolConfig = null;
+		GenericObjectPoolConfig pObjectPoolConfig;
 		ObjectPool<PoolableConnection> pConnPool;		
 		PoolingDataSource<PoolableConnection> pDataSource;
 		
