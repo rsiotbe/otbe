@@ -4,13 +4,14 @@
     		com.rsi.rvia.rest.operation.MiqQuests,
 		 	java.sql.Connection"
     %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Access</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+<title></title>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <script type="text/javascript" src="/api/js/manageRequestRviaRest.js"></script>
+<script type="text/javascript" src="/http://cdn.jsdelivr.net/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js"></script>
 </head>
 <%
 	MiqQuests pMiqQuests = null;
@@ -30,7 +31,7 @@
 	
 %>
 <body>
-Cargando...
+cargando...
 <script type="text/javascript">
   var data = {};
 
@@ -40,6 +41,10 @@ Cargando...
     type : '<%=strType%>',
     success : function(response) {
       $('html').html(response);
+    },
+    error: function()
+    {
+    	$('html').text('Error al cargar la operativa');
     }
   });
 
