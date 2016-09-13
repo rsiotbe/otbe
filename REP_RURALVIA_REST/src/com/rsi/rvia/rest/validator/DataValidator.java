@@ -3,10 +3,8 @@ package com.rsi.rvia.rest.validator;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Hashtable;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -17,9 +15,10 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 /** Clase destinada a las validaciones de datos censados en la tabla bdptb228 */
 public class DataValidator
 {
-	private static Logger pLog = LoggerFactory.getLogger(DataValidator.class);
+	private static Logger	pLog	= LoggerFactory.getLogger(DataValidator.class);
 
-	public static ArrayList<MiqValidation> getDDBBValidations(String strPathRest) throws Exception{
+	public static ArrayList<MiqValidation> getDDBBValidations(String strPathRest) throws Exception
+	{
 		ArrayList<MiqValidation> alReturn = new ArrayList<MiqValidation>();
 		Connection pConnection = null;
 		PreparedStatement pPreparedStatement = null;
@@ -27,7 +26,7 @@ public class DataValidator
 		try
 		{
 			String strQuery = "select * from " + " bel.bdptb222_miq_quests z," + " bel.bdptb226_miq_quest_rl_session x,"
-					+ " bel.bdptb225_miq_session_params a," + " BEL.BDPTB228_MIQ_PARAM_VALIDATION b" 
+					+ " bel.bdptb225_miq_session_params a," + " BEL.BDPTB228_MIQ_PARAM_VALIDATION b"
 					+ " where z.path_rest=? and z.id_miq=x.id_miq" + " and x.id_miq_param= a.id_miq_param"
 					+ " and a.id_miq_param=b.id_miq_param";
 			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -36,27 +35,20 @@ public class DataValidator
 			pResultSet = pPreparedStatement.executeQuery();
 			while (pResultSet.next())
 			{
-				MiqValidation pMiqValidation = new MiqValidation(
-							pResultSet.getInt("paramlong"), 
-							pResultSet.getString("parammin") , 
-							pResultSet.getString("parammax") , 
-							pResultSet.getString("parammask"), 
-							pResultSet.getString("paramdatatype"), 
-							pResultSet.getString("paramname"), 
-							pResultSet.getString("aliasname"));
+				MiqValidation pMiqValidation = new MiqValidation(pResultSet.getInt("paramlong"), pResultSet.getString("parammin"), pResultSet.getString("parammax"), pResultSet.getString("parammask"), pResultSet.getString("paramdatatype"), pResultSet.getString("paramname"), pResultSet.getString("aliasname"));
 				alReturn.add(pMiqValidation);
 			}
-
-				
-		}catch(Exception ex){
+		}
+		catch (Exception ex)
+		{
 			pLog.error("Error al realizar la consulta a la BBDD.");
-		}finally{
+		}
+		finally
+		{
 			pResultSet.close();
 			pPreparedStatement.close();
 			pConnection.close();
 		}
-
-		
 		return alReturn;
 	}
 
@@ -74,9 +66,11 @@ public class DataValidator
 		String strReturn = "{}";
 		ArrayList<MiqValidation> alMiqValidations = getDDBBValidations(strPathRest);
 		JSONObject pJsonError = new JSONObject();
-		for(MiqValidation pMiqValidation : alMiqValidations){
+		for (MiqValidation pMiqValidation : alMiqValidations)
+		{
 			pJsonError.put(pMiqValidation.getParamName(), pMiqValidation.getJson());
-			if(fCheck){
+			if (fCheck)
+			{
 				switch (pMiqValidation.getParamDataType())
 				{
 					case "Date":
@@ -89,10 +83,11 @@ public class DataValidator
 						if (!validateDate(strValue, pMiqValidation.getParamMask()))
 						{
 							fCheck = false;
-						}else{
+						}
+						else
+						{
 							pLog.trace("Validacion Date Correcta.");
 						}
-						
 						break;
 					case "Integer":
 						strValue = htParams.get(pMiqValidation.getParamName());
@@ -104,7 +99,9 @@ public class DataValidator
 						if (!validateInteger(strValue, pMiqValidation.getParamMin(), pMiqValidation.getParamMax()))
 						{
 							fCheck = false;
-						}else{
+						}
+						else
+						{
 							pLog.trace("Validacion Integer Correcta.");
 						}
 						break;
@@ -118,7 +115,9 @@ public class DataValidator
 						if (!validateDDBBEntidad(strValue))
 						{
 							fCheck = false;
-						}else{
+						}
+						else
+						{
 							pLog.trace("Validacion Entidad Correcta.");
 						}
 						break;
@@ -132,7 +131,9 @@ public class DataValidator
 						if (!validateString(strValue, pMiqValidation.getParamMin(), pMiqValidation.getParamMax(), pMiqValidation.getParamLong()))
 						{
 							fCheck = false;
-						}else{
+						}
+						else
+						{
 							pLog.trace("Validacion String Correcta.");
 						}
 						break;
@@ -141,14 +142,10 @@ public class DataValidator
 				}
 			}
 		}
-			
-			
-		
 		// Si fCheck es falso ha dado un error en algun lado.
 		if (!fCheck)
 		{
 			pLog.info("Validacion fallida. Devolviendo JSON con informaci�n de los campos.");
-			
 			strReturn = pJsonError.toString();
 		}
 		return strReturn;
@@ -169,10 +166,9 @@ public class DataValidator
 		{
 			fReturn = false;
 		}
-		Date fechaIni;
 		try
 		{
-			fechaIni = pDateFormat.parse(strValue);
+			pDateFormat.parse(strValue);
 		}
 		catch (Exception ex)
 		{
@@ -224,7 +220,7 @@ public class DataValidator
 	 * 
 	 * @param strValue
 	 *           entidad a consultar
-	 * @return True si la validación es positiva, false si es negativa 
+	 * @return True si la validación es positiva, false si es negativa
 	 * @throws Exception */
 	private static boolean validateDDBBEntidad(String strValue) throws Exception
 	{
@@ -239,7 +235,6 @@ public class DataValidator
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
 			pPreparedStatement.setString(1, strValue);
 			pResultSet = pPreparedStatement.executeQuery();
-			
 			if (!pResultSet.next())
 			{
 				fReturn = false;
@@ -248,17 +243,21 @@ public class DataValidator
 		catch (Exception ex)
 		{
 			fReturn = false;
-		}finally{
-			if(pResultSet!= null){
+		}
+		finally
+		{
+			if (pResultSet != null)
+			{
 				pResultSet.close();
 			}
-			if(pPreparedStatement != null){
+			if (pPreparedStatement != null)
+			{
 				pPreparedStatement.close();
 			}
-			if(pConnection != null){
+			if (pConnection != null)
+			{
 				pConnection.close();
 			}
-			
 		}
 		return fReturn;
 	}
