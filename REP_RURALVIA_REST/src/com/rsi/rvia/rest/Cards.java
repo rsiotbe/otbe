@@ -27,10 +27,10 @@ public class Cards
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
 	 * @throws Exception */
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_HTML)
 	public Response getAllUserCards(@Context HttpServletRequest pRequest,@Context UriInfo pUriInfo, String strData) throws Exception
 	{
-		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);
 		return pReturn;
 	}
 	
