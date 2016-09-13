@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.multibank.CssMultiBankProcessor;
@@ -88,7 +89,7 @@ public class TemplateManager
 	 * @return HTML con la etiqueta script insertada */
 	private static String includeIframeScript(String strReturn)
 	{
-		Document pHtml = Jsoup.parse(strReturn);
+		Document pHtml = (Document) Jsoup.parse(strReturn, "", Parser.htmlParser());
 		pHtml.outputSettings().prettyPrint(false);
 		Element pScript = pHtml.createElement("script");
 		pScript.attr("src", IFRAME_SCRIPT_ADAPTER);

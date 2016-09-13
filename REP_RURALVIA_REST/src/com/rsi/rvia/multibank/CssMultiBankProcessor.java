@@ -128,7 +128,7 @@ public class CssMultiBankProcessor
 	 * @return Documento bien formado */
 	private static Document strToDocumentParser(String strData)
 	{
-		Document pDoc = (Document) Jsoup.parse(strData, "", Parser.xmlParser());
+		Document pDoc = (Document) Jsoup.parse(strData, "", Parser.htmlParser());
 		pDoc.outputSettings().prettyPrint(false);
 		return pDoc;
 	}
@@ -184,7 +184,7 @@ public class CssMultiBankProcessor
 	{
 		String strReturn = null;
 		pDoc.outputSettings().escapeMode(EscapeMode.xhtml);
-		strReturn = pDoc.toString();
+		strReturn = pDoc.html();
 		return strReturn;
 	}
 }

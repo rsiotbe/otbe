@@ -15,59 +15,8 @@
 <div id="contenido">
 
 </div>
-<div id="botonera">
-      <a onclick="refrescar();" class="waves-effect waves-light btn">Refrescar</a>
-      <a onclick="ajaxGenerico();" class="waves-effect waves-light btn">Ajax Generico</a>
-      <a onclick="ajaxNormal();" class="waves-effect waves-light btn">Ajax Normal</a>
-      <a onclick="peticionAjax();" class="waves-effect waves-light btn">PRUEBAS</a>
 
-</div>
-
-<hr>
-
-<div id="ajaxNormal"></div>
-
-<hr>
-
-<div id="ajaxGenerico"></div>
 <script type="text/javascript">
-
-function refrescar() {
-      var strUrl = "/api/rest/cashierLocatior?codigoEntidad=3016&longitud=-5.659779&latitud=42.573584&radio=19";
-      pageQuery(strUrl,callback);
-}
-function callback(){
-      console.log("callbacK llamado:");
-}
-
-function ajaxNormal() {
-      $.ajax({
-            url : '/api/rest/prueba/getddbb/help',
-            type : 'GET',
-            dataType : 'json',
-            success : ajaxNormalAction,
-            error : function(xhr, status) {
-                  console.log("Error al procesar la llamada ajaxNormal. xhr" + xhr + " - status: " + status);
-            }
-      });
-      console.log("Llamada ajax normal terminada.");
-}
-function ajaxNormalAction(respuesta) {
-      console.log("Ajax Normal Action - Respuesta: " + respuesta);
-      $("#ajaxNormal").text(respuesta);
-}
-
-function ajaxGenerico(){
-      var params = {};
-      params.type = 'GET';
-      params.url = '/api/rest/prueba/getddbb/help';
-      genericAjax(params,null,ajaxGenericoAction,null);
-      console.log("Llamada ajax generico terminada.");
-}
-function ajaxGenericoAction(respuesta){
-      console.log("Ajax Generico Action - Respuesta: " + respuesta);
-      $("#ajaxGenerico").text(respuesta);
-}
 
 function addContent(json) {
       var strReturn = '';
@@ -94,7 +43,7 @@ function addContent(json) {
 $(document).ready(function(){
       
       
-      var pJson = {"response":{"ListaCajeros":[{"codigoPostal":"24008","distancia":"7.5265","direccion":"CRUZ ROJA, 1","indicadorComision":"S","latitud":"42.604615","indicadorCajero":"X","nombreLocalidad":"LEON","longitud":"-5.57807","codigoCajeros":"7732","codigoEntidad":"3085","comision":"0","nombreEntidad":"CAJA RURAL DE ZAMORA"},{"codigoPostal":"24003","distancia":"7.5431","direccion":"DE LAS CORTES LEONESAS,4","indicadorComision":"S","latitud":"42.5956199","indicadorCajero":"X","nombreLocalidad":"LEON","longitud":"-5.57264","codigoCajeros":"7740","codigoEntidad":"3085","comision":"0","nombreEntidad":"CAJA RURAL DE ZAMORA"},{"codigoPostal":"24005","distancia":"7.6360","direccion":"VELAZQUEZ, 10","indicadorComision":"S","latitud":"42.590147","indicadorCajero":"X","nombreLocalidad":"LEON","longitud":"-5.569267","codigoCajeros":"7734","codigoEntidad":"3085","comision":"0","nombreEntidad":"CAJA RURAL DE ZAMORA"},{"codigoPostal":"24002","distancia":"7.6668","direccion":"PADRE ISLA,18","indicadorComision":"S","latitud":"42.599817","indicadorCajero":"X","nombreLocalidad":"LEON","longitud":"-5.573173","codigoCajeros":"7733","codigoEntidad":"3085","comision":"0","nombreEntidad":"CAJA RURAL DE ZAMORA"},{"codigoPostal":"24007","distancia":"9.1652","direccion":"PLACIDO HERRERO DE PRADO C. VUELTA,0","indicadorComision":"S","latitud":"42.609647","indicadorCajero":"X","nombreLocalidad":"LEON","longitud":"-5.559103","codigoCajeros":"8073","codigoEntidad":"3085","comision":"0","nombreEntidad":"CAJA RURAL DE ZAMORA"}],"numeroRegistros":"5"}};
+      var pJson = '__JSONDATA__';
 
       var strList = addContent(pJson);
       $("#contenido").html(strList);
