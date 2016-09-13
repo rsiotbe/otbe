@@ -147,12 +147,13 @@ public class SessionRviaData
 		}
 		catch (Exception ex)
 		{
-			throw new SessionException(500, "Error al obtener datos de sesion desde Ruralvia" , ex);
+			throw new SessionException(500, 999999, "Error al obtener datos de sesion desde Ruralvia" , strIsumServiceId, ex);
 		}
 	}
 
-	/** Caraga las propiedades de ruralvia */
-	private void loadProperties()
+	/** Carga las propiedades de ruralvia 
+	 * @throws Exception */
+	private void loadProperties() throws Exception
 	{
 		try
 		{
@@ -165,6 +166,7 @@ public class SessionRviaData
 		catch (Exception ex)
 		{
 			pLog.error("Fallo al cargar las propiedades de conexión con ruralvia", ex);
+			throw ex;
 		}
 	}
 

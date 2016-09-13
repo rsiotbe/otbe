@@ -9,84 +9,99 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.isum.IsumValidation;
+import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.error.ErrorManager;
+import com.rsi.rvia.rest.error.ErrorResponse;
 import com.rsi.rvia.rest.error.exceptions.ISUMException;
-import com.rsi.rvia.rest.error.exceptions.RVIAException;
-import com.rsi.rvia.rest.error.exceptions.RviaRestException;
-import com.rsi.rvia.rest.error.exceptions.WSException;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.template.TemplateManager;
 import com.rsi.rvia.rest.tool.Utils;
 import com.rsi.rvia.translates.TranslateProcessor;
 
+/** Clase que gestiona cualquier petición que llega a la apliación RviaRest */
 public class OperationManager
 {
 	private static HttpSession	pSession;
 	private static Logger		pLog	= LoggerFactory.getLogger(TranslateProcessor.class);
 
+	/** Se procesa una petición que llega desde la antigua apliación de ruralvia
+	 * 
+	 * @param pRequest
+	 *           Objeto petición original
+	 * @param pUriInfo
+	 *           Uri asociada a la petición
+	 * @param strData
+	 *           Datos asociados a la petición
+	 * @param pMediaType
+	 *           Tipo de mediatype que debe cumplir la petición
+	 * @return Objeto respuesta de Jersey */
 	public static Response proccesFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String strData,
 			MediaType pMediaType)
 	{
-		RestWSConnector pRestConnector;
+		ErrorResponse pErrorCaptured = null;
+		RestConnector pRestConnector;
 		String strJsonData = "";
-		int nStatusCode = 200;
+		int nReturnHttpCode = 200;
 		String strTemplate = "";
-		Response pReturn = null;
+		Response pResponseConnector;
 		SessionRviaData pSessionRviaData = null;
 		pSession = pRequest.getSession(true);
 		try
 		{
+			/* se obtiene los datos asociados a la petición de ruralvia */
 			pSessionRviaData = new SessionRviaData(pRequest);
 			if (pSessionRviaData != null)
 			{
+				/* se establece el token de datos recibido desde ruralvia como dato de sesión */
 				pSession.setAttribute("token", pSessionRviaData.getToken());
+				/* se comprueba si el servicio de isum está permitido */
 				if (!IsumValidation.IsValidService(pSessionRviaData))
-					throw new ISUMException(401,"Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.");
+					throw new ISUMException(401, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+				/* se obtienen los datos necesario para realizar la petición al proveedor */
 				String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
 				MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
-				pRestConnector = new RestWSConnector();
-				pReturn = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath, pListParams);
-				nStatusCode = pReturn.getStatus();
+				/* se instancia el conector y se solicitan los datos */
+				pRestConnector = new RestConnector();
+				pResponseConnector = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath, pListParams);
+				pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
+				/* se procesa el resultado del conector paa evaluar y adaptar su contenido */
+				strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector);
+				pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
+				/* se obtiene la plantilla destino si es que existe */
 				strTemplate = pRestConnector.getMiqQuests().getTemplate();
-				strJsonData = pReturn.readEntity(String.class);
-				pLog.trace("strJsonData preProcesado: " + strJsonData);
-				pLog.info("Respuesta recuperada del conector, se va a procesar.");
-				strJsonData = ResponseManager.processResponse(strJsonData, nStatusCode);
-				pLog.trace("strJsonData posProcesado: " + strJsonData);
-				pLog.info("Respuesta procesada correctamente.");
 			}
-		}
-		catch (RviaRestException exRVIARest)
-		{
-			String strExceptionType = exRVIARest.getClass().getSimpleName();
-			pLog.error("Se genera una exception de tipo " + strExceptionType + ". Mensaje: " + exRVIARest.getMessage());
-			strJsonData = ErrorManager.getJsonError(exRVIARest);
-			nStatusCode = exRVIARest.getErrorCode();
 		}
 		catch (Exception ex)
 		{
-			pLog.error("Internal error: " + ex.getMessage());
-			strJsonData = ErrorManager.getJsonError("500", "Error interno RviaRest", "Error Interno RviaRest");
-			nStatusCode = 500;
+			pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
 		}
-		
-		/* Se añaden los datos la template */
-		if (ErrorManager.isJsonError(strJsonData))
+		try
 		{
-			pLog.info("La respuesta ha sido un error.");
-			int nNewStatusCode = Integer.parseInt(ErrorManager.getCodeError(strJsonData));
-			// TODO Aqui se meteria el error en la plantilla de Error
-			pReturn = Response.ok(strJsonData).status(nNewStatusCode).build();
-		}
-		else
-		{
+			/* Se comprueba si ha habido algun error para generar la respuesta adecuada */
+			if (pErrorCaptured != null)
+			{
+				pLog.info("Se procede a gestionar el error");
+				/* si la apliación debe responder un XHTML */
+				if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
+					strTemplate = ErrorManager.ERROR_TEMPLATE;
+				strJsonData = pErrorCaptured.getJsonError();
+				nReturnHttpCode = pErrorCaptured.getHttpCode();
+				pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
+			}
 			if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
 			{
-				pLog.info("Se ha encontrado plantilla para la respuesta.");
+				pLog.info("La petición utiliza plantilla XHTML");
 				strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
 			}
-			pReturn = Response.ok(strJsonData).build();
+			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).build();			
 		}
-		return pReturn;
+		catch (Exception ex)
+		{
+			pLog.error("Se ha generado un error al procesar la respuesta final", ex);
+			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
+			pResponseConnector = Response.serverError().build();			
+		}
+		return pResponseConnector;
 	}
 }

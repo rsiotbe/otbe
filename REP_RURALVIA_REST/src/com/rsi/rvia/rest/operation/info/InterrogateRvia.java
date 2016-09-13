@@ -1,6 +1,7 @@
 package com.rsi.rvia.rest.operation.info;
 
 import java.io.StringReader;
+import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -10,6 +11,7 @@ import javax.ws.rs.core.Response;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.glassfish.jersey.client.ClientConfig;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -104,5 +106,54 @@ public class InterrogateRvia
 			throw new Exception("No se ha podido procesar el contenido xml recibido por el servicio de intearrogar ruralvia");
 		}
 		return pXmlDoc;
+	}
+	
+
+	/** Obtiene los valores de la sesión de ruralvia dao una lista de parámetros. Realiza una invoación a un servlet
+	 * específico de ruralvia
+	 * 
+	 * @param strParameters
+	 *           Rarámetros a recuperar separados por el caracter ';'
+	 * @param pSessionRvia
+	 *           Datos de petición recibida desde ruralvia de Ruralvia
+	 * @return Hastable con los parámetros leidos desde ruralvia */
+	public static Hashtable<String, String> getParameterFromSession(String strParameters, SessionRviaData pSessionRvia)
+	{
+		String strSesId;
+		String strHost;
+		String url;
+		String strHTML = "";
+		String[] strDatosParam = null;
+		Hashtable<String, String> htReturn;
+		org.jsoup.nodes.Document pDocResp;
+		/* se obtienen los parametros de la petición a ruralvia */
+		strSesId = pSessionRvia.getRviaSessionId();
+		strHost = pSessionRvia.getUriRvia().toString();
+		htReturn = new Hashtable<String, String>();
+		url = strHost + "/portal_rvia/RviaRestInfo;RVIASESION=" + strSesId + "?listAttributes=" + strParameters;
+		try
+		{
+			/* Se fuerza que sea Document el tipo: org.jsoup.nodes.Document */
+			pDocResp = Jsoup.connect(url).get();
+			strHTML = pDocResp.html();
+			strDatosParam = strHTML.split(";");
+			if (strDatosParam != null)
+			{
+				for (String strParam : strDatosParam)
+				{
+					String[] strPartesParam = strParam.split("#-#");
+					if ((strPartesParam != null) && (strPartesParam.length >= 2))
+					{
+						htReturn.put(strPartesParam[0], strPartesParam[1]);
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			pLog.error("Error al recuperar parametros de la sesion de Rvia: " + ex);
+			htReturn = null;
+		}
+		return htReturn;
 	}
 }

@@ -1,293 +1,139 @@
 package com.rsi.rvia.rest.error;
 
-import java.util.Iterator;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.rsi.rvia.rest.error.exceptions.RVIAException;
-import com.rsi.rvia.rest.error.exceptions.RviaRestException;
-import com.rsi.rvia.rest.error.exceptions.WSException;
+import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
+import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.rvia.rest.conector.RestConnector;
+import com.rsi.rvia.rest.error.exceptions.ApplicationException;
+import com.rsi.rvia.rest.session.SessionRviaData;
 
 public class ErrorManager
 {
-	private static Logger pLog = LoggerFactory.getLogger(ErrorManager.class);
+	private static Logger		pLog				= LoggerFactory.getLogger(ErrorManager.class);
+	public static final String	ERROR_TEMPLATE	= "";
 
-	public static String processError(String strJsonData, int nStatusCode) throws JSONException, RviaRestException
+	public static ErrorResponse getErrorResponseObject(Exception pEx)
 	{
-		String strReturn = getJsonError("500", "Error interno en el servidor", "Error en el manejor de la respuesta.");
-		if (isWebError(strJsonData))
+		ErrorResponse pReturn;
+		pLog.info("Se gestiona un error de tipo: " + pEx.getClass().getName());
+		/* se evalua que tipo de excepción se ha capturado */
+		if (pEx.getClass().isAssignableFrom(ApplicationException.class))
 		{
-			strReturn = getJsonFormRviaError(strJsonData);
+			ApplicationException pException;
+			pException = (ApplicationException) pEx;
+			pReturn = new ErrorResponse(pException);
 		}
 		else
 		{
-			if (isWSError(strJsonData))
-			{
-				JSONObject pJsonReader = new JSONObject(strJsonData);
-				String strPrimaryKey = "";
-				Iterator<String> pKeys = pJsonReader.keys();
-				if (pKeys.hasNext())
-				{
-					strPrimaryKey = (String) pKeys.next();
-				}
-				if (!strPrimaryKey.trim().isEmpty())
-				{
-					JSONObject pJsonContent = new JSONObject();
-					JSONObject pJsonErrors = new JSONObject();
-					pJsonContent = pJsonReader.getJSONObject(strPrimaryKey);
-					if (pJsonContent != null)
-					{
-						pJsonErrors = pJsonContent.getJSONObject("Errores");
-					}
-					if (pJsonErrors != null)
-					{
-						String strCode = pJsonErrors.getString("codigoMostrar");
-						String strMessage = pJsonErrors.getString("mensajeMostrar");
-						String strDescription = pJsonErrors.getString("solucion");
-						int nCode = Integer.parseInt(strCode);
-						throw new WSException(nCode,strMessage,strDescription);
-					}
-				}
-			}
-			else
-			{
-				if (isHTTPError(nStatusCode))
-				{
-					String strCode = String.valueOf(nStatusCode);
-					String strMessage = "Error " + nStatusCode;
-					String strDescription = "Error " + nStatusCode;
-					int nCode = Integer.parseInt(strCode);
-					throw new RviaRestException(nCode,strMessage,strDescription);
-					
-				}
-			}
+			pReturn = new ErrorResponse(pEx);
 		}
-		return strReturn;
+		/* se deja traza del error en los log */
+		pLog.error("Se ha producido un error. " + pEx.toString());
+		return pReturn;
 	}
 
-	public static boolean isHTTPError(int nStatusCode)
+	/** Recupera el mensaje amigable que contiene ruralvia del codigo de error generado
+	 * 
+	 * @param strErrorCode
+	 *           Codigo de error
+	 * @param SessionRviaData
+	 *           Objeto que contiene los datos de ususario de ruralvia
+	 * @param pRestConnector
+	 *           Objeto que contiene la información de la petición realizada, se utilzia para obtener el clave página
+	 * @return Texto de error ya traducido
+	 * @throws Exception */
+	public static String getFriendlyErrorFromRuralvia(String strErrorCode, SessionRviaData pSessionRviaData,
+			RestConnector pRestConnector) throws Exception
 	{
-		return (nStatusCode != 200);
-	}
-
-	public static boolean isWSError(String strHtml)
-	{
-		boolean fReturn = false;
-		String strPrimaryKey = "";
+		Connection pConnection = null;
+		PreparedStatement pPreparedStatement = null;
+		ResultSet pResultSet = null;
+		String strLanguage;
+		String strClavepagina;
+		String strReturn = null;
+		;
 		try
 		{
-			JSONObject pJsonReader = new JSONObject(strHtml);
-			Iterator<String> pKeys = pJsonReader.keys();
-			if (pKeys.hasNext())
+			/* se hace una consulta a la tabla especifa de errores por clave página */
+			String strQuery = "SELECT * FROM BDPTB090_ERRORES where CODERR = ? and IDIOMAERR = ? and CLAVE_PAGINA = ?";
+			strLanguage = pSessionRviaData.getLanguage();
+			strClavepagina = pRestConnector.getMiqQuests().getEndPoint();
+			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
+			pPreparedStatement = pConnection.prepareStatement(strQuery);
+			pPreparedStatement.setInt(1, Integer.parseInt(strErrorCode));
+			pPreparedStatement.setString(2, strLanguage);
+			pPreparedStatement.setString(3, strClavepagina);
+			pResultSet = pPreparedStatement.executeQuery();
+			while (pResultSet.next())
 			{
-				strPrimaryKey = (String) pKeys.next();
-			}
-			if (!strPrimaryKey.trim().isEmpty())
-			{
-				JSONObject pJsonContent = new JSONObject();
-				pJsonContent = pJsonReader.getJSONObject(strPrimaryKey);
-				String strStatusResponse = (String) pJsonContent.get("codigoRetorno");
-				if ("0".equals(strStatusResponse))
-				{
-					fReturn = true;
-				}
-			}
-		}
-		catch (JSONException ex)
-		{
-			pLog.error("No es un error de WS.");
-		}
-		return fReturn;
-	}
-
-	public static boolean isWebError(String strHtml)
-	{
-		boolean fReturn = false;
-		Document pDoc = Jsoup.parse(strHtml);
-		try
-		{
-			if ((pDoc.getElementsByClass("txtaviso") != null) && (pDoc.getElementsByClass("txtaviso").size() > 0))
-			{
-				fReturn = true;
+				strReturn = pResultSet.getString("TXTERR");
 			}
 		}
 		catch (Exception ex)
 		{
-			pLog.error("Error al procesar la respuesta como HTML.");
+			pLog.error("Error al realizar la consulta a la BBDD para obtener el mensaje amigable de error de la tabla personalizada por clave página", ex);
 		}
-		return fReturn;
-	}
-
-	public static boolean isJsonError(String strJson)
-	{
-		boolean fReturn = false;
-		String strCodeStatus = "";
-		try
+		finally
 		{
-			JSONObject pJson = new JSONObject(strJson);
-			strCodeStatus = pJson.getString("code");
-		}
-		catch (JSONException ex)
-		{
-			pLog.error("No existe el arbol 'code' en el JSON, no se trata de un error.");
-		}
-		if (!strCodeStatus.trim().isEmpty())
-		{
-			fReturn = true;
-		}
-		return fReturn;
-	}
-
-	public static String getCodeError(String strJson)
-	{
-		String strReturn = "0";
-		String strCodeStatus = "";
-		try
-		{
-			JSONObject pJson = new JSONObject(strJson);
-			strCodeStatus = pJson.getString("code");
-		}
-		catch (JSONException ex)
-		{
-			pLog.error("No se encuentra la etiqueda 'code' dentro del JSON.");
-		}
-		if (!strCodeStatus.trim().isEmpty())
-		{
-			strReturn = strCodeStatus;
-		}
-		return strReturn;
-	}
-
-	public static String getJsonFormRviaError(String strHtml) throws JSONException, RVIAException
-	{
-		String strReturn = "";
-		String strCode = "";
-		String strMessage = "";
-		String strDescription = "";
-		Element pError = null;
-		Document pDoc = Jsoup.parse(strHtml);
-		if ((pDoc.getElementsByClass("txtaviso") != null) && (pDoc.getElementsByClass("txtaviso").size() > 0))
-		{
-			pError = pDoc.getElementsByClass("txtaviso").get(0);
-		}
-		if (pError != null)
-		{
-			String[] pStrPartes = pError.text().split(":");
-			if ((pStrPartes != null) && (pStrPartes.length > 1))
+			try
 			{
-				strCode = pStrPartes[1].trim();
+				if (pResultSet != null)
+					pResultSet.close();
+				if (pPreparedStatement != null)
+					pPreparedStatement.close();
+				if (pConnection != null)
+					pConnection.close();
 			}
-			else
+			catch (Exception ex)
 			{
-				strCode = "0";
+				pLog.error("error al cerrar la conexión a base de datos", ex);
+				throw ex;
 			}
-			pStrPartes = strHtml.split("<!-- TEXTO DE ERROR ORIGINAL ");
-			if ((pStrPartes != null) && (pStrPartes.length > 1))
+		}
+		/* si no se ha encontrado el mensaje personalizado por clave página se intenta como genérico */
+		if (strReturn == null)
+		{
+			try
 			{
-				String[] pStrPartes2 = pStrPartes[1].split("-->");
-				if ((pStrPartes2 != null) && (pStrPartes2.length > 1))
+				/* se hace una consulta a la tabla especifa de errores por clave página */
+				String strQuery = "SELECT * FROM BELTS105 where CODERR = ? and IDIOMAERR = ?";
+				strLanguage = pSessionRviaData.getLanguage();
+				strClavepagina = pRestConnector.getMiqQuests().getEndPoint();
+				pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
+				pPreparedStatement = pConnection.prepareStatement(strQuery);
+				pPreparedStatement.setInt(1, Integer.parseInt(strErrorCode));
+				pPreparedStatement.setString(2, strLanguage);
+				pResultSet = pPreparedStatement.executeQuery();
+				while (pResultSet.next())
 				{
-					strMessage = pStrPartes2[0];
+					strReturn = pResultSet.getString("TXTERR");
 				}
 			}
-			else
+			catch (Exception ex)
 			{
-				strMessage = "Error rvia";
+				pLog.error("Error al realizar la consulta a la BBDD para obtener el mensaje amigable de error de la tabla general", ex);
 			}
-			strDescription = "Error Rvia: " + strMessage;
-			int nCode = Integer.parseInt(strCode);
-			throw new RVIAException(nCode,strMessage,strDescription);
-		}
-		else
-		{
-			strReturn = "{}";
-		}
-		return strReturn;
-	}
-
-	public static String getJsonError(String strCode, String strMessage, String strDescription)
-	{
-		String strReturn = "";
-		JSONObject pJson;
-		try
-		{
-			pJson = new JSONObject();
-			pJson.put("code", strCode);
-			pJson.put("message", strMessage);
-			pJson.put("description", strDescription);
-			strReturn = pJson.toString();
-		}
-		catch (JSONException ex)
-		{
-			pLog.error("Error al formar el JSON de Error");
-			strReturn = "{}";
-		}
-		return strReturn;
-	}
-	
-	public static String getJsonError(Exception pEx)
-	{
-		String strReturn = "";
-		JSONObject pJson;
-		String strHttpCode;
-		
-		try
-		{
-			pJson = new JSONObject();
-			
-			/* se evalua que tipo de excepción se ha capturado*/
-			if(pEx.getClass().isAssignableFrom(RviaRestException.class))
+			finally
 			{
-				pLog.info("Se gestiona un error de tipo: " + pEx.getClass().getName());
-
-				/* si es una excepción de tipo RviaRestException o sus hijos */
-				pJson.put("code", ((RviaRestException)pEx).getErrorCode());
-				pJson.put("message", ((RviaRestException)pEx).getMessage());
-				pJson.put("description", ((RviaRestException)pEx).getDescription());				
+				try
+				{
+					if (pResultSet != null)
+						pResultSet.close();
+					if (pPreparedStatement != null)
+						pPreparedStatement.close();
+					if (pConnection != null)
+						pConnection.close();
+				}
+				catch (Exception ex)
+				{
+					pLog.error("error al cerrar la conexión a base de datos", ex);
+					throw ex;
+				}
 			}
-			else
-			{
-				pJson.put("code", "500");
-				pJson.put("message", "Error no controlado");
-				pJson.put("description", pEx.getMessage());		
-			}
-			pJson.put("code", "500");
-			pJson.put("message", "Error no controlado");
-			pJson.put("description", pEx.getMessage());	
-			strReturn = pJson.toString();
-			pLog.info("Se genera el JSON de error a partir del error detectado. JSON: " + strReturn);
-			pLog.error("Traza completa del error: \n" + 
-					"codigo http: " + "\n");
-			
-		}
-		catch (JSONException ex2)
-		{
-			pLog.error("Error al formar el JSON de Error");
-			strReturn = "{}";
-		}
-		return strReturn;
-	}
-	
-	public static String getJsonError(RviaRestException ex)
-	{
-		String strReturn = "";
-		JSONObject pJson;
-		try
-		{
-			pJson = new JSONObject();
-			pJson.put("code", ex.getErrorCode());
-			pJson.put("message", ex.getMessage());
-			pJson.put("description", ex.getDescription());
-			strReturn = pJson.toString();
-		}
-		catch (JSONException ex2)
-		{
-			pLog.error("Error al formar el JSON de Error");
-			strReturn = "{}";
 		}
 		return strReturn;
 	}

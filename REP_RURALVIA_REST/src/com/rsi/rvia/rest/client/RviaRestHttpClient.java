@@ -5,7 +5,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 
-public class CustomRSIClient
+public class RviaRestHttpClient
 {
 	/** Retorna un cliente de Jersey con la configuración de timeOuts
 	 * 

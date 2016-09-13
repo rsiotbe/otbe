@@ -10,6 +10,12 @@ import com.rsi.rvia.rest.session.SessionRviaData;
 
 public class IsumValidation
 {
+	/**
+	 * Comprueba si el servicio solicitado por el usuario es accesible para el perfil del usuario
+	 * @param pSessionRviaData Datos de sesión de la apliación de ruralvia
+	 * @return Booleano indicando si está disponible el servicio
+	 * @throws Exception
+	 */
 	public static boolean IsValidService(SessionRviaData pSessionRviaData) throws Exception
 	{
 		boolean fReturn = false;
@@ -28,7 +34,6 @@ public class IsumValidation
 			pPreparedStatement.setString(1, strUserIsumProfile);
 			pPreparedStatement.setString(2, strServiceIsumId);
 			pResultSet = pPreparedStatement.executeQuery();
-
 			while (pResultSet.next())
 			{
 				fReturn = true;
@@ -37,10 +42,12 @@ public class IsumValidation
 			pResultSet.close();
 			pPreparedStatement.close();
 		}
-		catch(Exception ex)
+		catch (Exception ex)
 		{
-			throw new ISUMException(500, "No ha sido posible validar el servicio contra ISUM", "Error al obtener obtener la información de los servicios de ISUM", ex);
-		}finally{
+			throw new ISUMException(500, null, "No ha sido posible validar el servicio contra ISUM", "Error al obtener obtener la información de los servicios de ISUM", ex);
+		}
+		finally
+		{
 			pResultSet.close();
 			pPreparedStatement.close();
 			pConnection.close();

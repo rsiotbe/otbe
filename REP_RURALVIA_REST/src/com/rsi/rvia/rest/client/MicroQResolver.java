@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
-import com.rsi.rvia.rest.client.CustomRSIClient;
+import com.rsi.rvia.rest.client.RviaRestHttpClient;
 
 /*
  * 1.- Con el objeto request, tomamos el path y el verbo, y extraemos los inputs 2.- Revisamos los parámetros de entrada
@@ -99,7 +99,7 @@ public class MicroQResolver
 
 	private static Response getRVIAInputs(String endp) throws Exception
 	{
-		Client client = CustomRSIClient.getClient();
+		Client client = RviaRestHttpClient.getClient();
 		WebTarget target = client.target(getBaseRviaXML());
 		Response rp = target.request().accept(MediaType.TEXT_PLAIN).get(Response.class);
 		pLog.info("RVIA____________: " + rp.getHeaders().toString());
@@ -125,7 +125,7 @@ public class MicroQResolver
 
 	private static Response rviaPost(@Context HttpServletRequest request, String ct, String endp) throws Exception
 	{
-		Client client = CustomRSIClient.getClient();
+		Client client = RviaRestHttpClient.getClient();
 		WebTarget target = client.target(getBaseRviaXML());
 		Response rp = null;
 		/*
@@ -143,7 +143,7 @@ public class MicroQResolver
 	// @Produces(MediaType.TEXT_PLAIN)
 	private static Response get(HttpServletRequest request, String ct, String endp) throws Exception
 	{
-		Client client = CustomRSIClient.getClient();
+		Client client = RviaRestHttpClient.getClient();
 		WebTarget target = client.target(getBaseWSURI(endp));
 		Response rp = target.request().accept(MediaType.TEXT_PLAIN).get(Response.class);
 		pLog.info("GET: " + rp.toString());
@@ -154,7 +154,7 @@ public class MicroQResolver
 	// @Produces(MediaType.TEXT_PLAIN)
 	private static Response post(@Context HttpServletRequest request) throws Exception
 	{
-		Client client = CustomRSIClient.getClient();
+		Client client = RviaRestHttpClient.getClient();
 		WebTarget target = client.target(getBaseRviaXML());
 		Response rp = null;
 		/*

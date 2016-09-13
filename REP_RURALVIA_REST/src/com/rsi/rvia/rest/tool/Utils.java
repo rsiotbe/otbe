@@ -3,6 +3,8 @@ package com.rsi.rvia.rest.tool;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -15,9 +17,6 @@ import javax.ws.rs.core.UriInfo;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,7 +136,6 @@ public class Utils
 
 	public static MultivaluedMap<String, String> getParam4Path(UriInfo pUriInfo)
 	{
-		String strReturn = "";
 		MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
 		return pListParameters;
 	}
@@ -204,5 +202,17 @@ public class Utils
 		}
 		strReturn = pJson.toString();
 		return strReturn;
+	}
+	
+	/**
+	 * Obtiene la cadena que contiene el stacktrace de una excepción
+	 * @param ex Excepcion a escribir
+	 * @return Cadena que contiene la pila
+	 */
+	public static String getExceptionStackTrace(Exception ex)
+	{
+		StringWriter errors = new StringWriter();
+		ex.printStackTrace(new PrintWriter(errors));
+		return errors.toString();
 	}
 }

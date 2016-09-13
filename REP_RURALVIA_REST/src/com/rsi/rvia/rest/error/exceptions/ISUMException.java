@@ -1,22 +1,12 @@
 package com.rsi.rvia.rest.error.exceptions;
 
-public class ISUMException extends RviaRestException
+public class ISUMException extends ApplicationException
 {
-	private static final long		serialVersionUID				= 1L;
+	private static final long	serialVersionUID	= 1L;
 
-	public ISUMException(int nErrorCode, String strMessage, Exception ex)
+	public ISUMException(Integer nHttpErrorCode, Integer nInnerErrorCode, String strMessage, String strDescription,
+			Exception ex)
 	{
-		super(nErrorCode, strMessage, null, ex);
+		super(nHttpErrorCode, nInnerErrorCode, strMessage, strDescription, ex);
 	}
-
-	public ISUMException(int nErrorCode, String strMessage, String strDescription)
-	{
-		super(nErrorCode, strMessage, strDescription, null);
-	}
-	
-
-	public ISUMException(int nErrorCode, String strMessage, String strDescription, Exception ex)
-	{
-		super(nErrorCode, strMessage, strDescription, ex);
-	}	
 }

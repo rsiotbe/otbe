@@ -1,13 +1,21 @@
 package com.rsi.rvia.rest.error;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.rsi.rvia.rest.error.exceptions.ApplicationException;
+
 public class ErrorResponse
 {
-	private int nHttpCode;
-	private int nErrorCode;
+	private static Logger pLog = LoggerFactory.getLogger(ErrorManager.class);
+
+	private Integer nHttpCode;
+	private Integer nInnerErrorCode;
 	private String strMessage;
-	private String strDescriptción;
+	private String strDescription;
 	
-	public int getHttpCode()
+	public Integer getHttpCode()
 	{
 		return nHttpCode;
 	}
@@ -15,13 +23,13 @@ public class ErrorResponse
 	{
 		this.nHttpCode = nHttpCode;
 	}
-	public int getErrorCode()
+	public Integer getInnerErrorCode()
 	{
-		return nErrorCode;
+		return nInnerErrorCode;
 	}
-	public void setErrorCode(int nErrorCode)
+	public void setInnerErrorCode(int nErrorCode)
 	{
-		this.nErrorCode = nErrorCode;
+		this.nInnerErrorCode = nErrorCode;
 	}	
 	public String getMessage()
 	{
@@ -31,12 +39,61 @@ public class ErrorResponse
 	{
 		this.strMessage = strMessage;
 	}
-	public String getDescriptción()
+	public String getDescription()
 	{
-		return strDescriptción;
+		return strDescription;
 	}
-	public void setDescriptción(String strDescriptción)
+	public void setDescription(String strDescriptción)
 	{
-		this.strDescriptción = strDescriptción;
+		this.strDescription = strDescriptción;
 	}
+	
+	public ErrorResponse (ApplicationException ex)
+	{
+		if(ex.getHttpErrorCode() != null)
+			nHttpCode = ex.getHttpErrorCode();
+		else
+			nHttpCode = 500;
+		if(ex.getInnerErrorCode() != null)
+			nInnerErrorCode = ex.getInnerErrorCode();
+		else
+			nInnerErrorCode = 9999999;			
+		if(ex.getMessage() != null && !ex.getMessage().trim().isEmpty())
+			strMessage = ex.getMessage();
+		if(ex.getDescription() != null && !ex.getDescription().trim().isEmpty())
+			strDescription = ex.getDescription();		
+	}
+	
+	public ErrorResponse (Exception ex)
+	{
+		nHttpCode = 500;
+		nInnerErrorCode = 9999999;
+		strMessage = "Error de la aplicación";
+		strDescription = "Error no controlado de la aplicación";	
+	}
+	
+	public String getJsonError()
+	{
+		String strReturn = "";
+		JSONObject pJson;
+		try
+		{
+			pJson = new JSONObject();
+			pJson.put("code", this.getInnerErrorCode());
+			pJson.put("message", this.getMessage());
+			pJson.put("description", this.getDescription());
+			strReturn = pJson.toString();
+		}
+		catch (JSONException ex)
+		{
+			pLog.error("Error al generar el JSON de Error", ex);
+			strReturn = "{" +
+					"\"code\":500," +
+					"\"message\":\"Error de la aplicación\"," + 
+					"\"description\":\"Error no controlado de la aplicación\"" +
+					"}";
+		}
+		return strReturn;
+	}
+	
 }
