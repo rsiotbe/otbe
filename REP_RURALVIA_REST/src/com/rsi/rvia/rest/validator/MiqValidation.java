@@ -16,7 +16,7 @@ public class MiqValidation
 
 	public int getParamLong()
 	{
-		return nParamLong;
+		return nParamLong; 
 	}
 
 	public int getParamMin()
