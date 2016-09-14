@@ -9,9 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.conector.RestRviaConnector;
-import com.rsi.rvia.rest.error.ErrorManager;
+import com.rsi.rvia.rest.conector.RestWSConnector;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
-import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.session.SessionRviaData;
 
 /** Clase para manejar la respuesta del RestConnector. Mira si es un error o si no lo es y compone una respuesta JSON
@@ -86,16 +85,16 @@ public class ResponseManager
 			nHttpErrorCode = pResponse.getStatus();
 		}
 		/* se comprueba si el mensaje contiene un error generado por el conector WS */
-		if (isWSError(pJsonData))
+		if (RestWSConnector.isWSError(pJsonData))
 		{
 			/* se lanza la excepción de tipo lócigo, en caso de no lanzarse se genera una exceción de tipo general */
-			if (!throwWSError(nHttpErrorCode, pJsonData))
+			if (!RestWSConnector.throwWSError(nHttpErrorCode, pJsonData))
 				throw new ApplicationException(500, 999999, "Error al procesar la información", "Error al acceder al contenido de un error de tipo ws", null);
 		}
-		else if (isRVIAError(pJsonData))
+		else if (RestRviaConnector.isRVIAError(pJsonData))
 		{
 			/* se lanza la excepción de tipo lócigo, en caso de no lanzarse se genera una exceción de tipo general */
-			if (!throwRVIAError(pSessionRviaData, pRestConnector, pJsonData))
+			if (!RestRviaConnector.throwRVIAError(pSessionRviaData, pRestConnector, pJsonData))
 				throw new ApplicationException(500, 999999, "Error al procesar la información", "Error al acceder al contenido de un error de tipo ws", null);
 		}
 		/* si la ejecución ha llegado aqui es que todo parece correcto, se continua */
@@ -111,7 +110,7 @@ public class ResponseManager
 	private static JSONObject formatResponse(JSONObject pJsonData) throws Exception
 	{
 		/* se comprueba si el json pertenece a WS */
-		if (isWSJson(pJsonData))
+		if (RestWSConnector.isWSJson(pJsonData))
 		{
 			pJsonData = adjustWSJson(pJsonData);
 		}
@@ -143,172 +142,7 @@ public class ResponseManager
 		return true;
 	}
 
-	/** Comprueba si el contenido del JSON es de tipo WS
-	 * 
-	 * @param pJsonData
-	 *           Objeto que contiene la información JSON
-	 * @return */
-	public static boolean isWSJson(JSONObject pJsonData)
-	{
-		boolean fReturn = false;
-		String strPrimaryKey = "";
-		try
-		{
-			if (pJsonData.keys().hasNext())
-			{
-				strPrimaryKey = (String) pJsonData.keys().next();
-			}
-			if (!strPrimaryKey.trim().isEmpty())
-			{
-				String strStatusResponse = pJsonData.getJSONObject(strPrimaryKey).getString("codigoRetorno");
-				if (strStatusResponse != null && strStatusResponse.trim().length() > 0)
-				{
-					fReturn = true;
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.warn("No es un JSON de WS");
-			fReturn = false;
-		}
-		return fReturn;
-	}
-
-	/** Comprueba si el contenido del JSON es un error generado por WS
-	 * 
-	 * @param pJsonData
-	 *           Objeto que contiene la información JSON
-	 * @return */
-	public static boolean isWSError(JSONObject pJsonData)
-	{
-		boolean fReturn = false;
-		String strPrimaryKey = "";
-		try
-		{
-			if (pJsonData.keys().hasNext())
-			{
-				strPrimaryKey = (String) pJsonData.keys().next();
-			}
-			if (!strPrimaryKey.trim().isEmpty())
-			{
-				String strStatusResponse = (String) pJsonData.getJSONObject(strPrimaryKey).getString("codigoRetorno");
-				if ("0".equals(strStatusResponse))
-				{
-					fReturn = true;
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.warn("No es un error de WS");
-			fReturn = false;
-		}
-		return fReturn;
-	}
-
-	/** genera unaexceción de tipo lógico a partir del mensaje de error de una respuesta WS
-	 * 
-	 * @param nHttpErrorCode
-	 *           Codigo de error obtenido en la cabecera de la respuesta
-	 * @param pJsonData
-	 *           Objeto que contiene la información JSON
-	 * @return Objeto JSON que contiene el cuerpo
-	 * @throws LogicalErrorException */
-	private static boolean throwWSError(Integer nHttpErrorCode, JSONObject pJsonData) throws LogicalErrorException
-	{
-		Integer nCode = null;
-		String strMessage = null;
-		String strDescription = null;
-		boolean fProcessed = false;
-		try
-		{
-			String strPrimaryKey = "";
-			if (pJsonData.keys().hasNext())
-			{
-				strPrimaryKey = (String) pJsonData.keys().next();
-			}
-			if (!strPrimaryKey.trim().isEmpty())
-			{
-				JSONObject pJsonContent = pJsonData.getJSONObject(strPrimaryKey).getJSONObject("Errores");
-				if (pJsonContent == null)
-					pLog.error("No se ha encontrado el nodo 'Errores' dentro del contenido del JSON devuelto por el WS");
-				else
-				{
-					nCode = Integer.parseInt(pJsonContent.getString("codigoMostrar"));
-					strMessage = pJsonContent.getString("mensajeMostrar");
-					strDescription = pJsonContent.getString("solucion");
-					fProcessed = true;
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("Error al obtener el cuerpo del mensaje de error de una respuesta WS", ex);
-		}
-		if (fProcessed)
-			throw new LogicalErrorException(nHttpErrorCode, nCode, strMessage, strDescription, null);
-		return true;
-	}
-
-	/** Comprueba si el contenido del JSON es un error generado por ruralvia WS
-	 * 
-	 * @param pJsonData
-	 *           Objeto que contiene la información JSON
-	 * @return */
-	public static boolean isRVIAError(JSONObject pJsonData)
-	{
-		boolean fReturn = false;
-		String strInnerCode;
-		try
-		{
-			strInnerCode = pJsonData.getString("CODERRR");
-			fReturn = (strInnerCode != null) && (!strInnerCode.trim().isEmpty());
-		}
-		catch (Exception ex)
-		{
-			pLog.error("No es un error de RVIA");
-			fReturn = false;
-		}
-		return fReturn;
-	}
-
-	/** @param pSessionRviaData
-	 *           Datos de sesión del usuario en ruralvia
-	 * @param pRestConnector
-	 *           Conector al origen de los datos
-	 * @param pJsonData
-	 *           Objeto que contiene la información JSON
-	 * @return Indica si se ha llegado ha lanzar una excepción de error
-	 * @throws LogicalErrorException */
-	public static boolean throwRVIAError(SessionRviaData pSessionRviaData, RestConnector pRestConnector,
-			JSONObject pJsonData) throws LogicalErrorException
-	{
-		boolean fReturn = false;
-		String strInnerCode;
-		Integer nCode = null;
-		String strMessage = null;
-		String strDescription = null;
-		Integer nHttpErrorCode = 400;
-		boolean fProcessed = false;
-		try
-		{
-			strInnerCode = pJsonData.getString("CODERRR");
-			nCode = Integer.parseInt(strInnerCode);
-			strDescription = pJsonData.getString("TXTERRR");
-			strMessage = ErrorManager.getFriendlyErrorFromRuralvia(strInnerCode, pSessionRviaData, pRestConnector);
-			fProcessed = true;
-		}
-		catch (Exception ex)
-		{
-			pLog.error("Error al obtener el cuerpo del mensaje de error de una respuesta RVIA", ex);
-		}
-		if (fProcessed)
-			throw new LogicalErrorException(nHttpErrorCode, nCode, strMessage, strDescription, null);
-		return fReturn;
-	}
-
-	/** Formatea el contenido de la respuesta para que comience por el token 'respponse' y despues el contenido
+	/** Formatea el contenido de la respuesta para que comience por el token 'response' y despues el contenido
 	 * 
 	 * @param pJsonData
 	 *           Objeto que contiene la información JSON

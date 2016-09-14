@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.rvia.rest.session.SessionRviaData;
 
 /** Clase que gestiona el los CSS de multientidad para adaptar el estilo de la web. */
 public class CssMultiBankProcessor
@@ -96,14 +97,22 @@ public class CssMultiBankProcessor
 	 * 
 	 * @param strXHTML
 	 *           String con el XHTML
-	 * @param strNRBE
-	 *           String con el codigo de entidad
+	 * @param pSessionRviaData
+	 *           Datos de sesión de ruralvia para el usuario
 	 * @return String con el HTML con los reemplazos de css ya realizados. 
 	 * @throws Exception */
-	public static String processXHTML(String strXHTML, String strNRBE) throws Exception
+	public static String processXHTML(String strXHTML, SessionRviaData pSessionRviaData) throws Exception
 	{
 		Document pDoc = null;
 		String strReturn = null;
+		String strNRBE;
+		if(pSessionRviaData == null)
+		{
+			pLog.warn("Los datos de sesión de ruralvia están vacios, se escoge la entidad del cooperativo por defecto");
+			strNRBE = "0198";
+		}
+		else
+			strNRBE = pSessionRviaData.getNRBE();
 		if (strXHTML == null || strXHTML.trim().isEmpty())
 			pLog.warn("El contenido de strXHTML es nulo o vacio");
 		else

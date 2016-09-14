@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"
     import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
     		com.rsi.rvia.rest.operation.MiqQuests,
-		 	java.sql.Connection"
+		 	java.sql.Connection, java.net.URL"
     %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -11,12 +11,12 @@
 <title></title>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <script type="text/javascript" src="/api/js/manageRequestRviaRest.js"></script>
-<script type="text/javascript" src="/http://cdn.jsdelivr.net/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js"></script>
+<script type="text/javascript" src="http://cdn.jsdelivr.net/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js"></script>
 </head>
 <%
 	MiqQuests pMiqQuests = null;
 	String strPathRest = null;
-	String strIdMiq = request.getParameter("idMiq");
+	String strIdMiq = request.getParameter("id");
 	int nMiqQuestId = Integer.parseInt(strIdMiq);
 	String strType = request.getParameter("type");
 	if(strType == null){
@@ -28,25 +28,30 @@
 	}else{
 		strPathRest = "Path Error";
 	}
+	URL resource = getClass().getResource("/");
+	String pathApp = resource.getPath();
 	
 %>
 <body>
-cargando...
 <script type="text/javascript">
   var data = {};
-
-  $.ajax({
-    url : '<%=strPathRest%>',
+  var appPath = '/' + window.location.pathname.substr(1).split('/')[0] + '/rest' + '<%=strPathRest%>';
+  var method = '<%=strType%>';
+ 
+<%--   $.ajax({
+    url : appPath + '<%=strPathRest%>',
     data : data,
     type : '<%=strType%>',
     success : function(response) {
       $('html').html(response);
     },
-    error: function()
+    error: function(data, textStatus, errorThrown)
     {
-    	$('html').text('Error al cargar la operativa');
+    	//$('html').html(data.responseText);
+    	document.write(data.responseText);
     }
-  });
+  }); --%>
+  $('<form action="' + appPath + '" type="' + method + '"></form>').appendTo('body').submit();
 
 </script>
 </body>

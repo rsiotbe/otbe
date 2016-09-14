@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.rvia.rest.session.SessionRviaData;
 
 /** Clase que gestiona el cambio de idioma en el contenido HTML de la web. */
 public class TranslateProcessor
@@ -90,15 +91,18 @@ public class TranslateProcessor
 	 * 
 	 * @param strXHTML
 	 *           String con el XHTML
-	 * @param strLanguage
-	 *           String con el idioma (es_ES)
+	 * @param pSessionRviaData
+	 *           Dattos de sessión de usuario de ruralvia
 	 * @return String con el HTML con la nueva traducción ya aplicada. */
-	public static String processXHTML(String strXHTML, String strLanguage)
+	public static String processXHTML(String strXHTML, SessionRviaData pSessionRviaData)
 	{
 		Document pDoc = null;
 		String strReturn = null;
 		ArrayList<String> alIdsTrans = null;
+		String strLanguage = null;
 		Hashtable<String, TranslateEntry> htTransData = new Hashtable<String, TranslateEntry>();
+		if(pSessionRviaData == null)
+			pLog.warn("Los datos de sesión de ruralvia están vacios, se escoge el idioma español por defecto");
 		if (strXHTML == null || strXHTML.trim().isEmpty())
 			pLog.warn("El contenido de XHTML es nulo o vacio");
 		else 
@@ -111,7 +115,7 @@ public class TranslateProcessor
 				pLog.debug("IDs de traducciones extraidos correctamente.");
 				pLog.debug("alIdsTrans lenght: " + alIdsTrans.size());
 			}
-			if (alIdsTrans != null)
+			if (alIdsTrans != null && alIdsTrans.size() > 0)
 			{
 				try
 				{
@@ -123,24 +127,17 @@ public class TranslateProcessor
 					pLog.error("Error al intentar recuperar las Traducciones de la BBDD", ex);
 				}
 			}
-			if (htTransData != null)
+			if (htTransData != null && htTransData.size() > 0)
 			{
 				if (strLanguage == null)
-				{
 					strLanguage = "es_ES";
-				}
-				pLog.debug("Documento premodificaci�n null: " + (pDoc == null));
+				pLog.debug("Documento premodificación null: " + (pDoc == null));
 				pDoc = modifyDocument(pDoc, htTransData, strLanguage);
 				pLog.debug("Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
-				if (pDoc != null)
-				{
-					strReturn = documentToString(pDoc);
-				}
-				else
-				{
-					pLog.debug("Doc null en último paso.");
-				}
 			}
+			/* se genera de nuevo el documento */
+			strReturn = documentToString(pDoc);
+
 		}		
 		return strReturn;
 	}

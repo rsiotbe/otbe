@@ -16,11 +16,13 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.RviaRestHttpClient;
+import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 import com.rsi.rvia.rest.session.SessionRviaData;
@@ -213,6 +215,115 @@ public class RestWSConnector
 			pConnection.close();
 		}
 		return strReturn;
+	}
+	
+
+	/** Comprueba si el contenido del JSON es de tipo WS
+	 * 
+	 * @param pJsonData
+	 *           Objeto que contiene la información JSON
+	 * @return */
+	public static boolean isWSJson(JSONObject pJsonData)
+	{
+		boolean fReturn = false;
+		String strPrimaryKey = "";
+		try
+		{
+			if (pJsonData.keys().hasNext())
+			{
+				strPrimaryKey = (String) pJsonData.keys().next();
+			}
+			if (!strPrimaryKey.trim().isEmpty())
+			{
+				String strStatusResponse = pJsonData.getJSONObject(strPrimaryKey).getString("codigoRetorno");
+				if (strStatusResponse != null && strStatusResponse.trim().length() > 0)
+				{
+					fReturn = true;
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			pLog.warn("No es un JSON de WS");
+			fReturn = false;
+		}
+		return fReturn;
+	}
+
+	/** Comprueba si el contenido del JSON es un error generado por WS
+	 * 
+	 * @param pJsonData
+	 *           Objeto que contiene la información JSON
+	 * @return */
+	public static boolean isWSError(JSONObject pJsonData)
+	{
+		boolean fReturn = false;
+		String strPrimaryKey = "";
+		try
+		{
+			if (pJsonData.keys().hasNext())
+			{
+				strPrimaryKey = (String) pJsonData.keys().next();
+			}
+			if (!strPrimaryKey.trim().isEmpty())
+			{
+				String strStatusResponse = (String) pJsonData.getJSONObject(strPrimaryKey).getString("codigoRetorno");
+				if ("0".equals(strStatusResponse))
+				{
+					fReturn = true;
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			pLog.warn("No es un error de WS");
+			fReturn = false;
+		}
+		return fReturn;
+	}
+	
+	/** genera unaexceción de tipo lógico a partir del mensaje de error de una respuesta WS
+	 * 
+	 * @param nHttpErrorCode
+	 *           Codigo de error obtenido en la cabecera de la respuesta
+	 * @param pJsonData
+	 *           Objeto que contiene la información JSON
+	 * @return Objeto JSON que contiene el cuerpo
+	 * @throws LogicalErrorException */
+	public static boolean throwWSError(Integer nHttpErrorCode, JSONObject pJsonData) throws LogicalErrorException
+	{
+		Integer nCode = null;
+		String strMessage = null;
+		String strDescription = null;
+		boolean fProcessed = false;
+		try
+		{
+			String strPrimaryKey = "";
+			if (pJsonData.keys().hasNext())
+			{
+				strPrimaryKey = (String) pJsonData.keys().next();
+			}
+			if (!strPrimaryKey.trim().isEmpty())
+			{
+				JSONObject pJsonContent = pJsonData.getJSONObject(strPrimaryKey).getJSONObject("Errores");
+				if (pJsonContent == null)
+					pLog.error("No se ha encontrado el nodo 'Errores' dentro del contenido del JSON devuelto por el WS");
+				else
+				{
+					nCode = Integer.parseInt(pJsonContent.getString("codigoMostrar"));
+					strMessage = pJsonContent.getString("mensajeMostrar");
+					strDescription = pJsonContent.getString("solucion");
+					fProcessed = true;
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			pLog.error("Error al obtener el cuerpo del mensaje de error de una respuesta WS", ex);
+		}
+		if (fProcessed)
+			throw new LogicalErrorException(nHttpErrorCode, nCode, strMessage, strDescription, null);
+		return true;
 	}
 	
 }

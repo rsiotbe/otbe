@@ -69,8 +69,7 @@ public class ApplicationException extends Exception
 		if(strDescription != null)
 			pSb.append("Detalle: " + strDescription).append(" - ");
 		if(pInnerException != null)
-			pSb.append("Inner Exception: " + Utils.getExceptionStackTrace(pInnerException)).append(" - ");;
-		pSb.append("StackTrace: " + Utils.getExceptionStackTrace(this));
+			pSb.append("Inner Exception: " + Utils.getExceptionStackTrace(pInnerException));
 		return pSb.toString();
 	}	
 }

@@ -14,14 +14,14 @@ import com.rsi.rvia.rest.session.SessionRviaData;
 public class ErrorManager
 {
 	private static Logger		pLog				= LoggerFactory.getLogger(ErrorManager.class);
-	public static final String	ERROR_TEMPLATE	= "";
+	public static final String	ERROR_TEMPLATE	= "/error/error.xhtml";
 
 	public static ErrorResponse getErrorResponseObject(Exception pEx)
 	{
 		ErrorResponse pReturn;
 		pLog.info("Se gestiona un error de tipo: " + pEx.getClass().getName());
 		/* se evalua que tipo de excepción se ha capturado */
-		if (pEx.getClass().isAssignableFrom(ApplicationException.class))
+		if (ApplicationException.class.isAssignableFrom(pEx.getClass()))
 		{
 			ApplicationException pException;
 			pException = (ApplicationException) pEx;
@@ -32,7 +32,7 @@ public class ErrorManager
 			pReturn = new ErrorResponse(pEx);
 		}
 		/* se deja traza del error en los log */
-		pLog.error("Se ha producido un error. " + pEx.toString());
+		pLog.error("Se ha producido un error: " + pEx.toString());
 		return pReturn;
 	}
 

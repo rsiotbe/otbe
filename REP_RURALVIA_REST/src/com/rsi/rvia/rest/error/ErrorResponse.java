@@ -80,6 +80,7 @@ public class ErrorResponse
 		{
 			pJson = new JSONObject();
 			pJson.put("code", this.getInnerErrorCode());
+			pJson.put("httpCode", this.getHttpCode());
 			pJson.put("message", this.getMessage());
 			pJson.put("description", this.getDescription());
 			strReturn = pJson.toString();
@@ -88,7 +89,8 @@ public class ErrorResponse
 		{
 			pLog.error("Error al generar el JSON de Error", ex);
 			strReturn = "{" +
-					"\"code\":500," +
+					"\"code\":999999," +
+					"\"httpCode\":500," +
 					"\"message\":\"Error de la aplicación\"," + 
 					"\"description\":\"Error no controlado de la aplicación\"" +
 					"}";

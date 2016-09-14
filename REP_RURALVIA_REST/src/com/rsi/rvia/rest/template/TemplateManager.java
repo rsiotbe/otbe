@@ -61,18 +61,22 @@ public class TemplateManager
 		String strReturn;
 		try
 		{
-			String strCacheKey = strPathToTemplate + "_" + pSessionRviaData.getLanguage();
+			String strCacheKey = strPathToTemplate;
+			if(pSessionRviaData != null)
+				strCacheKey = strPathToTemplate + "_" + pSessionRviaData.getLanguage();
+			else
+				
 			pLog.debug("strCacheKey: " + strCacheKey);
 			if (htCacheTemplate.containsKey(strCacheKey))
 				strReturn = htCacheTemplate.get(strCacheKey);
 			else
 			{
 				strReturn = readTemplate(strPathToTemplate);
-				strReturn = translateXhtml(strReturn, pSessionRviaData.getLanguage());
+				strReturn = translateXhtml(strReturn, pSessionRviaData);
 				htCacheTemplate.put(strCacheKey, strReturn);
 			}
 			strReturn = includeIframeScript(strReturn);
-			strReturn = adjustCssMultiBank(strReturn, pSessionRviaData.getNRBE());
+			strReturn = adjustCssMultiBank(strReturn, pSessionRviaData);
 			strReturn = includeJsonData(strReturn, strDataJson);
 		}
 		catch (Exception ex)
@@ -108,7 +112,7 @@ public class TemplateManager
 			return strXhtml;
 		else
 		{
-			pLog.info("RESULTADO: " + strJsonData.replace("\"", "\\\""));
+			pLog.info("RESULTADO: " + strJsonData);
 			return strXhtml.replace(JSON_DATA_TAG, strJsonData.replaceAll("\"", "\\\""));
 		}
 	}
@@ -117,12 +121,12 @@ public class TemplateManager
 	 * 
 	 * @param strXhtml
 	 *           Codigo xhtml evaluado hasta entonces
-	 * @param strLanguage
-	 *           Idioma seleccionado por el usuario
+	 * @param pSessionRviaData
+	 *           Datos de sesión de ruralvia para el usuario
 	 * @return HTML con las traducciones */
-	private static String translateXhtml(String strXhtml, String strLanguage)
+	private static String translateXhtml(String strXhtml, SessionRviaData pSessionRviaData)
 	{
-		return TranslateProcessor.processXHTML(strXhtml, strLanguage);
+		return TranslateProcessor.processXHTML(strXhtml, pSessionRviaData);
 	}
 
 	/** Abre el XHTML para procesarlo
@@ -141,12 +145,12 @@ public class TemplateManager
 	 * 
 	 * @param strXhtml
 	 *           Codigo xhtml evaluado hasta entonces
-	 * @param strNRBE
-	 *           Codigo de entidad del usuario
+	 * @param pSessionRviaData
+	 *           Datos de sesión de ruralvia para el usuario
 	 * @return 
 	 * @throws Exception */
-	private static String adjustCssMultiBank(String strXhtml, String strNRBE) throws Exception
+	private static String adjustCssMultiBank(String strXhtml, SessionRviaData pSessionRviaData) throws Exception
 	{
-		return CssMultiBankProcessor.processXHTML(strXhtml, strNRBE);
+		return CssMultiBankProcessor.processXHTML(strXhtml, pSessionRviaData);
 	}
 }

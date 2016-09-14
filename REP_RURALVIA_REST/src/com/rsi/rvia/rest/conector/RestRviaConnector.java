@@ -13,6 +13,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import org.w3c.dom.NodeList;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.RviaRestHttpClient;
+import com.rsi.rvia.rest.error.ErrorManager;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.error.exceptions.RestConnectorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
@@ -467,5 +469,64 @@ public class RestRviaConnector
 			pReturn = new LogicalErrorException(400, nInnerErrorCode, strTextError, null, null);
 		}
 		return pReturn;
+	}
+
+
+	/** Comprueba si el contenido del JSON es un error generado por ruralvia WS
+	 * 
+	 * @param pJsonData
+	 *           Objeto que contiene la información JSON
+	 * @return */
+	public static boolean isRVIAError(JSONObject pJsonData)
+	{
+		boolean fReturn = false;
+		String strInnerCode;
+		try
+		{
+			strInnerCode = pJsonData.getString("CODERRR");
+			fReturn = (strInnerCode != null) && (!strInnerCode.trim().isEmpty());
+		}
+		catch (Exception ex)
+		{
+			pLog.error("No es un error de RVIA");
+			fReturn = false;
+		}
+		return fReturn;
+	}
+	
+
+	/** @param pSessionRviaData
+	 *           Datos de sesión del usuario en ruralvia
+	 * @param pRestConnector
+	 *           Conector al origen de los datos
+	 * @param pJsonData
+	 *           Objeto que contiene la información JSON
+	 * @return Indica si se ha llegado ha lanzar una excepción de error
+	 * @throws LogicalErrorException */
+	public static boolean throwRVIAError(SessionRviaData pSessionRviaData, RestConnector pRestConnector,
+			JSONObject pJsonData) throws LogicalErrorException
+	{
+		boolean fReturn = false;
+		String strInnerCode;
+		Integer nCode = null;
+		String strMessage = null;
+		String strDescription = null;
+		Integer nHttpErrorCode = 400;
+		boolean fProcessed = false;
+		try
+		{
+			strInnerCode = pJsonData.getString("CODERRR");
+			nCode = Integer.parseInt(strInnerCode);
+			strDescription = pJsonData.getString("TXTERRR");
+			strMessage = ErrorManager.getFriendlyErrorFromRuralvia(strInnerCode, pSessionRviaData, pRestConnector);
+			fProcessed = true;
+		}
+		catch (Exception ex)
+		{
+			pLog.error("Error al obtener el cuerpo del mensaje de error de una respuesta RVIA", ex);
+		}
+		if (fProcessed)
+			throw new LogicalErrorException(nHttpErrorCode, nCode, strMessage, strDescription, null);
+		return fReturn;
 	}
 }
