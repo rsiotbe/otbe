@@ -1,8 +1,8 @@
 <!DOCTYPE configuration>
 <configuration scan="true" scanPeriod="300 seconds">
 	<property name="APP_NAME" value="REP_RURALVIA_REST" />
-	<property name="SERVER_NAME" value="${weblogic.Name}" />
-	<property name="LOG_DIRECTORY" value="/u01/Internet/middleware/logs/Internet/${APP_NAME}/${APP_NAME}/" />
+	<property name="SERVER_NAME" value="${HOSTNAME}" />
+	<property name="LOG_DIRECTORY" value="/cloud-disk/logs/Proyectos/omnicanal/${APP_NAME}/" />
 	<conversionRule conversionWord="th_id" 
                   converterClass="com.rsi.rvia.rest.logback.LogBackThreadConverter" />
 	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
