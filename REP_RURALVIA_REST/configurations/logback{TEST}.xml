@@ -4,7 +4,7 @@
 	<property name="SERVER_NAME" value="${HOSTNAME}" />
 	<property name="LOG_DIRECTORY" value="/cloud-disk/logs/Proyectos/omnicanal/${APP_NAME}/" />
 	<conversionRule conversionWord="th_id" 
-                  converterClass="com.rsi.rvia.rest.logback.LogBackThreadConverter" />
+                  converterClass="com.rsi.rvia.rest.logback.LogBackThreadConverter" /> 
 	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
 		<Target>System.out</Target>
 		<encoder class="com.rsi.logback.layout.ExtendedPatternLayoutEncoder">
