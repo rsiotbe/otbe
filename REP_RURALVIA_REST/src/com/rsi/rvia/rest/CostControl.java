@@ -1,6 +1,5 @@
 package com.rsi.rvia.rest;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -36,7 +35,7 @@ public class CostControl
 			String strData) throws Exception
 	{	
 		//return Response.ok("Lista de contratos").build();
-		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Lista de contratos");
 		return pReturn;		
 	}
@@ -47,7 +46,7 @@ public class CostControl
 			String strData) throws Exception
 	{	
 		//return Response.ok("Movimientos de un contrato").build();
-		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Movimientos de un contrato");
 		return pReturn;	
 	}
@@ -58,7 +57,7 @@ public class CostControl
 			String strData) throws Exception
 	{	
 		//return Response.ok("Movimientos de un contrato").build();
-		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Movimientos de un contrato");
 		return pReturn;	
 	}

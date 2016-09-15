@@ -12,9 +12,7 @@
 		 org.slf4j.LoggerFactory	 		 
 "
 %>
-
 <%
-
 	JSONObject jsonError = new JSONObject();
 	int contrato = Integer.parseInt(request.getParameter("idContract"));
 	String entidad = request.getParameter("codEntidad");

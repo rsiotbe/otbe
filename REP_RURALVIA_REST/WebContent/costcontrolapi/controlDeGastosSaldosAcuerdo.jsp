@@ -16,7 +16,8 @@
 		java.text.ParseException,
 		java.text.SimpleDateFormat		 		 
 "
-%><%
+%>
+<%
 
 
 	// Validación de forma de número de acuerdo
@@ -45,10 +46,10 @@
 		String strQuery =
 				" select" +
 				" 	mi_fecha_fin_mes \"finMes\"," +
-				" 	mi_sdo_ac_p \"sdoPuntual\"," +
-				" 	mi_sdo_dispble_p \"sdoDisponible\"," +
-				" 	mi_sdo_acr_p \"sdoAcreedor\"," +
-				" 	mi_sdo_deu_p \"sdoDeudor\"" +
+				" 	mi_sdo_ac_p \"saldoPuntual\"," +
+				" 	mi_sdo_dispble_p \"saldoDisponible\"," +
+				" 	mi_sdo_acr_p \"saldoAcreedor\"," +
+				" 	mi_sdo_deu_p \"saldoDeudor\"" +
 				" from rdwc01.mi_ac_eco_gen" +
 				" where cod_nrbe_en=?" +
 				" and num_sec_ac =?" +				

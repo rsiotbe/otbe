@@ -1,20 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
- 	import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
+ 	import="java.sql.Connection,
+ 		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
 		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider,
 		 com.rsi.rvia.rest.tool.Utils,		 
 		 java.sql.PreparedStatement,
-		 java.sql.ResultSet,
+		 java.sql.ResultSet,		 
 		 org.json.JSONArray,
 		 org.json.JSONObject,
-		 org.slf4j.Logger,
-		 org.slf4j.LoggerFactory,
-		 java.sql.Connection
+         org.slf4j.Logger,
+		 org.slf4j.LoggerFactory
 "
-%><%
+%>
+<%
 	String q =
 		" SELECT" +   
-		" 	t1.NUM_SEC_AC \"numeroAcuerdo\", trim(t2.NOMB_GRP_PD) \"nombreGrupo\"," +
+		" 	t1.NUM_SEC_AC \"acuerdo\", trim(t2.NOMB_GRP_PD) \"nombreGrupo\"," +
 		" 	trim(nvl(t3.NOMB_PDV, t2.NOMB_GRP_PD)) \"nombreProducto\"" +
 		" FROM" +
 		" 	rdwc01.mi_clte_rl_ac t1" +
