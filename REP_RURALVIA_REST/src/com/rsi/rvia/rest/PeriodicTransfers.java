@@ -19,7 +19,7 @@ import com.rsi.rvia.rest.client.*;
 @Path("/periodictransfers")
 public class PeriodicTransfers
 {
-	private static Logger			pLog	= LoggerFactory.getLogger(PeriodicTransfers.class);
+	private static Logger			pLog	= LoggerFactory.getLogger(Cards.class);
 
 	/** Obtiene el listado completo de tarjetas de un usuario
 	 * 

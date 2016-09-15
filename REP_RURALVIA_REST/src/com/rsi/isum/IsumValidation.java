@@ -7,19 +7,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
-import com.rsi.rvia.rest.client.ResponseManager;
 import com.rsi.rvia.rest.error.exceptions.ISUMException;
 import com.rsi.rvia.rest.session.SessionRviaData;
 
 public class IsumValidation
 {
 	private static Logger	pLog	= LoggerFactory.getLogger(IsumValidation.class);
-	/**
-	 * Comprueba si el servicio solicitado por el usuario es accesible para el perfil del usuario
-	 * @param pSessionRviaData Datos de sesión de la apliación de ruralvia
+
+	/** Comprueba si el servicio solicitado por el usuario es accesible para el perfil del usuario
+	 * 
+	 * @param pSessionRviaData
+	 *           Datos de sesión de la apliación de ruralvia
 	 * @return Booleano indicando si está disponible el servicio
-	 * @throws Exception
-	 */
+	 * @throws Exception */
 	public static boolean IsValidService(SessionRviaData pSessionRviaData) throws Exception
 	{
 		boolean fReturn = false;
@@ -41,6 +41,7 @@ public class IsumValidation
 			while (pResultSet.next())
 			{
 				fReturn = true;
+				pLog.info("El servicio está permitido para este usuario");
 				break;
 			}
 			pResultSet.close();
@@ -48,6 +49,7 @@ public class IsumValidation
 		}
 		catch (Exception ex)
 		{
+			pLog.error("El servicio NO está permitido para este usuario");
 			throw new ISUMException(500, null, "No ha sido posible validar el servicio contra ISUM", "Error al obtener obtener la información de los servicios de ISUM", ex);
 		}
 		finally

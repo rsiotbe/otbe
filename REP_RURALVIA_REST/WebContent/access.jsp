@@ -19,6 +19,7 @@
 	String strIdMiq = request.getParameter("id");
 	int nMiqQuestId = Integer.parseInt(strIdMiq);
 	String strType = request.getParameter("type");
+	String strToken = request.getParameter("token");
 	if(strType == null){
 		strType = "GET";
 	}
@@ -37,7 +38,7 @@
   var data = {};
   var appPath = '/' + window.location.pathname.substr(1).split('/')[0] + '/rest' + '<%=strPathRest%>';
   var method = '<%=strType%>';
- 
+ var token = '<%=strToken%>';
 <%--   $.ajax({
     url : appPath + '<%=strPathRest%>',
     data : data,
@@ -51,7 +52,7 @@
     	document.write(data.responseText);
     }
   }); --%>
-  $('<form action="' + appPath + '" type="' + method + '"></form>').appendTo('body').submit();
+  $('<form action="' + appPath + '" type="' + method + '"><input type="hidden" name="token" value="' + token + '"></form>').appendTo('body').submit();
 
 </script>
 </body>

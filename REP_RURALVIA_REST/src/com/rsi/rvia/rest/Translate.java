@@ -31,7 +31,7 @@ public class Translate
 				+ "<h2>Bloque Traducción 2</h2><p data-translate=\"COMUN_Literal_Contratacion_-_Buscar_oficina_no_ofi\">bla</p></div><div>"
 				+ "<h2>Bloque Traducción 3</h2><p data-translate=\"HC_comun_ClienteClau4\">bla bla bla</p></div></body></html>";
 		String strReturn = "";
-		strReturn = TranslateProcessor.processXHTML(strHTMLPruebas, null);
+		strReturn = ((Object)TranslateProcessor.processXHTML(strHTMLPruebas, null)).toString();
 		return strReturn;
 	}
 }

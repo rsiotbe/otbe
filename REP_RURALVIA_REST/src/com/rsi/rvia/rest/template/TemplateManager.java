@@ -2,10 +2,12 @@ package com.rsi.rvia.rest.template;
 
 import java.io.InputStream;
 import java.util.Hashtable;
+import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.parser.Parser;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.multibank.CssMultiBankProcessor;
@@ -20,7 +22,8 @@ public class TemplateManager
 	static Logger										pLog							= LoggerFactory.getLogger(TemplateManager.class);
 	public final static String						JSON_DATA_TAG				= "'__JSONDATA__'";
 	private final static String					IFRAME_SCRIPT_ADAPTER	= "http://cdn.jsdelivr.net/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js";
-	public static Hashtable<String, String>	htCacheTemplate			= new Hashtable<String, String>();
+	private final static String					UPDATE_RVIA_SESSION		= "/api/js/manageRequestRviaRest.js";
+	public static Hashtable<String, Document>	htCacheTemplate			= new Hashtable<String, Document>();
 
 	/** Devuelve el tamaño de la cache
 	 * 
@@ -59,25 +62,27 @@ public class TemplateManager
 	public static String processTemplate(String strPathToTemplate, SessionRviaData pSessionRviaData, String strDataJson)
 	{
 		String strReturn;
+		Document pDocument;
 		try
 		{
 			String strCacheKey = strPathToTemplate;
-			if(pSessionRviaData != null)
+			if (pSessionRviaData != null)
 				strCacheKey = strPathToTemplate + "_" + pSessionRviaData.getLanguage();
 			else
-				
-			pLog.debug("strCacheKey: " + strCacheKey);
+				pLog.debug("strCacheKey: " + strCacheKey);
 			if (htCacheTemplate.containsKey(strCacheKey))
-				strReturn = htCacheTemplate.get(strCacheKey);
+				pDocument = htCacheTemplate.get(strCacheKey);
 			else
 			{
-				strReturn = readTemplate(strPathToTemplate);
-				strReturn = translateXhtml(strReturn, pSessionRviaData);
-				htCacheTemplate.put(strCacheKey, strReturn);
+				pDocument = readTemplate(strPathToTemplate);
+				pDocument = translateXhtml(pDocument, pSessionRviaData);
+				htCacheTemplate.put(strCacheKey, pDocument);
 			}
-			strReturn = includeIframeScript(strReturn);
-			strReturn = adjustCssMultiBank(strReturn, pSessionRviaData);
-			strReturn = includeJsonData(strReturn, strDataJson);
+			pDocument = includeIframeScript(pDocument);
+			pDocument = includeUpdateRviaScript(pDocument);
+			pDocument = adjustCssMultiBank(pDocument, pSessionRviaData);
+			pDocument = includeJsonData(pDocument, strDataJson);
+			strReturn = pDocument.toString();
 		}
 		catch (Exception ex)
 		{
@@ -89,68 +94,87 @@ public class TemplateManager
 
 	/** Incluye el script para ajustar el tamaño del iframe
 	 * 
-	 * @param strReturn
-	 * @return HTML con la etiqueta script insertada */
-	private static String includeIframeScript(String strReturn)
+	 * @param pDocument
+	 *           Documento html en jsoup
+	 * @return Documento jsoupHTML con la etiqueta script insertada */
+	private static Document includeIframeScript(Document pDocument)
 	{
-		Document pHtml = (Document) Jsoup.parse(strReturn, "", Parser.htmlParser());
-		pHtml.outputSettings().prettyPrint(false);
-		Element pScript = pHtml.createElement("script");
+		Element pScript = pDocument.createElement("script");
 		pScript.attr("src", IFRAME_SCRIPT_ADAPTER);
-		pHtml.body().appendChild(pScript);
-		return pHtml.html();
+		pDocument.body().appendChild(pScript);
+		return pDocument;
+	}
+
+	/** Incluye el script para asegurar el refresco de sesión de ruralvia e ISUM
+	 * 
+	 * @param pDocument
+	 *           Documento html en jsoup
+	 * @return HTML con la etiqueta script insertada */
+	private static Document includeUpdateRviaScript(Document pDocument)
+	{
+		pDocument.outputSettings().prettyPrint(false);
+		Element pScript = pDocument.createElement("script");
+		pScript.attr("src", UPDATE_RVIA_SESSION);
+		pDocument.body().appendChild(pScript);
+		return pDocument;
 	}
 
 	/** Añade el Json al template de salida
 	 * 
-	 * @param strXhtml
+	 * @param pDocument
+	 *           Documento html en jsoup
 	 * @param strJsonData
-	 * @return HTML con el json de datos añadido */
-	private static String includeJsonData(String strXhtml, String strJsonData)
+	 * @return Documento html en jsoup
+	 */
+	private static Document includeJsonData(Document pDocument, String strJsonData)
 	{
-		if (strJsonData == null || strJsonData.trim().isEmpty())
-			return strXhtml;
-		else
-		{
-			pLog.info("RESULTADO: " + strJsonData);
-			return strXhtml.replace(JSON_DATA_TAG, strJsonData.replaceAll("\"", "\\\""));
+		Elements els = pDocument.body().getAllElements();
+		for (Element e : els) {
+		    List<TextNode> tnList = e.textNodes();
+		    for (TextNode tn : tnList){
+		        String orig = tn.text();
+		        tn.text(orig.replaceAll(JSON_DATA_TAG, strJsonData)); 
+		    }
 		}
+		return pDocument;
 	}
 
 	/** Añade el contenido de las traducciones al HTML
 	 * 
-	 * @param strXhtml
-	 *           Codigo xhtml evaluado hasta entonces
+	 * @param pDocument
+	 *           Documento html en jsoup
 	 * @param pSessionRviaData
 	 *           Datos de sesión de ruralvia para el usuario
-	 * @return HTML con las traducciones */
-	private static String translateXhtml(String strXhtml, SessionRviaData pSessionRviaData)
+	 * @return Documento HTML con las traducciones */
+	private static Document translateXhtml(Document pDocument, SessionRviaData pSessionRviaData)
 	{
-		return TranslateProcessor.processXHTML(strXhtml, pSessionRviaData);
+		return TranslateProcessor.processXHTML(pDocument, pSessionRviaData);
 	}
 
 	/** Abre el XHTML para procesarlo
 	 * 
 	 * @param strPathToTemplate
-	 * @return XHTML sin procesar */
-	private static String readTemplate(String strPathToTemplate)
+	 * @return Documento jsoup con el HTML */
+	private static Document readTemplate(String strPathToTemplate)
 	{
-		String strReturn = "";
+		Document pDocument;
+		String strHtml = "";
 		InputStream pInputStream = (TemplateManager.class.getResourceAsStream(strPathToTemplate));
-		strReturn = Utils.getStringFromInputStream(pInputStream);
-		return strReturn;
+		strHtml = Utils.getStringFromInputStream(pInputStream);
+		pDocument = Jsoup.parse(strHtml);
+		return pDocument;
 	}
 
 	/** Comprueba si es necesario modificar los css para adaptarlos a multientidad
 	 * 
-	 * @param strXhtml
-	 *           Codigo xhtml evaluado hasta entonces
+	 * @param pDocument
+	 *           Documento html en jsoup
 	 * @param pSessionRviaData
 	 *           Datos de sesión de ruralvia para el usuario
-	 * @return 
+	 * @return
 	 * @throws Exception */
-	private static String adjustCssMultiBank(String strXhtml, SessionRviaData pSessionRviaData) throws Exception
+	private static Document adjustCssMultiBank(Document pDocument, SessionRviaData pSessionRviaData) throws Exception
 	{
-		return CssMultiBankProcessor.processXHTML(strXhtml, pSessionRviaData);
+		return CssMultiBankProcessor.processXHTML(pDocument, pSessionRviaData);
 	}
 }

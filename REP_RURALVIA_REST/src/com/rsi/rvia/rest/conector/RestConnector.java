@@ -51,28 +51,29 @@ public class RestConnector
 			case "GET":
 				if ("RVIA".equals(pMiqQuests.getComponentType()))
 				{
-					pLog.trace("Derivando petición a ruralvía");
+					pLog.trace("Derivando petición GET a ruralvía");
 					pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, pSessionRvia, strData);
 				}
 				else
 				{
-					pLog.trace("Solicitando petición REST");
+					pLog.trace("Solicitando petición GET a WS");
 					pReturn = RestWSConnector.get(pRequest, pMiqQuests, strPrimaryPath, pSessionRvia, pPathParams);
 				}
 				break;
 			case "POST":
 				if ("RVIA".equals(pMiqQuests.getComponentType()))
 				{
-					pLog.trace("Derivando petición a ruralvía");
+					pLog.trace("Derivando petición POST a ruralvía");
 					pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, pSessionRvia, strData);
 				}
 				else
 				{
-					pLog.trace("Solicitando petición REST");
+					pLog.trace("Solicitando petición POST a WS");
 					pReturn = RestWSConnector.post(pRequest, strPrimaryPath, pSessionRvia, strData, pMiqQuests, pPathParams);
 				}
 				break;
 			case "PUT":
+				pLog.trace("Solicitando petición PUT a WS");
 				pReturn = RestWSConnector.put(pRequest, strPrimaryPath, pSessionRvia, strData, pMiqQuests, pPathParams);
 				break;
 			case "PATCH":

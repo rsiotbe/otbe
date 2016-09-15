@@ -407,7 +407,7 @@ public class RestRviaConnector
 		return fReturn;
 	}
 
-	/** Comprueba si el texto recibido es una pagina de cierre de sesión  generada por ruralvia *
+	/** Comprueba si el texto recibido es una pagina de cierre de sesión generada por ruralvia *
 	 * 
 	 * @param strHtml
 	 *           Datos recibidos (html)
@@ -471,7 +471,6 @@ public class RestRviaConnector
 		return pReturn;
 	}
 
-
 	/** Comprueba si el contenido del JSON es un error generado por ruralvia WS
 	 * 
 	 * @param pJsonData
@@ -479,21 +478,12 @@ public class RestRviaConnector
 	 * @return */
 	public static boolean isRVIAError(JSONObject pJsonData)
 	{
-		boolean fReturn = false;
-		String strInnerCode;
-		try
-		{
-			strInnerCode = pJsonData.getString("CODERRR");
-			fReturn = (strInnerCode != null) && (!strInnerCode.trim().isEmpty());
-		}
-		catch (Exception ex)
-		{
-			pLog.error("No es un error de RVIA");
-			fReturn = false;
-		}
+		boolean fReturn;
+		fReturn = pJsonData.has("CODERRR");
+		if (fReturn)
+			pLog.error("Es un error de RVIA");
 		return fReturn;
 	}
-	
 
 	/** @param pSessionRviaData
 	 *           Datos de sesión del usuario en ruralvia

@@ -32,7 +32,7 @@ import com.rsi.rvia.rest.tool.Utils;
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
 public class RestWSConnector
 {
-	private static Logger	pLog			= LoggerFactory.getLogger(RestWSConnector.class);
+	private static Logger	pLog	= LoggerFactory.getLogger(RestWSConnector.class);
 
 	/** Realiza una petición de tipo get restFull al proveedor de datos (Ruralvia o WS dependiendo de la configuración)
 	 * 
@@ -125,9 +125,7 @@ public class RestWSConnector
 		}
 		strJsonData = pJson.toString();
 		WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint());
-		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans)
-				.header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp)
-				.post(Entity.json(strJsonData));
+		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).post(Entity.json(strJsonData));
 		pLog.info("Respose POST: " + pReturn.toString());
 		return pReturn;
 	}
@@ -179,7 +177,7 @@ public class RestWSConnector
 	 *           Path rest de la opreación a realizar
 	 * @param strCampo
 	 *           campo a consultar de la base de datos
-	 * @return Cadena que contiene los campos separados por el carácter ';' 
+	 * @return Cadena que contiene los campos separados por el carácter ';'
 	 * @throws Exception */
 	private static String getDDBBOperationParameters(String strPathRest, String strCampo) throws Exception
 	{
@@ -191,8 +189,8 @@ public class RestWSConnector
 		{
 			String strQuery = "select c." + strCampo + " campo from " + " BEL.BDPTB222_MIQ_QUESTS a, "
 					+ " BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, " + " BEL.BDPTB225_MIQ_SESSION_PARAMS c "
-					+ " where a.id_miq=b.id_miq " + " and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " + " and a.path_rest='" + strPathRest
-					+ "' order by c.ID_MIQ_PARAM";
+					+ " where a.id_miq=b.id_miq " + " and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " + " and a.path_rest='"
+					+ strPathRest + "' order by c.ID_MIQ_PARAM";
 			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
 			pResultSet = pPreparedStatement.executeQuery();
@@ -206,27 +204,20 @@ public class RestWSConnector
 				}
 				strReturn += strInputName;
 			}
-		}catch(Exception ex){
+		}
+		catch (Exception ex)
+		{
 			pLog.error("Error al recuperar los nombres de parametros Path_Rest(" + strPathRest + "): " + ex);
 			strReturn = "";
-		}finally{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+		}
+		finally
+		{
+			pResultSet.close();
+			pPreparedStatement.close();
+			pConnection.close();
 		}
 		return strReturn;
 	}
-	
 
 	/** Comprueba si el contenido del JSON es de tipo WS
 	 * 
@@ -277,21 +268,25 @@ public class RestWSConnector
 			}
 			if (!strPrimaryKey.trim().isEmpty())
 			{
-				String strStatusResponse = (String) pJsonData.getJSONObject(strPrimaryKey).getString("codigoRetorno");
-				if ("0".equals(strStatusResponse))
+				if (pJsonData.getJSONObject(strPrimaryKey).has("codigoRetorno"))
 				{
-					fReturn = true;
+					String strStatusResponse = (String) pJsonData.getJSONObject(strPrimaryKey).getString("codigoRetorno");
+					if ("0".equals(strStatusResponse))
+					{
+						fReturn = true;
+					}
 				}
 			}
 		}
 		catch (Exception ex)
 		{
-			pLog.warn("No es un error de WS");
 			fReturn = false;
 		}
+		if (fReturn)
+			pLog.warn("Es un error de WS");
 		return fReturn;
 	}
-	
+
 	/** genera unaexceción de tipo lógico a partir del mensaje de error de una respuesta WS
 	 * 
 	 * @param nHttpErrorCode
@@ -335,5 +330,4 @@ public class RestWSConnector
 			throw new LogicalErrorException(nHttpErrorCode, nCode, strMessage, strDescription, null);
 		return true;
 	}
-	
 }

@@ -11,12 +11,11 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
-import com.rsi.rvia.rest.session.SessionRviaData;
 
 @Path("/cashierLocatior")
 public class CashierLocatior
 {
-	private static Logger			pLog	= LoggerFactory.getLogger(CashierLocatior.class);
+	private static Logger	pLog	= LoggerFactory.getLogger(Cards.class);
 
 	@GET
 	@Produces(MediaType.TEXT_HTML)

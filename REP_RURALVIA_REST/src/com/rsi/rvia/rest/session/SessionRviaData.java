@@ -21,6 +21,7 @@ public class SessionRviaData
 	private String					strIsumServiceId		= "";
 	private String					strLanguage				= "";
 	private String					strNRBE					= "";
+	private String					strCanalAix					= "";
 	private String					strToken					= "";
 
 	public String getNodeRvia()
@@ -63,6 +64,10 @@ public class SessionRviaData
 		return strNRBE;
 	}
 
+	public String getCanalAix()
+	{
+		return strCanalAix;
+	}
 	public String getToken()
 	{
 		return strToken;
@@ -128,6 +133,11 @@ public class SessionRviaData
 						if (strValue != null)
 							strNRBE = strValue;
 					}
+					else if ("canalAix".equals(strName))
+					{
+						if (strValue != null)
+							strCanalAix = strValue;
+					}					
 				}
 			}
 			else
@@ -140,6 +150,7 @@ public class SessionRviaData
 				strIsumServiceId = request.getParameter("isumServiceId");
 				strLanguage = request.getParameter("lang");
 				strNRBE = request.getParameter("NRBE");
+				strCanalAix = request.getParameter("canalAix");
 			}
 			pCookiesRviaData = request.getCookies();
 			/* se precargan las propiedades de comunicación con RVIA */
@@ -158,8 +169,10 @@ public class SessionRviaData
 		try
 		{
 			if (pAddressRviaProp.isEmpty())
+			{	
 				pAddressRviaProp.load(this.getClass().getResourceAsStream("/RuralviaAddress.properties"));
-			pLog.debug("Se carga el fichero de resolución de direcciones");
+				pLog.debug("Se carga el fichero de resolución de direcciones");
+			}
 			/* se obtiene la maquina y puerto en la que existe la sesión del usuario */
 			pUriRvia = new URI(pAddressRviaProp.getProperty(strNodeRvia));
 		}
