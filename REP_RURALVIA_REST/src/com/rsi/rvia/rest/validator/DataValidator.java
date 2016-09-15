@@ -45,9 +45,19 @@ public class DataValidator
 		}
 		finally
 		{
-			pResultSet.close();
-			pPreparedStatement.close();
-			pConnection.close();
+			try
+			{
+				if (pResultSet != null)
+					pResultSet.close();
+				if (pPreparedStatement != null)
+					pPreparedStatement.close();
+				if (pConnection != null)
+					pConnection.close();
+			}
+			catch (Exception ex)
+			{
+				pLog.error("Error al cerrar los objetos de base de datos", ex);
+			}
 		}
 		return alReturn;
 	}
@@ -246,17 +256,18 @@ public class DataValidator
 		}
 		finally
 		{
-			if (pResultSet != null)
+			try
 			{
-				pResultSet.close();
+				if (pResultSet != null)
+					pResultSet.close();
+				if (pPreparedStatement != null)
+					pPreparedStatement.close();
+				if (pConnection != null)
+					pConnection.close();
 			}
-			if (pPreparedStatement != null)
+			catch (Exception ex)
 			{
-				pPreparedStatement.close();
-			}
-			if (pConnection != null)
-			{
-				pConnection.close();
+				pLog.error("Error al cerrar los objetos de base de datos", ex);
 			}
 		}
 		return fReturn;
