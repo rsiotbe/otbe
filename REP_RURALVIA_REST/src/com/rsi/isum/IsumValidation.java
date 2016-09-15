@@ -3,13 +3,17 @@ package com.rsi.isum;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.rvia.rest.client.ResponseManager;
 import com.rsi.rvia.rest.error.exceptions.ISUMException;
 import com.rsi.rvia.rest.session.SessionRviaData;
 
 public class IsumValidation
 {
+	private static Logger	pLog	= LoggerFactory.getLogger(IsumValidation.class);
 	/**
 	 * Comprueba si el servicio solicitado por el usuario es accesible para el perfil del usuario
 	 * @param pSessionRviaData Datos de sesión de la apliación de ruralvia
@@ -48,9 +52,19 @@ public class IsumValidation
 		}
 		finally
 		{
-			pResultSet.close();
-			pPreparedStatement.close();
-			pConnection.close();
+			try
+			{
+				if (pResultSet != null)
+					pResultSet.close();
+				if (pPreparedStatement != null)
+					pPreparedStatement.close();
+				if (pConnection != null)
+					pConnection.close();
+			}
+			catch (Exception ex)
+			{
+				pLog.error("Error al cerrar los objetos de base de datos", ex);
+			}
 		}
 		return fReturn;
 	}

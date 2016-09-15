@@ -6,10 +6,12 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 public class LogBackThreadConverter extends ClassicConverter {
 
 	@Override
-	public String convert(ILoggingEvent arg0)
+	public String convert(ILoggingEvent pEvent)
 	{
-		String strIdThread = String.valueOf(Thread.currentThread().getId());
-		
+		String strThreadName = pEvent.getThreadName();
+		String strIdThread = strThreadName.substring(strThreadName.lastIndexOf('-'))
+													 .replace("]","")
+													 .replace("-", "");
 		return strIdThread;
 	}
 }

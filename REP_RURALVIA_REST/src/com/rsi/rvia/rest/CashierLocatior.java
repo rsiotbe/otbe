@@ -16,7 +16,7 @@ import com.rsi.rvia.rest.session.SessionRviaData;
 @Path("/cashierLocatior")
 public class CashierLocatior
 {
-	private static Logger			pLog	= LoggerFactory.getLogger(Cards.class);
+	private static Logger			pLog	= LoggerFactory.getLogger(CashierLocatior.class);
 
 	@GET
 	@Produces(MediaType.TEXT_HTML)

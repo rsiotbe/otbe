@@ -17,7 +17,7 @@ import com.rsi.rvia.rest.session.SessionRviaData;
 @Path("/accountname")
 public class AccountName
 {
-	private static Logger			pLog	= LoggerFactory.getLogger(Cards.class);
+	private static Logger			pLog	= LoggerFactory.getLogger(AccountName.class);
 
 
 	@POST
