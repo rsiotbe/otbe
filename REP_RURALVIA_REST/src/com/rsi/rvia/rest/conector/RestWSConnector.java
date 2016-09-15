@@ -167,7 +167,7 @@ public class RestWSConnector
 	 * @throws Exception */
 	public static Response delete(@Context HttpServletRequest pRequest) throws Exception
 	{
-		// /??? falta por implementar el método delete
+		///??? falta por implementar el método delete
 		pLog.error("El método delete no está implementado");
 		throw new Exception("Se ha recibido una petición de tipo DELETE y no existe ningún método que implemente este tipo de peticiones");
 	}

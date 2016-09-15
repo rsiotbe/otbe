@@ -16,6 +16,12 @@ import org.slf4j.LoggerFactory;
 public class DDBBPool
 {
 	protected static Logger	pLog	= LoggerFactory.getLogger(DDBBPool.class);
+	
+	/**
+	 * Recupera las propiedades de configuración de Banca Oracle para configurar
+	 * @return DataSource con la configuración de Banca Oracle ya cargada
+	 * @throws Exception
+	 */
 	public static DataSource setupBancaOracle() throws Exception
 	{
 		Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
@@ -24,6 +30,11 @@ public class DDBBPool
 		return setupDataSource(pDDBBProp);
 	}
 	
+	/**
+	 * Recupera las propiedades de configuración de CIP Oracle para configurar
+	 * @return DataSource con la configuración de CIP Oracle ya cargada
+	 * @throws Exception
+	 */
 	public static DataSource setupCIPOracle() throws Exception
 	{
 		Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
@@ -32,6 +43,11 @@ public class DDBBPool
 		return setupDataSource(pDDBBProp);
 	}
 	
+	/**
+	 * Recupera las propiedades de configuración de MySql para configurar
+	 * @return DataSource con la configuración de MySql ya cargada
+	 * @throws Exception
+	 */
 	public static DataSource setupMySql() throws Exception
 	{
 		Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
@@ -40,6 +56,12 @@ public class DDBBPool
 		return setupDataSource(pDDBBProp);
 	}
 	
+	
+	/**
+	 * Carga la configuración del pool de base de datos extrayendo los datos de las propiedades
+	 * @param pProps Propiedades con la configuración de la base de datos especifica.
+	 * @return DataSource con la configuración recibida ya cargada.
+	 */
 	private static DataSource setupDataSource(Properties pProps)
 	{
 		ConnectionFactory pConnFactory;

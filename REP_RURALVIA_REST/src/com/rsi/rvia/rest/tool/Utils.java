@@ -133,13 +133,22 @@ public class Utils
 		}
 		return pJson;
 	}
-
+ 	/**
+	 * Devuelve un Map con los parametros del path (key -> value)
+	 * @param pUriInfo UriInfo con la información de path
+	 * @return MultivaluedMap con el key y el valor de cada elemento del path dinámico
+	 */
 	public static MultivaluedMap<String, String> getParam4Path(UriInfo pUriInfo)
 	{
 		MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
 		return pListParameters;
 	}
-
+ 	/**
+ * Convierte un MultivaluedMap a un queryString.
+ * @param pMap MultivaluedMap a convertir
+ * @return String en formato queryString del tipo "&key=value"
+ */
+ 
 	public static String multiValuedMap2QueryString(MultivaluedMap<String, String> pMap)
 	{
 		String strReturn = "";
@@ -154,7 +163,12 @@ public class Utils
 		}
 		return strReturn;
 	}
-
+	 /**
+	 * Obtiene un String a traves de un InputStream de un recuerso compilado. 
+	 * Ejemplo de uso: lectura de los templates xhtml.
+	 * @param is InputStream del recurso
+	 * @return String con del recurso
+	 */
 	public static String getStringFromInputStream(InputStream is)
 	{
 		BufferedReader pBufferedReader = null;
@@ -189,7 +203,12 @@ public class Utils
 		return pStringBuilder.toString();
 	}
 
-
+	 /**
+	 * Convierte un Hashtable a un JSON (Hace uso de la librería Jackson)
+	 * @param htData	Hashtable a convertir.
+	 * @return String json que contiene los valores del hashtable.
+	 * @throws JSONException
+	 */
 	public static String hashTable2Json(Hashtable<String, String> htData) throws JSONException
 	{
 		String strReturn = "{}";
