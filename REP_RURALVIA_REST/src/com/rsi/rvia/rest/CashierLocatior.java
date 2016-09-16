@@ -2,6 +2,7 @@ package com.rsi.rvia.rest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -24,6 +25,16 @@ public class CashierLocatior
 		pLog.info("Se recibe una peticion de cashierLocatior");
 		String strData = "";
 		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);
+		return pReturn;
+	}
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAllUserCards2(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
+	{
+		pLog.info("Se recibe una peticion de cashierLocatior");
+		String strData = "";
+		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
 		return pReturn;
 	}
 }

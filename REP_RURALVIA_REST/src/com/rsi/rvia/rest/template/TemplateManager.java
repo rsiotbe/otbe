@@ -2,14 +2,11 @@ package com.rsi.rvia.rest.template;
 
 import java.io.InputStream;
 import java.util.Hashtable;
-import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Entities.EscapeMode;
-import org.jsoup.nodes.TextNode;
 import org.jsoup.parser.Parser;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.multibank.CssMultiBankProcessor;
@@ -72,7 +69,8 @@ public class TemplateManager
 				strCacheKey = strPathToTemplate + "_" + pSessionRviaData.getLanguage();
 			else
 				pLog.debug("strCacheKey: " + strCacheKey);
-			if (htCacheTemplate.containsKey(strCacheKey)){
+			if (htCacheTemplate.containsKey(strCacheKey))
+			{
 				pLog.info("Template cacheado, recuperandolo...");
 				Document pCacheDocument = htCacheTemplate.get((strCacheKey));
 				pDocument = Jsoup.parse(pCacheDocument.toString(), "", Parser.xmlParser());
@@ -87,10 +85,10 @@ public class TemplateManager
 			pDocument = includeIframeScript(pDocument);
 			pDocument = includeUpdateRviaScript(pDocument);
 			pDocument = adjustCssMultiBank(pDocument, pSessionRviaData);
-			pDocument = includeJsonData(pDocument, strDataJson);
-			pDocument.outputSettings().prettyPrint(false);
+			// pDocument.outputSettings().prettyPrint(false);
 			pDocument.outputSettings().escapeMode(EscapeMode.xhtml);
 			strReturn = pDocument.html();
+			strReturn = includeJsonData(strReturn, strDataJson);
 		}
 		catch (Exception ex)
 		{
@@ -107,7 +105,6 @@ public class TemplateManager
 	 * @return Documento jsoupHTML con la etiqueta script insertada */
 	private static Document includeIframeScript(Document pDocument)
 	{
-		
 		Element pScript = pDocument.createElement("script");
 		pScript.attr("src", IFRAME_SCRIPT_ADAPTER);
 		pDocument.body().appendChild(pScript);
@@ -129,23 +126,13 @@ public class TemplateManager
 
 	/** Añade el Json al template de salida
 	 * 
-	 * @param pDocument
-	 *           Documento html en jsoup
+	 * @param strXhtml
+	 *           Documento html
 	 * @param strJsonData
 	 * @return Documento html en jsoup */
-	private static Document includeJsonData(Document pDocument, String strJsonData)
+	private static String includeJsonData(String strXhtml, String strJsonData)
 	{
-		Elements els = pDocument.body().getAllElements();
-		for (Element e : els)
-		{
-			List<TextNode> tnList = e.textNodes();
-			for (TextNode tn : tnList)
-			{
-				String orig = tn.text();
-				tn.text(orig.replaceAll(JSON_DATA_TAG, strJsonData));
-			}
-		}
-		return pDocument;
+		return strXhtml.replaceAll(JSON_DATA_TAG, strJsonData);
 	}
 
 	/** Añade el contenido de las traducciones al HTML
@@ -171,7 +158,6 @@ public class TemplateManager
 		InputStream pInputStream = (TemplateManager.class.getResourceAsStream(strPathToTemplate));
 		strHtml = Utils.getStringFromInputStream(pInputStream);
 		pDocument = Jsoup.parse(strHtml, "", Parser.xmlParser());
-		
 		return pDocument;
 	}
 
