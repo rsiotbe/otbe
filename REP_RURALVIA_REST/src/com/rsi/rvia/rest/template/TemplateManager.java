@@ -82,7 +82,7 @@ public class TemplateManager
 			pDocument = includeUpdateRviaScript(pDocument);
 			pDocument = adjustCssMultiBank(pDocument, pSessionRviaData);
 			pDocument = includeJsonData(pDocument, strDataJson);
-			strReturn = pDocument.toString();
+			strReturn = pDocument.outerHtml();
 		}
 		catch (Exception ex)
 		{
@@ -124,17 +124,18 @@ public class TemplateManager
 	 * @param pDocument
 	 *           Documento html en jsoup
 	 * @param strJsonData
-	 * @return Documento html en jsoup
-	 */
+	 * @return Documento html en jsoup */
 	private static Document includeJsonData(Document pDocument, String strJsonData)
 	{
 		Elements els = pDocument.body().getAllElements();
-		for (Element e : els) {
-		    List<TextNode> tnList = e.textNodes();
-		    for (TextNode tn : tnList){
-		        String orig = tn.text();
-		        tn.text(orig.replaceAll(JSON_DATA_TAG, strJsonData)); 
-		    }
+		for (Element e : els)
+		{
+			List<TextNode> tnList = e.textNodes();
+			for (TextNode tn : tnList)
+			{
+				String orig = tn.text();
+				tn.text(orig.replaceAll(JSON_DATA_TAG, strJsonData));
+			}
 		}
 		return pDocument;
 	}
