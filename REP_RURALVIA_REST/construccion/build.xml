@@ -52,7 +52,7 @@
 	<path id="project.classpath">
 		<pathelement location="${classes-directory}" />
 		<path refid="classpath.runtime" />
-		<path refid="classoath.lib" />
+		<path refid="classpath.lib" />
 	</path>
 	<target name="compile" depends="init" >
 		<echo message="Se procede a compilar las clases"/>
