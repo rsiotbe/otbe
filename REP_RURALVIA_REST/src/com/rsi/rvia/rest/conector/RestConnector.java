@@ -45,6 +45,12 @@ public class RestConnector
 		pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
 		pLog.info("Se obtiene la configuración de la base de datos. MiqQuest: " + pMiqQuests);
 		pLog.info("Se recibe una petición con tipo de metodo : " + strMethod);
+		/*
+		 * se comprueba si la infomración asociada a la petición enviada por el cliente viene vacia o nulo se inicializa a
+		 * un json vacio
+		 */
+		if (strData == null || strData.trim().isEmpty())
+			strData = "{}";
 		/* se invoca al tipo de petición leido desde configuracón */
 		switch (strMethod)
 		{
