@@ -191,7 +191,7 @@ public class Utils
 			pBufferedReader = new BufferedReader(new InputStreamReader(is));
 			while ((strLine = pBufferedReader.readLine()) != null)
 			{
-				pStringBuilder.append(strLine + "\r\n");
+				pStringBuilder.append(strLine).append("\r\n");
 			}
 		}
 		catch (Exception ex)
