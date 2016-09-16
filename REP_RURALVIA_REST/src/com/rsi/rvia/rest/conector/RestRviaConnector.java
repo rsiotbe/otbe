@@ -3,11 +3,15 @@ package com.rsi.rvia.rest.conector;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -33,7 +37,7 @@ import com.rsi.rvia.rest.session.SessionRviaData;
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
 public class RestRviaConnector
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(RestRviaConnector.class);
+	private static Logger pLog = LoggerFactory.getLogger(RestRviaConnector.class);
 
 	/** Realiza la comunicación con RUralvia para obtener los datos necesarios de la operación
 	 * 
@@ -67,6 +71,7 @@ public class RestRviaConnector
 			proccessInformationFromRviaXML(pXmlDoc, pMiqQuests, pSessionFields);
 			pLog.trace("Se añade la información reciida en la propia peticón");
 			addDatatoSessionFields(strClavePagina, strData, pSessionFields);
+			pSessionFields = checkSessionValues(pRequest, pSessionFields);
 			pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
 			pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
 			pReturn = pTarget.request().post(Entity.form(pSessionFields));
@@ -147,7 +152,10 @@ public class RestRviaConnector
 				/* si no existe la relación se procede a crarla */
 				if (!fExistConfig)
 				{
-					/* si el parámetro no existe, se comprueba si está definido como parámetro de culaquier otra opertativa */
+					/*
+					 * si el parámetro no existe, se comprueba si está definido como parámetro de culaquier otra
+					 * opertativa
+					 */
 					Integer nIdMiqParam = existParamInDDBB(strParamName);
 					if (nIdMiqParam == null)
 					{
@@ -518,5 +526,32 @@ public class RestRviaConnector
 		if (fProcessed)
 			throw new LogicalErrorException(nHttpErrorCode, nCode, strMessage, strDescription, null);
 		return fReturn;
+	}
+
+	/** Revisa si algun parametro recuperado esta en sesion, si lo está coge el de sesion, sino lo añade a esta
+	 * 
+	 * @param pRequest
+	 * @param pParameters
+	 * @return */
+	public static MultivaluedMap<String, String> checkSessionValues(@Context HttpServletRequest pRequest,
+			MultivaluedMap<String, String> pSessionFields)
+	{
+		HttpSession pSession = pRequest.getSession(false);
+		Iterator<String> pIterator = pSessionFields.keySet().iterator();
+		while (pIterator.hasNext())
+		{
+			String strKey = (String) pIterator.next();
+			String strSessionValue = (String) pSession.getAttribute(strKey);
+			if (strSessionValue != null)
+			{
+				pSessionFields.remove(strKey);
+				pSessionFields.add(strKey, strSessionValue);
+			}
+			else
+			{
+				pSession.setAttribute(strKey, pSessionFields.get(strKey));
+			}
+		}
+		return pSessionFields;
 	}
 }
