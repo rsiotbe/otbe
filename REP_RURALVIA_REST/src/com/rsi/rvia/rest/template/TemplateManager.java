@@ -76,7 +76,7 @@ public class TemplateManager
 			if (pSessionRviaData != null)
 				strCacheKey = strPathToTemplate + "_" + pSessionRviaData.getLanguage();
 			else
-				pLog.debug("strCacheKey: " + strCacheKey);
+				pLog.debug("strCacheKey:" + strCacheKey);
 			if (htCacheTemplate.containsKey(strCacheKey))
 			{
 				pLog.info("Template cacheado, recuperandolo...");
