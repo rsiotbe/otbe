@@ -22,13 +22,15 @@ import org.slf4j.LoggerFactory;
 
 public class Utils
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(Utils.class);
+	private static Logger pLog = LoggerFactory.getLogger(Utils.class);
 
-	/** Dado el uriInfo, compone el path original (con el nombre del parametro, no el valor) Ejemplo de salida:
+	/**
+	 * Dado el uriInfo, compone el path original (con el nombre del parametro, no el valor) Ejemplo de salida:
 	 * /cards/{id}
 	 * 
 	 * @param pUriInfo
-	 * @return */
+	 * @return
+	 */
 	public static String getPrimaryPath(UriInfo pUriInfo)
 	{
 		String strKeys = "";
@@ -55,12 +57,14 @@ public class Utils
 		return ("/" + strPath + strKeys);
 	}
 
-	/** Convierte un Result Set a un Json bien formado
+	/**
+	 * Convierte un Result Set a un Json bien formado
 	 * 
 	 * @param pResultSet
 	 * @return
 	 * @throws SQLException
-	 * @throws JSONException */
+	 * @throws JSONException
+	 */
 	public static JSONArray convertResultSet2JSON(ResultSet pResultSet) throws SQLException, JSONException
 	{
 		JSONArray pJson = new JSONArray();
@@ -133,9 +137,12 @@ public class Utils
 		}
 		return pJson;
 	}
- 	/**
+
+	/**
 	 * Devuelve un Map con los parametros del path (key -> value)
-	 * @param pUriInfo UriInfo con la información de path
+	 * 
+	 * @param pUriInfo
+	 *           UriInfo con la información de path
 	 * @return MultivaluedMap con el key y el valor de cada elemento del path dinámico
 	 */
 	public static MultivaluedMap<String, String> getParam4Path(UriInfo pUriInfo)
@@ -143,12 +150,14 @@ public class Utils
 		MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
 		return pListParameters;
 	}
- 	/**
- * Convierte un MultivaluedMap a un queryString.
- * @param pMap MultivaluedMap a convertir
- * @return String en formato queryString del tipo "&key=value"
- */
- 
+
+	/**
+	 * Convierte un MultivaluedMap a un queryString.
+	 * 
+	 * @param pMap
+	 *           MultivaluedMap a convertir
+	 * @return String en formato queryString del tipo "&key=value"
+	 */
 	public static String multiValuedMap2QueryString(MultivaluedMap<String, String> pMap)
 	{
 		String strReturn = "";
@@ -163,10 +172,13 @@ public class Utils
 		}
 		return strReturn;
 	}
-	 /**
-	 * Obtiene un String a traves de un InputStream de un recuerso compilado. 
-	 * Ejemplo de uso: lectura de los templates xhtml.
-	 * @param is InputStream del recurso
+
+	/**
+	 * Obtiene un String a traves de un InputStream de un recuerso compilado. Ejemplo de uso: lectura de los templates
+	 * xhtml.
+	 * 
+	 * @param is
+	 *           InputStream del recurso
 	 * @return String con del recurso
 	 */
 	public static String getStringFromInputStream(InputStream is)
@@ -179,7 +191,7 @@ public class Utils
 			pBufferedReader = new BufferedReader(new InputStreamReader(is));
 			while ((strLine = pBufferedReader.readLine()) != null)
 			{
-				pStringBuilder.append(strLine);
+				pStringBuilder.append(strLine + "\r\n");
 			}
 		}
 		catch (Exception ex)
@@ -203,9 +215,11 @@ public class Utils
 		return pStringBuilder.toString();
 	}
 
-	 /**
+	/**
 	 * Convierte un Hashtable a un JSON (Hace uso de la librería Jackson)
-	 * @param htData	Hashtable a convertir.
+	 * 
+	 * @param htData
+	 *           Hashtable a convertir.
 	 * @return String json que contiene los valores del hashtable.
 	 * @throws JSONException
 	 */
@@ -222,10 +236,12 @@ public class Utils
 		strReturn = pJson.toString();
 		return strReturn;
 	}
-	
+
 	/**
 	 * Obtiene la cadena que contiene el stacktrace de una excepción
-	 * @param ex Excepcion a escribir
+	 * 
+	 * @param ex
+	 *           Excepcion a escribir
 	 * @return Cadena que contiene la pila
 	 */
 	public static String getExceptionStackTrace(Exception ex)
