@@ -3,18 +3,16 @@
 	<property name="APP_NAME" value="REP_RURALVIA_REST" />
 	<property name="SERVER_NAME" value="${HOSTNAME}" />
 	<property name="LOG_DIRECTORY" value="/cloud-disk/logs/Proyectos/omnicanal/${APP_NAME}/" />
-	<conversionRule conversionWord="th_id" 
-                  converterClass="com.rsi.rvia.rest.logback.LogBackThreadConverter" /> 
 	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
 		<Target>System.out</Target>
-		<encoder class="com.rsi.logback.layout.ExtendedPatternLayoutEncoder">
-			<pattern>*%d{yyyy-MM-dd HH:mm:ss.SSSS} ${SERVER_NAME}: [%th_id]\t%-5level\t%class{0}:%method\t- %msg%n</pattern>
+		<encoder class="com.rsi.logback.layout.TomcatPatternLayoutEncoder">
+			<pattern>*%d{yyyy-MM-dd HH:mm:ss.SSSS} ${SERVER_NAME}:%-4process_id\t%-5level\t%class{0}:%method\t- %msg%n</pattern>
 		</encoder>
 	</appender>
 	<appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<prudent>true</prudent>
-		<encoder class="com.rsi.logback.layout.ExtendedPatternLayoutEncoder">
-			<pattern>*%d{yyyy-MM-dd HH:mm:ss.SSSS} ${SERVER_NAME}: [%th_id]\t%-5level\t%class{0}:%method\t- %msg%n</pattern>
+		<encoder class="com.rsi.logback.layout.TomcatPatternLayoutEncoder">
+			<pattern>*%d{yyyy-MM-dd HH:mm:ss.SSSS} ${SERVER_NAME}:%-4process_id\t%-5level\t%class{0}:%method\t- %msg%n</pattern>
 		</encoder>
 		<file>${LOG_DIRECTORY}${APP_NAME}.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
