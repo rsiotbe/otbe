@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.util.Hashtable;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Entities.EscapeMode;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +60,9 @@ public class CssMultiBankProcessor
 		catch (Exception ex)
 		{
 			pLog.error("Error al realizar la consulta a la BBDD.");
-		}finally{
+		}
+		finally
+		{
 			try
 			{
 				if (pResultSet != null)
@@ -76,7 +77,6 @@ public class CssMultiBankProcessor
 				pLog.error("Error al cerrar los objetos de base de datos", ex);
 			}
 		}
-
 	}
 
 	/** Devuelve el valor de reemplazo del link css y si no lo encuentra devuelve el propio valor pasado
@@ -120,7 +120,8 @@ public class CssMultiBankProcessor
 			pLog.warn("Los datos de sesión de ruralvia están vacios, se escoge la entidad del cooperativo por defecto");
 			strNRBE = "0198";
 		}
-		strNRBE = pSessionRviaData.getNRBE();
+		else
+			strNRBE = pSessionRviaData.getNRBE();
 		pLog.debug("String XHTML parseado a Documento correctamente.");
 		if (pDocument != null)
 		{
