@@ -11,6 +11,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Entities.EscapeMode;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,6 +139,8 @@ public class TranslateProcessor
 			pDocument = modifyDocument(pDocument, htTransData, strLanguage);
 			pLog.debug("Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
 		}
+		pDocument.outputSettings().prettyPrint(false);
+		pDocument.outputSettings().escapeMode(EscapeMode.xhtml);
 		return pDocument;
 	}
 
@@ -269,6 +272,8 @@ public class TranslateProcessor
 		}
 		/* se añade el atributo lang a la etiqueta html para poder manejar el idioma dentro de la página */
 		pDoc.getElementsByTag("html").attr("lang", strLanguage.replace("_", "-"));
+		pDoc.outputSettings().prettyPrint(false);
+		pDoc.outputSettings().escapeMode(EscapeMode.xhtml);
 		return pDoc;
 	}
 }

@@ -6,7 +6,9 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Entities.EscapeMode;
 import org.jsoup.nodes.TextNode;
+import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,19 +72,24 @@ public class TemplateManager
 				strCacheKey = strPathToTemplate + "_" + pSessionRviaData.getLanguage();
 			else
 				pLog.debug("strCacheKey: " + strCacheKey);
-			if (htCacheTemplate.containsKey(strCacheKey))
-				pDocument = htCacheTemplate.get(strCacheKey);
+			if (htCacheTemplate.containsKey(strCacheKey)){
+				Document pCacheDocument = htCacheTemplate.get((strCacheKey));
+				pDocument = Jsoup.parse(pCacheDocument.toString(), "", Parser.xmlParser());
+			}
 			else
 			{
 				pDocument = readTemplate(strPathToTemplate);
 				pDocument = translateXhtml(pDocument, pSessionRviaData);
 				htCacheTemplate.put(strCacheKey, pDocument);
+				pDocument = Jsoup.parse(pDocument.toString(), "", Parser.xmlParser());
 			}
 			pDocument = includeIframeScript(pDocument);
 			pDocument = includeUpdateRviaScript(pDocument);
 			pDocument = adjustCssMultiBank(pDocument, pSessionRviaData);
 			pDocument = includeJsonData(pDocument, strDataJson);
-			strReturn = pDocument.outerHtml();
+			pDocument.outputSettings().prettyPrint(false);
+			pDocument.outputSettings().escapeMode(EscapeMode.xhtml);
+			strReturn = pDocument.html();
 		}
 		catch (Exception ex)
 		{
@@ -99,9 +106,12 @@ public class TemplateManager
 	 * @return Documento jsoupHTML con la etiqueta script insertada */
 	private static Document includeIframeScript(Document pDocument)
 	{
+		
 		Element pScript = pDocument.createElement("script");
 		pScript.attr("src", IFRAME_SCRIPT_ADAPTER);
 		pDocument.body().appendChild(pScript);
+		pDocument.outputSettings().prettyPrint(false);
+		pDocument.outputSettings().escapeMode(EscapeMode.xhtml);
 		return pDocument;
 	}
 
@@ -112,10 +122,11 @@ public class TemplateManager
 	 * @return HTML con la etiqueta script insertada */
 	private static Document includeUpdateRviaScript(Document pDocument)
 	{
-		pDocument.outputSettings().prettyPrint(false);
 		Element pScript = pDocument.createElement("script");
 		pScript.attr("src", UPDATE_RVIA_SESSION);
 		pDocument.body().appendChild(pScript);
+		pDocument.outputSettings().prettyPrint(false);
+		pDocument.outputSettings().escapeMode(EscapeMode.xhtml);
 		return pDocument;
 	}
 
@@ -137,6 +148,8 @@ public class TemplateManager
 				tn.text(orig.replaceAll(JSON_DATA_TAG, strJsonData));
 			}
 		}
+		pDocument.outputSettings().prettyPrint(false);
+		pDocument.outputSettings().escapeMode(EscapeMode.xhtml);
 		return pDocument;
 	}
 
@@ -162,7 +175,8 @@ public class TemplateManager
 		String strHtml = "";
 		InputStream pInputStream = (TemplateManager.class.getResourceAsStream(strPathToTemplate));
 		strHtml = Utils.getStringFromInputStream(pInputStream);
-		pDocument = Jsoup.parse(strHtml);
+		pDocument = Jsoup.parse(strHtml, "", Parser.xmlParser());
+		
 		return pDocument;
 	}
 

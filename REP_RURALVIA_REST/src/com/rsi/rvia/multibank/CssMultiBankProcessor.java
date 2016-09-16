@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.util.Hashtable;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Entities.EscapeMode;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,6 +127,8 @@ public class CssMultiBankProcessor
 			pLog.debug("Se procede a modificar los enlaces css si es necesario");
 			pDocument = adjustCSSLink(pDocument, strNRBE);
 		}
+		pDocument.outputSettings().prettyPrint(false);
+		pDocument.outputSettings().escapeMode(EscapeMode.xhtml);
 		return pDocument;
 	}
 
@@ -168,6 +171,8 @@ public class CssMultiBankProcessor
 			}
 		}
 		/* se retorna el documetno modificado */
+		pDocument.outputSettings().prettyPrint(false);
+		pDocument.outputSettings().escapeMode(EscapeMode.xhtml);
 		return pDocument;
 	}
 }
