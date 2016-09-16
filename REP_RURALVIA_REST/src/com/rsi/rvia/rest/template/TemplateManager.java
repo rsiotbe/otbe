@@ -73,6 +73,7 @@ public class TemplateManager
 			else
 				pLog.debug("strCacheKey: " + strCacheKey);
 			if (htCacheTemplate.containsKey(strCacheKey)){
+				pLog.info("Template cacheado, recuperandolo...");
 				Document pCacheDocument = htCacheTemplate.get((strCacheKey));
 				pDocument = Jsoup.parse(pCacheDocument.toString(), "", Parser.xmlParser());
 			}
@@ -110,8 +111,6 @@ public class TemplateManager
 		Element pScript = pDocument.createElement("script");
 		pScript.attr("src", IFRAME_SCRIPT_ADAPTER);
 		pDocument.body().appendChild(pScript);
-		pDocument.outputSettings().prettyPrint(false);
-		pDocument.outputSettings().escapeMode(EscapeMode.xhtml);
 		return pDocument;
 	}
 
@@ -125,8 +124,6 @@ public class TemplateManager
 		Element pScript = pDocument.createElement("script");
 		pScript.attr("src", UPDATE_RVIA_SESSION);
 		pDocument.body().appendChild(pScript);
-		pDocument.outputSettings().prettyPrint(false);
-		pDocument.outputSettings().escapeMode(EscapeMode.xhtml);
 		return pDocument;
 	}
 
@@ -148,8 +145,6 @@ public class TemplateManager
 				tn.text(orig.replaceAll(JSON_DATA_TAG, strJsonData));
 			}
 		}
-		pDocument.outputSettings().prettyPrint(false);
-		pDocument.outputSettings().escapeMode(EscapeMode.xhtml);
 		return pDocument;
 	}
 

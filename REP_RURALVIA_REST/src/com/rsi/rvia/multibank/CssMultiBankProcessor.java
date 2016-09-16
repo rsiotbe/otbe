@@ -127,8 +127,6 @@ public class CssMultiBankProcessor
 			pLog.debug("Se procede a modificar los enlaces css si es necesario");
 			pDocument = adjustCSSLink(pDocument, strNRBE);
 		}
-		pDocument.outputSettings().prettyPrint(false);
-		pDocument.outputSettings().escapeMode(EscapeMode.xhtml);
 		return pDocument;
 	}
 
@@ -171,8 +169,6 @@ public class CssMultiBankProcessor
 			}
 		}
 		/* se retorna el documetno modificado */
-		pDocument.outputSettings().prettyPrint(false);
-		pDocument.outputSettings().escapeMode(EscapeMode.xhtml);
 		return pDocument;
 	}
 }
