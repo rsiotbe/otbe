@@ -14,7 +14,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import org.json.JSONObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
@@ -55,31 +55,147 @@ public class PruebaMetodos
 		return pReturn;
 	}
 
-	
-	/**
-	 * Devuelve un mensaje en json con información de bbdd para hacer pruebas con respuestas en json
-	 * @param pRequest
-	 * @param pUriInfo
-	 * @param strData
-	 * @return
-	 * @throws Exception
-	 */
-	@Path("/getjson")
+	/*@Path("/getddbb")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getDDBBInfo(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+			throws Exception
+	{
+		String strQuery = null;
+		String strTabla = pRequest.getParameter("tabla");
+		String strParams = pRequest.getParameter("params");
+		String strWhereKey = pRequest.getParameter("wherekey");
+		String strWhereValue = pRequest.getParameter("wherevalue");
+		String strOther = pRequest.getParameter("other");
+		Response pReturn;
+		StringBuilder pSB = new StringBuilder();
+		pSB.append("select ");
+		if (strParams != null)
+		{
+			pSB.append(strParams);
+		}
+		else
+		{
+			pSB.append("*");
+		}
+		pSB.append(" from ");
+		if (strTabla != null)
+		{
+			pSB.append(strTabla);
+		}
+		else
+		{
+			strQuery = null;
+		}
+		if ((strWhereKey != null) && (strWhereValue != null))
+		{
+			pSB.append(" where " + strWhereKey + " = '" + strWhereValue + "'");
+			if (strOther != null)
+			{
+				pSB.append(" " + strOther);
+			}
+			strQuery = pSB.toString();
+		}
+		else
+		{
+			strQuery = pSB.toString();
+		}
+		
+		if (strQuery != null)
+		{
+			/*DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
+			PreparedStatement pPreparedStament = pDBConection.prepareStatement(strQuery);
+			ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
+			JSONArray jsonArray = new JSONArray();
+			jsonArray = Utils.convertResultSet2JSON(pResultSet);
+			pReturn = Response.ok(jsonArray.toString()).build();
+			pReu
+		}
+		else
+		{
+			pReturn = Response.ok("{\"Error\" : \"Query mal formada.\"}").build();
+		}
+		return pReturn;
+	}*/
+
+	@Path("/getddbb/help")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getDDBBhelp(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
 			throws Exception
 	{
-		
-		JSONObject pJson = new JSONObject();	
-		Response pReturn;
-		pJson.put("DATA", "EXAMPLE SAMPLE EXAMPLE");
-		pJson.put("Username", "Perico Palotes");
-		pJson.put("Estado", "Serio");
 
-		pReturn = Response.ok(pJson.toString()).build();
+		Response pReturn;
+		StringBuilder pSB = new StringBuilder();
+		String strHelp = "{\"Info\":\"Petici�n para devolver datos de la BBDD en formato JSON\","
+				+ "\"Lista de parametros\":{\"params\":\"Parametros separados por [,] a recuperar)\","
+				+ "\"tabla\":\"Nombre de la tabla.\",\"wherekey\":\"Nombre del campo para la sentencia where\","
+				+ "\"wherevalue\":\"Valor del campo para la sentencia where\","
+				+ "\"other\":\"Otra sentencia (a�adir and si va despues del where)\"}" + "}";
+		pReturn = Response.ok(strHelp).build();
 		return pReturn;
 	}
 	
-
+	/*@Path("/checkddbb")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response checkDoubleDDBB(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+			throws Exception
+	{
+		Response pReturn;
+		String strReturn = "";
+		String strQuery = "select * from belts100 where clave_pagina = 'BDP_HC_NC_CLAUSULAS_P'";
+		String strQueryCip = " SELECT" + 
+				" NUM_SEC_AC \"numAcuerdo\", id_interno_pe" +
+				" FROM rdwc01.mi_clte_rl_ac" +
+				" WHERE MI_FECHA_FIN=to_date('31/12/9999','dd/mm/yyyy')" +
+				" AND COD_NRBE_EN='3076'" +
+				" AND COD_RL_PERS_AC='01'" +
+				" AND NUM_RL_ORDEN=1" +
+				" AND COD_ECV_PERS_AC='2'" +
+				" AND ID_INTERNO_PE=16" ;
+		DDBBConnection pDBConection = DDBBFactory.getDDBB(DDBBProvider.OracleBanca);
+		PreparedStatement pPreparedStament = pDBConection.prepareStatement(strQuery);
+		ResultSet pResultSet = pDBConection.executeQuery(pPreparedStament);
+		JSONArray jsonArray = new JSONArray();
+		jsonArray = Utils.convertResultSet2JSON(pResultSet);
+		
+		DDBBConnection pDBConection3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP);
+		PreparedStatement pPreparedStament3 = pDBConection3.prepareStatement(strQueryCip);
+		ResultSet pResultSet3 = pDBConection3.executeQuery(pPreparedStament3);
+		JSONArray jsonArray3 = new JSONArray();
+		jsonArray3 = Utils.convertResultSet2JSON(pResultSet3);
+		
+		strReturn = "{\"1\":" + jsonArray.toString() + ",\"2\":" + ",\"3\":" + jsonArray3.toString() + "}";
+		pReturn = Response.ok(strReturn).build();
+		return pReturn;
+	}*/
+	
+	/*@Path("/checkcip")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response checkCipDDBB(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+			throws Exception
+	{
+		Response pReturn;
+		String strReturn = "";
+		String strQueryCip = " SELECT" + 
+				" NUM_SEC_AC \"numAcuerdo\", id_interno_pe" +
+				" FROM rdwc01.mi_clte_rl_ac" +
+				" WHERE MI_FECHA_FIN=to_date('31/12/9999','dd/mm/yyyy')" +
+				" AND COD_NRBE_EN='3076'" +
+				" AND COD_RL_PERS_AC='01'" +
+				" AND NUM_RL_ORDEN=1" +
+				" AND COD_ECV_PERS_AC='2'" +
+				" AND ID_INTERNO_PE=20" ;
+		DDBBConnection pDBConection3 = DDBBFactory.getDDBB(DDBBProvider.OracleCIP);
+		PreparedStatement pPreparedStament3 = pDBConection3.prepareStatement(strQueryCip);
+		ResultSet pResultSet3 = pDBConection3.executeQuery(pPreparedStament3);
+		JSONArray jsonArray3 = new JSONArray();
+		jsonArray3 = Utils.convertResultSet2JSON(pResultSet3);
+		
+		strReturn = jsonArray3.toString();
+		pReturn = Response.ok(strReturn).build();
+		return pReturn;
+	}*/
 }

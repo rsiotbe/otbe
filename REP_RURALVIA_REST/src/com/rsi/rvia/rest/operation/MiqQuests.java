@@ -115,7 +115,7 @@ public class MiqQuests
 		pSb.append("PathRest :" + strPathRest + "\n");
 		pSb.append("ComponentType :" + strComponentType + "\n");
 		pSb.append("EndPoint      :" + strEndPoint + "\n");
-		pSb.append("Template      :" + strTemplate);
+		pSb.append("Template      :" + strTemplate + "\n");
 		return pSb.toString();
 	}
 

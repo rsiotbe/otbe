@@ -7,7 +7,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -33,9 +32,10 @@ import com.rsi.rvia.rest.tool.Utils;
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
 public class RestWSConnector
 {
-	private static Logger pLog = LoggerFactory.getLogger(RestWSConnector.class);
+	private static Logger	pLog	= LoggerFactory.getLogger(RestWSConnector.class);
 
-	/** Realiza una petición de tipo get restFull al proveedor de datos (Ruralvia o WS dependiendo de la configuración)
+	/**
+	 * Realiza una petición de tipo get restFull al proveedor de datos (Ruralvia o WS dependiendo de la configuración)
 	 * 
 	 * @param pRequest
 	 *           petición del cliente
@@ -52,9 +52,10 @@ public class RestWSConnector
 	 * @param pPathParams
 	 *           Parámetros asociados al path
 	 * @return Respuesta del proveedor de datos
-	 * @throws Exception */
-	public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests, String strPathRest,
-			SessionRviaData pSessionRvia, MultivaluedMap<String, String> pPathParams) throws Exception
+	 * @throws Exception
+	 */
+	public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests, SessionRviaData pSessionRvia,
+			MultivaluedMap<String, String> pPathParams) throws Exception
 	{
 		Client pClient = RviaRestHttpClient.getClient();
 		String strQueryParams = pRequest.getQueryString();
@@ -75,7 +76,8 @@ public class RestWSConnector
 		return pReturn;
 	}
 
-	/** Realiza una petición de tipo post restFull al proveedor de datos (Ruralvia o WS dependiendo de la configuración)
+	/**
+	 * Realiza una petición de tipo post restFull al proveedor de datos (Ruralvia o WS dependiendo de la configuración)
 	 * 
 	 * @param pRequest
 	 *           petición del cliente
@@ -90,9 +92,10 @@ public class RestWSConnector
 	 * @param pPathParams
 	 *           Parámetros asociados al path
 	 * @return Respuesta del proveedor de datos
-	 * @throws Exception */
-	public static Response post(@Context HttpServletRequest pRequest, String strPathRest, SessionRviaData pSessionRvia,
-			String strJsonData, MiqQuests pMiqQuests, MultivaluedMap<String, String> pPathParams) throws Exception
+	 * @throws Exception
+	 */
+	public static Response post(@Context HttpServletRequest pRequest, SessionRviaData pSessionRvia, String strJsonData,
+			MiqQuests pMiqQuests, MultivaluedMap<String, String> pPathParams) throws Exception
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = RviaRestHttpClient.getClient();
@@ -104,12 +107,11 @@ public class RestWSConnector
 		String strCODApl = GettersRequestParams.getCODApl(pRequest);
 		String strCODCanal = GettersRequestParams.getCODCanal(pRequest);
 		String strCODSecIp = GettersRequestParams.getCODSecIp(pRequest);
-		String strParameters = getDDBBOperationParameters(strPathRest, "paramname");
+		String strParameters = getDDBBOperationParameters(pMiqQuests.getPathRest(), "paramname");
 		pLog.info("Query Params: " + strParameters);
 		if (!strParameters.isEmpty())
 		{
 			htDatesParameters = InterrogateRvia.getParameterFromSession(strParameters, pSessionRvia);
-			htDatesParameters = checkSessionValues(pRequest, htDatesParameters);
 		}
 		ObjectMapper pMapper = new ObjectMapper();
 		ObjectNode pJson = (ObjectNode) pMapper.readTree(strJsonData);
@@ -132,7 +134,8 @@ public class RestWSConnector
 		return pReturn;
 	}
 
-	/** Realiza una petición de tipo put restFull al proveedor de datos (Ruralvia o WS dependiendo de la configuración)
+	/**
+	 * Realiza una petición de tipo put restFull al proveedor de datos (Ruralvia o WS dependiendo de la configuración)
 	 * 
 	 * @param pRequest
 	 *           petición del cliente
@@ -147,33 +150,36 @@ public class RestWSConnector
 	 * @param pPathParams
 	 *           Parámetros asociados al path
 	 * @return Respuesta del proveedor de datos
-	 * @throws Exception */
-	public static Response put(@Context HttpServletRequest pRequest, String strPathRest, SessionRviaData pSessionRvia,
-			String strJsonData, MiqQuests pMiqQuests, MultivaluedMap<String, String> pPathParams) throws Exception
+	 * @throws Exception
+	 */
+	public static Response put(@Context HttpServletRequest pRequest, SessionRviaData pSessionRvia, String strJsonData,
+			MiqQuests pMiqQuests, MultivaluedMap<String, String> pPathParams) throws Exception
 	{
 		/*
 		 * se reutiliza la petición post puesto que es similar, en caso de una implementación diferente, es necesario
 		 * definir este método desde cero
 		 */
 		pLog.warn("Se recibe un método PUT, pero se trata como si fuera un POST");
-		return post(pRequest, strPathRest, pSessionRvia, strJsonData, pMiqQuests, pPathParams);
+		return post(pRequest, pSessionRvia, strJsonData, pMiqQuests, pPathParams);
 	}
 
-	/** Realiza una petición de tipo delete restFull al proveedor de datos (Ruralvia o WS dependiendo de la
-	 * configuración)
+	/**
+	 * Realiza una petición de tipo delete restFull al proveedor de datos (Ruralvia o WS dependiendo de la configuración)
 	 * 
 	 * @param pRequest
 	 *           petición del cliente
 	 * @return Respuesta del proveedor de datos
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	public static Response delete(@Context HttpServletRequest pRequest) throws Exception
 	{
-		/// ??? falta por implementar el método delete
+		// /??? falta por implementar el método delete
 		pLog.error("El método delete no está implementado");
 		throw new Exception("Se ha recibido una petición de tipo DELETE y no existe ningún método que implemente este tipo de peticiones");
 	}
 
-	/** Obtiene los parámetros necesarios para poder ejecutar una operación. Los datos se leen desde la base de datos de
+	/**
+	 * Obtiene los parámetros necesarios para poder ejecutar una operación. Los datos se leen desde la base de datos de
 	 * configuración.
 	 * 
 	 * @param strPathRest
@@ -181,7 +187,8 @@ public class RestWSConnector
 	 * @param strCampo
 	 *           campo a consultar de la base de datos
 	 * @return Cadena que contiene los campos separados por el carácter ';'
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	private static String getDDBBOperationParameters(String strPathRest, String strCampo) throws Exception
 	{
 		String strReturn = "";
@@ -222,11 +229,13 @@ public class RestWSConnector
 		return strReturn;
 	}
 
-	/** Comprueba si el contenido del JSON es de tipo WS
+	/**
+	 * Comprueba si el contenido del JSON es de tipo WS
 	 * 
 	 * @param pJsonData
 	 *           Objeto que contiene la información JSON
-	 * @return */
+	 * @return
+	 */
 	public static boolean isWSJson(JSONObject pJsonData)
 	{
 		boolean fReturn = false;
@@ -254,11 +263,13 @@ public class RestWSConnector
 		return fReturn;
 	}
 
-	/** Comprueba si el contenido del JSON es un error generado por WS
+	/**
+	 * Comprueba si el contenido del JSON es un error generado por WS
 	 * 
 	 * @param pJsonData
 	 *           Objeto que contiene la información JSON
-	 * @return */
+	 * @return
+	 */
 	public static boolean isWSError(JSONObject pJsonData)
 	{
 		boolean fReturn = false;
@@ -271,33 +282,31 @@ public class RestWSConnector
 			}
 			if (!strPrimaryKey.trim().isEmpty())
 			{
-				if (pJsonData.getJSONObject(strPrimaryKey).has("codigoRetorno"))
+				String strStatusResponse = (String) pJsonData.getJSONObject(strPrimaryKey).getString("codigoRetorno");
+				if ("0".equals(strStatusResponse))
 				{
-					String strStatusResponse = (String) pJsonData.getJSONObject(strPrimaryKey).getString("codigoRetorno");
-					if ("0".equals(strStatusResponse))
-					{
-						fReturn = true;
-					}
+					fReturn = true;
 				}
 			}
 		}
 		catch (Exception ex)
 		{
+			pLog.warn("No es un error de WS");
 			fReturn = false;
 		}
-		if (fReturn)
-			pLog.warn("Es un error de WS");
 		return fReturn;
 	}
 
-	/** genera unaexceción de tipo lógico a partir del mensaje de error de una respuesta WS
+	/**
+	 * genera unaexceción de tipo lógico a partir del mensaje de error de una respuesta WS
 	 * 
 	 * @param nHttpErrorCode
 	 *           Codigo de error obtenido en la cabecera de la respuesta
 	 * @param pJsonData
 	 *           Objeto que contiene la información JSON
 	 * @return Objeto JSON que contiene el cuerpo
-	 * @throws LogicalErrorException */
+	 * @throws LogicalErrorException
+	 */
 	public static boolean throwWSError(Integer nHttpErrorCode, JSONObject pJsonData) throws LogicalErrorException
 	{
 		Integer nCode = null;
@@ -332,32 +341,5 @@ public class RestWSConnector
 		if (fProcessed)
 			throw new LogicalErrorException(nHttpErrorCode, nCode, strMessage, strDescription, null);
 		return true;
-	}
-
-	/** Revisa si algun parametro recuperado esta en sesion, si lo está coge el de sesion, sino lo añade a esta
-	 * 
-	 * @param pRequest
-	 * @param pParameters
-	 * @return */
-	public static Hashtable<String, String> checkSessionValues(@Context HttpServletRequest pRequest,
-			Hashtable<String, String> pParameters)
-	{
-		HttpSession pSession = pRequest.getSession(false);
-		Iterator<String> pIterator = pParameters.keySet().iterator();
-		while (pIterator.hasNext())
-		{
-			String strKey = (String) pIterator.next();
-			String strSessionValue = (String) pSession.getAttribute(strKey);
-			if (strSessionValue != null)
-			{
-				pParameters.remove(strKey);
-				pParameters.put(strKey, strSessionValue);
-			}
-			else
-			{
-				pSession.setAttribute(strKey, pParameters.get(strKey));
-			}
-		}
-		return pParameters;
 	}
 }

@@ -11,18 +11,21 @@ import com.rsi.rvia.rest.session.SessionRviaData;
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
 public class RestConnector
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(RestConnector.class);
-	private MiqQuests			pMiqQuests;
+	private static Logger	pLog				= LoggerFactory.getLogger(RestConnector.class);
+	private String				_requestMethod	= "";
 
-	/** Devuelve el objeto MiqQuests asociado a la petición
+	/**
+	 * Devuelve el método asociado a la petición
 	 * 
-	 * @return Objeto MiqQuests */
-	public MiqQuests getMiqQuests()
+	 * @return String método del request
+	 */
+	public String getMethod()
 	{
-		return this.pMiqQuests;
+		return this._requestMethod;
 	}
 
-	/** Realiza la llamada al proveedor de datos para obtener el resultado de la operación
+	/**
+	 * Realiza la llamada al proveedor de datos para obtener el resultado de la operación
 	 * 
 	 * @param pRequest
 	 *           petición del cliente
@@ -35,58 +38,102 @@ public class RestConnector
 	 * @param pPathParams
 	 *           parámetros asociados al path
 	 * @return Respuesta del proveedor de datos
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	public Response getData(HttpServletRequest pRequest, String strData, SessionRviaData pSessionRvia,
-			String strPrimaryPath, MultivaluedMap<String, String> pPathParams) throws Exception
+			MiqQuests pMiqQuests, MultivaluedMap<String, String> pPathParams) throws Exception
 	{
 		Response pReturn = null;
 		String strMethod = pRequest.getMethod();
+		String strComponentType;
+		this._requestMethod = strMethod;
 		/* se obtiene la configuración de la operativa desde base de datos */
-		pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
+		strComponentType = pMiqQuests.getComponentType();
 		pLog.info("Se obtiene la configuración de la base de datos. MiqQuest: " + pMiqQuests);
 		pLog.info("Se recibe una petición con tipo de metodo : " + strMethod);
-		/*
-		 * se comprueba si la infomración asociada a la petición enviada por el cliente viene vacia o nulo se inicializa a
-		 * un json vacio
-		 */
-		if (strData == null || strData.trim().isEmpty())
-			strData = "{}";
 		/* se invoca al tipo de petición leido desde configuracón */
 		switch (strMethod)
 		{
 			case "GET":
-				if ("RVIA".equals(pMiqQuests.getComponentType()))
+				if ("RVIA".equals(strComponentType))
 				{
-					pLog.trace("Derivando petición GET a ruralvía");
+					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
 					pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, pSessionRvia, strData);
+				}
+				else if ("WS".equals(strComponentType))
+				{
+					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
+					pReturn = RestWSConnector.get(pRequest, pMiqQuests, pSessionRvia, pPathParams);
+				}
+				else if ("API".equals(strComponentType))
+				{
+					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
+					pReturn = RestWSConnector.get(pRequest, pMiqQuests, pSessionRvia, pPathParams);
 				}
 				else
 				{
-					pLog.trace("Solicitando petición GET a WS");
-					pReturn = RestWSConnector.get(pRequest, pMiqQuests, strPrimaryPath, pSessionRvia, pPathParams);
+					pLog.warn("No existe tipo de componente definido para esta petición, se devuelve una respuesta ok vacía");
+					pReturn = Response.ok("{}").build();
 				}
 				break;
 			case "POST":
-				if ("RVIA".equals(pMiqQuests.getComponentType()))
+				if ("RVIA".equals(strComponentType))
 				{
-					pLog.trace("Derivando petición POST a ruralvía");
+					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
 					pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, pSessionRvia, strData);
+				}
+				else if ("WS".equals(strComponentType))
+				{
+					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
+					pReturn = RestWSConnector.post(pRequest, pSessionRvia, strData, pMiqQuests, pPathParams);
+				}
+				else if ("API".equals(strComponentType))
+				{
+					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
+					pReturn = RestWSConnector.post(pRequest, pSessionRvia, strData, pMiqQuests, pPathParams);
 				}
 				else
 				{
-					pLog.trace("Solicitando petición POST a WS");
-					pReturn = RestWSConnector.post(pRequest, strPrimaryPath, pSessionRvia, strData, pMiqQuests, pPathParams);
+					pLog.warn("No existe tipo de componente definido para esta petición, se devuelve una respuesta ok vacía");
+					pReturn = Response.ok("{}").build();
 				}
 				break;
 			case "PUT":
-				pLog.trace("Solicitando petición PUT a WS");
-				pReturn = RestWSConnector.put(pRequest, strPrimaryPath, pSessionRvia, strData, pMiqQuests, pPathParams);
+				if ("WS".equals(strComponentType))
+				{
+					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
+					pReturn = RestWSConnector.put(pRequest, pSessionRvia, strData, pMiqQuests, pPathParams);
+				}
+				else if ("API".equals(strComponentType))
+				{
+					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
+					pReturn = RestWSConnector.put(pRequest, pSessionRvia, strData, pMiqQuests, pPathParams);
+				}
+				else
+				{
+					pLog.warn("No existe tipo de componente definido para esta petición, se devuelve una respuesta ok vacía");
+					pReturn = Response.ok("{}").build();
+				}
 				break;
 			case "PATCH":
 				pLog.warn("No existe ninguna acción para este método");
 				break;
 			case "DELETE":
-				pReturn = RestWSConnector.delete(pRequest);
+				if ("WS".equals(strComponentType))
+				{
+					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
+					pReturn = RestWSConnector.delete(pRequest);
+				}
+				else if ("API".equals(strComponentType))
+				{
+					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
+					pReturn = RestWSConnector.delete(pRequest);
+				}
+				else
+				{
+					pLog.warn("No existe tipo de componente definido para esta petición, se devuelve una respuesta ok vacía");
+					pReturn = Response.ok("{}").build();
+				}
 				break;
 		}
 		return pReturn;
