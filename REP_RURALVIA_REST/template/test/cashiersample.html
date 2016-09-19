@@ -9,6 +9,7 @@
       <!-- Compiled and minified JavaScript -->
        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
        <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+       <script src="/api/js/manageRequestRviaRest.js"></script>
 </head>
 <body>
 <div id="formulario">
@@ -35,28 +36,75 @@
       <div class="input-field col s6">
          <span>Radio</span>
          <input id="radio" type="number" class="validate">
-
         </div>
       </div>
     </div>
   </div>
   <a onclick="getData()" class="waves-effect waves-light btn light-green darken-1">Enviar</a>
-
+  <a onclick="getCashierClose()" class="waves-effect waves-light btn light-green darken-1">Mas Cercano</a>
 </div>
 <hr>
+<div id="map">
+      
+
+</div>
 <div id="contenido">
 
 </div>
 
 <script type="text/javascript">
 
+function getCashierClose() {
+      var strLatitud = '40.5991253';
+      var strLongitud = '-3.7030169';
+      var strCodigoEntidad = '3016';
+      var strRadio = '5';
+
+      var dataGet = {};
+      dataGet.codigoEntidad = strCodigoEntidad;
+      dataGet.longitud = strLongitud;
+      dataGet.latitud = strLatitud;
+      dataGet.radio = strRadio;
+
+      $.ajax({
+            url : '/api/rest/cashierLocatior',
+            data : dataGet,
+            type : 'GET',
+            dataType : 'json',
+            success : loadDataMap(respuesta, strLatitud, strLongitud),
+            error : function(xhr, status) {
+                  console.log("Error al procesar la llamada ajax. xhr" + xhr + " - status: " + status);
+            }
+      });
+}
+
+function loadDataMap(json,latitud,longitud){
+      var strReturn = getMap(json,latitud,longitud);
+
+      $("#map").load(strReturn);
+}
+function getMap(json,latitud,longitud){
+      var urlBase = "http://maps.googleapis.com/maps/api/staticmap?center=";
+      var urlConfig = "&zoom=14&size=400x300&sensor=false";
+      var listCashier = json.response.ListaCajeros;
+      var strMarkers = "";
+      for (cajero in listCashier) {
+            strMarkers += getMarker(listCashier[cajero].latitud,listCashier[cajero].longitud);
+      }
+      var imgUrl = urlBase + urlConfig + strMarkers;
+      return "<img src='" + imgUrl + "'>";
+}
+function getMarker(latitud,longitud) {
+      return "&markers=color:green%7Clabel:C%7C" + latitud + ',' + longitud;
+
+}
 function getData() {
       var strCodigoEntidad = $("#codigoEntidad").val();
       var strLongitud = $("#longitud").val();
       var strLatitud =  $("#latitud").val();
       var strRadio = $("#radio").val();
 
-      console.log("Codigo Entidad: " + strCodigoEntidad);
+
       var dataGet = {};
       dataGet.codigoEntidad = strCodigoEntidad;
       dataGet.longitud = strLongitud;

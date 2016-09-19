@@ -21,7 +21,7 @@ import com.rsi.rvia.rest.session.SessionRviaData;
  */
 public class ResponseManager
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(ResponseManager.class);
+	private static Logger pLog = LoggerFactory.getLogger(ResponseManager.class);
 
 	/**
 	 * Procesa una respuesta recibida desde el conector para evaluar si es un error y formatear su contenido
@@ -168,7 +168,6 @@ public class ResponseManager
 	 */
 	private static JSONObject adjustWSJson(JSONObject pJsonData) throws Exception
 	{
-		String strContent;
 		JSONObject pResponseObject;
 		try
 		{
@@ -179,9 +178,8 @@ public class ResponseManager
 			}
 			if (!strPrimaryKey.trim().isEmpty())
 			{
-				strContent = pJsonData.getJSONObject(strPrimaryKey).getString("Respuesta");
 				pResponseObject = new JSONObject();
-				pResponseObject.append("response", strContent);
+				pResponseObject.put("response", pJsonData.getJSONObject(strPrimaryKey).getJSONObject("Respuesta"));
 			}
 			else
 				throw new Exception("No se ha encontrado la raiz del json de WS");
