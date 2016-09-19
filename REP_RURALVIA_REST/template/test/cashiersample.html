@@ -88,7 +88,7 @@ function getMap(json,latitud,longitud){
       var APIkey = "&key=AIzaSyCShs_SweSfuTGvp6H068K0EUGKcy-4D7s";
       var urlBase = "http://maps.googleapis.com/maps/api/staticmap?center=";
       var urlConfig = "&zoom=10&size=800x600&sensor=false";
-      var listCashier = json.response.ListaCajeros;
+      var listCashier = json.response.data.ListaCajeros;
       var strMarkers = "";
       for (cajero in listCashier) {
             strMarkers += getMarker(listCashier[cajero].latitud,listCashier[cajero].longitud);
@@ -136,7 +136,7 @@ function loadData(pJson){
 function addContent(json) {
       var strReturn = '';
       strReturn += '<ul class="collection">';
-      var listCashier = json.response.ListaCajeros;
+      var listCashier = json.response.data.ListaCajeros;
       if(Array.isArray(listCashier)){
             for (cajero in listCashier ) {
                   strReturn += prepareContent(listCashier[cajero]);
