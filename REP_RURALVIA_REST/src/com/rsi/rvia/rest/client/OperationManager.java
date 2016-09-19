@@ -16,7 +16,6 @@ import com.rsi.rvia.rest.error.exceptions.ISUMException;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.template.TemplateManager;
 import com.rsi.rvia.rest.tool.Utils;
-import com.rsi.rvia.rest.client.ResponseManager;
 import com.rsi.rvia.translates.TranslateProcessor;
 
 /** Clase que gestiona cualquier petición que llega a la apliación RviaRest */
@@ -66,7 +65,7 @@ public class OperationManager
 				pResponseConnector = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath, pListParams);
 				pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
 				/* se procesa el resultado del conector paa evaluar y adaptar su contenido */
-				strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector, pRestConnector.getMiqQuests().getIdMiq());
+				strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector);
 				pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
 				/* se obtiene la plantilla destino si es que existe */
 				strTemplate = pRestConnector.getMiqQuests().getTemplate();
@@ -145,28 +144,27 @@ public class OperationManager
 		try
 		{
 			/* se obtiene los datos asociados a la petición de ruralvia */
-//			pSessionRviaData = new SessionRviaData(pRequest);
-//			if (pSessionRviaData != null)
-//			{
+			pSessionRviaData = new SessionRviaData(pRequest);
+			if (pSessionRviaData != null)
+			{
 				/* se establece el token de datos recibido desde ruralvia como dato de sesión */
-				//pSession.setAttribute("token", pSessionRviaData.getToken());
+				pSession.setAttribute("token", pSessionRviaData.getToken());
 				/* se comprueba si el servicio de isum está permitido */
-				//if (!IsumValidation.IsValidService(pSessionRviaData))
-				//	throw new ISUMException(401, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+				if (!IsumValidation.IsValidService(pSessionRviaData))
+					throw new ISUMException(401, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
 				/* se obtienen los datos necesario para realizar la petición al proveedor */
 				String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
-				MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);			
+				MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
 				/* se instancia el conector y se solicitan los datos */
-				
 				pRestConnector = new RestConnector();
 				pResponseConnector = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath, pListParams);
 				pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
 				/* se procesa el resultado del conector paa evaluar y adaptar su contenido */
-				strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector, pRestConnector.getMiqQuests().getIdMiq());
+				strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector);
 				pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
 				/* se obtiene la plantilla destino si es que existe */
 				strTemplate = pRestConnector.getMiqQuests().getTemplate();
-//			}
+			}
 		}
 		catch (Exception ex)
 		{

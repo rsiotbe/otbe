@@ -1,6 +1,5 @@
 package com.rsi.rvia.rest.client;
 
-import java.util.Vector;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.json.JSONArray;
@@ -12,7 +11,6 @@ import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.conector.RestRviaConnector;
 import com.rsi.rvia.rest.conector.RestWSConnector;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
-import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.session.SessionRviaData;
 
 /** Clase para manejar la respuesta del RestConnector. Mira si es un error o si no lo es y compone una respuesta JSON
@@ -21,7 +19,6 @@ import com.rsi.rvia.rest.session.SessionRviaData;
 public class ResponseManager
 {
 	private static Logger	pLog	= LoggerFactory.getLogger(ResponseManager.class);
-	
 
 	/**
 	 * Procesa una respuesta recibida desde el conector para evaluar si es un error y formatear su contenido
@@ -32,7 +29,7 @@ public class ResponseManager
 	 * @throws Exception
 	 */
 	public static String processResponseConnector(SessionRviaData pSessionRviaData, RestConnector pRestConnector,
-			Response pResponseConnector, int nIdMiq) throws Exception
+			Response pResponseConnector) throws Exception
 	{
 		String strJsonData;
 		strJsonData = pResponseConnector.readEntity(String.class);
@@ -65,7 +62,7 @@ public class ResponseManager
 		/* se compreuba si el json contiene un error, si es así se genera una excepción lógica */
 		checkLogicalError(pSessionRviaData, pRestConnector, pResponseConnector, pJsonData);
 		/* se formatea la respuesta para estandarizarla y eliminar información que el usuario final no necesita */
-		pJsonData = formatResponse(pJsonData, nIdMiq, pRestConnector);
+		pJsonData = formatResponse(pJsonData);
 		return pJsonData.toString();
 	}
 
@@ -110,14 +107,14 @@ public class ResponseManager
 	 *           Objeto que contiene la información JSON
 	 * @return
 	 * @throws Exception */
-	private static JSONObject formatResponse(JSONObject pJsonData, int nIdMiq, RestConnector pRestConnector) throws Exception
+	private static JSONObject formatResponse(JSONObject pJsonData) throws Exception
 	{
 		/* se comprueba si el json pertenece a WS */
 		if (RestWSConnector.isWSJson(pJsonData))
 		{
 			pJsonData = adjustWSJson(pJsonData);
 		}
-		pJsonData = filterResponseFields(pJsonData, nIdMiq, pRestConnector);
+		pJsonData = filterResponseFields(pJsonData);
 		return pJsonData;
 	}
 
@@ -179,12 +176,8 @@ public class ResponseManager
 		return pResponseObject;
 	}
 
-	private static JSONObject filterResponseFields(JSONObject pJsonData, int nIdMiq, RestConnector pRestConnector) throws Exception
+	private static JSONObject filterResponseFields(JSONObject pJsonData)
 	{
-		
-		/* Cargamos en el modelo los parámetros de salida */
-		SaveExitHierarchy.process (pJsonData, nIdMiq, pRestConnector.getMethod());
-		
 		// TODO: aqui ira el filtrado de campos de salida
 		return pJsonData;
 	}

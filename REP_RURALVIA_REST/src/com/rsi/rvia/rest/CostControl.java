@@ -56,20 +56,9 @@ public class CostControl
 	public Response moviminetosTarjeta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
 	{	
-		//return Response.ok("Movimientoline{s de un contrato").build();
+		//return Response.ok("Movimientos de un contrato").build();
 		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Movimientos de un contrato");
 		return pReturn;	
 	}
-	@GET
-	@Path("/contracts/line/{codLinea}") 
-   @Produces(MediaType.APPLICATION_JSON)
-	public Response listaDeContratosPorLinea(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			String strData) throws Exception
-	{	
-		//return Response.ok("Lista de contratos").build();
-		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-		pLog.info("Lista de contratos");
-		return pReturn;		
-	}	
 }

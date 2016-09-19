@@ -13,7 +13,6 @@ public class RestConnector
 {
 	private static Logger	pLog	= LoggerFactory.getLogger(RestConnector.class);
 	private MiqQuests			pMiqQuests;
-	private String _requestMethod = "";
 
 	/** Devuelve el objeto MiqQuests asociado a la petición
 	 * 
@@ -23,14 +22,6 @@ public class RestConnector
 		return this.pMiqQuests;
 	}
 
-	/** Devuelve el método asociado a la petición
-	 * 
-	 * @return String método del request */
-	public String getMethod()
-	{
-		return this._requestMethod;
-	}	
-	
 	/** Realiza la llamada al proveedor de datos para obtener el resultado de la operación
 	 * 
 	 * @param pRequest
@@ -50,7 +41,6 @@ public class RestConnector
 	{
 		Response pReturn = null;
 		String strMethod = pRequest.getMethod();
-		this._requestMethod = strMethod;
 		/* se obtiene la configuración de la operativa desde base de datos */
 		pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
 		pLog.info("Se obtiene la configuración de la base de datos. MiqQuest: " + pMiqQuests);
