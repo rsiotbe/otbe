@@ -21,7 +21,7 @@ import com.rsi.rvia.rest.session.SessionRviaData;
  */
 public class ResponseManager
 {
-	private static Logger pLog = LoggerFactory.getLogger(ResponseManager.class);
+	private static Logger	pLog	= LoggerFactory.getLogger(ResponseManager.class);
 
 	/**
 	 * Procesa una respuesta recibida desde el conector para evaluar si es un error y formatear su contenido
@@ -36,7 +36,7 @@ public class ResponseManager
 	 * @throws Exception
 	 */
 	public static String processResponseConnector(SessionRviaData pSessionRviaData, RestConnector pRestConnector,
-			Response pResponseConnector, int nIdMiq, MiqQuests pMiqQuests) throws Exception
+			Response pResponseConnector, MiqQuests pMiqQuests) throws Exception
 	{
 		String strJsonData;
 		strJsonData = pResponseConnector.readEntity(String.class);
@@ -69,7 +69,7 @@ public class ResponseManager
 		/* se compreuba si el json contiene un error, si es así se genera una excepción lógica */
 		checkLogicalError(pSessionRviaData, pMiqQuests, pResponseConnector, pJsonData);
 		/* se formatea la respuesta para estandarizarla y eliminar información que el usuario final no necesita */
-		pJsonData = formatResponse(pJsonData, nIdMiq, pRestConnector);
+		pJsonData = formatResponse(pJsonData, pMiqQuests.getIdMiq(), pRestConnector);
 		return pJsonData.toString();
 	}
 

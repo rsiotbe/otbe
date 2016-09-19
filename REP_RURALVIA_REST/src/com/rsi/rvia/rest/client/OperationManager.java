@@ -70,7 +70,7 @@ public class OperationManager
 				pResponseConnector = pRestConnector.getData(pRequest, strData, pSessionRviaData, pMiqQuests, pListParams);
 				pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
 				/* se procesa el resultado del conector paa evaluar y adaptar su contenido */
-				strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector, pMiqQuests.getIdMiq(), pMiqQuests);
+				strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector, pMiqQuests);
 				pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
 				/* se obtiene la plantilla destino si es que existe */
 				strTemplate = pMiqQuests.getTemplate();
@@ -156,7 +156,7 @@ public class OperationManager
 			pResponseConnector = pRestConnector.getData(pRequest, strData, pSessionRviaData, pMiqQuests, pListParams);
 			pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
 			/* se procesa el resultado del conector paa evaluar y adaptar su contenido */
-			strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector, pMiqQuests.getIdMiq(), pMiqQuests);
+			strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector, pMiqQuests);
 			pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
 			/* se obtiene la plantilla destino si es que existe */
 			strTemplate = pMiqQuests.getTemplate();
