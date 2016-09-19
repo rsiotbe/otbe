@@ -12,75 +12,12 @@
        <script src="/api/js/manageRequestRviaRest.js"></script>
 </head>
 <body>
-<div id="formulario">
-       <div class="row">
-    <div class="col s12">
-      <div class="row">
-        <div class="input-field col s6">
-            <span>Código Entidad</span>
-          <input id="codigoEntidad" type="number" class="validate">
-          
-        </div>
-        <div class="input-field col s6">
-        <span>Longitud</span>
-          <input id="longitud" type="number" class="validate">
-         
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-        <span>Latitud</span>
-          <input id="latitud" type="number" class="validate">
-        </div>
-      
-      <div class="input-field col s6">
-         <span>Radio</span>
-         <input id="radio" type="number" class="validate">
-
-        </div>
-      </div>
-    </div>
-  </div>
-  <a onclick="getData()" class="waves-effect waves-light btn light-green accent-3">Enviar</a>
-
-</div>
-<hr>
 <div id="contenido">
 
 </div>
 
 <script type="text/javascript">
 
-function getData() {
-      var strCodigoEntidad = $("#codigoEntidad").val();
-      var strLongitud = $("#longitud").val();
-      var strLatitud =  $("#latitud").val();
-      var strRadio = $("#radio").val();
-
-      var strQueryParams = '?codigoEntidad=' + strCodigoEntidad + "&longitud=" + strLongitud + "&latitud=" + strLatitud + "&radio=" + strRadio;
-      console.log("Codigo Entidad: " + strCodigoEntidad);
-      var dataGet = {};
-      dataGet.codigoEntidad = strCodigoEntidad;
-      dataGet.longitud = strLongitud;
-      dataGet.latitud = strLatitud;
-      dataGet.radio = strRadio;
-      $.ajax({
-            url : '/api/rest/prueba/cashierLocatior' + strQueryParams,
-            data : dataGet,
-            type : 'GET',
-            dataType : 'json',
-            success : loadData,
-            error : function(xhr, status) {
-                  console.log("Error al procesar la llamada ajax. xhr" + xhr + " - status: " + status);
-            }
-      });
-      console.log("Llamada ajax normal terminada.");
-}
-
-function loadData(json){
-      var strList = addContent(pJson);
-      $("#contenido").load(strList);
-}
 function addContent(json) {
       var strReturn = '';
       strReturn += '<ul class="collection">';
@@ -103,7 +40,14 @@ function addContent(json) {
             return strReturn;
       }
 
-var pJsonOk = '__JSONDATA__';
+$(document).ready(function(){
+      
+      
+      var pJson = '__JSONDATA__';
+
+      var strList = addContent(pJson);
+      $("#contenido").html(strList);
+});
 
  
 </script>
