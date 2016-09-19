@@ -16,9 +16,31 @@
 	JSONObject pJson = new JSONObject();
 	String strResponse = "";
 	String strCleanAll = (String) request.getParameter("clean");
+	String strRefresh = (String) request.getParameter("refresh");
 	pLog.trace("StrCleanAll: " + strCleanAll);
 	String[] pStrPartes;
-	if (!strCleanAll.trim().isEmpty())
+	if(strRefresh != null && !strRefresh.trim().isEmpty()){
+		fCheckStatus = true;
+		JSONObject pJsonTrans = new JSONObject();
+		pJsonTrans.put("clean", fCheckStatus);
+		pJsonTrans.put("size", TranslateProcessor.getSizeCache());
+		pJson.put("translate", pJsonTrans);
+		JSONObject pJsonTemplate = new JSONObject();
+		pJsonTemplate.put("clean", fCheckStatus);
+		pJsonTemplate.put("size", TemplateManager.getSizeCache());
+		pJson.put("template", pJsonTemplate);
+		JSONObject pJsonCssMultibank = new JSONObject();
+		pJsonCssMultibank.put("clean", fCheckStatus);
+		pJsonCssMultibank.put("size", CssMultiBankProcessor.getSizeCache());
+		pJson.put("cssMultibank", pJsonCssMultibank);
+		JSONObject pJsonAll = new JSONObject();
+		pJsonAll.put("clean", fCheckStatus);
+		pJsonAll.put("size", TemplateManager.getSizeCache() 
+							+ TranslateProcessor.getSizeCache()
+							+ CssMultiBankProcessor.getSizeCache());
+		pJson.put("all", pJsonAll);
+	}
+	if (strCleanAll != null && !strCleanAll.trim().isEmpty())
 	{
 		pStrPartes = strCleanAll.split(",");
 		for (String strItem : pStrPartes)
@@ -46,7 +68,9 @@
 					pJson.put("cssMultibank", pJsonCssMultibank);
 					JSONObject pJsonAll = new JSONObject();
 					pJsonAll.put("clean", fCheckStatus);
-					pJsonAll.put("size", TemplateManager.getSizeCache() + TranslateProcessor.getSizeCache());
+					pJsonAll.put("size", TemplateManager.getSizeCache() 
+										+ TranslateProcessor.getSizeCache()
+										+ CssMultiBankProcessor.getSizeCache());
 					pJson.put("all", pJsonAll);
 				}
 				catch (Exception ex)
