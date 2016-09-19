@@ -13,6 +13,7 @@ public class RestConnector
 {
 	private static Logger	pLog	= LoggerFactory.getLogger(RestConnector.class);
 	private MiqQuests			pMiqQuests;
+	private String _requestMethod = "";
 
 	/** Devuelve el objeto MiqQuests asociado a la petición
 	 * 
@@ -22,6 +23,14 @@ public class RestConnector
 		return this.pMiqQuests;
 	}
 
+	/** Devuelve el método asociado a la petición
+	 * 
+	 * @return String método del request */
+	public String getMethod()
+	{
+		return this._requestMethod;
+	}	
+	
 	/** Realiza la llamada al proveedor de datos para obtener el resultado de la operación
 	 * 
 	 * @param pRequest
@@ -41,45 +50,39 @@ public class RestConnector
 	{
 		Response pReturn = null;
 		String strMethod = pRequest.getMethod();
+		this._requestMethod = strMethod;
 		/* se obtiene la configuración de la operativa desde base de datos */
 		pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
 		pLog.info("Se obtiene la configuración de la base de datos. MiqQuest: " + pMiqQuests);
 		pLog.info("Se recibe una petición con tipo de metodo : " + strMethod);
-		/*
-		 * se comprueba si la infomración asociada a la petición enviada por el cliente viene vacia o nulo se inicializa a
-		 * un json vacio
-		 */
-		if (strData == null || strData.trim().isEmpty())
-			strData = "{}";
 		/* se invoca al tipo de petición leido desde configuracón */
 		switch (strMethod)
 		{
 			case "GET":
 				if ("RVIA".equals(pMiqQuests.getComponentType()))
 				{
-					pLog.trace("Derivando petición GET a ruralvía");
+					pLog.trace("Derivando petición a ruralvía");
 					pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, pSessionRvia, strData);
 				}
 				else
 				{
-					pLog.trace("Solicitando petición GET a WS");
+					pLog.trace("Solicitando petición REST");
 					pReturn = RestWSConnector.get(pRequest, pMiqQuests, strPrimaryPath, pSessionRvia, pPathParams);
 				}
 				break;
 			case "POST":
 				if ("RVIA".equals(pMiqQuests.getComponentType()))
 				{
-					pLog.trace("Derivando petición POST a ruralvía");
+					pLog.trace("Derivando petición a ruralvía");
 					pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, pSessionRvia, strData);
 				}
 				else
 				{
-					pLog.trace("Solicitando petición POST a WS");
+					pLog.trace("Solicitando petición REST");
 					pReturn = RestWSConnector.post(pRequest, strPrimaryPath, pSessionRvia, strData, pMiqQuests, pPathParams);
 				}
 				break;
 			case "PUT":
-				pLog.trace("Solicitando petición PUT a WS");
 				pReturn = RestWSConnector.put(pRequest, strPrimaryPath, pSessionRvia, strData, pMiqQuests, pPathParams);
 				break;
 			case "PATCH":

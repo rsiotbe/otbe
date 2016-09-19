@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Entities.EscapeMode;
+import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,19 +27,18 @@ public class TranslateProcessor
 	private static Logger									pLog			= LoggerFactory.getLogger(TranslateProcessor.class);
 	public static Hashtable<String, TranslateEntry>	htCacheData	= new Hashtable<String, TranslateEntry>();
 
-	/** Devuelve el tamaño de la cache
-	 * 
-	 * @return int con el tamaño de la cache */
-	public static int getSizeCache()
-	{
+	
+	/**
+	 * Devuelve el tamaño de la cache
+	 * @return int con el tamaño de la cache
+	 */ 
+	public static int getSizeCache(){
 		int nReturn = 0;
-		if (htCacheData != null)
-		{
+		if(htCacheData != null){
 			nReturn = htCacheData.size();
 		}
 		return nReturn;
 	}
-
 	/** Función que recibe una serie de identificadores de traducción e idioma y obtien su traducción
 	 * 
 	 * @param processIds
@@ -86,62 +87,61 @@ public class TranslateProcessor
 		return htReturn;
 	}
 
-	/** Función Principal, recibe el XHTML y el idioma y lo traduce
+	/** Función Principal, recibe el XHTML y el Idioma y traduce este XHTML
 	 * 
-	 * @param strHtmlt
-	 *           Texto html
+	 * @param strXHTML
+	 *           String con el XHTML
 	 * @param pSessionRviaData
 	 *           Dattos de sessión de usuario de ruralvia
-	 * @return Documento jsoup con el HTML con la nueva traducción ya aplicada. */
-	public static Document processXHTML(String strHtmlt, SessionRviaData pSessionRviaData)
+	 * @return String con el HTML con la nueva traducción ya aplicada. */
+	public static String processXHTML(String strXHTML, SessionRviaData pSessionRviaData)
 	{
-		 return processXHTML(new Document(strHtmlt), pSessionRviaData);
-	}
-	
-	/** Función Principal, recibe el documento Jsoup y el idioma y lo traduce
-	 * 
-	 * @param pDocument
-	 *           Documento jsoup que contien el html
-	 * @param pSessionRviaData
-	 *           Dattos de sessión de usuario de ruralvia
-	 * @return Documento jsoup con el HTML con la nueva traducción ya aplicada. */
-	public static Document processXHTML(Document pDocument, SessionRviaData pSessionRviaData)
-	{
+		Document pDoc = null;
+		String strReturn = null;
 		ArrayList<String> alIdsTrans = null;
 		String strLanguage = null;
 		Hashtable<String, TranslateEntry> htTransData = new Hashtable<String, TranslateEntry>();
-		if (pSessionRviaData == null)
+		if(pSessionRviaData == null)
 			pLog.warn("Los datos de sesión de ruralvia están vacios, se escoge el idioma español por defecto");
-		pLog.debug("String XHTML parseado a Documento correctamente.");
-		if (pDocument != null)
+		if (strXHTML == null || strXHTML.trim().isEmpty())
+			pLog.warn("El contenido de XHTML es nulo o vacio");
+		else 
 		{
-			alIdsTrans = extractIdsFromDocument(pDocument);
-			pLog.debug("IDs de traducciones extraidos correctamente.");
-			pLog.debug("alIdsTrans lenght: " + alIdsTrans.size());
-		}
-		if (alIdsTrans != null && alIdsTrans.size() > 0)
-		{
-			try
+			pDoc = strToDocumentParser(strXHTML);
+			pLog.debug("String XHTML parseado a Documento correctamente.");
+			if (pDoc != null)
 			{
-				htTransData = getTranslations(alIdsTrans);
-				pLog.debug("Traducciones recuperadas correctamente.");
+				alIdsTrans = extractIdsFromDocument(pDoc);
+				pLog.debug("IDs de traducciones extraidos correctamente.");
+				pLog.debug("alIdsTrans lenght: " + alIdsTrans.size());
 			}
-			catch (Exception ex)
+			if (alIdsTrans != null && alIdsTrans.size() > 0)
 			{
-				pLog.error("Error al intentar recuperar las Traducciones de la BBDD", ex);
+				try
+				{
+					htTransData = getTranslations(alIdsTrans);
+					pLog.debug("Traducciones recuperadas correctamente.");
+				}
+				catch (Exception ex)
+				{
+					pLog.error("Error al intentar recuperar las Traducciones de la BBDD", ex);
+				}
 			}
-		}
-		if (htTransData != null && htTransData.size() > 0)
-		{
-			if (strLanguage == null)
-				strLanguage = "es_ES";
-			pLog.debug("Documento premodificación es nulo?: " + (pDocument == null));
-			pDocument = modifyDocument(pDocument, htTransData, strLanguage);
-			pLog.debug("Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
-		}
-		return pDocument;
-	}
+			if (htTransData != null && htTransData.size() > 0)
+			{
+				if (strLanguage == null)
+					strLanguage = "es_ES";
+				pLog.debug("Documento premodificación null: " + (pDoc == null));
+				pDoc = modifyDocument(pDoc, htTransData, strLanguage);
+				pLog.debug("Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
+			}
+			/* se genera de nuevo el documento */
+			strReturn = documentToString(pDoc);
 
+		}		
+		return strReturn;
+	}
+	
 	/** Función para recuperar las traducciones dada una lista de IDs.
 	 * 
 	 * @param alIdsTrans
@@ -172,8 +172,7 @@ public class TranslateProcessor
 			Connection pConnection = null;
 			PreparedStatement pPreparedStatement = null;
 			ResultSet pResultSet = null;
-			try
-			{
+			try{
 				String strQuery = "SELECT codigo,idioma,traduccion FROM bdptb079_idioma where codigo in (?)";
 				pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 				pPreparedStatement = pConnection.prepareStatement(strQuery);
@@ -196,27 +195,28 @@ public class TranslateProcessor
 					htResult.get(strCode).addTranslate(strIdiom, strTraduction);
 					htCacheData.get(strCode).addTranslate(strIdiom, strTraduction);
 				}
-			}
-			catch (Exception ex)
-			{
+			}catch(Exception ex){
 				pLog.error("Error al realizar la consulta a la BBDD.");
 			}finally{
-				try
-				{
-					if (pResultSet != null)
-						pResultSet.close();
-					if (pPreparedStatement != null)
-						pPreparedStatement.close();
-					if (pConnection != null)
-						pConnection.close();
-				}
-				catch (Exception ex)
-				{
-					pLog.error("Error al cerrar los objetos de base de datos", ex);
-				}
+				pResultSet.close();
+				pPreparedStatement.close();
+				pConnection.close();
 			}
 		}
 		return htResult;
+	}
+	
+
+	/** Función que procesa el String que contiene el HTML en un Document(Jsoup)
+	 * 
+	 * @param strData
+	 *           HTML inicial
+	 * @return Documento bien formado */
+	private static Document strToDocumentParser(String strData)
+	{
+		Document pDoc = (Document) Jsoup.parse(strData, "", Parser.htmlParser());
+		pDoc.outputSettings().prettyPrint(false);
+		return pDoc;
 	}
 
 	/** Función que extrae todos los IDs de data-translate dado un Document(Jsoup)
@@ -271,5 +271,25 @@ public class TranslateProcessor
 		/* se añade el atributo lang a la etiqueta html para poder manejar el idioma dentro de la página */
 		pDoc.getElementsByTag("html").attr("lang", strLanguage.replace("_", "-"));
 		return pDoc;
+	}
+
+	/** Funci�n para parsear un Document(Jsoup) a String
+	 * 
+	 * @param pDoc
+	 *           Document(Jsoup) para parsear a string
+	 * @return String con el documento HTML */
+	private static String documentToString(Document pDoc)
+	{
+		String strReturn = null;
+		if (pDoc != null)
+		{
+			pDoc.outputSettings().escapeMode(EscapeMode.xhtml);
+			strReturn = pDoc.html();
+		}
+		else
+		{
+			pLog.error("El documento a convertir en nulo");
+		}
+		return strReturn;
 	}
 }

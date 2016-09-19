@@ -4,8 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Hashtable;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Entities.EscapeMode;
+import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +43,7 @@ public class CssMultiBankProcessor
 		Connection pConnection = null;
 		PreparedStatement pPreparedStatement = null;
 		ResultSet pResultSet = null;
-		try
-		{
+		try{
 			String strQuery = "SELECT * from bel.bdptb229_css_multibank";
 			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
@@ -56,27 +58,14 @@ public class CssMultiBankProcessor
 					htCacheData.put(strKey, strNewLink);
 			}
 			pLog.debug("Se carga la cache de CssMultiBank con " + getSizeCache() + " elementos");
-		}
-		catch (Exception ex)
-		{
+		}catch(Exception ex){
 			pLog.error("Error al realizar la consulta a la BBDD.");
+		}finally{
+			pResultSet.close();
+			pPreparedStatement.close();
+			pConnection.close();
 		}
-		finally
-		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
-		}
+
 	}
 
 	/** Devuelve el valor de reemplazo del link css y si no lo encuentra devuelve el propio valor pasado
@@ -106,29 +95,51 @@ public class CssMultiBankProcessor
 
 	/** Función Principal, recibe el XHTML y la entidad y realiza las conversiones
 	 * 
-	 * @param pDocument
-	 *           Documento html en jsoup
+	 * @param strXHTML
+	 *           String con el XHTML
 	 * @param pSessionRviaData
 	 *           Datos de sesión de ruralvia para el usuario
-	 * @return String con el HTML con los reemplazos de css ya realizados.
+	 * @return String con el HTML con los reemplazos de css ya realizados. 
 	 * @throws Exception */
-	public static Document processXHTML(Document pDocument, SessionRviaData pSessionRviaData) throws Exception
+	public static String processXHTML(String strXHTML, SessionRviaData pSessionRviaData) throws Exception
 	{
+		Document pDoc = null;
+		String strReturn = null;
 		String strNRBE;
-		if (pSessionRviaData == null)
+		if(pSessionRviaData == null)
 		{
 			pLog.warn("Los datos de sesión de ruralvia están vacios, se escoge la entidad del cooperativo por defecto");
 			strNRBE = "0198";
 		}
 		else
 			strNRBE = pSessionRviaData.getNRBE();
-		pLog.debug("String XHTML parseado a Documento correctamente.");
-		if (pDocument != null)
+		if (strXHTML == null || strXHTML.trim().isEmpty())
+			pLog.warn("El contenido de strXHTML es nulo o vacio");
+		else
 		{
-			pLog.debug("Se procede a modificar los enlaces css si es necesario");
-			pDocument = adjustCSSLink(pDocument, strNRBE);
+			pDoc = strToDocumentParser(strXHTML);
+			pLog.debug("String XHTML parseado a Documento correctamente.");
+			if (pDoc != null)
+			{
+				pLog.debug("Se procede a modificar los enlaces css si es necesario");
+				pDoc = adjustCSSLink(pDoc, strNRBE);
+				/* se obtiene el String que contiene l documetno final */
+				strReturn = documentToString(pDoc);
+			}
 		}
-		return pDocument;
+		return strReturn;
+	}
+
+	/** Función que procesa el String que contiene el HTML en un Document(Jsoup)
+	 * 
+	 * @param strData
+	 *           HTML inicial
+	 * @return Documento bien formado */
+	private static Document strToDocumentParser(String strData)
+	{
+		Document pDoc = (Document) Jsoup.parse(strData, "", Parser.htmlParser());
+		pDoc.outputSettings().prettyPrint(false);
+		return pDoc;
 	}
 
 	/** Función que modifica los links css de un documento JSOUP.
@@ -139,7 +150,7 @@ public class CssMultiBankProcessor
 	 *           Hashtable con los enlaces a convertir y sus conversiones.
 	 * @param strNRBE
 	 *           String con el idioma al que se quiere traducir.
-	 * @return Document(Jsoup) con la traducción ya puesta.
+	 * @return Document(Jsoup) con la traducción ya puesta. 
 	 * @throws Exception */
 	private static Document adjustCSSLink(Document pDocument, String strNRBE) throws Exception
 	{
@@ -171,5 +182,18 @@ public class CssMultiBankProcessor
 		}
 		/* se retorna el documetno modificado */
 		return pDocument;
+	}
+
+	/** Función para parsear un Document(Jsoup) a String
+	 * 
+	 * @param pDoc
+	 *           Document(Jsoup) para parsear a string
+	 * @return String con el documento HTML */
+	private static String documentToString(Document pDoc)
+	{
+		String strReturn = null;
+		pDoc.outputSettings().escapeMode(EscapeMode.xhtml);
+		strReturn = pDoc.html();
+		return strReturn;
 	}
 }

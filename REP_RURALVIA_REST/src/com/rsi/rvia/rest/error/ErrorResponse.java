@@ -72,10 +72,6 @@ public class ErrorResponse
 		strDescription = "Error no controlado de la aplicación";	
 	}
 	
-	/**
-	 * Devuelve el objeto ErrorResponse como un json 
-	 * @return String con el JSON de respuesta.
-	 */
 	public String getJsonError()
 	{
 		String strReturn = "";

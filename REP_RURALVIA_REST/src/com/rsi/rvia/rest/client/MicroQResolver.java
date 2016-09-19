@@ -74,19 +74,9 @@ public class MicroQResolver
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			pResultSet.close();
+			pPreparedStatement.close();
+			pConnection.close();
 		}
 		
 		return pReturn;

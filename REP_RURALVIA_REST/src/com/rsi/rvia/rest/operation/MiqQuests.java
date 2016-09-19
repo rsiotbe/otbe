@@ -13,12 +13,13 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 /** Objeto que representa una operativa o operación definida en la aplicación */
 public class MiqQuests
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(MiqQuests.class);
-	private int					nIdMiq;
-	private String				strPathRest;
-	private String				strComponentType;
-	private String				strEndPoint;
-	private String				strTemplate;
+	private static Logger	pLog			= LoggerFactory.getLogger(MiqQuests.class);
+
+	private int		nIdMiq;
+	private String	strPathRest;
+	private String	strComponentType;
+	private String	strEndPoint;
+	private String	strTemplate;
 
 	public int getIdMiq()
 	{
@@ -39,7 +40,6 @@ public class MiqQuests
 	{
 		this.strPathRest = strPathRest;
 	}
-
 	public String getComponentType()
 	{
 		return strComponentType;
@@ -70,13 +70,11 @@ public class MiqQuests
 		this.strTemplate = strTemplate;
 	}
 
-	/**
-	 * Obtiene un objeto URI a del valor de EndPoint
+	/** Obtiene un objeto URI a del valor de EndPoint
 	 * 
 	 * @param strEndPoint
 	 *           String que contiene la uri
-	 * @return Objeto URI
-	 */
+	 * @return Objeto URI */
 	public URI getBaseWSEndPoint()
 	{
 		return UriBuilder.fromUri(this.strEndPoint).build();
@@ -87,8 +85,7 @@ public class MiqQuests
 	{
 	}
 
-	/**
-	 * Contructor con parámetros
+	/** Contructor con parámetros
 	 * 
 	 * @param nIdMiq
 	 *           Identificador de operación
@@ -97,8 +94,7 @@ public class MiqQuests
 	 * @param strEndPoint
 	 *           Dirección endPoint
 	 * @param strTemplate
-	 *           Plantilla asociada
-	 */
+	 *           Plantilla asociada */
 	public MiqQuests(int nIdMiq, String strPathRest, String strComponentType, String strEndPoint, String strTemplate)
 	{
 		this.nIdMiq = nIdMiq;
@@ -119,19 +115,17 @@ public class MiqQuests
 		pSb.append("PathRest :" + strPathRest + "\n");
 		pSb.append("ComponentType :" + strComponentType + "\n");
 		pSb.append("EndPoint      :" + strEndPoint + "\n");
-		pSb.append("Template      :" + strTemplate);
+		pSb.append("Template      :" + strTemplate + "\n");
 		return pSb.toString();
 	}
 
-	/**
-	 * Realiza una conexión a la BBDD para obtener los datos necesarios para crear un objeto MiqQuests y darlo como
+	/** Realiza una conexión a la BBDD para obtener los datos necesarios para crear un objeto MiqQuests y darlo como
 	 * respuesta.
 	 * 
 	 * @param strPath
 	 *           String path primario para la clausula where de la consulta
 	 * @return MiqQuests con el id:miq, el component_type, el end_point y el template.
-	 * @throws Exception
-	 */
+	 * @throws Exception */
 	public static MiqQuests getMiqQuests(String strPath) throws Exception
 	{
 		MiqQuests pMiqQuests = null;
@@ -152,20 +146,20 @@ public class MiqQuests
 		}
 		catch (Exception ex)
 		{
-			pLog.error("error al obtener la informacion de MiqQuest con path: " + strPath, ex);
+			pLog.error("error al obtener la informacion de MiqQuest con path: " + strPath, ex);			
 		}
 		finally
 		{
 			try
 			{
-				if (pResultSet != null)
+				if(pResultSet != null)
 					pResultSet.close();
-				if (pPreparedStatement != null)
+				if(pPreparedStatement != null)
 					pPreparedStatement.close();
-				if (pConnection != null)
+				if(pConnection != null)
 					pConnection.close();
 			}
-			catch (Exception ex)
+			catch(Exception ex)
 			{
 				pLog.error("error al cerrar la conexión a base de datos", ex);
 				throw ex;
@@ -174,15 +168,13 @@ public class MiqQuests
 		return pMiqQuests;
 	}
 
-	/**
-	 * Realiza una conexión a la BBDD para obtener los datos necesarios para crear un objeto MiqQuests y darlo como
+	/** Realiza una conexión a la BBDD para obtener los datos necesarios para crear un objeto MiqQuests y darlo como
 	 * respuesta.
 	 * 
 	 * @param nMiqQuestId
 	 *           identificador de la operación
 	 * @return MiqQuests con el id:miq, el component_type, el end_point y el template.
-	 * @throws Exception
-	 */
+	 * @throws Exception */
 	public static MiqQuests getMiqQuests(int nMiqQuestId) throws Exception
 	{
 		MiqQuests pMiqQuests = null;
@@ -203,20 +195,20 @@ public class MiqQuests
 		}
 		catch (Exception ex)
 		{
-			pLog.error("error al obtener la informacion de MiqQuest con id: " + nMiqQuestId, ex);
+			pLog.error("error al obtener la informacion de MiqQuest con id: " + nMiqQuestId, ex);			
 		}
 		finally
 		{
 			try
 			{
-				if (pResultSet != null)
+				if(pResultSet != null)
 					pResultSet.close();
-				if (pPreparedStatement != null)
+				if(pPreparedStatement != null)
 					pPreparedStatement.close();
-				if (pConnection != null)
+				if(pConnection != null)
 					pConnection.close();
 			}
-			catch (Exception ex)
+			catch(Exception ex)
 			{
 				pLog.error("error al cerrar la conexión a base de datos", ex);
 				throw ex;
