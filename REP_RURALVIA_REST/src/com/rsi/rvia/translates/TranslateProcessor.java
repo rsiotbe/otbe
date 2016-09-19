@@ -1,5 +1,7 @@
-/************************************************************************ CREACION: REFERENCIA: P000008956 FECHA: 02-08-2016 AUTOR: Victor Muñoz Descripción: Clase procesadora de traducciones
- * en HTML MODIFICACIONES: ************************************************************************/
+/************************************************************************
+ * CREACION: REFERENCIA: P000008956 FECHA: 02-08-2016 AUTOR: Victor Muñoz Descripción: Clase procesadora de traducciones
+ * en HTML MODIFICACIONES:
+ ************************************************************************/
 package com.rsi.rvia.translates;
 
 import java.sql.Connection;
@@ -9,11 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Entities.EscapeMode;
-import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,25 +26,30 @@ public class TranslateProcessor
 	private static Logger									pLog			= LoggerFactory.getLogger(TranslateProcessor.class);
 	public static Hashtable<String, TranslateEntry>	htCacheData	= new Hashtable<String, TranslateEntry>();
 
-	
 	/**
 	 * Devuelve el tamaño de la cache
+	 * 
 	 * @return int con el tamaño de la cache
-	 */ 
-	public static int getSizeCache(){
+	 */
+	public static int getSizeCache()
+	{
 		int nReturn = 0;
-		if(htCacheData != null){
+		if (htCacheData != null)
+		{
 			nReturn = htCacheData.size();
 		}
 		return nReturn;
 	}
-	/** Función que recibe una serie de identificadores de traducción e idioma y obtien su traducción
+
+	/**
+	 * Función que recibe una serie de identificadores de traducción e idioma y obtien su traducción
 	 * 
 	 * @param processIds
 	 *           Array de String con los identificadores
 	 * @param strLanguage
 	 *           String con el idioma (es_ES)
-	 * @return hastable con parejas identificador y su traducción. */
+	 * @return hastable con parejas identificador y su traducción.
+	 */
 	public static Hashtable<String, String> processIds(String[] pStrIds, String strLanguage)
 	{
 		ArrayList<String> alIdsTrans;
@@ -87,67 +91,74 @@ public class TranslateProcessor
 		return htReturn;
 	}
 
-	/** Función Principal, recibe el XHTML y el Idioma y traduce este XHTML
+	/**
+	 * Función Principal, recibe el XHTML y el idioma y lo traduce
 	 * 
-	 * @param strXHTML
-	 *           String con el XHTML
+	 * @param strHtmlt
+	 *           Texto html
 	 * @param pSessionRviaData
 	 *           Dattos de sessión de usuario de ruralvia
-	 * @return String con el HTML con la nueva traducción ya aplicada. */
-	public static String processXHTML(String strXHTML, SessionRviaData pSessionRviaData)
+	 * @return Documento jsoup con el HTML con la nueva traducción ya aplicada.
+	 */
+	public static Document processXHTML(String strHtmlt, SessionRviaData pSessionRviaData)
 	{
-		Document pDoc = null;
-		String strReturn = null;
+		return processXHTML(new Document(strHtmlt), pSessionRviaData);
+	}
+
+	/**
+	 * Función Principal, recibe el documento Jsoup y el idioma y lo traduce
+	 * 
+	 * @param pDocument
+	 *           Documento jsoup que contien el html
+	 * @param pSessionRviaData
+	 *           Dattos de sessión de usuario de ruralvia
+	 * @return Documento jsoup con el HTML con la nueva traducción ya aplicada.
+	 */
+	public static Document processXHTML(Document pDocument, SessionRviaData pSessionRviaData)
+	{
 		ArrayList<String> alIdsTrans = null;
 		String strLanguage = null;
 		Hashtable<String, TranslateEntry> htTransData = new Hashtable<String, TranslateEntry>();
-		if(pSessionRviaData == null)
+		if (pSessionRviaData == null)
 			pLog.warn("Los datos de sesión de ruralvia están vacios, se escoge el idioma español por defecto");
-		if (strXHTML == null || strXHTML.trim().isEmpty())
-			pLog.warn("El contenido de XHTML es nulo o vacio");
-		else 
+		pLog.debug("String XHTML parseado a Documento correctamente.");
+		if (pDocument != null)
 		{
-			pDoc = strToDocumentParser(strXHTML);
-			pLog.debug("String XHTML parseado a Documento correctamente.");
-			if (pDoc != null)
+			alIdsTrans = extractIdsFromDocument(pDocument);
+			pLog.debug("IDs de traducciones extraidos correctamente.");
+			pLog.debug("alIdsTrans lenght: " + alIdsTrans.size());
+		}
+		if (alIdsTrans != null && alIdsTrans.size() > 0)
+		{
+			try
 			{
-				alIdsTrans = extractIdsFromDocument(pDoc);
-				pLog.debug("IDs de traducciones extraidos correctamente.");
-				pLog.debug("alIdsTrans lenght: " + alIdsTrans.size());
+				htTransData = getTranslations(alIdsTrans);
+				pLog.debug("Traducciones recuperadas correctamente.");
 			}
-			if (alIdsTrans != null && alIdsTrans.size() > 0)
+			catch (Exception ex)
 			{
-				try
-				{
-					htTransData = getTranslations(alIdsTrans);
-					pLog.debug("Traducciones recuperadas correctamente.");
-				}
-				catch (Exception ex)
-				{
-					pLog.error("Error al intentar recuperar las Traducciones de la BBDD", ex);
-				}
+				pLog.error("Error al intentar recuperar las Traducciones de la BBDD", ex);
 			}
-			if (htTransData != null && htTransData.size() > 0)
-			{
-				if (strLanguage == null)
-					strLanguage = "es_ES";
-				pLog.debug("Documento premodificación null: " + (pDoc == null));
-				pDoc = modifyDocument(pDoc, htTransData, strLanguage);
-				pLog.debug("Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
-			}
-			/* se genera de nuevo el documento */
-			strReturn = documentToString(pDoc);
-
-		}		
-		return strReturn;
+		}
+		if (htTransData != null && htTransData.size() > 0)
+		{
+			if (strLanguage == null)
+				strLanguage = "es_ES";
+			pLog.debug("Documento premodificación es nulo?: " + (pDocument == null));
+			pDocument = modifyDocument(pDocument, htTransData, strLanguage);
+			pLog.debug("Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
+		}
+		return pDocument;
 	}
-	
-	/** Función para recuperar las traducciones dada una lista de IDs.
+
+	/**
+	 * Función para recuperar las traducciones dada una lista de IDs.
 	 * 
 	 * @param alIdsTrans
 	 *           ArrayList<String> con los IDs de las traducciones.
 	 * @return HashTable con las traducciones en todos los idiomas de cada ID de la lista inicial
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	private static Hashtable<String, TranslateEntry> getTranslations(ArrayList<String> alIdsTrans) throws Exception
 	{
 		String strNewsIds = "";
@@ -172,7 +183,8 @@ public class TranslateProcessor
 			Connection pConnection = null;
 			PreparedStatement pPreparedStatement = null;
 			ResultSet pResultSet = null;
-			try{
+			try
+			{
 				String strQuery = "SELECT codigo,idioma,traduccion FROM bdptb079_idioma where codigo in (?)";
 				pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 				pPreparedStatement = pConnection.prepareStatement(strQuery);
@@ -195,35 +207,38 @@ public class TranslateProcessor
 					htResult.get(strCode).addTranslate(strIdiom, strTraduction);
 					htCacheData.get(strCode).addTranslate(strIdiom, strTraduction);
 				}
-			}catch(Exception ex){
+			}
+			catch (Exception ex)
+			{
 				pLog.error("Error al realizar la consulta a la BBDD.");
-			}finally{
-				pResultSet.close();
-				pPreparedStatement.close();
-				pConnection.close();
+			}
+			finally
+			{
+				try
+				{
+					if (pResultSet != null)
+						pResultSet.close();
+					if (pPreparedStatement != null)
+						pPreparedStatement.close();
+					if (pConnection != null)
+						pConnection.close();
+				}
+				catch (Exception ex)
+				{
+					pLog.error("Error al cerrar los objetos de base de datos", ex);
+				}
 			}
 		}
 		return htResult;
 	}
-	
 
-	/** Función que procesa el String que contiene el HTML en un Document(Jsoup)
-	 * 
-	 * @param strData
-	 *           HTML inicial
-	 * @return Documento bien formado */
-	private static Document strToDocumentParser(String strData)
-	{
-		Document pDoc = (Document) Jsoup.parse(strData, "", Parser.htmlParser());
-		pDoc.outputSettings().prettyPrint(false);
-		return pDoc;
-	}
-
-	/** Función que extrae todos los IDs de data-translate dado un Document(Jsoup)
+	/**
+	 * Función que extrae todos los IDs de data-translate dado un Document(Jsoup)
 	 * 
 	 * @param pDocument
 	 *           Document(Jsoup) con el HTML parseado.
-	 * @return ArrayList<String> con los IDs de data-translate */
+	 * @return ArrayList<String> con los IDs de data-translate
+	 */
 	private static ArrayList<String> extractIdsFromDocument(Document pDocument)
 	{
 		ArrayList<String> alIdsTranslate = new ArrayList<String>();
@@ -239,7 +254,8 @@ public class TranslateProcessor
 		return alIdsTranslate;
 	}
 
-	/** Función que modifica sus etiquetas data-translate con las nuevas traducciones.
+	/**
+	 * Función que modifica sus etiquetas data-translate con las nuevas traducciones.
 	 * 
 	 * @param doc
 	 *           Document(Jsoup) a modificar.
@@ -247,7 +263,8 @@ public class TranslateProcessor
 	 *           Hashtable con los IDs data.translate y las traducciones.
 	 * @param strLanguage
 	 *           String con el idioma al que se quiere traducir.
-	 * @return Document(Jsoup) con la traducción ya puesta. */
+	 * @return Document(Jsoup) con la traducción ya puesta.
+	 */
 	private static Document modifyDocument(Document pDoc, Hashtable<String, TranslateEntry> htData, String strLanguage)
 	{
 		Enumeration<String> pEnumHTData = htData.keys();
@@ -271,25 +288,5 @@ public class TranslateProcessor
 		/* se añade el atributo lang a la etiqueta html para poder manejar el idioma dentro de la página */
 		pDoc.getElementsByTag("html").attr("lang", strLanguage.replace("_", "-"));
 		return pDoc;
-	}
-
-	/** Funci�n para parsear un Document(Jsoup) a String
-	 * 
-	 * @param pDoc
-	 *           Document(Jsoup) para parsear a string
-	 * @return String con el documento HTML */
-	private static String documentToString(Document pDoc)
-	{
-		String strReturn = null;
-		if (pDoc != null)
-		{
-			pDoc.outputSettings().escapeMode(EscapeMode.xhtml);
-			strReturn = pDoc.html();
-		}
-		else
-		{
-			pLog.error("El documento a convertir en nulo");
-		}
-		return strReturn;
 	}
 }

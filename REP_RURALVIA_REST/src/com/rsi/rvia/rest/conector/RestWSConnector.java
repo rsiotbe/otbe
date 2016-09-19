@@ -7,6 +7,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -112,6 +113,7 @@ public class RestWSConnector
 		if (!strParameters.isEmpty())
 		{
 			htDatesParameters = InterrogateRvia.getParameterFromSession(strParameters, pSessionRvia);
+			htDatesParameters = checkSessionValues(pRequest, htDatesParameters);
 		}
 		ObjectMapper pMapper = new ObjectMapper();
 		ObjectNode pJson = (ObjectNode) pMapper.readTree(strJsonData);
@@ -282,10 +284,13 @@ public class RestWSConnector
 			}
 			if (!strPrimaryKey.trim().isEmpty())
 			{
-				String strStatusResponse = (String) pJsonData.getJSONObject(strPrimaryKey).getString("codigoRetorno");
-				if ("0".equals(strStatusResponse))
+				if (pJsonData.getJSONObject(strPrimaryKey).has("codigoRetorno"))
 				{
-					fReturn = true;
+					String strStatusResponse = (String) pJsonData.getJSONObject(strPrimaryKey).getString("codigoRetorno");
+					if ("0".equals(strStatusResponse))
+					{
+						fReturn = true;
+					}
 				}
 			}
 		}
@@ -341,5 +346,34 @@ public class RestWSConnector
 		if (fProcessed)
 			throw new LogicalErrorException(nHttpErrorCode, nCode, strMessage, strDescription, null);
 		return true;
+	}
+
+	/**
+	 * Revisa si algun parametro recuperado esta en sesion, si lo está coge el de sesion, sino lo añade a esta
+	 * 
+	 * @param pRequest
+	 * @param pParameters
+	 * @return
+	 */
+	public static Hashtable<String, String> checkSessionValues(@Context HttpServletRequest pRequest,
+			Hashtable<String, String> pParameters)
+	{
+		HttpSession pSession = pRequest.getSession(false);
+		Iterator<String> pIterator = pParameters.keySet().iterator();
+		while (pIterator.hasNext())
+		{
+			String strKey = (String) pIterator.next();
+			String strSessionValue = (String) pSession.getAttribute(strKey);
+			if (strSessionValue != null)
+			{
+				pParameters.remove(strKey);
+				pParameters.put(strKey, strSessionValue);
+			}
+			else
+			{
+				pSession.setAttribute(strKey, pParameters.get(strKey));
+			}
+		}
+		return pParameters;
 	}
 }
