@@ -1,6 +1,8 @@
 package com.rsi.rvia.rest.DDBB;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
@@ -23,12 +25,14 @@ public class DDBBPoolFactory
 	private static Properties	pPropOracleCIP		= null;
 	private static Properties	pPropMySql			= null;
 
-	/** Obtiene la clase que gestiona la conexión con base de datos
+	/**
+	 * Obtiene la clase que gestiona la conexión con base de datos
 	 * 
 	 * @param pDDBBProvider
 	 *           Tipo de base de datos a instanciar
 	 * @return Conexión con la base de datos seleccionar
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	public static Connection getDDBB(DDBBProvider pDDBBProvider) throws Exception
 	{
 		Connection pReturn = null;
@@ -122,5 +126,36 @@ public class DDBBPoolFactory
 			pLog.error("Error al obtener la conexión con la base de datos", ex);
 		}
 		return pReturn;
+	}
+
+	/**
+	 * Encapsula el cierre de objetos d e base de datos abiertos por el código
+	 * 
+	 * @param pLogger
+	 *           Logger de la aplicación
+	 * @param pResultSet
+	 *           Objeto en caso de existir
+	 * @param pPreparedStatement
+	 *           Objeto en caso de existir
+	 * @param pConnection
+	 *           Objeto en caso de existir
+	 */
+	public static void closeDDBBObjects(Logger pLogger, ResultSet pResultSet, PreparedStatement pPreparedStatement,
+			Connection pConnection)
+	{
+		try
+		{
+			if (pResultSet != null)
+				pResultSet.close();
+			if (pPreparedStatement != null)
+				pPreparedStatement.close();
+			if (pConnection != null)
+				pConnection.close();
+		}
+		catch (Exception ex)
+		{
+			if (pLogger != null)
+				pLogger.error("Error al cerrar los objetos de base de datos", ex);
+		}
 	}
 }
