@@ -21,6 +21,7 @@ public class SessionRviaData
 	private String					strIsumServiceId		= "";
 	private String					strLanguage				= "";
 	private String					strNRBE					= "";
+	private String					strCanalAix				= "";
 	private String					strToken					= "";
 
 	public String getNodeRvia()
@@ -61,6 +62,11 @@ public class SessionRviaData
 	public String getNRBE()
 	{
 		return strNRBE;
+	}
+
+	public String getCanalAix()
+	{
+		return strCanalAix;
 	}
 
 	public String getToken()
@@ -128,6 +134,11 @@ public class SessionRviaData
 						if (strValue != null)
 							strNRBE = strValue;
 					}
+					else if ("canalAix".equals(strName))
+					{
+						if (strValue != null)
+							strCanalAix = strValue;
+					}
 				}
 			}
 			else
@@ -140,6 +151,7 @@ public class SessionRviaData
 				strIsumServiceId = request.getParameter("isumServiceId");
 				strLanguage = request.getParameter("lang");
 				strNRBE = request.getParameter("NRBE");
+				strCanalAix = request.getParameter("canalAix");
 			}
 			pCookiesRviaData = request.getCookies();
 			/* se precargan las propiedades de comunicación con RVIA */
@@ -147,25 +159,38 @@ public class SessionRviaData
 		}
 		catch (Exception ex)
 		{
-			throw new SessionException(500, 999999, "Error al obtener datos de sesion desde Ruralvia" , strIsumServiceId, ex);
+			throw new SessionException(500, 999999, "Error al obtener datos de sesion desde Ruralvia", strIsumServiceId, ex);
 		}
 	}
 
-	/** Carga las propiedades de ruralvia 
+	/** Carga las propiedades de ruralvia
+	 * 
 	 * @throws Exception */
 	private void loadProperties() throws Exception
 	{
 		try
 		{
 			if (pAddressRviaProp.isEmpty())
-				pAddressRviaProp.load(this.getClass().getResourceAsStream("/RuralviaAddress.properties"));
-			pLog.debug("Se carga el fichero de resolución de direcciones");
+			{
+				try
+				{
+					pAddressRviaProp.load(this.getClass().getResourceAsStream("/RuralviaAddress.properties"));
+					pLog.debug("Se carga el fichero de resolución de direcciones");
+				}
+				catch (Exception ex)
+				{
+					pLog.error("Fallo al cargar las propiedades de conexión con ruralvia", ex);
+					throw ex;
+				}
+			}
 			/* se obtiene la maquina y puerto en la que existe la sesión del usuario */
+			if (strNodeRvia == null)
+				pLog.error("No se ha podido leer el parámetro nodo de ruralvia, esto va a generar un error al obtener el nodo origen de la petición");
 			pUriRvia = new URI(pAddressRviaProp.getProperty(strNodeRvia));
 		}
 		catch (Exception ex)
 		{
-			pLog.error("Fallo al cargar las propiedades de conexión con ruralvia", ex);
+			pLog.error("Error al obtener los datos de configuración original de la sessión de ruralvia", ex);
 			throw ex;
 		}
 	}

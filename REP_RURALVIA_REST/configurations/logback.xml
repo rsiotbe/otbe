@@ -3,16 +3,15 @@
 	<property name="APP_NAME" value="REP_RURALVIA_REST" />
 	<property name="SERVER_NAME" value="LOCAL" />
 	<property name="LOG_DIRECTORY" value="/tmp/${APP_NAME}/" />
-
 	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
 		<Target>System.out</Target>
-		<encoder class="com.rsi.logback.layout.ExtendedPatternLayoutEncoder">
+		<encoder class="com.rsi.logback.layout.TomcatPatternLayoutEncoder">
 			<pattern>*%d{yyyy-MM-dd HH:mm:ss.SSSS} ${SERVER_NAME}:%-4process_id\t%-5level\t%class{0}:%method\t- %msg%n</pattern>
 		</encoder>
 	</appender>
 	<appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<prudent>true</prudent>
-		<encoder class="com.rsi.logback.layout.ExtendedPatternLayoutEncoder">
+		<encoder class="com.rsi.logback.layout.TomcatPatternLayoutEncoder">
 			<pattern>*%d{yyyy-MM-dd HH:mm:ss.SSSS} ${SERVER_NAME}:%-4process_id\t%-5level\t%class{0}:%method\t- %msg%n</pattern>
 		</encoder>
 		<file>${LOG_DIRECTORY}${APP_NAME}.log</file>

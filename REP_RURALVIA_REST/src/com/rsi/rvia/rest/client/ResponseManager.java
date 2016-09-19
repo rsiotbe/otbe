@@ -20,14 +20,16 @@ public class ResponseManager
 {
 	private static Logger	pLog	= LoggerFactory.getLogger(ResponseManager.class);
 
-	/**
-	 * Procesa una respuesta recibida desde el conector para evaluar si es un error y formatear su contenido
-	 * @param pSessionRviaData Datos de sesión del usuario ruralvia
-	 * @param pRestConnector Conector al origen de datos
-	 * @param pResponseConnector Objeto respuesta obtenida del conector
+	/** Procesa una respuesta recibida desde el conector para evaluar si es un error y formatear su contenido
+	 * 
+	 * @param pSessionRviaData
+	 *           Datos de sesión del usuario ruralvia
+	 * @param pRestConnector
+	 *           Conector al origen de datos
+	 * @param pResponseConnector
+	 *           Objeto respuesta obtenida del conector
 	 * @return
-	 * @throws Exception
-	 */
+	 * @throws Exception */
 	public static String processResponseConnector(SessionRviaData pSessionRviaData, RestConnector pRestConnector,
 			Response pResponseConnector) throws Exception
 	{
@@ -68,13 +70,15 @@ public class ResponseManager
 
 	/** Comprueba si los adtos obtenidos contienen un error lógico y genera a excepción en dicho caso *
 	 * 
-	 * @param pSessionRviaData Datos de sesión del usuario ruralvia
-	 * @param pRestConnector Conector al origen de datos
-	 * @param pResponse Objeto respuesta obtenida del conector
+	 * @param pSessionRviaData
+	 *           Datos de sesión del usuario ruralvia
+	 * @param pRestConnector
+	 *           Conector al origen de datos
+	 * @param pResponse
+	 *           Objeto respuesta obtenida del conector
 	 * @param pJsonData
 	 *           Objeto que contiene la información JSON
-	 * @throws ApplicationException
-	 */
+	 * @throws ApplicationException */
 	private static void checkLogicalError(SessionRviaData pSessionRviaData, RestConnector pRestConnector,
 			Response pResponse, JSONObject pJsonData) throws ApplicationException
 	{
@@ -150,7 +154,6 @@ public class ResponseManager
 	 * @throws Exception */
 	private static JSONObject adjustWSJson(JSONObject pJsonData) throws Exception
 	{
-		String strContent;
 		JSONObject pResponseObject;
 		try
 		{
@@ -161,9 +164,10 @@ public class ResponseManager
 			}
 			if (!strPrimaryKey.trim().isEmpty())
 			{
-				strContent = pJsonData.getJSONObject(strPrimaryKey).getString("Respuesta");
+				JSONObject pJSONObjectAux;
+				pJSONObjectAux = pJsonData.getJSONObject(strPrimaryKey).getJSONObject("Respuesta");
 				pResponseObject = new JSONObject();
-				pResponseObject.append("response", strContent);
+				pResponseObject.put("response", pJSONObjectAux);
 			}
 			else
 				throw new Exception("No se ha encontrado la raiz del json de WS");

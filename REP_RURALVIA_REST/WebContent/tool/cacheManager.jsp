@@ -612,7 +612,12 @@ input:disabled+label {
 				</div>
 			</div>
 			<div class="bloqueBotoneraCenter">
-				<div style="margin-top: -10px;"></div>
+				<div style="margin-top: -10px;">
+					<button id="botonLanzar" class="button" type="button"
+						onclick="refreshCache()">
+						<span id="spanBotonLanzar">Actualizar</span>
+					</button>
+				</div>
 			</div>
 			<div class="bloqueBotoneraRight">
 				<div style="margin-top: -10px;"></div>
@@ -661,6 +666,31 @@ input:disabled+label {
 	</div>
 
 	<script type="text/javascript">
+	
+		function refreshCache(){
+			var strRefresh = "true";
+			var pLoading = '<div class="bola_warning"></div>';
+			var dataGet = {};
+			
+			document.getElementById("cacheTemplate").innerHTML = pLoading;
+			document.getElementById("cacheTranslate").innerHTML = pLoading;
+			document.getElementById("cacheCssMultibank").innerHTML = pLoading;
+			
+			dataGet.refresh = strRefresh;
+			console.log("Refresh: " + strRefresh);
+			var strUrl = '/api/tool/cleanCache.jsp';
+			$.ajax({
+				url : strUrl,
+				data : dataGet,
+				type : 'GET',
+				dataType : 'json',
+				success : refreshData,
+				error : function(xhr, status) {
+					console.log("Error al liberar caches. xhr" + xhr
+							+ " - status: " + status);
+				}
+			});
+		}
 		function freeCache() {
 			var strParams = '';
 			var pLoading = '<div class="bola_warning"></div>';
@@ -692,7 +722,7 @@ input:disabled+label {
 			}
 			dataGet.clean = strParams;
 			console.log("StrParams: " + strParams);
-			var strUrl = 'http://localhost:8080/api/tool/cleanCache.jsp';
+			var strUrl = '/api/tool/cleanCache.jsp';
 			$.ajax({
 				url : strUrl,
 				data : dataGet,

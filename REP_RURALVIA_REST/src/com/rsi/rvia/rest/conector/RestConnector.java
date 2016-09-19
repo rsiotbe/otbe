@@ -45,34 +45,41 @@ public class RestConnector
 		pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
 		pLog.info("Se obtiene la configuración de la base de datos. MiqQuest: " + pMiqQuests);
 		pLog.info("Se recibe una petición con tipo de metodo : " + strMethod);
+		/*
+		 * se comprueba si la infomración asociada a la petición enviada por el cliente viene vacia o nulo se inicializa a
+		 * un json vacio
+		 */
+		if (strData == null || strData.trim().isEmpty())
+			strData = "{}";
 		/* se invoca al tipo de petición leido desde configuracón */
 		switch (strMethod)
 		{
 			case "GET":
 				if ("RVIA".equals(pMiqQuests.getComponentType()))
 				{
-					pLog.trace("Derivando petición a ruralvía");
+					pLog.trace("Derivando petición GET a ruralvía");
 					pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, pSessionRvia, strData);
 				}
 				else
 				{
-					pLog.trace("Solicitando petición REST");
+					pLog.trace("Solicitando petición GET a WS");
 					pReturn = RestWSConnector.get(pRequest, pMiqQuests, strPrimaryPath, pSessionRvia, pPathParams);
 				}
 				break;
 			case "POST":
 				if ("RVIA".equals(pMiqQuests.getComponentType()))
 				{
-					pLog.trace("Derivando petición a ruralvía");
+					pLog.trace("Derivando petición POST a ruralvía");
 					pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, pSessionRvia, strData);
 				}
 				else
 				{
-					pLog.trace("Solicitando petición REST");
+					pLog.trace("Solicitando petición POST a WS");
 					pReturn = RestWSConnector.post(pRequest, strPrimaryPath, pSessionRvia, strData, pMiqQuests, pPathParams);
 				}
 				break;
 			case "PUT":
+				pLog.trace("Solicitando petición PUT a WS");
 				pReturn = RestWSConnector.put(pRequest, strPrimaryPath, pSessionRvia, strData, pMiqQuests, pPathParams);
 				break;
 			case "PATCH":

@@ -18,6 +18,7 @@
 	<property name="classes-directory" value="${build-directory}/classes" />
 	<property name="configurations-directory" value="${base-directory}/configurations" />
 	<property name="dist-directory" value="${base-directory}/dist" />
+	<property name="tomcat-directory" value="/cloud-disk/tomcat/omnicanal/apache-tomcat-7.0.70/lib" />
 	
 	<target name="clean">
 		<echo message="Se procede a eliminar las rutas build y dist" />
@@ -42,15 +43,21 @@
     	<mkdir dir="${classes-directory}"/>
     	<mkdir dir="${dist-directory}" />
 	</target>
-	<path id="compile.classpath">
-    	<fileset dir="${lib-directory}">
-        	<include name="*.jar"/>
-   		 </fileset>
-	</path>	
+	<path id="classpath.runtime">
+		<fileset dir="${tomcat-directory}" includes="**/*.jar" />
+	</path>
+	<path id="classpath.lib">
+		<fileset dir="${lib-directory}" includes="**/*.jar" />
+	</path>
+	<path id="project.classpath">
+		<pathelement location="${classes-directory}" />
+		<path refid="classpath.runtime" />
+		<path refid="classpath.lib" />
+	</path>
 	<target name="compile" depends="init" >
 		<echo message="Se procede a compilar las clases"/>
 	   	<javac destdir="${classes-directory}" debug="true" srcdir="${source-directory}">
-        	<classpath refid="compile.classpath"/>
+			<classpath refid="project.classpath" />
    	 	</javac>
 	</target>
 	<target name="war" depends="compile">
