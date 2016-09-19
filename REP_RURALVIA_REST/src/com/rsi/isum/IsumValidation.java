@@ -14,12 +14,14 @@ public class IsumValidation
 {
 	private static Logger	pLog	= LoggerFactory.getLogger(IsumValidation.class);
 
-	/** Comprueba si el servicio solicitado por el usuario es accesible para el perfil del usuario
+	/**
+	 * Comprueba si el servicio solicitado por el usuario es accesible para el perfil del usuario
 	 * 
 	 * @param pSessionRviaData
 	 *           Datos de sesión de la apliación de ruralvia
 	 * @return Booleano indicando si está disponible el servicio
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	public static boolean IsValidService(SessionRviaData pSessionRviaData) throws Exception
 	{
 		boolean fReturn = false;
@@ -54,19 +56,7 @@ public class IsumValidation
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
 		return fReturn;
 	}
