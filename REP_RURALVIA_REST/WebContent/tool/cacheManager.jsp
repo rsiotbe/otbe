@@ -1,8 +1,8 @@
 <%@page import="com.rsi.rvia.multibank.CssMultiBankProcessor"%>
 <%@page
 	import="com.rsi.rvia.rest.template.TemplateManager,com.rsi.rvia.translates.TranslateProcessor"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html"
+	pageEncoding="UTF-8"%>
 
 <%
 	int nTemplateSize = TemplateManager.getSizeCache();
@@ -14,7 +14,7 @@
 <head>
 
 <title>Cache Manager</title>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Type" content="text/html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta charset="UTF-8" />
 <script
@@ -76,7 +76,7 @@ body {
 }
 
 .button span:after {
-	content: '»';
+	content: 'Â»';
 	position: absolute;
 	opacity: 0;
 	top: 0;

@@ -96,13 +96,13 @@ public class OperationManager
 				pLog.info("La petición utiliza plantilla XHTML");
 				strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
 			}
-			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).build();
+			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).encoding("UTF-8").build();
 		}
 		catch (Exception ex)
 		{
 			pLog.error("Se ha generado un error al procesar la respuesta final", ex);
 			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-			pResponseConnector = Response.serverError().build();
+			pResponseConnector = Response.serverError().encoding("UTF-8").build();
 		}
 		return pResponseConnector;
 	}
@@ -164,13 +164,13 @@ public class OperationManager
 			}
 			pLog.info("La petición utiliza plantilla XHTML");
 			strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
-			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).build();
+			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).encoding("UTF-8").build();
 		}
 		catch (Exception ex)
 		{
 			pLog.error("Se ha generado un error al procesar la respuesta final", ex);
 			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-			pResponseConnector = Response.serverError().build();
+			pResponseConnector = Response.serverError().encoding("UTF-8").build();
 		}
 		return pResponseConnector;
 	}
@@ -250,13 +250,13 @@ public class OperationManager
 				pLog.info("La petición utiliza plantilla XHTML");
 				strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
 			}
-			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).build();
+			pResponseConnector = Response.status(nReturnHttpCode).encoding("UTF-8").entity(strJsonData).build();
 		}
 		catch (Exception ex)
 		{
 			pLog.error("Se ha generado un error al procesar la respuesta final", ex);
 			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-			pResponseConnector = Response.serverError().build();
+			pResponseConnector = Response.serverError().encoding("UTF-8").build();
 		}
 		return pResponseConnector;
 	}

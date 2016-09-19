@@ -8,7 +8,7 @@
 	java.util.Hashtable,
 	org.json.JSONObject,
 	org.jsoup.nodes.Document;"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+<%@ page language="java" contentType="text/html"
 	pageEncoding="UTF-8"%>
 <%
 	Logger pLog = LoggerFactory.getLogger("CleanCache.jsp");
@@ -17,9 +17,9 @@
 	String strResponse = "";
 	String strCleanAll = (String) request.getParameter("clean");
 	String strRefresh = (String) request.getParameter("refresh");
-	pLog.trace("StrCleanAll: " + strCleanAll);
 	String[] pStrPartes;
 	if(strRefresh != null && !strRefresh.trim().isEmpty()){
+		pLog.info("Refrescando página de caches");
 		fCheckStatus = true;
 		JSONObject pJsonTrans = new JSONObject();
 		pJsonTrans.put("clean", fCheckStatus);
@@ -42,10 +42,11 @@
 	}
 	if (strCleanAll != null && !strCleanAll.trim().isEmpty())
 	{
+		pLog.info("Liberando Caches: " + strCleanAll);
 		pStrPartes = strCleanAll.split(",");
 		for (String strItem : pStrPartes)
 		{
-			pLog.trace("strItem: " + strItem);
+			pLog.trace("Libero cache: " + strItem);
 			if ("all".equals(strItem))
 			{
 				try

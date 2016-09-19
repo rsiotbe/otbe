@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -188,7 +189,7 @@ public class Utils
 		String strLine;
 		try
 		{
-			pBufferedReader = new BufferedReader(new InputStreamReader(is));
+			pBufferedReader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 			while ((strLine = pBufferedReader.readLine()) != null)
 			{
 				pStringBuilder.append(strLine).append("\r\n");
