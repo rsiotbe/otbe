@@ -44,10 +44,6 @@
   <a onclick="getCashierClose()" class="waves-effect waves-light btn light-green darken-1">Mas Cercano</a>
 </div>
 <hr>
-<div id="map">
-      <img id="imgMap" src="" style="display:none;"></img>
-
-</div>
 <div id="contenido">
 
 </div>
@@ -82,10 +78,8 @@ function getCashierClose() {
             console.log("Cargando datos en el mapa: ");
             var strReturn = getMap(json,strLatitud,strLongitud);
             console.log("imagen: " + strReturn);
-            $("#imgMap").attr('src',strReturn);
-            $("#imgMap").show(150);
-
-            
+            $('#contenido').html('<img id="imgMap" src="' + strReturn + '" style="display:none"/>');
+            $("#imgMap").show("slow");
       }
 }
 
@@ -104,7 +98,6 @@ function getMap(json,latitud,longitud){
 }
 function getMarker(latitud,longitud) {
       return "&markers=color:green%7Clabel:C%7C" + latitud + ',' + longitud;
-
 }
 function getData() {
       var strCodigoEntidad = $("#codigoEntidad").val();
@@ -136,28 +129,40 @@ function loadData(pJson){
       var strList = addContent(pJson);
 
       $("#contenido").html(strList);
+      $("li").first().show( "fast", function showNext() {
+            $( this ).next( "li" ).show( "fast", showNext );
+       });
 }
 function addContent(json) {
       var strReturn = '';
       strReturn += '<ul class="collection">';
       var listCashier = json.response.ListaCajeros;
-      for (cajero in listCashier ) {
-            console.log(listCashier);
-            strReturn += '<li class="collection-item">';
-            strReturn += '<span class="title">'+ listCashier[cajero].nombreEntidad +'</span>';
-            strReturn += '<p>';
-            strReturn += '<div class="chip">'+ listCashier[cajero].codigoEntidad +'</div><div class="chip">'+ listCashier[cajero].codigoCajeros +'</div>';
-            strReturn += '<div class="chip">'+ listCashier[cajero].direccion +'</div><div class="chip">'+ listCashier[cajero].codigoPostal +'</div>';
-            strReturn += '<div class="chip">'+ listCashier[cajero].indicadorCajero +'</div><div class="chip">'+ listCashier[cajero].indicadorComision +'</div>';
-            strReturn += '<div class="chip">'+ listCashier[cajero].longitud +'</div><div class="chip">'+ listCashier[cajero].latitud +'</div>';
-            strReturn += '<div class="chip">'+ listCashier[cajero].distancia +'</div><div class="chip">'+ listCashier[cajero].nombreLocalidad +'</div>';
-            strReturn += '</p>';
-            strReturn += '<span class="secondary-content">'+ listCashier[cajero].comision +'</span>';
-            strReturn += '</li>';
+      if(Array.isArray(listCashier)){
+            for (cajero in listCashier ) {
+                  strReturn += prepareContent(listCashier[cajero]);
+            }
+      }else{
+            strReturn += prepareContent(listCashier);
       }
-            strReturn += '</ul>';
-            return strReturn;
-      }
+      strReturn += '</ul>';
+      return strReturn;
+}
+
+function prepareContent(object) {
+      var strReturn = "";
+      strReturn += '<li class="collection-item id="itemList" style="display:none;">';
+      strReturn += '<span class="title">'+ object.nombreEntidad +'</span>';
+      strReturn += '<p>';
+      strReturn += '<div class="chip">'+ object.codigoEntidad +'</div><div class="chip">'+ object.codigoCajeros +'</div>';
+      strReturn += '<div class="chip">'+ object.direccion +'</div><div class="chip">'+ object.codigoPostal +'</div>';
+      strReturn += '<div class="chip">'+ object.indicadorCajero +'</div><div class="chip">'+ object.indicadorComision +'</div>';
+      strReturn += '<div class="chip">'+ object.longitud +'</div><div class="chip">'+ object.latitud +'</div>';
+      strReturn += '<div class="chip">'+ object.distancia +'</div><div class="chip">'+ object.nombreLocalidad +'</div>';
+      strReturn += '</p>';
+      strReturn += '<span class="secondary-content">'+ object.comision +'</span>';
+      strReturn += '</li>';
+      return strReturn;
+}
 
 var pJsonOk = '__JSONDATA__';
 
