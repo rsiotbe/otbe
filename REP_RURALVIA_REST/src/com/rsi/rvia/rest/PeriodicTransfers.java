@@ -30,7 +30,7 @@ public class PeriodicTransfers
 	public Response getAllUserPeriodicTransfers(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
 	{
-		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+		Response pReturn = OperationManager.proccesDataFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Se recibe una peticion de listado de transferencias periodicas");
 		return pReturn;
 	}
@@ -44,7 +44,7 @@ public class PeriodicTransfers
 	public Response getAllUserPeriodicTransfersXhtml(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
 	{
-		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);
+		Response pReturn = OperationManager.proccesDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);
 		pLog.info("Se recibe unsa peticion de listado de transferencias periódicas");
 		return pReturn;
 	}

@@ -9,7 +9,6 @@
       <!-- Compiled and minified JavaScript -->
        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
        <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-       <script src="/api/js/manageRequestRviaRest.js"></script>
 </head>
 <body>
 <div id="formulario">
@@ -41,7 +40,7 @@
       </div>
     </div>
   </div>
-  <a onclick="getData()" class="waves-effect waves-light btn light-green accent-3">Enviar</a>
+  <a onclick="getData()" class="waves-effect waves-light btn light-green darken-1">Enviar</a>
 
 </div>
 <hr>
@@ -57,7 +56,6 @@ function getData() {
       var strLatitud =  $("#latitud").val();
       var strRadio = $("#radio").val();
 
-      var strQueryParams = '?codigoEntidad=' + strCodigoEntidad + "&longitud=" + strLongitud + "&latitud=" + strLatitud + "&radio=" + strRadio;
       console.log("Codigo Entidad: " + strCodigoEntidad);
       var dataGet = {};
       dataGet.codigoEntidad = strCodigoEntidad;
@@ -65,7 +63,7 @@ function getData() {
       dataGet.latitud = strLatitud;
       dataGet.radio = strRadio;
       $.ajax({
-            url : '/api/rest/cashierLocatior/getjson' + strQueryParams,
+            url : '/api/rest/cashierLocatior',
             data : dataGet,
             type : 'GET',
             dataType : 'json',
@@ -103,14 +101,7 @@ function addContent(json) {
             return strReturn;
       }
 
-$(document).ready(function(){
-      
-      
-      var pJson = '__JSONDATA__';
-
-      var strList = addContent(pJson);
-      $("#contenido").html(strList);
-});
+var pJsonOk = '__JSONDATA__';
 
  
 </script>

@@ -16,7 +16,7 @@ import com.rsi.rvia.rest.client.OperationManager;
 @Path("/cashierLocatior")
 public class CashierLocatior
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(Cards.class);
+	private static Logger pLog = LoggerFactory.getLogger(Cards.class);
 
 	@GET
 	@Produces(MediaType.TEXT_HTML)
@@ -25,7 +25,7 @@ public class CashierLocatior
 	{
 		pLog.info("Se recibe una peticion de cashierLocatior");
 		String strData = "";
-		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);
+		Response pReturn = OperationManager.processTemplateFromRvia(pRequest, pUriInfo, strData);
 		return pReturn;
 	}
 
@@ -36,7 +36,7 @@ public class CashierLocatior
 	{
 		pLog.info("Se recibe una peticion de cashierLocatior");
 		String strData = "";
-		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+		Response pReturn = OperationManager.proccesDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
 		return pReturn;
 	}
 }

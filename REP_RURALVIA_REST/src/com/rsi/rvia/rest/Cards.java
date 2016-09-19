@@ -30,7 +30,7 @@ public class Cards
 	@Produces(MediaType.TEXT_HTML)
 	public Response getAllUserCards(@Context HttpServletRequest pRequest,@Context UriInfo pUriInfo, String strData) throws Exception
 	{
-		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);
+		Response pReturn = OperationManager.proccesDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);
 		return pReturn;
 	}
 	
@@ -39,7 +39,7 @@ public class Cards
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response getCard(@Context HttpServletRequest pRequest,@Context UriInfo pUriInfo, String strData) throws Exception
 	{
-		Response pReturn = OperationManager.proccesFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
+		Response pReturn = OperationManager.proccesDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
 		return pReturn;
 	}
 	

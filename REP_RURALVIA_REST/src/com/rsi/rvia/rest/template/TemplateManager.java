@@ -145,6 +145,8 @@ public class TemplateManager
 	 */
 	private static String includeJsonData(String strReturn, String strJsonData)
 	{
+		if (strJsonData == null || strJsonData.trim().isEmpty())
+			strJsonData = "{}";
 		return strReturn.replace(JSON_DATA_TAG, strJsonData);
 	}
 

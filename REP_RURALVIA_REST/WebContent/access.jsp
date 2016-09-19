@@ -16,8 +16,14 @@
 <%
 	MiqQuests pMiqQuests = null;
 	String strPathRest = null;
+	int nMiqQuestId = 0;
 	String strIdMiq = request.getParameter("id");
-	int nMiqQuestId = Integer.parseInt(strIdMiq);
+	try{
+		nMiqQuestId = Integer.parseInt(strIdMiq);
+	}catch(Exception ex){
+		
+	}
+	
 	String strType = request.getParameter("type");
 	String strToken = request.getParameter("token");
 	if(strType == null){
