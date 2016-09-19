@@ -45,7 +45,7 @@
 </div>
 <hr>
 <div id="map">
-      
+      <img id="imgMap" src="" style="display:none;"></img>
 
 </div>
 <div id="contenido">
@@ -55,10 +55,11 @@
 <script type="text/javascript">
 
 function getCashierClose() {
+      console.log("Entrando en getCashierClose");
       var strLatitud = '40.5991253';
       var strLongitud = '-3.7030169';
       var strCodigoEntidad = '3016';
-      var strRadio = '5';
+      var strRadio = '20';
 
       var dataGet = {};
       dataGet.codigoEntidad = strCodigoEntidad;
@@ -71,28 +72,35 @@ function getCashierClose() {
             data : dataGet,
             type : 'GET',
             dataType : 'json',
-            success : loadDataMap(respuesta, strLatitud, strLongitud),
+            success : loadDataMap,
             error : function(xhr, status) {
                   console.log("Error al procesar la llamada ajax. xhr" + xhr + " - status: " + status);
             }
       });
+
+      function loadDataMap(json){
+            console.log("Cargando datos en el mapa: ");
+            var strReturn = getMap(json,strLatitud,strLongitud);
+            console.log("imagen: " + strReturn);
+            $("#imgMap").attr('src',strReturn);
+            $("#imgMap").show(150);
+
+            
+      }
 }
 
-function loadDataMap(json,latitud,longitud){
-      var strReturn = getMap(json,latitud,longitud);
 
-      $("#map").load(strReturn);
-}
 function getMap(json,latitud,longitud){
+      var APIkey = "&key=AIzaSyCShs_SweSfuTGvp6H068K0EUGKcy-4D7s";
       var urlBase = "http://maps.googleapis.com/maps/api/staticmap?center=";
-      var urlConfig = "&zoom=14&size=400x300&sensor=false";
+      var urlConfig = "&zoom=10&size=800x600&sensor=false";
       var listCashier = json.response.ListaCajeros;
       var strMarkers = "";
       for (cajero in listCashier) {
             strMarkers += getMarker(listCashier[cajero].latitud,listCashier[cajero].longitud);
       }
-      var imgUrl = urlBase + urlConfig + strMarkers;
-      return "<img src='" + imgUrl + "'>";
+      var imgUrl = urlBase + latitud + "," + longitud + urlConfig + strMarkers + APIkey;
+      return  imgUrl;
 }
 function getMarker(latitud,longitud) {
       return "&markers=color:green%7Clabel:C%7C" + latitud + ',' + longitud;
@@ -123,16 +131,18 @@ function getData() {
       console.log("Llamada ajax normal terminada.");
 }
 
-function loadData(json){
+function loadData(pJson){
+      console.log('Datos recuperados correctamente.');
       var strList = addContent(pJson);
-      $("#contenido").load(strList);
+
+      $("#contenido").html(strList);
 }
 function addContent(json) {
       var strReturn = '';
       strReturn += '<ul class="collection">';
       var listCashier = json.response.ListaCajeros;
       for (cajero in listCashier ) {
-            console.log(listCashier[cajero]);
+            console.log(listCashier);
             strReturn += '<li class="collection-item">';
             strReturn += '<span class="title">'+ listCashier[cajero].nombreEntidad +'</span>';
             strReturn += '<p>';
