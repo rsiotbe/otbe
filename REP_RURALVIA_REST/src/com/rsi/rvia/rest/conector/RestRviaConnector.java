@@ -33,9 +33,10 @@ import com.rsi.rvia.rest.session.SessionRviaData;
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
 public class RestRviaConnector
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(RestRviaConnector.class);
+	private static Logger pLog = LoggerFactory.getLogger(RestRviaConnector.class);
 
-	/** Realiza la comunicación con RUralvia para obtener los datos necesarios de la operación
+	/**
+	 * Realiza la comunicación con RUralvia para obtener los datos necesarios de la operación
 	 * 
 	 * @param pRequest
 	 *           petición del cliente
@@ -46,7 +47,8 @@ public class RestRviaConnector
 	 * @param strData
 	 *           datos a enviar al proveedor
 	 * @return Respuesta del proveedor de datos
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	public static Response doConnection(HttpServletRequest pRequest, MiqQuests pMiqQuests, SessionRviaData pSessionRvia,
 			String strData) throws RestConnectorException
 	{
@@ -128,13 +130,15 @@ public class RestRviaConnector
 		}
 	}
 
-	/** Guarda los parámetros necesarios, si todavia no lo están, para una invoación a ruralvia en base de datos
+	/**
+	 * Guarda los parámetros necesarios, si todavia no lo están, para una invoación a ruralvia en base de datos
 	 * 
 	 * @param nIdMiq
 	 *           Identificador de operativa interno
 	 * @param aParamNames
 	 *           Array con los nombres de parámetros
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	private static synchronized void saveDDBBSenssionVarNames(int nIdMiq, Vector<String> aParamNames) throws Exception
 	{
 		for (int i = 0; i < aParamNames.size(); i++)
@@ -147,7 +151,9 @@ public class RestRviaConnector
 				/* si no existe la relación se procede a crarla */
 				if (!fExistConfig)
 				{
-					/* si el parámetro no existe, se comprueba si está definido como parámetro de culaquier otra opertativa */
+					/*
+					 * si el parámetro no existe, se comprueba si está definido como parámetro de culaquier otra opertativa
+					 */
 					Integer nIdMiqParam = existParamInDDBB(strParamName);
 					if (nIdMiqParam == null)
 					{
@@ -162,13 +168,15 @@ public class RestRviaConnector
 		}
 	}
 
-	/** Compreuab si un paramétro ya está realacionado con una operativa
+	/**
+	 * Compreuab si un paramétro ya está realacionado con una operativa
 	 * 
 	 * @param nIdMiq
 	 *           identificador de eoperativa
 	 * @param strParamName
 	 *           nombre del parámetro
-	 * @return Id del parametro en caso de existir */
+	 * @return Id del parametro en caso de existir
+	 */
 	private static boolean existConfigInDDBB(int nIdMiq, String strParamName)
 	{
 		Connection pConnection = null;
@@ -219,11 +227,13 @@ public class RestRviaConnector
 		return fReturn;
 	}
 
-	/** Comprueba si el parámetro existe ya dado de alta en las tablas de MiqQuest
+	/**
+	 * Comprueba si el parámetro existe ya dado de alta en las tablas de MiqQuest
 	 * 
 	 * @param strParamName
 	 *           Nombre del parámetro
-	 * @return Identificador del parámetro */
+	 * @return Identificador del parámetro
+	 */
 	private static Integer existParamInDDBB(String strParamName)
 	{
 		Connection pConnection = null;
@@ -265,9 +275,11 @@ public class RestRviaConnector
 		return nReturn;
 	}
 
-	/** Obtiene el siguiente id libre en la tabla de configuración de parámetros MiqQuest
+	/**
+	 * Obtiene el siguiente id libre en la tabla de configuración de parámetros MiqQuest
 	 * 
-	 * @return Identificador a utilizar */
+	 * @return Identificador a utilizar
+	 */
 	private static Integer getNextParamId()
 	{
 		Connection pConnection = null;
@@ -308,10 +320,12 @@ public class RestRviaConnector
 		return nReturn;
 	}
 
-	/** Se crear un nuevo registro de parámetros de tipo MiqQuest
+	/**
+	 * Se crear un nuevo registro de parámetros de tipo MiqQuest
 	 * 
 	 * @param nIdMiqParam
-	 * @param strParamName */
+	 * @param strParamName
+	 */
 	private static void insertNewParam(int nIdMiqParam, String strParamName)
 	{
 		Connection pConnection = null;
@@ -345,12 +359,14 @@ public class RestRviaConnector
 		}
 	}
 
-	/** Se crear un nuevo registro de relación parámetro - operativa de tipo MiqQuest
+	/**
+	 * Se crear un nuevo registro de relación parámetro - operativa de tipo MiqQuest
 	 * 
 	 * @param nIdMiqParam
 	 *           Identificador de la operativa MiqQuest
 	 * @param strParamName
-	 *           Nombre del parámetro */
+	 *           Nombre del parámetro
+	 */
 	private static void createRelationParamAndOperation(int nIdMiqParam, String strParamName)
 	{
 		Connection pConnection = null;
@@ -385,11 +401,13 @@ public class RestRviaConnector
 		}
 	}
 
-	/** Comprueba si el texto recibido es una pagina de error generada por ruralvia *
+	/**
+	 * Comprueba si el texto recibido es una pagina de error generada por ruralvia *
 	 * 
 	 * @param strHtml
 	 *           Datos recibidos (html)
-	 * @return */
+	 * @return
+	 */
 	public static boolean isRuralviaWebError(String strHtml)
 	{
 		boolean fReturn = false;
@@ -407,11 +425,13 @@ public class RestRviaConnector
 		return fReturn;
 	}
 
-	/** Comprueba si el texto recibido es una pagina de cierre de sesión  generada por ruralvia *
+	/**
+	 * Comprueba si el texto recibido es una pagina de cierre de sesión generada por ruralvia *
 	 * 
 	 * @param strHtml
 	 *           Datos recibidos (html)
-	 * @return */
+	 * @return
+	 */
 	public static boolean isRuralviaSessionTimeoutError(String strHtml)
 	{
 		boolean fReturn = false;
@@ -429,12 +449,14 @@ public class RestRviaConnector
 		return fReturn;
 	}
 
-	/** Genera una exceción de tipo logico a partir de los datos que devuelve ruralvia en la pagina de error
+	/**
+	 * Genera una exceción de tipo logico a partir de los datos que devuelve ruralvia en la pagina de error
 	 * 
 	 * @param strHtml
 	 *           Pagina de error de ruralvia
 	 * @return Excepción de tipo logico con los datos del esrror
-	 * @throws JSONException */
+	 * @throws JSONException
+	 */
 	public static LogicalErrorException generateLogicalErrorException(String strHtml) throws JSONException
 	{
 		LogicalErrorException pReturn;
@@ -471,12 +493,13 @@ public class RestRviaConnector
 		return pReturn;
 	}
 
-
-	/** Comprueba si el contenido del JSON es un error generado por ruralvia WS
+	/**
+	 * Comprueba si el contenido del JSON es un error generado por ruralvia WS
 	 * 
 	 * @param pJsonData
 	 *           Objeto que contiene la información JSON
-	 * @return */
+	 * @return
+	 */
 	public static boolean isRVIAError(JSONObject pJsonData)
 	{
 		boolean fReturn = false;
@@ -493,18 +516,19 @@ public class RestRviaConnector
 		}
 		return fReturn;
 	}
-	
 
-	/** @param pSessionRviaData
+	/**
+	 * @param pSessionRviaData
 	 *           Datos de sesión del usuario en ruralvia
 	 * @param pRestConnector
 	 *           Conector al origen de los datos
 	 * @param pJsonData
 	 *           Objeto que contiene la información JSON
 	 * @return Indica si se ha llegado ha lanzar una excepción de error
-	 * @throws LogicalErrorException */
-	public static boolean throwRVIAError(SessionRviaData pSessionRviaData, RestConnector pRestConnector,
-			JSONObject pJsonData) throws LogicalErrorException
+	 * @throws LogicalErrorException
+	 */
+	public static boolean throwRVIAError(SessionRviaData pSessionRviaData, MiqQuests pMiqQuests, JSONObject pJsonData)
+			throws LogicalErrorException
 	{
 		boolean fReturn = false;
 		String strInnerCode;
@@ -518,7 +542,7 @@ public class RestRviaConnector
 			strInnerCode = pJsonData.getString("CODERRR");
 			nCode = Integer.parseInt(strInnerCode);
 			strDescription = pJsonData.getString("TXTERRR");
-			strMessage = ErrorManager.getFriendlyErrorFromRuralvia(strInnerCode, pSessionRviaData, pRestConnector);
+			strMessage = ErrorManager.getFriendlyErrorFromRuralvia(strInnerCode, pSessionRviaData, pMiqQuests);
 			fProcessed = true;
 		}
 		catch (Exception ex)

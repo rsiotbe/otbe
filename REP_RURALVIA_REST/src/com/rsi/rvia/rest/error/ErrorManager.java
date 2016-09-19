@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
-import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
+import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.session.SessionRviaData;
 
 public class ErrorManager
@@ -36,7 +36,8 @@ public class ErrorManager
 		return pReturn;
 	}
 
-	/** Recupera el mensaje amigable que contiene ruralvia del codigo de error generado
+	/**
+	 * Recupera el mensaje amigable que contiene ruralvia del codigo de error generado
 	 * 
 	 * @param strErrorCode
 	 *           Codigo de error
@@ -45,9 +46,10 @@ public class ErrorManager
 	 * @param pRestConnector
 	 *           Objeto que contiene la información de la petición realizada, se utilzia para obtener el clave página
 	 * @return Texto de error ya traducido
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	public static String getFriendlyErrorFromRuralvia(String strErrorCode, SessionRviaData pSessionRviaData,
-			RestConnector pRestConnector) throws Exception
+			MiqQuests pMiqQuests) throws Exception
 	{
 		Connection pConnection = null;
 		PreparedStatement pPreparedStatement = null;
@@ -61,7 +63,7 @@ public class ErrorManager
 			/* se hace una consulta a la tabla especifa de errores por clave página */
 			String strQuery = "SELECT * FROM BDPTB090_ERRORES where CODERR = ? and IDIOMAERR = ? and CLAVE_PAGINA = ?";
 			strLanguage = pSessionRviaData.getLanguage();
-			strClavepagina = pRestConnector.getMiqQuests().getEndPoint();
+			strClavepagina = pMiqQuests.getEndPoint();
 			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
 			pPreparedStatement.setInt(1, Integer.parseInt(strErrorCode));
@@ -102,7 +104,7 @@ public class ErrorManager
 				/* se hace una consulta a la tabla especifa de errores por clave página */
 				String strQuery = "SELECT * FROM BELTS105 where CODERR = ? and IDIOMAERR = ?";
 				strLanguage = pSessionRviaData.getLanguage();
-				strClavepagina = pRestConnector.getMiqQuests().getEndPoint();
+				strClavepagina = pMiqQuests.getEndPoint();
 				pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 				pPreparedStatement = pConnection.prepareStatement(strQuery);
 				pPreparedStatement.setInt(1, Integer.parseInt(strErrorCode));

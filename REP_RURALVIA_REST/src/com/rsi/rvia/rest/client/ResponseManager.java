@@ -11,6 +11,7 @@ import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.conector.RestRviaConnector;
 import com.rsi.rvia.rest.conector.RestWSConnector;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
+import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.session.SessionRviaData;
 
 /**
@@ -20,7 +21,7 @@ import com.rsi.rvia.rest.session.SessionRviaData;
  */
 public class ResponseManager
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(ResponseManager.class);
+	private static Logger pLog = LoggerFactory.getLogger(ResponseManager.class);
 
 	/**
 	 * Procesa una respuesta recibida desde el conector para evaluar si es un error y formatear su contenido
@@ -35,7 +36,7 @@ public class ResponseManager
 	 * @throws Exception
 	 */
 	public static String processResponseConnector(SessionRviaData pSessionRviaData, RestConnector pRestConnector,
-			Response pResponseConnector, int nIdMiq) throws Exception
+			Response pResponseConnector, int nIdMiq, MiqQuests pMiqQuests) throws Exception
 	{
 		String strJsonData;
 		strJsonData = pResponseConnector.readEntity(String.class);
@@ -66,7 +67,7 @@ public class ResponseManager
 		/* se crea el objeto JSON para ser manejado */
 		pJsonData = new JSONObject(strJsonData);
 		/* se compreuba si el json contiene un error, si es así se genera una excepción lógica */
-		checkLogicalError(pSessionRviaData, pRestConnector, pResponseConnector, pJsonData);
+		checkLogicalError(pSessionRviaData, pMiqQuests, pResponseConnector, pJsonData);
 		/* se formatea la respuesta para estandarizarla y eliminar información que el usuario final no necesita */
 		pJsonData = formatResponse(pJsonData, nIdMiq, pRestConnector);
 		return pJsonData.toString();
@@ -85,8 +86,8 @@ public class ResponseManager
 	 *           Objeto que contiene la información JSON
 	 * @throws ApplicationException
 	 */
-	private static void checkLogicalError(SessionRviaData pSessionRviaData, RestConnector pRestConnector,
-			Response pResponse, JSONObject pJsonData) throws ApplicationException
+	private static void checkLogicalError(SessionRviaData pSessionRviaData, MiqQuests pMiqQuests, Response pResponse,
+			JSONObject pJsonData) throws ApplicationException
 	{
 		Integer nHttpErrorCode = null;
 		/* se comprueba si la respuesta tiene un codigo http de error para utilizarlo */
@@ -104,7 +105,7 @@ public class ResponseManager
 		else if (RestRviaConnector.isRVIAError(pJsonData))
 		{
 			/* se lanza la excepción de tipo lócigo, en caso de no lanzarse se genera una exceción de tipo general */
-			if (!RestRviaConnector.throwRVIAError(pSessionRviaData, pRestConnector, pJsonData))
+			if (!RestRviaConnector.throwRVIAError(pSessionRviaData, pMiqQuests, pJsonData))
 				throw new ApplicationException(500, 999999, "Error al procesar la información", "Error al acceder al contenido de un error de tipo ws", null);
 		}
 		/* si la ejecución ha llegado aqui es que todo parece correcto, se continua */
