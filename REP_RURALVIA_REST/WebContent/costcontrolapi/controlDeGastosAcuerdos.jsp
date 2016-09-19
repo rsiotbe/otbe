@@ -13,6 +13,10 @@
 "
 %>
 <%
+	String linea="";
+	if(request.getParameter("codLinea") != null){
+		linea=" AND t1.COD_LINEA = '" + request.getParameter("codLinea") + "'";
+	}
 	String q =
 		" SELECT" +   
 		" 	t1.NUM_SEC_AC \"acuerdo\", trim(t2.NOMB_GRP_PD) \"nombreGrupo\"," +
@@ -31,7 +35,7 @@
 		" 		AND t1.cod_nrbe_en = t3.cod_nrbe_en" +
 		" 		and t3.mi_fecha_fin = t2.mi_fecha_fin" +
 		" WHERE  t1.MI_FECHA_FIN = to_date('31.12.9999','dd.mm.yyyy')" +
-		" 	AND t1.COD_NRBE_EN =?" +
+		" 	AND t1.COD_NRBE_EN =?" + linea +
 		" 	AND t1.COD_RL_PERS_AC = '01'" +
 		" 	AND t1.NUM_RL_ORDEN = 1" +
 		" 	AND t1.COD_ECV_PERS_AC = '2'" +
