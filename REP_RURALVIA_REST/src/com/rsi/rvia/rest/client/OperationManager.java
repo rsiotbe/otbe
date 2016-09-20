@@ -120,11 +120,10 @@ public class OperationManager
 	 *           Tipo de mediatype que debe cumplir la petición
 	 * @return Objeto respuesta de Jersey
 	 */
-	public static Response processTemplateFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String strData)
+	public static Response processTemplateFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String strJsonData)
 	{
 		MiqQuests pMiqQuests;
 		ErrorResponse pErrorCaptured = null;
-		String strJsonData = "";
 		int nReturnHttpCode = 200;
 		String strTemplate = "";
 		Response pResponseConnector;
