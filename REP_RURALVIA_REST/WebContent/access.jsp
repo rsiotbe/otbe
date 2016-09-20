@@ -16,6 +16,7 @@
 <%
 	MiqQuests pMiqQuests = null;
 	String strPathRest = null;
+	String strError = "";
 	int nMiqQuestId = 0;
 	String strIdMiq = request.getParameter("idMiq");
 	try{
@@ -33,7 +34,9 @@
 		pMiqQuests = MiqQuests.getMiqQuests(nMiqQuestId);
 		strPathRest = pMiqQuests.getPathRest();
 	}else{
-		strPathRest = "Path Error";
+		strError = "1111";
+		
+		strPathRest = "/rviaerror";
 	}
 	URL resource = getClass().getResource("/");
 	String pathApp = resource.getPath();
@@ -58,7 +61,7 @@
     	document.write(data.responseText);
     }
   }); --%>
-  $('<form action="' + appPath + '" type="' + method + '"><input type="hidden" name="token" value="' + token + '"></form>').appendTo('body').submit();
+  $('<form action="' + appPath + '" type="' + method + '"><input type="hidden" name="token" value="' + token + '"><input type="hidden" name="errorCode" value="<%=strError%>"></form>').appendTo('body').submit();
 
 </script>
 </body>
