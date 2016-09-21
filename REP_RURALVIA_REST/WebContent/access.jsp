@@ -2,7 +2,8 @@
     pageEncoding="UTF-8"
     import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
     		com.rsi.rvia.rest.operation.MiqQuests,
-		 	java.sql.Connection, java.net.URL"
+		 	java.sql.Connection, java.net.URL,
+		 	org.slf4j.Logger,org.slf4j.LoggerFactory"
     %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -14,6 +15,7 @@
 <script type="text/javascript" src="http://cdn.jsdelivr.net/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js"></script>
 </head>
 <%
+	Logger pLog = LoggerFactory.getLogger("Access.jsp");
 	MiqQuests pMiqQuests = null;
 	String strPathRest = null;
 	String strError = "";
@@ -22,7 +24,7 @@
 	try{
 		nMiqQuestId = Integer.parseInt(strIdMiq);
 	}catch(Exception ex){
-		
+		pLog.error("Imposible convertir strIdMiq a Integer, valor de strIdMiq: " + strIdMiq);
 	}
 	
 	String strType = request.getParameter("type");
@@ -30,12 +32,14 @@
 	if(strType == null){
 		strType = "GET";
 	}
+	pLog.trace("IdMiq: " + strIdMiq);
+	pLog.trace("Type: " + strType);
+	pLog.trace("Token: " + strToken);
 	if(strIdMiq != null){
 		pMiqQuests = MiqQuests.getMiqQuests(nMiqQuestId);
 		strPathRest = pMiqQuests.getPathRest();
 	}else{
 		strError = "1111";
-		
 		strPathRest = "/rviaerror";
 	}
 	URL resource = getClass().getResource("/");
