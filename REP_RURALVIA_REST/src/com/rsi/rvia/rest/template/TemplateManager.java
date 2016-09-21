@@ -73,10 +73,11 @@ public class TemplateManager
 		try
 		{
 			String strCacheKey = strPathToTemplate;
+			/* en función del canalAix de la petición se obtiene la plantilla adecuada */
+			strPathToTemplate = adjustTemplateNameByChannel(strPathToTemplate, pSessionRviaData);
 			if (pSessionRviaData != null)
 				strCacheKey = strPathToTemplate + "_" + pSessionRviaData.getLanguage();
-			else
-				pLog.debug("strCacheKey:" + strCacheKey);
+			pLog.debug("strCacheKey:" + strCacheKey);
 			if (htCacheTemplate.containsKey(strCacheKey))
 			{
 				pLog.info("Template cacheado, recuperandolo...");
@@ -193,5 +194,49 @@ public class TemplateManager
 	private static Document adjustCssMultiBank(Document pDocument, SessionRviaData pSessionRviaData) throws Exception
 	{
 		return CssMultiBankProcessor.processXHTML(pDocument, pSessionRviaData);
+	}
+
+	/**
+	 * Obtiene el nombre de la plantilla adecuado al canal que solicita la página
+	 * 
+	 * @param strPathToTemplate
+	 *           Nombre de la plantilla
+	 * @param pSessionRviaData
+	 *           Datos de sesión de ruralvia para el usuario
+	 * @return
+	 * @throws Exception
+	 */
+	private static String adjustTemplateNameByChannel(String strPathToTemplate, SessionRviaData pSessionRviaData)
+	{
+		String strReturn = null;
+		if (pSessionRviaData != null)
+		{
+			switch (pSessionRviaData.getCanalAix())
+			{
+				case BancaMóvil:
+				case BancaTablet:
+				case BancaTabletCAU:
+					int nLastDot = strPathToTemplate.lastIndexOf('.');
+					if (nLastDot != -1)
+						strReturn = strPathToTemplate.substring(0, nLastDot) + "_movil"
+								+ strPathToTemplate.substring(nLastDot);
+					else
+						strReturn = strPathToTemplate + "_movil";
+					break;
+				case ValoresBancaInternet:
+				case ValoresBancaTelefónica:
+				case BancaInternet:
+				case BancaTelefonica:
+				case Abogados:
+				case AbogadosTelefonica:
+				case Oficina:
+				case Seguros:
+				case TPVVirtual:
+				case TPVVirtualTelefonica:
+				default:
+					break;
+			}
+		}
+		return strReturn;
 	}
 }

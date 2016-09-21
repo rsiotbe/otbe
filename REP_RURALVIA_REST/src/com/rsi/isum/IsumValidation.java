@@ -30,7 +30,7 @@ public class IsumValidation
 		ResultSet pResultSet = null;
 		try
 		{
-			String strQuery = "select sp.* " + "from ISUM.SERVICES s, ISUM.SERVICES_PROFILES sp, ISUM.PROFILES p "
+			String strQuery = "select sp.* from ISUM.SERVICES s, ISUM.SERVICES_PROFILES sp, ISUM.PROFILES p "
 					+ "where s.ser_id = sp.ser_id and p.prf_id = sp.prf_id "
 					+ "and p.prf_code = ? and s.ser_code = ? and sp.SPR_PRF_STATUS='A'";
 			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);

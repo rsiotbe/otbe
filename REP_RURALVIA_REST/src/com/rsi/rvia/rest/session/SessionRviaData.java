@@ -21,8 +21,29 @@ public class SessionRviaData
 	private String					strIsumServiceId		= "";
 	private String					strLanguage				= "";
 	private String					strNRBE					= "";
-	private String					strCanalAix				= "";
 	private String					strToken					= "";
+	private CanalAix				pCanalAix				= CanalAix.BancaInternet;
+
+	/**
+	 * Enumeración de canal aix recibido desde ruralvia
+	 */
+	public enum CanalAix
+	{
+		ValoresBancaInternet(1), ValoresBancaTelefónica(2), BancaInternet(3), BancaTelefonica(4), Abogados(5), AbogadosTelefonica(
+				6), TPVVirtual(7), Seguros(8), Oficina(9), TPVVirtualTelefonica(10), BancaMóvil(11), BancaTablet(13), BancaTabletCAU(
+				14);
+		private final int	value;
+
+		CanalAix(int newValue)
+		{
+			value = newValue;
+		}
+
+		public int getValue()
+		{
+			return value;
+		}
+	}
 
 	public String getNodeRvia()
 	{
@@ -64,9 +85,9 @@ public class SessionRviaData
 		return strNRBE;
 	}
 
-	public String getCanalAix()
+	public CanalAix getCanalAix()
 	{
-		return strCanalAix;
+		return pCanalAix;
 	}
 
 	public String getToken()
@@ -74,6 +95,13 @@ public class SessionRviaData
 		return strToken;
 	}
 
+	/**
+	 * Constructor de la clase
+	 * 
+	 * @param request
+	 *           Objeto request recibido
+	 * @throws Exception
+	 */
 	public SessionRviaData(HttpServletRequest request) throws Exception
 	{
 		try
@@ -137,7 +165,10 @@ public class SessionRviaData
 					else if ("canalAix".equals(strName))
 					{
 						if (strValue != null)
-							strCanalAix = strValue;
+						{
+							/* se buscan en todas los posibles valores de la enumeración */
+							pCanalAix = obtainCanalAixFromStringValue(strValue);
+						}
 					}
 				}
 			}
@@ -151,7 +182,7 @@ public class SessionRviaData
 				strIsumServiceId = request.getParameter("isumServiceId");
 				strLanguage = request.getParameter("lang");
 				strNRBE = request.getParameter("NRBE");
-				strCanalAix = request.getParameter("canalAix");
+				pCanalAix = obtainCanalAixFromStringValue(request.getParameter("canalAix"));
 			}
 			pCookiesRviaData = request.getCookies();
 			/* se precargan las propiedades de comunicación con RVIA */
@@ -163,8 +194,11 @@ public class SessionRviaData
 		}
 	}
 
-	/** Carga las propiedades de ruralvia 
-	 * @throws Exception */
+	/**
+	 * Carga las propiedades de ruralvia
+	 * 
+	 * @throws Exception
+	 */
 	private void loadProperties() throws Exception
 	{
 		try
@@ -192,6 +226,34 @@ public class SessionRviaData
 			pLog.error("Error al obtener los datos de configuración original de la sessión de ruralvia", ex);
 			throw ex;
 		}
+	}
+
+	/**
+	 * Obtiene el valor de enumeración correspondiente al valor pasado
+	 * 
+	 * @param strValue
+	 *           Valor a buscar su representación en la enumeración
+	 * @return Valor de la enumeración
+	 */
+	private CanalAix obtainCanalAixFromStringValue(String strValue)
+	{
+		/* por defecto se considera canal WEB */
+		CanalAix pReturn = CanalAix.BancaInternet;
+		if (strValue != null && !strValue.trim().isEmpty())
+		{
+			/* se buscan en todas los posibles valores de la enumeración */
+			int nValue = Integer.parseInt(strValue);
+			for (CanalAix pCanal : CanalAix.values())
+			{
+				/* si encuentra la enumaración que me indica el valor recibido */
+				if (pCanal.getValue() == nValue)
+				{
+					pReturn = pCanal;
+					break;
+				}
+			}
+		}
+		return pReturn;
 	}
 
 	/*
