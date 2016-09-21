@@ -3,6 +3,7 @@
 	import="com.rsi.rvia.rest.template.TemplateManager,
 	com.rsi.rvia.translates.TranslateProcessor,
 	com.rsi.rvia.translates.TranslateEntry,
+	com.rsi.rvia.multibank.CssMultiBankProcessor,
 	javax.servlet.http.HttpServletRequest,
 	org.slf4j.Logger,org.slf4j.LoggerFactory,
 	java.util.Hashtable,
