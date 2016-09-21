@@ -81,20 +81,7 @@ public class ErrorManager
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("error al cerrar la conexión a base de datos", ex);
-				throw ex;
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
 		/* si no se ha encontrado el mensaje personalizado por clave página se intenta como genérico */
 		if (strReturn == null)
@@ -121,20 +108,7 @@ public class ErrorManager
 			}
 			finally
 			{
-				try
-				{
-					if (pResultSet != null)
-						pResultSet.close();
-					if (pPreparedStatement != null)
-						pPreparedStatement.close();
-					if (pConnection != null)
-						pConnection.close();
-				}
-				catch (Exception ex)
-				{
-					pLog.error("error al cerrar la conexión a base de datos", ex);
-					throw ex;
-				}
+				DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 			}
 		}
 		return strReturn;

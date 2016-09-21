@@ -1,32 +1,22 @@
 package com.rsi.rvia.rest.client;
 
-import java.net.*;
-import java.io.*;
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
-import com.rsi.rvia.rest.client.RviaRestHttpClient;
 
 /*
  * 1.- Con el objeto request, tomamos el path y el verbo, y extraemos los inputs 2.- Revisamos los parámetros de entrada
@@ -60,7 +50,6 @@ public class MicroQResolver
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
 			pPreparedStatement.setString(1, strPath);
 			pResultSet = pPreparedStatement.executeQuery();
-			
 			while (pResultSet.next())
 			{
 				strComponentType = pResultSet.getString("componet_type");
@@ -74,21 +63,8 @@ public class MicroQResolver
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
-		
 		return pReturn;
 	}
 

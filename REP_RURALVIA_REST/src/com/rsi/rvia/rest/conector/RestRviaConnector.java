@@ -33,7 +33,7 @@ import com.rsi.rvia.rest.session.SessionRviaData;
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
 public class RestRviaConnector
 {
-	private static Logger pLog = LoggerFactory.getLogger(RestRviaConnector.class);
+	private static Logger	pLog	= LoggerFactory.getLogger(RestRviaConnector.class);
 
 	/**
 	 * Realiza la comunicación con RUralvia para obtener los datos necesarios de la operación
@@ -210,19 +210,7 @@ public class RestRviaConnector
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
 		return fReturn;
 	}
@@ -258,19 +246,7 @@ public class RestRviaConnector
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
 		return nReturn;
 	}
@@ -303,19 +279,7 @@ public class RestRviaConnector
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
 		return nReturn;
 	}
@@ -345,17 +309,7 @@ public class RestRviaConnector
 		}
 		finally
 		{
-			try
-			{
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement, pConnection);
 		}
 	}
 
@@ -387,17 +341,7 @@ public class RestRviaConnector
 		}
 		finally
 		{
-			try
-			{
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement, pConnection);
 		}
 	}
 

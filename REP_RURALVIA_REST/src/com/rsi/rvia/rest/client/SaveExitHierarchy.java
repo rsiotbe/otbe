@@ -12,65 +12,80 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 
 public class SaveExitHierarchy
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(SaveExitHierarchy.class);
-	private static int _nIdMiq;
-	private static JSONObject secResponse;
-	private static String _strMethod;
-	SaveExitHierarchy(){}
-	
-	/** Inicia el proceso de censo de los campos de salida a partir de la 
-	 * sección response del objeto json de salida
+	private static Logger		pLog	= LoggerFactory.getLogger(SaveExitHierarchy.class);
+	private static int			_nIdMiq;
+	private static JSONObject	secResponse;
+	private static String		_strMethod;
+
+	SaveExitHierarchy()
+	{
+	}
+
+	/**
+	 * Inicia el proceso de censo de los campos de salida a partir de la sección response del objeto json de salida
 	 * 
 	 * @param pJsonData
 	 *           Objeto json
 	 * @param nIdMiq
-	 *           Identidicador del servicio RESTFul 
-	 * @paarm strMethod
-	 *           Verbo de solicitud 
-	 * @throws Exception */	
-	public static void process(JSONObject pJsonData, int nIdMiq, String strMethod) throws Exception{
-		_strMethod=strMethod;
-		_nIdMiq=nIdMiq;
+	 *           Identidicador del servicio RESTFul
+	 * @paarm strMethod Verbo de solicitud
+	 * @throws Exception
+	 */
+	public static void process(JSONObject pJsonData, int nIdMiq, String strMethod) throws Exception
+	{
+		_strMethod = strMethod;
+		_nIdMiq = nIdMiq;
 		secResponse = pJsonData.getJSONObject("response");
-		analisisRecursivo(secResponse,"");
-	}	
-	
-	/** Realiza un recorrido recursivo sobre un objeto json
+		analisisRecursivo(secResponse, "");
+	}
+
+	/**
+	 * Realiza un recorrido recursivo sobre un objeto json
 	 * 
 	 * @param secResponse
 	 *           Objeto json
 	 * @param toPath
-	 *           Nombre totalmente cualificado del campo de salida 
-	 * @throws Exception */
+	 *           Nombre totalmente cualificado del campo de salida
+	 * @throws Exception
+	 */
 	private static void analisisRecursivo(JSONObject secResponse, String toPath) throws Exception
-	{		
+	{
 		int i;
 		String key;
 		Iterator iterator = secResponse.keys();
-		while (iterator.hasNext()){
-			key = (String) iterator.next();			
-			if(secResponse.optJSONArray(key) != null){ // Es un objeto array de objetos
+		while (iterator.hasNext())
+		{
+			key = (String) iterator.next();
+			if (secResponse.optJSONArray(key) != null)
+			{ // Es un objeto array de objetos
 				toPath = toPath + "." + key;
-				for(i=0; i<secResponse.optJSONArray(key).length(); i++){		
+				for (i = 0; i < secResponse.optJSONArray(key).length(); i++)
+				{
 					analisisRecursivo(secResponse.optJSONArray(key).getJSONObject(i), toPath);
 				}
 			}
-			else  if(secResponse.optJSONObject(key) != null){ // Es un objeto json
+			else if (secResponse.optJSONObject(key) != null)
+			{ // Es un objeto json
 				toPath = toPath + "." + key;
 				analisisRecursivo(secResponse.optJSONObject(key), toPath);
 			}
-			else{ // Es un campo del objeto
-				save(key,toPath);
+			else
+			{ // Es un campo del objeto
+				save(key, toPath);
 			}
-		}		
-	}	
-	/** Intenta grabar el campo de salida caso de no existir
+		}
+	}
+
+	/**
+	 * Intenta grabar el campo de salida caso de no existir
 	 * 
 	 * @param key
 	 *           Nombre de campo de salida
 	 * @param toPath
-	 *           Nombre totalmente cualificado del campo de salida */	
-	private static void save(String key, String toPath){
+	 *           Nombre totalmente cualificado del campo de salida
+	 */
+	private static void save(String key, String toPath)
+	{
 		pLog.info(toPath + "." + key);
 		String strPath = toPath + "." + key;
 		String strParamName = key;
@@ -81,7 +96,10 @@ public class SaveExitHierarchy
 			/* si no existe la relación se procede a crarla */
 			if (!fExistConfig)
 			{
-				/* si el campo de salida no existe, se comprueba si está definido como campo de salida de culaquier otra opertativa */
+				/*
+				 * si el campo de salida no existe, se comprueba si está definido como campo de salida de culaquier otra
+				 * opertativa
+				 */
 				Integer nIdMiqParam = existExitFieldInDDBB(strParamName);
 				if (nIdMiqParam == null)
 				{
@@ -95,13 +113,15 @@ public class SaveExitHierarchy
 		}
 	}
 
-	/** Comprueba si un campo de salida ya está realacionado con una operativa
+	/**
+	 * Comprueba si un campo de salida ya está realacionado con una operativa
 	 * 
 	 * @param nIdMiq
 	 *           identificador de eoperativa
 	 * @param strExitFieldName
 	 *           nombre del campo de salida
-	 * @return Id del parametro en caso de existir */
+	 * @return Id del parametro en caso de existir
+	 */
 	private static boolean existExitFieldsConfigInDDBB(int nIdMiq, String strParamName)
 	{
 		Connection pConnection = null;
@@ -134,28 +154,18 @@ public class SaveExitHierarchy
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
 		return fReturn;
-	}	
-	
-	/** Comprueba si el campo de salida existe ya dado de alta en las tablas de MiqQuest
+	}
+
+	/**
+	 * Comprueba si el campo de salida existe ya dado de alta en las tablas de MiqQuest
 	 * 
 	 * @param strExitFieldName
 	 *           Nombre del campo de salida
-	 * @return Identificador del campo de salida */
+	 * @return Identificador del campo de salida
+	 */
 	private static Integer existExitFieldInDDBB(String strExitFieldName)
 	{
 		Connection pConnection = null;
@@ -180,26 +190,16 @@ public class SaveExitHierarchy
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
 		return nReturn;
 	}
 
-	/** Obtiene el siguiente id libre en la tabla de configuración de campo de salidas MiqQuest
+	/**
+	 * Obtiene el siguiente id libre en la tabla de configuración de campo de salidas MiqQuest
 	 * 
-	 * @return Identificador a utilizar */
+	 * @return Identificador a utilizar
+	 */
 	private static Integer getNextExitFieldId()
 	{
 		Connection pConnection = null;
@@ -223,27 +223,17 @@ public class SaveExitHierarchy
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
 		return nReturn;
 	}
 
-	/** Se crear un nuevo registro de campo de salida de tipo MiqQuest
+	/**
+	 * Se crear un nuevo registro de campo de salida de tipo MiqQuest
 	 * 
 	 * @param nIdMiqExitField
-	 * @param strExitFieldName */
+	 * @param strExitFieldName
+	 */
 	private static void insertNewExitField(int nIdMiqExitField, String strExitFieldName, String strPath)
 	{
 		Connection pConnection = null;
@@ -264,26 +254,18 @@ public class SaveExitHierarchy
 		}
 		finally
 		{
-			try
-			{
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement, pConnection);
 		}
 	}
 
-	/** Se crear un nuevo registro de relación campo de salida - operativa de tipo MiqQuest
+	/**
+	 * Se crear un nuevo registro de relación campo de salida - operativa de tipo MiqQuest
 	 * 
 	 * @param nIdMiqExitField
 	 *           Identificador de la operativa MiqQuest
 	 * @param strExitFieldName
-	 *           Nombre del campo de salida */
+	 *           Nombre del campo de salida
+	 */
 	private static void createRelationExitFieldAndOperation(int nIdMiq, int nIdMiqExitField, String strExitFieldName)
 	{
 		Connection pConnection = null;
@@ -300,38 +282,12 @@ public class SaveExitHierarchy
 		}
 		catch (Exception ex)
 		{
-			pLog.error("No se ha podido insertar la relación del campo de salida " + strExitFieldName + " con la operativa "
-					+ nIdMiqExitField, ex);
+			pLog.error("No se ha podido insertar la relación del campo de salida " + strExitFieldName
+					+ " con la operativa " + nIdMiqExitField, ex);
 		}
 		finally
 		{
-			try
-			{
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement, pConnection);
 		}
-	}	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	}
 }
-
