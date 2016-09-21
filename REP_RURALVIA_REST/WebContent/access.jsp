@@ -44,24 +44,11 @@
 %>
 <body>
 <script type="text/javascript">
-  var data = {};
-  var appPath = '/' + window.location.pathname.substr(1).split('/')[0] + '/rest' + '<%=strPathRest%>';
-  var method = '<%=strType%>';
- var token = '<%=strToken%>';
-<%--   $.ajax({
-    url : appPath + '<%=strPathRest%>',
-    data : data,
-    type : '<%=strType%>',
-    success : function(response) {
-      $('html').html(response);
-    },
-    error: function(data, textStatus, errorThrown)
-    {
-    	//$('html').html(data.responseText);
-    	document.write(data.responseText);
-    }
-  }); --%>
-  $('<form action="' + appPath + '" type="' + method + '"><input type="hidden" name="token" value="' + token + '"><input type="hidden" name="errorCode" value="<%=strError%>"></form>').appendTo('body').submit();
+	var data = {};
+	var appPath = '/' + window.location.pathname.substr(1).split('/')[0] + '/rest' + '<%=strPathRest%>';
+  	var method = '<%=strType%>';
+ 	var token = '<%=strToken%>';
+  	$('<form action="' + appPath + '" type="' + method + '"><input type="hidden" name="token" value="' + token + '"><input type="hidden" name="errorCode" value="<%=strError%>"></form>').appendTo('body').submit();
 
 </script>
 </body>
