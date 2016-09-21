@@ -209,6 +209,7 @@ public class TemplateManager
 	private static String adjustTemplateNameByChannel(String strPathToTemplate, SessionRviaData pSessionRviaData)
 	{
 		String strReturn = null;
+		strReturn = strPathToTemplate;
 		if (pSessionRviaData != null)
 		{
 			switch (pSessionRviaData.getCanalAix())
