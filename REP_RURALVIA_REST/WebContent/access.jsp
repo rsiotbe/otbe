@@ -11,7 +11,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
 <title></title>
 <script type="text/javascript" src="http://cdn.jsdelivr.net/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js"></script>
-</head>
+</head> 
 <%
 	Logger pLog = LoggerFactory.getLogger("access.jsp");
 	MiqQuests pMiqQuests = null;
