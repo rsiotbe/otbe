@@ -10,50 +10,46 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
 <title></title>
-<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-<script type="text/javascript" src="/api/js/manageRequestRviaRest.js"></script>
 <script type="text/javascript" src="http://cdn.jsdelivr.net/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js"></script>
 </head>
 <%
-	Logger pLog = LoggerFactory.getLogger("Access.jsp");
+	Logger pLog = LoggerFactory.getLogger("access.jsp");
 	MiqQuests pMiqQuests = null;
 	String strPathRest = null;
 	String strError = "";
 	int nMiqQuestId = 0;
 	String strIdMiq = request.getParameter("idMiq");
+	pLog.info("Se recibe una petición para acceder a la operativa con idMiq" + strIdMiq);
 	try{
 		nMiqQuestId = Integer.parseInt(strIdMiq);
 	}catch(Exception ex){
 		pLog.error("Imposible convertir strIdMiq a Integer, valor de strIdMiq: " + strIdMiq);
 	}
 	
-	String strType = request.getParameter("type");
 	String strToken = request.getParameter("token");
-	if(strType == null){
-		strType = "GET";
-	}
+	String strMethod = request.getParameter("method");
+	if(strMethod == null)
+		strMethod = "GET";
+	pLog.trace("Method: " + strMethod);
 	pLog.trace("IdMiq: " + strIdMiq);
-	pLog.trace("Type: " + strType);
 	pLog.trace("Token: " + strToken);
 	if(strIdMiq != null){
 		pMiqQuests = MiqQuests.getMiqQuests(nMiqQuestId);
 		strPathRest = pMiqQuests.getPathRest();
-	}else{
+	}
+	else
+	{
 		strError = "1111";
 		strPathRest = "/rviaerror";
 	}
-	URL resource = getClass().getResource("/");
-	String pathApp = resource.getPath();
-	
 %>
 <body>
+  	<form id="formRedirect" action="/api/rest<%=strPathRest%>" method="<%=strMethod%>">
+  		<input type="hidden" name="token" value="<%=strToken%>">
+  		<input type="hidden" name="errorCode" value="<%=strError%>">
+    </form>
 <script type="text/javascript">
-	var data = {};
-	var appPath = '/' + window.location.pathname.substr(1).split('/')[0] + '/rest' + '<%=strPathRest%>';
-  	var method = '<%=strType%>';
- 	var token = '<%=strToken%>';
-  	$('<form action="' + appPath + '" type="' + method + '"><input type="hidden" name="token" value="' + token + '"><input type="hidden" name="errorCode" value="<%=strError%>"></form>').appendTo('body').submit();
-
+	document.getElementById('formRedirect').submit();
 </script>
 </body>
 </html>
