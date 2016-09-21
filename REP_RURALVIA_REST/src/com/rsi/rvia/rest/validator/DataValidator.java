@@ -45,31 +45,21 @@ public class DataValidator
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
 		return alReturn;
 	}
 
-	/** Realiza una validación de los datos que recibe en un Hashtable, siguiendo el un criterio censado en la tabla
+	/**
+	 * Realiza una validación de los datos que recibe en un Hashtable, siguiendo el un criterio censado en la tabla
 	 * bdptb228_miq_param_validation y el pathRest - Para añadir nuevas validaciones crear un nuevo metodo
 	 * validate"BLaBLa"() y añadirlo como caso en la función validation.
 	 * 
 	 * @param strPathRest
 	 * @param htParams
 	 * @return
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	public static String validation(String strPathRest, Hashtable<String, String> htParams) throws Exception
 	{
 		boolean fCheck = true;
@@ -161,13 +151,15 @@ public class DataValidator
 		return strReturn;
 	}
 
-	/** Validación de una fecha dato una mascara
+	/**
+	 * Validación de una fecha dato una mascara
 	 * 
 	 * @param strValue
 	 *           Fecha
 	 * @param strMask
 	 *           Formato en forma de mascara
-	 * @return True si la validación es positiva, false si es negativa */
+	 * @return True si la validación es positiva, false si es negativa
+	 */
 	private static boolean validateDate(String strValue, String strMask)
 	{
 		boolean fReturn = true;
@@ -187,7 +179,8 @@ public class DataValidator
 		return fReturn;
 	}
 
-	/** Validación de un entero segun su longitud, máximo y mínimo.
+	/**
+	 * Validación de un entero segun su longitud, máximo y mínimo.
 	 * 
 	 * @param strValue
 	 *           entero en formato de String
@@ -197,7 +190,8 @@ public class DataValidator
 	 *           máximo posible para el entero.
 	 * @param nLong
 	 *           longitud máxima para el entero
-	 * @return True si la validación es positiva, false si es negativa */
+	 * @return True si la validación es positiva, false si es negativa
+	 */
 	private static boolean validateInteger(String strValue, int nMin, int nMax)
 	{
 		boolean fReturn = true;
@@ -226,12 +220,14 @@ public class DataValidator
 		return fReturn;
 	}
 
-	/** Valida si una entidad existe. Para ello ejecuta una query contra el CIP-
+	/**
+	 * Valida si una entidad existe. Para ello ejecuta una query contra el CIP-
 	 * 
 	 * @param strValue
 	 *           entidad a consultar
 	 * @return True si la validación es positiva, false si es negativa
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	private static boolean validateDDBBEntidad(String strValue) throws Exception
 	{
 		boolean fReturn = true;
@@ -256,24 +252,13 @@ public class DataValidator
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
 		return fReturn;
 	}
 
-	/** Validación de un string segun su longitud, máximo y mínimo.
+	/**
+	 * Validación de un string segun su longitud, máximo y mínimo.
 	 * 
 	 * @param strValue
 	 *           string entrante
@@ -283,7 +268,8 @@ public class DataValidator
 	 *           máximo número de caracteres
 	 * @param nLong
 	 *           número fijo de caracteres
-	 * @return True si la validación es positiva, false si es negativa */
+	 * @return True si la validación es positiva, false si es negativa
+	 */
 	private static boolean validateString(String strValue, int nMin, int nMax, int nLong)
 	{
 		boolean fReturn = true;

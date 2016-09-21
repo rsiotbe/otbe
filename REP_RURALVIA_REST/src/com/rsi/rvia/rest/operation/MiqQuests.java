@@ -156,20 +156,7 @@ public class MiqQuests
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("error al cerrar la conexión a base de datos", ex);
-				throw ex;
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
 		return pMiqQuests;
 	}
@@ -207,20 +194,7 @@ public class MiqQuests
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("error al cerrar la conexión a base de datos", ex);
-				throw ex;
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
 		return pMiqQuests;
 	}

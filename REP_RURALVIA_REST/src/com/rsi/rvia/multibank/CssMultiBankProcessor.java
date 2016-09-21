@@ -19,9 +19,11 @@ public class CssMultiBankProcessor
 	private static Logger							pLog			= LoggerFactory.getLogger(CssMultiBankProcessor.class);
 	public static Hashtable<String, String>	htCacheData	= new Hashtable<String, String>();
 
-	/** Devuelve el tamaño de la cache
+	/**
+	 * Devuelve el tamaño de la cache
 	 * 
-	 * @return int con el tamaño de la cache */
+	 * @return int con el tamaño de la cache
+	 */
 	public static int getSizeCache()
 	{
 		int nReturn = 0;
@@ -32,9 +34,11 @@ public class CssMultiBankProcessor
 		return nReturn;
 	}
 
-	/** Funcion que carga la cache desde base de datos
+	/**
+	 * Funcion que carga la cache desde base de datos
 	 * 
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	private static void loadDDBBCache() throws Exception
 	{
 		Connection pConnection = null;
@@ -63,29 +67,19 @@ public class CssMultiBankProcessor
 		}
 		finally
 		{
-			try
-			{
-				if (pResultSet != null)
-					pResultSet.close();
-				if (pPreparedStatement != null)
-					pPreparedStatement.close();
-				if (pConnection != null)
-					pConnection.close();
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al cerrar los objetos de base de datos", ex);
-			}
+			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
 	}
 
-	/** Devuelve el valor de reemplazo del link css y si no lo encuentra devuelve el propio valor pasado
+	/**
+	 * Devuelve el valor de reemplazo del link css y si no lo encuentra devuelve el propio valor pasado
 	 * 
 	 * @param strNRBE
 	 *           Código de entidad
 	 * @param strCSSLink
 	 *           Link css a convertir
-	 * @return */
+	 * @return
+	 */
 	private static String getLinkConversion(String strNRBE, String strCSSLink)
 	{
 		String strReturn;
@@ -104,14 +98,16 @@ public class CssMultiBankProcessor
 		return strReturn;
 	}
 
-	/** Función Principal, recibe el XHTML y la entidad y realiza las conversiones
+	/**
+	 * Función Principal, recibe el XHTML y la entidad y realiza las conversiones
 	 * 
 	 * @param pDocument
 	 *           Documento html en jsoup
 	 * @param pSessionRviaData
 	 *           Datos de sesión de ruralvia para el usuario
 	 * @return String con el HTML con los reemplazos de css ya realizados.
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	public static Document processXHTML(Document pDocument, SessionRviaData pSessionRviaData) throws Exception
 	{
 		String strNRBE;
@@ -131,7 +127,8 @@ public class CssMultiBankProcessor
 		return pDocument;
 	}
 
-	/** Función que modifica los links css de un documento JSOUP.
+	/**
+	 * Función que modifica los links css de un documento JSOUP.
 	 * 
 	 * @param doc
 	 *           Document(Jsoup) a modificar.
@@ -140,7 +137,8 @@ public class CssMultiBankProcessor
 	 * @param strNRBE
 	 *           String con el idioma al que se quiere traducir.
 	 * @return Document(Jsoup) con la traducción ya puesta.
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	private static Document adjustCSSLink(Document pDocument, String strNRBE) throws Exception
 	{
 		Elements pLinksCss = pDocument.select("link[href]");
