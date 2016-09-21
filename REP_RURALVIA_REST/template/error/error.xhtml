@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8"/>
-    <meta name=viewport content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <title>RSI</title>
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600" media="screen" rel="stylesheet" />
-    <style>
+    <style type="text/css">
           * {
               -moz-box-sizing: border-box;
               -webkit-box-sizing: border-box;
@@ -63,8 +63,7 @@
           .clearfix:after {
               clear: both;
           }
-      </style>
-      <style>
+
           .sign.error-page-wrapper {
               font-family: 'Source Sans Pro', sans-serif;
               background-color: #179eca;
@@ -148,43 +147,6 @@
               color: #ffba00;
               font-size: 24px;
               line-height: 32px;
-          }
-
-          @media screen and (max-width: 500px) {
-              .sign.error-page-wrapper {
-                  padding-top:10%;
-              }
-
-              .sign.error-page-wrapper .sign-container {
-                  width: 280px;
-                  top: 0px !important;
-              }
-
-              .sign.error-page-wrapper .sign-container .post {
-                  width: 100px;
-                  top: 50px;
-              }
-
-              .sign.error-page-wrapper .sign-container .pane {
-                  top: 70px;
-                  height: 220px;
-              }
-
-              .sign.error-page-wrapper .sign-container .pane .headline {
-                  margin-top: 20px;
-                  font-size: 45px;
-                  margin-bottom: 6px;
-              }
-
-              .sign.error-page-wrapper .sign-container .pane.just-header .headline {
-                  margin-top: 39px;
-                  line-height: 55px;
-              }
-
-              .sign.error-page-wrapper .sign-container .pane .context {
-                  font-size: 20px;
-                  line-height: 28px;
-              }
           }
 
           .sign.error-page-wrapper .text-container {
@@ -293,6 +255,38 @@
           }
 
           @media screen and (max-width: 500px) {
+
+              .sign.error-page-wrapper .sign-container {
+                  width: 280px;
+                  top: 0px !important;
+              }
+
+              .sign.error-page-wrapper .sign-container .post {
+                  width: 100px;
+                  top: 50px;
+              }
+
+              .sign.error-page-wrapper .sign-container .pane {
+                  top: 70px;
+                  height: 220px;
+              }
+
+              .sign.error-page-wrapper .sign-container .pane .headline {
+                  margin-top: 20px;
+                  font-size: 45px;
+                  margin-bottom: 6px;
+              }
+
+              .sign.error-page-wrapper .sign-container .pane.just-header .headline {
+                  margin-top: 39px;
+                  line-height: 55px;
+              }
+
+              .sign.error-page-wrapper .sign-container .pane .context {
+                  font-size: 20px;
+                  line-height: 28px;
+              }
+
               .sign.error-page-wrapper .text-container {
                   bottom:20px;
                   left: 20px;
@@ -436,10 +430,11 @@
 		</div>
 	</div>
 	<div style="margin-top:20px;text-align: center;">
-		<a class="buttonRvia" href="#" onClick="javascript:history.back(-1);">Volver</a>
+		<a class="buttonRvia" href="#" onclick="javascript:history.back(-1);">Volver</a>
 	</div>
 </div>
-    <script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script type="text/javascript">
         var data = '__JSONDATA__';
         document.getElementById('messageText').innerHTML = "Error: " + data.code + " (" + data.httpCode + ")";
         document.getElementById('messageDesc').innerHTML = data.message;
