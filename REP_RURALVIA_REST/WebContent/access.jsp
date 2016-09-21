@@ -19,7 +19,7 @@
 	String strError = "";
 	int nMiqQuestId = 0;
 	String strIdMiq = request.getParameter("idMiq");
-	pLog.info("Se recibe una petición para acceder a la operativa con idMiq" + strIdMiq);
+	pLog.info("Se recibe una petición para acceder a la operativa con idMiq " + strIdMiq);
 	try{
 		nMiqQuestId = Integer.parseInt(strIdMiq);
 	}catch(Exception ex){
