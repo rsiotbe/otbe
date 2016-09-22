@@ -41,7 +41,6 @@
       </div>
     </div>
   </div>
-  <a onclick="getData()" class="waves-effect waves-light btn light-green accent-3">Enviar</a>
 
 </div>
 <hr>
@@ -51,31 +50,6 @@
 
 <script type="text/javascript">
 
-function getData() {
-      var strCodigoEntidad = $("#codigoEntidad").val();
-      var strLongitud = $("#longitud").val();
-      var strLatitud =  $("#latitud").val();
-      var strRadio = $("#radio").val();
-
-      var strQueryParams = '?codigoEntidad=' + strCodigoEntidad + "&longitud=" + strLongitud + "&latitud=" + strLatitud + "&radio=" + strRadio;
-      console.log("Codigo Entidad: " + strCodigoEntidad);
-      var dataGet = {};
-      dataGet.codigoEntidad = strCodigoEntidad;
-      dataGet.longitud = strLongitud;
-      dataGet.latitud = strLatitud;
-      dataGet.radio = strRadio;
-      $.ajax({
-            url : '/api/rest/prueba/cashierLocatior' + strQueryParams,
-            data : dataGet,
-            type : 'GET',
-            dataType : 'json',
-            success : loadData,
-            error : function(xhr, status) {
-                  console.log("Error al procesar la llamada ajax. xhr" + xhr + " - status: " + status);
-            }
-      });
-      console.log("Llamada ajax normal terminada.");
-}
 
 function loadData(json){
       var strList = addContent(pJson);
@@ -104,7 +78,7 @@ function addContent(json) {
       }
 
 var pJsonOk = '__JSONDATA__';
-
+loadData(pJsonOk);
  
 </script>
 </body>

@@ -8,7 +8,7 @@
 
       <!-- Compiled and minified JavaScript -->
        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
-       <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+       <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
        <script src="/api/js/manageRequestRviaRest.js"></script>
 </head>
 <body>
@@ -69,7 +69,7 @@ function getCashierClose() {
       dataGet.radio = strRadio;
 
       $.ajax({
-            url : '/api/rest/cashierLocatior',
+            url : '/api/rest/test/cashierLocatior',
             data : dataGet,
             type : 'GET',
             dataType : 'json',
@@ -117,7 +117,7 @@ function getData() {
       dataGet.latitud = strLatitud;
       dataGet.radio = strRadio;
       $.ajax({
-            url : '/api/rest/cashierLocatior',
+            url : '/api/rest/test/cashierLocatior',
             data : dataGet,
             type : 'GET',
             dataType : 'json',
