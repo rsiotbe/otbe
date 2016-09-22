@@ -12,8 +12,9 @@
        <script src="/api/js/manageRequestRviaRest.js"></script>
 </head>
 <body>
-<div id="formulario">
-       <div class="row">
+
+<div id="formulario" style="text-align: center;margin-top: 30px;">
+ <!--      <div class="row">
     <div class="col s12">
       <div class="row">
         <div class="input-field col s6">
@@ -40,19 +41,25 @@
       </div>
     </div>
   </div>
-  <a onclick="getData()" class="waves-effect waves-light btn light-green darken-1">Enviar</a>
-  <a onclick="getCashierClose()" class="waves-effect waves-light btn light-green darken-1">Mas Cercano</a>
+  <a onclick="getData()" class="waves-effect waves-light btn light-green darken-1">Enviar</a>-->  
+  <a onclick="getCashierClose()" class="waves-effect waves-light btn light-green darken-1">Buscar cajeros</a>
 </div>
 <hr>
-<div id="contenido2">
+<div id="resultado" style="display:none;margin-top:10px">
+	El cajero más cercano a RSI es:
+	<span id="spanNearest"></span>
+	
+	<br></br>
+	Aqui tienees un mapa con los cajeros alrededor.
+    <div id="contenido"></div>
 
 </div>
 
- <div class="row">
+<!-- <div class="row">
     <div class="col s12 m4 l2"></div>
     <div class="col s12 m4 l8" id="contenido"></div>
     <div class="col s12 m4 l2"></div>
-  </div>
+  </div> --> 
 <script type="text/javascript">
 
 function getCashierClose() {
@@ -85,6 +92,15 @@ function getCashierClose() {
             console.log("imagen: " + strReturn);
             $('#contenido').html('<img id="imgMap" src="' + strReturn + '" style="display:none"/>');
             $("#imgMap").show("slow");
+            var listCashier = json.response.data.ListaCajeros;
+            var cajero = listCashier[0];
+            /* se añade la info del más cercano */
+            var strText = "Cajero de " + cajero.nombreEntidad + "(" + cajero.codigoEntidad + ") en la calle " + cajero.direccion + " en " + 
+            cajero.nombreLocalidad + " (" + cajero.codigoPostal +'), está a ' + cajero.distancia + 
+            			 " metros de RSI y cobra una decomisión de " + cajero.comision + "€";
+            $('#spanNearest').text(strText);
+            $('#resultado').show();
+            
       }
 }
 
