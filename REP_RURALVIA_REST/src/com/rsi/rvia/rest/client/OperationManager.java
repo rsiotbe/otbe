@@ -142,6 +142,7 @@ public class OperationManager
 				throw new ISUMException(401, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
 			/* se obtienen los datos necesario para realizar la petición al proveedor */
 			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
+			pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);
 			pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
 			pLog.debug("MiqQuest a procesar: " + pMiqQuests);
 			/* se obtiene la plantilla destino si es que existe */

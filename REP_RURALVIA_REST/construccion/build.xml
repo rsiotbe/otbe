@@ -72,7 +72,7 @@
 				<exclude name="${web-xml-file}" />
 			</fileset>
 			<lib dir="${lib-directory}"/>
-			<fileset dir="${template-directory}"></fileset>	
+			<!--<fileset dir="${template-directory}"></fileset>	-->
 		</war>
 	</target>
 </project>

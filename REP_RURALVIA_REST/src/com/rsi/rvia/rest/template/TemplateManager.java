@@ -22,7 +22,7 @@ public class TemplateManager
 {
 	static Logger										pLog							= LoggerFactory.getLogger(TemplateManager.class);
 	public final static String						JSON_DATA_TAG				= "'__JSONDATA__'";
-	private final static String					IFRAME_SCRIPT_ADAPTER	= "http://cdn.jsdelivr.net/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js";
+	private final static String					IFRAME_SCRIPT_ADAPTER	= "https://cdn.jsdelivr.net/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js";
 	private final static String					UPDATE_RVIA_SESSION		= "/api/js/manageRequestRviaRest.js";
 	public static Hashtable<String, Document>	htCacheTemplate			= new Hashtable<String, Document>();
 
