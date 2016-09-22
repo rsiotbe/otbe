@@ -33,9 +33,11 @@
 	pLog.trace("Method: " + strMethod);
 	pLog.trace("IdMiq: " + strIdMiq);
 	pLog.trace("Token: " + strToken);
-	if(strIdMiq != null){
+	if(strIdMiq != null)
+	{
 		pMiqQuests = MiqQuests.getMiqQuests(nMiqQuestId);
 		strPathRest = pMiqQuests.getPathRest();
+		pLog.info("Datos de la operativa: " + pMiqQuests.toString());
 	}
 	else
 	{

@@ -62,6 +62,7 @@ public class OperationManager
 			/* se obtienen los datos necesario para realizar la petición al proveedor */
 			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
 			pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
+			pLog.debug("MiqQuest a procesar: " + pMiqQuests);
 			MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
 			/* se instancia el conector y se solicitan los datos */
 			pRestConnector = new RestConnector();
@@ -108,7 +109,8 @@ public class OperationManager
 	}
 
 	/**
-	 * Se procesa una petición que llega desde la antigua apliación de ruralvia
+	 * Se procesa una petición que solo pinta una página sin datos de una petición que llega desde la antigua apliación
+	 * de ruralvia
 	 * 
 	 * @param pRequest
 	 *           Objeto petición original
@@ -141,6 +143,7 @@ public class OperationManager
 			/* se obtienen los datos necesario para realizar la petición al proveedor */
 			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
 			pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
+			pLog.debug("MiqQuest a procesar: " + pMiqQuests);
 			/* se obtiene la plantilla destino si es que existe */
 			strTemplate = pMiqQuests.getTemplate();
 		}
@@ -161,7 +164,7 @@ public class OperationManager
 				nReturnHttpCode = pErrorCaptured.getHttpCode();
 				pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
 			}
-			pLog.info("La petición utiliza plantilla XHTML");
+			pLog.info("La petición utiliza plantilla XHTML:" + strTemplate);
 			strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
 			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).encoding("UTF-8").build();
 		}
