@@ -270,13 +270,16 @@ public class SessionRviaData
 		pSb.append("Language        :" + strLanguage + "\n");
 		pSb.append("NRBE            :" + strNRBE + "\n");
 		pSb.append("Token           :" + strToken + "\n");
+		pSb.append("CanalAix        :" + pCanalAix.name() + "\n");
 		pSb.append("Cookie          :" + strToken + "\n");
 		if (pCookiesRviaData != null)
 		{
 			for (int i = 0; i < pCookiesRviaData.length; i++)
 			{
 				pSb.append("Cookie " + (i + 1) + "         :" + pCookiesRviaData[i].getName() + " -> "
-						+ pCookiesRviaData[i].getValue() + pCookiesRviaData[i - 1].getValue() + "\n");
+						+ pCookiesRviaData[i].getValue() + pCookiesRviaData[i - 1].getValue());
+				if (i < pCookiesRviaData.length - 1)
+					pSb.append("\n");
 			}
 		}
 		return pSb.toString();

@@ -189,6 +189,15 @@
               margin-right: 10%;
           }
 
+
+          @media all and (orientation: landscape) {
+
+              .sign.error-page-wrapper .sign-container {
+                transform-origin: top center;
+                animation: bounce2 ease-out 1s;
+              }
+          }
+
           @media screen and (max-width: 480px) and (orientation: portrait) {
 
               .sign.error-page-wrapper .sign-container {
@@ -204,7 +213,7 @@
 
               .sign.error-page-wrapper .sign-container .pane {
                   top: 70px;
-                  height: 220px;
+                  height: 180px;
               }
 
               .sign.error-page-wrapper .sign-container .pane .headline {
@@ -332,6 +341,18 @@
             96%  { transform: rotate(-2deg); animation-timing-function:ease-in; }
             100% { transform: rotate(0deg); }
           }
+
+          @keyframes bounce2 {
+            0%   { transform: rotate(-20deg); animation-timing-function:ease-in; }
+            37%  { transform: rotate(0deg); animation-timing-function:ease-out; }
+            55%  { transform: rotate(-10deg); animation-timing-function:ease-in; }
+            73%  { transform: rotate(0deg); animation-timing-function:ease-out; }
+            82%  { transform: rotate(-4deg); animation-timing-function:ease-in; }
+            91%  { transform: rotate(0deg); animation-timing-function:ease-out; }
+            96%  { transform: rotate(-2deg); animation-timing-function:ease-in; }
+            100% { transform: rotate(0deg); }
+          }
+
       </style>
   </head>
   <body class="sign error-page-wrapper background-color background-image">

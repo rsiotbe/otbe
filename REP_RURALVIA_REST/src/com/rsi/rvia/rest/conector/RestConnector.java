@@ -50,89 +50,35 @@ public class RestConnector
 		/* se obtiene la configuración de la operativa desde base de datos */
 		strComponentType = pMiqQuests.getComponentType();
 		pLog.info("Se obtiene la configuración de la base de datos. MiqQuest: " + pMiqQuests);
-		pLog.info("Se recibe una petición con tipo de metodo : " + strMethod);
-		/* se invoca al tipo de petición leido desde configuracón */
-		switch (strMethod)
+		pLog.info("Se recibe una petición con tipo de metodo : " + strMethod + " a " + strComponentType);
+		switch (strComponentType)
 		{
-			case "GET":
-				if ("RVIA".equals(strComponentType))
-				{
-					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
-					pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, pSessionRvia, strData);
-				}
-				else if ("WS".equals(strComponentType))
-				{
-					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
-					pReturn = RestWSConnector.get(pRequest, pMiqQuests, pSessionRvia, pPathParams);
-				}
-				else if ("API".equals(strComponentType))
-				{
-					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
-					pReturn = RestWSConnector.get(pRequest, pMiqQuests, pSessionRvia, pPathParams);
-				}
-				else
-				{
-					pLog.warn("No existe tipo de componente definido para esta petición, se devuelve una respuesta ok vacía");
-					pReturn = Response.ok("{}").build();
-				}
+			case "RVIA":
+				pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, pSessionRvia, strData);
 				break;
-			case "POST":
-				if ("RVIA".equals(strComponentType))
+			case "WS":
+			case "API":
+				switch (strMethod)
 				{
-					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
-					pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, pSessionRvia, strData);
-				}
-				else if ("WS".equals(strComponentType))
-				{
-					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
-					pReturn = RestWSConnector.post(pRequest, pSessionRvia, strData, pMiqQuests, pPathParams);
-				}
-				else if ("API".equals(strComponentType))
-				{
-					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
-					pReturn = RestWSConnector.post(pRequest, pSessionRvia, strData, pMiqQuests, pPathParams);
-				}
-				else
-				{
-					pLog.warn("No existe tipo de componente definido para esta petición, se devuelve una respuesta ok vacía");
-					pReturn = Response.ok("{}").build();
-				}
-				break;
-			case "PUT":
-				if ("WS".equals(strComponentType))
-				{
-					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
-					pReturn = RestWSConnector.put(pRequest, pSessionRvia, strData, pMiqQuests, pPathParams);
-				}
-				else if ("API".equals(strComponentType))
-				{
-					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
-					pReturn = RestWSConnector.put(pRequest, pSessionRvia, strData, pMiqQuests, pPathParams);
-				}
-				else
-				{
-					pLog.warn("No existe tipo de componente definido para esta petición, se devuelve una respuesta ok vacía");
-					pReturn = Response.ok("{}").build();
-				}
-				break;
-			case "PATCH":
-				pLog.warn("No existe ninguna acción para este método");
-				break;
-			case "DELETE":
-				if ("WS".equals(strComponentType))
-				{
-					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
-					pReturn = RestWSConnector.delete(pRequest);
-				}
-				else if ("API".equals(strComponentType))
-				{
-					pLog.trace("Petición de tipo " + strMethod + " a " + strComponentType);
-					pReturn = RestWSConnector.delete(pRequest);
-				}
-				else
-				{
-					pLog.warn("No existe tipo de componente definido para esta petición, se devuelve una respuesta ok vacía");
-					pReturn = Response.ok("{}").build();
+					case "GET":
+						pReturn = RestWSConnector.get(pRequest, pMiqQuests, pSessionRvia, pPathParams);
+						break;
+					case "POST":
+						pReturn = RestWSConnector.post(pRequest, pMiqQuests, pSessionRvia, strData, pPathParams);
+						break;
+					case "PUT":
+						pReturn = RestWSConnector.put(pRequest, pMiqQuests, pSessionRvia, strData, pPathParams);
+						break;
+					case "PATCH":
+						pLog.warn("No existe ninguna acción para este método");
+						break;
+					case "DELETE":
+						pReturn = RestWSConnector.delete(pRequest);
+						break;
+					default:
+						pLog.warn("No existe tipo de componente definido para esta petición, se devuelve una respuesta ok vacía");
+						pReturn = Response.ok("{}").build();
+						break;
 				}
 				break;
 		}

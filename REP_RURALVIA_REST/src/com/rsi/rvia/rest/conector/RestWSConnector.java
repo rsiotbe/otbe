@@ -95,8 +95,8 @@ public class RestWSConnector
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception
 	 */
-	public static Response post(@Context HttpServletRequest pRequest, SessionRviaData pSessionRvia, String strJsonData,
-			MiqQuests pMiqQuests, MultivaluedMap<String, String> pPathParams) throws Exception
+	public static Response post(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests,
+			SessionRviaData pSessionRvia, String strJsonData, MultivaluedMap<String, String> pPathParams) throws Exception
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = RviaRestHttpClient.getClient();
@@ -154,15 +154,15 @@ public class RestWSConnector
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception
 	 */
-	public static Response put(@Context HttpServletRequest pRequest, SessionRviaData pSessionRvia, String strJsonData,
-			MiqQuests pMiqQuests, MultivaluedMap<String, String> pPathParams) throws Exception
+	public static Response put(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests, SessionRviaData pSessionRvia,
+			String strJsonData, MultivaluedMap<String, String> pPathParams) throws Exception
 	{
 		/*
 		 * se reutiliza la petición post puesto que es similar, en caso de una implementación diferente, es necesario
 		 * definir este método desde cero
 		 */
 		pLog.warn("Se recibe un método PUT, pero se trata como si fuera un POST");
-		return post(pRequest, pSessionRvia, strJsonData, pMiqQuests, pPathParams);
+		return post(pRequest, pMiqQuests, pSessionRvia, strJsonData, pPathParams);
 	}
 
 	/**
