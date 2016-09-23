@@ -26,7 +26,7 @@
 	} catch (Exception ex) {
 		pLog.error("Imposible convertir strIdMiq a Integer, valor de strIdMiq: "
 				+ strIdMiq);
-		nMiqQuestId = 0;
+		nMiqQuestId = 0; 
 	}
 
 	String strToken = request.getParameter("token");
