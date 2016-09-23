@@ -68,12 +68,13 @@
 		<war warfile="${dist-directory}/${war-file-name}" webxml="${web-xml-file}">
 			<classes dir="${classes-directory}" />
 			<classes dir="${configurations-directory}" />
+			<classes dir="${template-directory}" />
 			<fileset dir="${web-directory}">
 				<!-- Need to exclude it since webxml is an attribute of the war tag above -->
 				<exclude name="${web-xml-file}" />
 			</fileset>
 			<lib dir="${lib-directory}"/>
-			<fileset dir="${template-directory}"></fileset>	
+			<!--<fileset dir="${template-directory}"></fileset>	-->
 		</war>
 	</target>
 </project>
