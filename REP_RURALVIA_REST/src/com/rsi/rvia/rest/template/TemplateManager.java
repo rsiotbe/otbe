@@ -48,8 +48,9 @@ public class TemplateManager
 	 * @param strPathToTemplate
 	 * @param pSessionRviaData
 	 * @return
+	 * @throws Exception
 	 */
-	public static String processTemplate(String strPathToTemplate, SessionRviaData pSessionRviaData)
+	public static String processTemplate(String strPathToTemplate, SessionRviaData pSessionRviaData) throws Exception
 	{
 		return processTemplate(strPathToTemplate, pSessionRviaData, "{}");
 	}
@@ -65,8 +66,10 @@ public class TemplateManager
 	 * @param strDataJson
 	 *           Datos en formato JSON.
 	 * @return Template procesado.
+	 * @throws Exception
 	 */
 	public static String processTemplate(String strPathToTemplate, SessionRviaData pSessionRviaData, String strDataJson)
+			throws Exception
 	{
 		String strReturn;
 		Document pDocument;
@@ -101,8 +104,8 @@ public class TemplateManager
 		}
 		catch (Exception ex)
 		{
-			strReturn = null;
 			pLog.error("No ha sido posible procesar la plantilla xhtml", ex);
+			throw ex;
 		}
 		return strReturn;
 	}
