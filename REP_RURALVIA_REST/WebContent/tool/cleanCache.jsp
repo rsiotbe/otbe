@@ -35,11 +35,11 @@
 		{		
 			pLog.trace("Libero cache: " + strItem);
 			if("Plantillas HTML".equals(strItem)){
-				TemplateManager.htCacheTemplate = new Hashtable<String, Document>();
+				TemplateManager.restartCache();
 			}else if("Traducciones".equals(strItem)){
-				TranslateProcessor.htCacheData = new Hashtable<String, TranslateEntry>();
+				TranslateProcessor.restartCache();
 			}else if("CSS Multientidad".equals(strItem)){
-				CssMultiBankProcessor.htCacheData = new Hashtable<String, String>();
+				CssMultiBankProcessor.restartCache();
 			}
 		}
 		strRefresh = "true";

@@ -35,6 +35,17 @@ public class CssMultiBankProcessor
 	}
 
 	/**
+	 * Reinicia la Cache
+	 */
+	public static void restartCache()
+	{
+		if (htCacheData != null)
+		{
+			htCacheData = new Hashtable<String, String>();
+		}
+	}
+
+	/**
 	 * Funcion que carga la cache desde base de datos
 	 * 
 	 * @throws Exception

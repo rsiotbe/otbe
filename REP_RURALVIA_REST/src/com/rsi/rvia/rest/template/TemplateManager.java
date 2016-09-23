@@ -42,6 +42,17 @@ public class TemplateManager
 	}
 
 	/**
+	 * Reinicia la Cache
+	 */
+	public static void restartCache()
+	{
+		if (htCacheTemplate != null)
+		{
+			htCacheTemplate = new Hashtable<String, Document>();
+		}
+	}
+
+	/**
 	 * Busca el template y lo lee, carga las traducciones, inyecta el script para ajustar el iframe, ajusta los estilos
 	 * para multicanalidad
 	 * 

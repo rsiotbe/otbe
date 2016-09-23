@@ -42,6 +42,17 @@ public class TranslateProcessor
 	}
 
 	/**
+	 * Reinicia la Cache
+	 */
+	public static void restartCache()
+	{
+		if (htCacheData != null)
+		{
+			htCacheData = new Hashtable<String, TranslateEntry>();
+		}
+	}
+
+	/**
 	 * Función que recibe una serie de identificadores de traducción e idioma y obtien su traducción
 	 * 
 	 * @param processIds
