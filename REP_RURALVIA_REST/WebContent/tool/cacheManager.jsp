@@ -1,13 +1,50 @@
-<%@page import="com.rsi.rvia.multibank.CssMultiBankProcessor"%>
 <%@page
-	import="com.rsi.rvia.rest.template.TemplateManager,com.rsi.rvia.translates.TranslateProcessor"%>
+	import="com.rsi.rvia.rest.template.TemplateManager
+	,com.rsi.rvia.translates.TranslateProcessor
+	,java.util.Hashtable
+	,java.util.Enumeration
+	,com.rsi.rvia.multibank.CssMultiBankProcessor"%>
 <%@ page language="java" contentType="text/html"
 	pageEncoding="UTF-8"%>
 
 <%
-	int nTemplateSize = TemplateManager.getSizeCache();
-	int nTranslateSize = TranslateProcessor.getSizeCache();
-	int nCssMultibankSize = CssMultiBankProcessor.getSizeCache();
+	Hashtable<String,String> htCaches = new Hashtable<String,String>();
+	/* Se añaden las caches */
+	htCaches.put("Plantillas HTML", (String) String.valueOf(TemplateManager.getSizeCache()));
+	htCaches.put("Traducciones", (String) String.valueOf(TranslateProcessor.getSizeCache()));
+	htCaches.put("CSS Multientidad", (String) String.valueOf(CssMultiBankProcessor.getSizeCache()));
+	
+	boolean fFirst = false;
+	String strTable = "";
+	String strJson = "{\"caches\":[";
+	
+	/* Se generan las tablas HTML y el Json para el Javascript */
+	for (Enumeration e = htCaches.keys(); e.hasMoreElements(); ) 
+	{ 
+		
+		String strKey = (String) e.nextElement();
+		String strBaseName = strKey.trim().replace(" ", "");
+		strTable += "<tr class=\"lineaGris centered\">\n" +
+					"<td>" + strKey + "</td>\n" +
+					"<td class=\"cacheSize\" id=\"cache" + strBaseName + "\">" + htCaches.get(strKey) + "</td>\n" +
+					"<td><input id=\"check" + strBaseName + "\" class=\"largeCheckBox\" type=\"checkbox\"></td>\n" +
+					"</tr>";
+		if(fFirst){
+			strJson += ",";
+		}
+		strJson += "{" +
+					"\"cacheName\":\"" + strKey + "\"," +
+					"\"idSize\":\"cache" + strBaseName + "\"," +
+					"\"idCheck\":\"check" + strBaseName + "\"" +
+					"}";
+		fFirst = true;
+	}
+		strJson += "]}";
+	
+	
+	
+
+	
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"/>
 <html>
@@ -636,27 +673,10 @@ input:disabled+label {
 				<tr class="lineaGris centered">
 					<td>Todas</td>
 					<td>-</td>
-					<td><input id="allCheck" class="largeCheckBox" type="checkbox">
+					<td><input onclick="checkAll()" id="checkAll" class="largeCheckBox" type="checkbox">
 					</td>
 				</tr>
-				<tr class="lineaGris centered">
-					<td>Plantillas HTML</td>
-					<td class="cacheSize" id="cacheTemplate"><%=nTemplateSize%></td>
-					<td><input id="templateCheck" class="largeCheckBox"
-						type="checkbox"></td>
-				</tr>
-				<tr class="lineaGris centered">
-					<td>Traducciones</td>
-					<td class="cacheSize" id="cacheTranslate"><%=nTranslateSize%></td>
-					<td><input id="translateCheck" class="largeCheckBox"
-						type="checkbox"></td>
-				</tr>
-				<tr class="lineaGris centered">
-					<td>Css Multientidad</td>
-					<td class="cacheSize" id="cacheCssMultibank"><%=nCssMultibankSize%></td>
-					<td><input id="cssMultibankCheck" class="largeCheckBox"
-						type="checkbox"></td>
-				</tr>				
+				<%=strTable%>			
 			</tbody>
 
 		</table>
@@ -667,14 +687,19 @@ input:disabled+label {
 
 	<script type="text/javascript">
 	
+	var pJsonData = <%=strJson%>;
+	var listCaches =  pJsonData.caches;
+	var pLoading = '<div class="bola_warning">-</div>';
+	
 		function refreshCache(){
 			var strRefresh = "true";
-			var pLoading = '<div class="bola_warning"></div>';
 			var dataGet = {};
 			
-			document.getElementById("cacheTemplate").innerHTML = pLoading;
-			document.getElementById("cacheTranslate").innerHTML = pLoading;
-			document.getElementById("cacheCssMultibank").innerHTML = pLoading;
+			/* Se ponen las caches en estado de cargando */
+			for (item in  listCaches) {
+				console.log("Item: " + item + ", listCaches[item].idSize: " + listCaches[item].idSize);
+				document.getElementById(listCaches[item].idSize).innerHTML = pLoading;
+			}
 			
 			dataGet.refresh = strRefresh;
 			console.log("Refresh: " + strRefresh);
@@ -691,35 +716,35 @@ input:disabled+label {
 				}
 			});
 		}
-		function freeCache() {
-			var strParams = '';
-			var pLoading = '<div class="bola_warning"></div>';
-			var fCheckAll = document.getElementById("allCheck");
-			var fCheckTemplate = document.getElementById("templateCheck");
-			var fCheckTranslate = document.getElementById("translateCheck");
-			var fCheckCssMultibank = document.getElementById("cssMultibankCheck");
-			var dataGet = {};
-			var pCacheSizes = document.getElementsByClassName("cacheSize");
-
-			if (fCheckAll.checked) {
-				strParams += 'all';
-				for (var i = 0; i < pCacheSizes.length; i++) {
-					pCacheSizes[i].innerHTML = pLoading;
-				}
-			} else {
-				if (fCheckTemplate.checked) {
-					strParams += 'template';
-					document.getElementById("cacheTemplate").innerHTML = pLoading;
-				}
-				if (fCheckTranslate.checked) {
-					strParams += ',translate';
-					document.getElementById("cacheTranslate").innerHTML = pLoading;
-				}
-				if (fCheckCssMultibank.checked) {
-					strParams += ',cssMultibank';
-					document.getElementById("cacheCssMultibank").innerHTML = pLoading;
+		
+		function refreshData(pJsonResponse) {
+			/* Se actualizan los valores conforme a la respuesta de la petición ajax */
+			for (item in  listCaches) {
+				console.log("Item: " + item + ", listCaches[item].idSize: " + listCaches[item].idSize);
+				for(cache in pJsonResponse.caches){
+					if(listCaches[item].cacheName === pJsonResponse.caches[cache].cacheName){
+						document.getElementById(listCaches[item].idSize).innerHTML = pJsonResponse.caches[cache].size;
+					}
 				}
 			}
+			
+		}
+		
+		function freeCache() {
+			var strParams = '';
+			
+			
+			var dataGet = {};
+			var pCacheSizes = document.getElementsByClassName("cacheSize");
+			
+			for (item in  listCaches) {					
+				if(document.getElementById(listCaches[item].idCheck).checked){
+					document.getElementById(listCaches[item].idSize).innerHTML = pLoading;
+					strParams += listCaches[item].cacheName + ";";
+				}
+			}
+			console.log("StrParams: " + strParams);
+			
 			dataGet.clean = strParams;
 			console.log("StrParams: " + strParams);
 			var strUrl = '/api/tool/cleanCache.jsp';
@@ -735,19 +760,25 @@ input:disabled+label {
 				}
 			});
 		}
-
-		function refreshData(pJsonResponse) {
-			console.log(pJsonResponse);
-			if (typeof pJsonResponse.template !== "undefined") {
-				document.getElementById("cacheTemplate").innerHTML = pJsonResponse.template.size;
+		
+		function checkAll() {
+			var allCheckBox = document.getElementById("checkAll");
+			if(allCheckBox.checked){
+				/* Se activan todos los Ticks */
+				for (item in  listCaches) {					
+					document.getElementById(listCaches[item].idCheck).checked = true;
+				}
+			}else{
+				/* Se desactivan todos los ticks */
+				for (item in  listCaches) {
+					
+					document.getElementById(listCaches[item].idCheck).checked = false;
+				}
 			}
-			if (typeof pJsonResponse.translate !== "undefined") {
-				document.getElementById("cacheTranslate").innerHTML = pJsonResponse.translate.size;
-			}
-			if (typeof pJsonResponse.cssMultibank !== "undefined") {
-				document.getElementById("cacheCssMultibank").innerHTML = pJsonResponse.cssMultibank.size;
-			}
+			
 		}
+
+		
 	</script>
 </body>
 </html>
