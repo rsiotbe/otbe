@@ -198,7 +198,7 @@ public class Utils
 		}
 		catch (Exception ex)
 		{
-			pLog.error("No es posible leer el contenido del InpoutStreamReader", ex);
+			pLog.error("No es posible leer el contenido del InputStreamReader", ex);
 			throw ex;
 		}
 		finally
