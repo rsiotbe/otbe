@@ -171,8 +171,9 @@ public class TemplateManager
 	 * 
 	 * @param strPathToTemplate
 	 * @return Documento jsoup con el HTML
+	 * @throws Exception
 	 */
-	private static Document readTemplate(String strPathToTemplate)
+	private static Document readTemplate(String strPathToTemplate) throws Exception
 	{
 		Document pDocument;
 		String strHtml = "";
