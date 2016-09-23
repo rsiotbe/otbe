@@ -26,6 +26,7 @@
 	} catch (Exception ex) {
 		pLog.error("Imposible convertir strIdMiq a Integer, valor de strIdMiq: "
 				+ strIdMiq);
+		nMiqQuestId = 0;
 	}
 
 	String strToken = request.getParameter("token");
@@ -35,10 +36,20 @@
 	pLog.trace("Method: " + strMethod);
 	pLog.trace("IdMiq: " + strIdMiq);
 	pLog.trace("Token: " + strToken);
-	if (strIdMiq != null) {
+	if (nMiqQuestId > 0) {
 		pMiqQuests = MiqQuests.getMiqQuests(nMiqQuestId);
-		strPathRest = pMiqQuests.getPathRest();
-		pLog.info("Datos de la operativa: " + pMiqQuests.toString());
+		if(pMiqQuests != null)
+		{
+			strPathRest = pMiqQuests.getPathRest();
+			pLog.info("Datos de la operativa: " + pMiqQuests.toString());
+		}
+		else
+		{
+			pLog.error("No se ha recuperado un objeto MiqQuest valido para el id: " + strIdMiq);
+			strError = "1111";
+			strPathRest = "/rviaerror";
+		}
+
 	} else {
 		strError = "1111";
 		strPathRest = "/rviaerror";

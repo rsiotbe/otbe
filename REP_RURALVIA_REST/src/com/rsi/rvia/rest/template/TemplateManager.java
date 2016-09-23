@@ -86,6 +86,7 @@ public class TemplateManager
 			}
 			else
 			{
+				pLog.info("Template NO cacheado, se procede a leerlo, tratarlo y cachearlo");
 				pDocument = readTemplate(strPathToTemplate);
 				pDocument = translateXhtml(pDocument, pSessionRviaData);
 				htCacheTemplate.put(strCacheKey, pDocument);
