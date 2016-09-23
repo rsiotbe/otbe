@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 public class Utils
 {
-	private static Logger pLog = LoggerFactory.getLogger(Utils.class);
+	private static Logger	pLog	= LoggerFactory.getLogger(Utils.class);
 
 	/**
 	 * Dado el uriInfo, compone el path original (con el nombre del parametro, no el valor) Ejemplo de salida:
@@ -181,8 +181,9 @@ public class Utils
 	 * @param is
 	 *           InputStream del recurso
 	 * @return String con del recurso
+	 * @throws Exception
 	 */
-	public static String getStringFromInputStream(InputStream is)
+	public static String getStringFromInputStream(InputStream is) throws Exception
 	{
 		BufferedReader pBufferedReader = null;
 		StringBuilder pStringBuilder = new StringBuilder();
@@ -197,7 +198,8 @@ public class Utils
 		}
 		catch (Exception ex)
 		{
-			pLog.error("No es posible leer el contenido del InpoutStreamReader", ex);
+			pLog.error("No es posible leer el contenido del InputStreamReader", ex);
+			throw ex;
 		}
 		finally
 		{

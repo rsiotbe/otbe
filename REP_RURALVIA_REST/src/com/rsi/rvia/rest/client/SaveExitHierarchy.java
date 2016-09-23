@@ -91,11 +91,12 @@ public class SaveExitHierarchy
 		String strParamName = key;
 		if (!strParamName.trim().isEmpty())
 		{
-			pLog.trace("Se evalua el campo de salida " + strParamName + " para su censo en la operativa con id " + _nIdMiq);
 			boolean fExistConfig = existExitFieldsConfigInDDBB(_nIdMiq, strParamName);
 			/* si no existe la relación se procede a crarla */
 			if (!fExistConfig)
 			{
+				pLog.trace("Se procede a insertar el campo de salida " + strParamName
+						+ " para su censo en la operativa con id " + _nIdMiq);
 				/*
 				 * si el campo de salida no existe, se comprueba si está definido como campo de salida de culaquier otra
 				 * opertativa
@@ -143,7 +144,6 @@ public class SaveExitHierarchy
 				if (!fReturn)
 				{
 					/* el campo de salida existe y está relacionado, se pasa al siguiente campo de salida */
-					pLog.trace("El campo " + strParamName + " ya se encuentra censado para esta operativa");
 					fReturn = true;
 				}
 			}

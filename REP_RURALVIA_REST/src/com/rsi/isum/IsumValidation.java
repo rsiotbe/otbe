@@ -58,6 +58,8 @@ public class IsumValidation
 		{
 			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
-		return fReturn;
+		// return fReturn;
+		// /???
+		return true;
 	}
 }

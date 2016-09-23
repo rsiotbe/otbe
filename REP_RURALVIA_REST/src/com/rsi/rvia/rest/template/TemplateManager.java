@@ -48,8 +48,9 @@ public class TemplateManager
 	 * @param strPathToTemplate
 	 * @param pSessionRviaData
 	 * @return
+	 * @throws Exception
 	 */
-	public static String processTemplate(String strPathToTemplate, SessionRviaData pSessionRviaData)
+	public static String processTemplate(String strPathToTemplate, SessionRviaData pSessionRviaData) throws Exception
 	{
 		return processTemplate(strPathToTemplate, pSessionRviaData, "{}");
 	}
@@ -65,8 +66,10 @@ public class TemplateManager
 	 * @param strDataJson
 	 *           Datos en formato JSON.
 	 * @return Template procesado.
+	 * @throws Exception
 	 */
 	public static String processTemplate(String strPathToTemplate, SessionRviaData pSessionRviaData, String strDataJson)
+			throws Exception
 	{
 		String strReturn;
 		Document pDocument;
@@ -86,6 +89,7 @@ public class TemplateManager
 			}
 			else
 			{
+				pLog.info("Template NO cacheado, se procede a leerlo, tratarlo y cachearlo");
 				pDocument = readTemplate(strPathToTemplate);
 				pDocument = translateXhtml(pDocument, pSessionRviaData);
 				htCacheTemplate.put(strCacheKey, pDocument);
@@ -100,8 +104,8 @@ public class TemplateManager
 		}
 		catch (Exception ex)
 		{
-			strReturn = null;
 			pLog.error("No ha sido posible procesar la plantilla xhtml", ex);
+			throw ex;
 		}
 		return strReturn;
 	}
@@ -170,8 +174,9 @@ public class TemplateManager
 	 * 
 	 * @param strPathToTemplate
 	 * @return Documento jsoup con el HTML
+	 * @throws Exception
 	 */
-	private static Document readTemplate(String strPathToTemplate)
+	private static Document readTemplate(String strPathToTemplate) throws Exception
 	{
 		Document pDocument;
 		String strHtml = "";
