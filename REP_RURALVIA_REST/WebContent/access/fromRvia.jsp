@@ -47,7 +47,7 @@
 		{
 			pLog.error("No se ha recuperado un objeto MiqQuest valido para el id: " + strIdMiq);
 			strError = "1111";
-			strPathRest = "/rviaerror";
+			strPathRest = "/test/rviaerror";
 		}
 
 	} else {
