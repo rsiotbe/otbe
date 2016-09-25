@@ -69,7 +69,6 @@
 
 		JSONObject pJson = new JSONObject();
 		JSONObject pJsonExit= new JSONObject();
-		pJsonExit.put("token", "sitio para el token");
 		Logger	pLog = LoggerFactory.getLogger("jsp");	
 		
 		JSONArray json = Utils.convertResultSet2JSON(pResultSet);

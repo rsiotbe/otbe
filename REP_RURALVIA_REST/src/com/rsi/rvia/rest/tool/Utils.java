@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class Utils
 			strKeys += strKeyName;
 			strKeys += "}";
 		}
-		String strPath = pUriInfo.getPath();
+		String strPath = pUriInfo.getPath();			
 		String[] pStrPathParts = strPath.split("/");
 		strPath = "";
 		for (int i = 0; i <= (pStrPathParts.length - pListParameters.size()) - 1; i++)
@@ -173,7 +174,21 @@ public class Utils
 		}
 		return strReturn;
 	}
-
+	public static String hashMap2QueryString(HashMap<String, String> pMap)
+	{
+		String strReturn = "";
+		Iterator<String> pIterator = pMap.keySet().iterator();
+		while (pIterator.hasNext())
+		{
+			String strKey = (String) pIterator.next();
+			if (pMap.get(strKey) != null)
+			{
+				strReturn += "&" + strKey + "=" + pMap.get(strKey);
+			}
+		}
+		return strReturn;
+	}
+	
 	/**
 	 * Obtiene un String a traves de un InputStream de un recuerso compilado. Ejemplo de uso: lectura de los templates
 	 * xhtml.

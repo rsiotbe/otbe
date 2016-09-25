@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
@@ -55,7 +56,7 @@ public class RestWSConnector
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception
 	 */
-	public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests, SessionRviaData pSessionRvia,
+			SessionRviaData pSessionRvia, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject) throws Exception
 			MultivaluedMap<String, String> pPathParams) throws Exception
 	{
 		Client pClient = RviaRestHttpClient.getClient();
@@ -69,8 +70,14 @@ public class RestWSConnector
 		String strCODCanal = GettersRequestParams.getCODCanal(pRequest);
 		String strCODSecIp = GettersRequestParams.getCODSecIp(pRequest);
 		String pathQueryParams = "";
-		pathQueryParams = Utils.multiValuedMap2QueryString(pPathParams);
-		WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint() + "?" + strQueryParams + pathQueryParams);
+		pathQueryParams = Utils.multiValuedMap2QueryString(pPathParams) + Utils.hashMap2QueryString(pParamsToInject);
+		
+		
+		//WebTarget pTarget = pClient.target("http://localhost:8080/api/costcontrolapi/controlDeGastosAcuerdos.jsp?&codEntidad=198&nTarjeta=198052445&idInternoPe=01577093");
+		
+		String urrQueryString=((strQueryParams==null) ? "" : strQueryParams) + "&idMiq=" + pMiqQuests.getIdMiq() + pathQueryParams;
+		
+		WebTarget pTarget = pClient.target( pMiqQuests.getBaseWSEndPoint() + "?" + urrQueryString);
 		pLog.info("END_POINT:" + pMiqQuests.getEndPoint());
 		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
 		pLog.info("GET: " + pReturn.toString());
@@ -96,7 +103,7 @@ public class RestWSConnector
 	 * @throws Exception
 	 */
 	public static Response post(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests,
-			SessionRviaData pSessionRvia, String strJsonData, MultivaluedMap<String, String> pPathParams) throws Exception
+			SessionRviaData pSessionRvia, String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject) throws Exception
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = RviaRestHttpClient.getClient();
@@ -129,6 +136,14 @@ public class RestWSConnector
 			String strKey = (String) pIterator.next();
 			pJson.put(strKey, (String) pPathParams.get(strKey).toString());
 		}
+		pIterator = pParamsToInject.keySet().iterator();
+		while (pIterator.hasNext())
+		{
+			String strKey = (String) pIterator.next();
+			pJson.put(strKey, (String) pPathParams.get(strKey).toString());
+		}
+		pJson.put("idMiq", pMiqQuests.getIdMiq());
+		
 		strJsonData = pJson.toString();
 		WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint());
 		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).post(Entity.json(strJsonData));
@@ -155,14 +170,14 @@ public class RestWSConnector
 	 * @throws Exception
 	 */
 	public static Response put(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests, SessionRviaData pSessionRvia,
-			String strJsonData, MultivaluedMap<String, String> pPathParams) throws Exception
+			String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject) throws Exception
 	{
 		/*
 		 * se reutiliza la petición post puesto que es similar, en caso de una implementación diferente, es necesario
 		 * definir este método desde cero
 		 */
 		pLog.warn("Se recibe un método PUT, pero se trata como si fuera un POST");
-		return post(pRequest, pMiqQuests, pSessionRvia, strJsonData, pPathParams);
+		return post(pRequest, pMiqQuests, pSessionRvia, strJsonData, pPathParams, pParamsToInject));
 	}
 
 	/**

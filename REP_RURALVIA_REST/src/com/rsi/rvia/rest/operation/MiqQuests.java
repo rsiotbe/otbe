@@ -138,6 +138,7 @@ public class MiqQuests
 		Connection pConnection = null;
 		PreparedStatement pPreparedStatement = null;
 		ResultSet pResultSet = null;
+		strPath = strPath.replace("/help", "");
 		try
 		{
 			String strQuery = "select * from bdptb222_miq_quests where path_rest = ?";

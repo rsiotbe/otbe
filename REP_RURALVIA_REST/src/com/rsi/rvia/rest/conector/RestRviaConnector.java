@@ -294,7 +294,7 @@ public class RestRviaConnector
 	{
 		Connection pConnection = null;
 		PreparedStatement pPreparedStatement = null;
-		String strQuery = "insert into BEL.BDPTB225_MIQ_SESSION_PARAMS values (?, ? ,'','','SESION','','')";
+		String strQuery = "insert into BEL.BDPTB225_MIQ_SESSION_PARAMS values (?, ? ,'','','RVIASESSION','','')";
 		try
 		{
 			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);

@@ -37,12 +37,13 @@
 		" 	AND t1.COD_ECV_PERS_AC = '2'" +
 		" 	AND t1.ID_INTERNO_PE =?" +
 		" 	and t2.mi_fecha_fin = (select MI_FECHA_PROCESO from rdwc01.ce_carga_tabla" +
-		" 		where nomtabla='MI_LINEA_GRUPO')" ;
+		" 		where nomtabla='MI_LINEA_GRUPO')";
 	JSONObject pp= new JSONObject();
 	JSONObject pJson = new JSONObject();
-	pp.put("token", "sitio para el token");
-	Logger	pLog = LoggerFactory.getLogger("jsp");	
-	
+	Logger	pLog = LoggerFactory.getLogger("jsp");
+
+	//pLog.info("--------------------------------: " + request.getParameter("idMiq"));
+		
 	Connection pConnection = null;
 	PreparedStatement pPreparedStatement = null;
 	ResultSet pResultSet = null;
@@ -56,7 +57,7 @@
 	pResultSet.close();
 	pPreparedStatement.close();
 	pConnection.close();
-	pp.put("output", json);	
+	pp.put("data", json);	
 	pJson.put("response",pp);
 	String respuesta=pJson.toString();
 	response.setHeader("content-type", "application/json");

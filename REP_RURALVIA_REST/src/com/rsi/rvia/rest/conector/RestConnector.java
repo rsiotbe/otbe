@@ -1,5 +1,7 @@
 package com.rsi.rvia.rest.conector;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -13,7 +15,7 @@ public class RestConnector
 {
 	private static Logger	pLog				= LoggerFactory.getLogger(RestConnector.class);
 	private String				_requestMethod	= "";
-
+	
 	/**
 	 * Devuelve el método asociado a la petición
 	 * 
@@ -41,7 +43,7 @@ public class RestConnector
 	 * @throws Exception
 	 */
 	public Response getData(HttpServletRequest pRequest, String strData, SessionRviaData pSessionRvia,
-			MiqQuests pMiqQuests, MultivaluedMap<String, String> pPathParams) throws Exception
+			MiqQuests pMiqQuests, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject) throws Exception
 	{
 		Response pReturn = null;
 		String strMethod = pRequest.getMethod();
@@ -52,6 +54,9 @@ public class RestConnector
 		pLog.info("Se obtiene la configuración de la base de datos. MiqQuest: " + pMiqQuests);
 		pLog.info("Se recibe una petición con tipo de metodo : " + strMethod + " a " + strComponentType);
 		switch (strComponentType)
+		
+
+		
 		{
 			case "RVIA":
 				pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, pSessionRvia, strData);
@@ -61,13 +66,13 @@ public class RestConnector
 				switch (strMethod)
 				{
 					case "GET":
-						pReturn = RestWSConnector.get(pRequest, pMiqQuests, pSessionRvia, pPathParams);
+					pReturn = RestWSConnector.get(pRequest, pMiqQuests, strPrimaryPath, pSessionRvia, pPathParams, pParamsToInject);
 						break;
 					case "POST":
-						pReturn = RestWSConnector.post(pRequest, pMiqQuests, pSessionRvia, strData, pPathParams);
+						pReturn = RestWSConnector.post(pRequest, pMiqQuests, pSessionRvia, strData, pPathParams, pParamsToInject);
 						break;
 					case "PUT":
-						pReturn = RestWSConnector.put(pRequest, pMiqQuests, pSessionRvia, strData, pPathParams);
+					pReturn = RestWSConnector.get(pRequest, pMiqQuests, strPrimaryPath, pSessionRvia, pPathParams, pParamsToInject);
 						break;
 					case "PATCH":
 						pLog.warn("No existe ninguna acción para este método");
