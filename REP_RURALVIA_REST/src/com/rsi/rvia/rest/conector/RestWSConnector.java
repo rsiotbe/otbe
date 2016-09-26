@@ -56,9 +56,8 @@ public class RestWSConnector
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception
 	 */
-	
-	public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests, String strPathRest,
-			SessionRviaData pSessionRvia, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject) throws Exception
+	public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests, SessionRviaData pSessionRvia,
+			MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject) throws Exception
 	{
 		Client pClient = RviaRestHttpClient.getClient();
 		String strQueryParams = pRequest.getQueryString();
@@ -72,13 +71,9 @@ public class RestWSConnector
 		String strCODSecIp = GettersRequestParams.getCODSecIp(pRequest);
 		String pathQueryParams = "";
 		pathQueryParams = Utils.multiValuedMap2QueryString(pPathParams) + Utils.hashMap2QueryString(pParamsToInject);
-		
-		
-		//WebTarget pTarget = pClient.target("http://localhost:8080/api/costcontrolapi/controlDeGastosAcuerdos.jsp?&codEntidad=198&nTarjeta=198052445&idInternoPe=01577093");
-		
-		String urrQueryString=((strQueryParams==null) ? "" : strQueryParams) + "&idMiq=" + pMiqQuests.getIdMiq() + pathQueryParams;
-		
-		WebTarget pTarget = pClient.target( pMiqQuests.getBaseWSEndPoint() + "?" + urrQueryString);
+		String urlQueryString = ((strQueryParams == null) ? "" : strQueryParams) + "&idMiq=" + pMiqQuests.getIdMiq()
+				+ pathQueryParams;
+		WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint() + "?" + urlQueryString);
 		pLog.info("END_POINT:" + pMiqQuests.getEndPoint());
 		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
 		pLog.info("GET: " + pReturn.toString());
@@ -104,7 +99,8 @@ public class RestWSConnector
 	 * @throws Exception
 	 */
 	public static Response post(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests,
-			SessionRviaData pSessionRvia, String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject) throws Exception
+			SessionRviaData pSessionRvia, String strJsonData, MultivaluedMap<String, String> pPathParams,
+			HashMap<String, String> pParamsToInject) throws Exception
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = RviaRestHttpClient.getClient();
@@ -144,7 +140,6 @@ public class RestWSConnector
 			pJson.put(strKey, (String) pPathParams.get(strKey).toString());
 		}
 		pJson.put("idMiq", pMiqQuests.getIdMiq());
-		
 		strJsonData = pJson.toString();
 		WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint());
 		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).post(Entity.json(strJsonData));
@@ -171,7 +166,8 @@ public class RestWSConnector
 	 * @throws Exception
 	 */
 	public static Response put(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests, SessionRviaData pSessionRvia,
-			String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject) throws Exception
+			String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject)
+			throws Exception
 	{
 		/*
 		 * se reutiliza la petición post puesto que es similar, en caso de una implementación diferente, es necesario

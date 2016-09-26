@@ -17,7 +17,7 @@
 	<property name="build-directory" value="${base-directory}/build" />
 	<property name="classes-directory" value="${build-directory}/classes" />
 	<property name="configurations-directory" value="${base-directory}/configurations" />
-	<property name="configurations-directory-aux" value="${build-directory}/aux" />
+	<property name="configurations-directory-aux" value="${base-directory}/aux" />
 	<property name="dist-directory" value="${base-directory}/dist" />
 	<property name="tomcat-directory" value="D:/Aplicaciones/Tomcat 7/lib" />
 	
@@ -45,7 +45,7 @@
     	<mkdir dir="${build-directory}"/>
     	<mkdir dir="${classes-directory}"/>
     	<mkdir dir="${dist-directory}" />
-	<!--	<mkdir dir="${configurations-directory-aux}" />-->
+		<mkdir dir="${configurations-directory-aux}" />
 	</target>
 	<path id="classpath.runtime">
 		<fileset dir="${tomcat-directory}" includes="**/*.jar" />

@@ -138,6 +138,10 @@ public class MiqQuests
 		Connection pConnection = null;
 		PreparedStatement pPreparedStatement = null;
 		ResultSet pResultSet = null;
+		/*
+		 * en caso de contener el path la coletilla /help, se elilina para obtener el path original sobre el cual se
+		 * pregunta la ayuda
+		 */
 		strPath = strPath.replace("/help", "");
 		try
 		{
