@@ -58,7 +58,14 @@
 <body>
 	<form id="formRedirect" action="/api/rest<%=strPathRest%>" method="<%=strMethod%>" encType="multipart/form-data">
 		<input type="hidden" name="token" value="<%=strToken%>"> 
+<%
+	if(!strError.trim().isEmpty())
+	{
+%>
 		<input type="hidden" name="errorCode" value="<%=strError%>">
+<%
+	}
+%>		
 	</form>
 	<script type="text/javascript">
 		document.getElementById('formRedirect').submit();
