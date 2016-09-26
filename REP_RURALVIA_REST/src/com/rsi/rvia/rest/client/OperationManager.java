@@ -25,6 +25,7 @@ import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.error.ErrorManager;
 import com.rsi.rvia.rest.error.ErrorResponse;
 import com.rsi.rvia.rest.error.exceptions.ISUMException;
+import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.template.TemplateManager;
@@ -254,7 +255,7 @@ public class OperationManager
 				else
 				{
 					// Login fallido
-					throw new Exception();
+					throw new LogicalErrorException(403,9999, "Login failed", "Suministre credenciales válidas para iniciar sesión", new Exception());
 				}
 			}
 			else
@@ -265,7 +266,7 @@ public class OperationManager
 			HashMap<String, String> pParamsToInject = ManageJWToken.validateJWT(JWT);
 			if (pParamsToInject == null)
 			{
-				throw new Exception();
+				throw new LogicalErrorException(401,9999, "Unauthorized", "Sesión no válida", new Exception());
 			}
 			// else{
 			// Forzamos regeneración de token tras una verificación correcta.

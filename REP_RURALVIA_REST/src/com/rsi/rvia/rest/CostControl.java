@@ -39,10 +39,10 @@ public class CostControl
 		// Invocar servicio de login	desde operation manager?
 		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);	
 		pLog.info(" ---------> Login");
-		int status = pReturn.getStatus();
-		if(status != 200)
-			return Response.ok("{\"httpCode\":\"403\",\"message\":\"Login failed\"}").status(403).build();
-		else	
+		//int status = pReturn.getStatus();
+		//if(status != 200)
+		//	return Response.ok("{\"httpCode\":\"403\",\"message\":\"Login failed\"}").status(403).build();
+		//else	
 			return pReturn;
 	}	
 	
