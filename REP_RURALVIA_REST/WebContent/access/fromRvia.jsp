@@ -56,12 +56,11 @@
 	}
 %>
 <body>
-	<form id="formRedirect" action="/api/rest<%=strPathRest%>" method="<%=strMethod%>">
+	<form id="formRedirect" action="/api/rest<%=strPathRest%>" method="<%=strMethod%>" encType="multipart/form-data">
 		<input type="hidden" name="token" value="<%=strToken%>"> 
 		<input type="hidden" name="errorCode" value="<%=strError%>">
 	</form>
 	<script type="text/javascript">
-		alert("se procede a enviar");
 		document.getElementById('formRedirect').submit();
 	</script>
 </body>

@@ -10,6 +10,7 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.tool.Utils;
 
 public class ErrorManager
 {
@@ -32,7 +33,7 @@ public class ErrorManager
 			pReturn = new ErrorResponse(pEx);
 		}
 		/* se deja traza del error en los log */
-		pLog.error("Se ha producido un error: " + pEx.toString());
+		pLog.error("Se ha producido un error: " + pEx.toString() + "\n" + Utils.getExceptionStackTrace(pEx));
 		return pReturn;
 	}
 
