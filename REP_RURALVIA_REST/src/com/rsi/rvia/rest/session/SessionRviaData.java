@@ -22,15 +22,15 @@ public class SessionRviaData
 	private String					strLanguage				= "";
 	private String					strNRBE					= "";
 	private String					strToken					= "";
-	private CanalAix				pCanalAix				= CanalAix.BancaInternet;
+	private CanalAix				pCanalAix				= CanalAix.BANCA_INTERNET;
 
 	/**
 	 * Enumeración de canal aix recibido desde ruralvia
 	 */
 	public enum CanalAix
 	{
-		ValoresBancaInternet(1), ValoresBancaTelefónica(2), BancaInternet(3), BancaTelefonica(4), Abogados(5), AbogadosTelefonica(
-				6), TPVVirtual(7), Seguros(8), Oficina(9), TPVVirtualTelefonica(10), BancaMóvil(11), BancaTablet(13), BancaTabletCAU(
+		VALORES_BANCA_INTERNET(1), VALORES_BANCA_TELEFONICA(2), BANCA_INTERNET(3), BANCA_TELEFONICA(4), ABOGADOS(5), ABOGADOS_TELEFONICA(
+				6), TPV_VIRTUAL(7), SEGUROS(8), OFICINA(9), TPV_VIRTUAL_TELEFONICA(10), BANCA_MOVIL(11), BANCA_TABLET(13), BANCA_TABLET_CAU(
 				14);
 		private final int	value;
 
@@ -238,7 +238,7 @@ public class SessionRviaData
 	private CanalAix obtainCanalAixFromStringValue(String strValue)
 	{
 		/* por defecto se considera canal WEB */
-		CanalAix pReturn = CanalAix.BancaInternet;
+		CanalAix pReturn = CanalAix.BANCA_INTERNET;
 		if (strValue != null && !strValue.trim().isEmpty())
 		{
 			/* se buscan en todas los posibles valores de la enumeración */

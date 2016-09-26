@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="REP_RURALVIA_REST" default="war" basedir=".">
+	<property file="build.scm.properties" />
+	<property name="project-name" value="REP_RUALVIA_REST" />
+	<property name="deploy-name" value="api" />
+	<tstamp>
+		<format property="timestamp" pattern="yyyyMMdd_HHmm" />
+	</tstamp>
+	
+	<property name="war-file-name" value="${deploy-name}##${timestamp}.war" />
+	<property name="base-directory" value=".." />
+	<property name="source-directory" value="${base-directory}/src" />
+	<property name="template-directory" value="${base-directory}/template" />
+	<property name="web-directory" value="${base-directory}/WebContent" />
+	<property name="web-xml-file" value="${web-directory}/WEB-INF/web.xml" />
+	<property name="lib-directory" value="${web-directory}/WEB-INF/lib" />
+	<property name="build-directory" value="${base-directory}/build" />
+	<property name="classes-directory" value="${build-directory}/classes" />
+	<property name="configurations-directory" value="${base-directory}/configurations" />
+	<property name="configurations-directory-aux" value="${build-directory}/aux" />
+	<property name="dist-directory" value="${base-directory}/dist" />
+	<property name="tomcat-directory" value="D:/Aplicaciones/Tomcat 7/lib" />
+	
+	<target name="clean">
+		<echo message="Se procede a eliminar las rutas build y dist" />
+    	<rmdir dir="${build-directory}"/>
+    	<rmdir dir="${dist-directory}" />
+		<rmdir dir="${configurations-directory-aux}" />
+	</target>	
+	<target name="init">
+		<echo message="project-name       : ${project-name}"/>
+		<echo message="war-file-name      : ${war-file-name}"/>
+		<echo message="base-directory     : ${base-directory}"/>
+		<echo message="source-directory   : ${source-directory}"/>
+		<echo message="template-directory : ${template-directory}"/>
+		<echo message="web-directory      : ${web-directory}"/>
+		<echo message="web-xml-file       : ${web-xml-file}"/>
+		<echo message="lib-directory      : ${lib-directory}"/>
+		<echo message="build-directory    : ${build-directory}"/>
+		<echo message="classes-directory  : ${classes-directory}"/>
+		<echo message="configurations-directory     :${configurations-directory}"/>
+		<echo message="configurations-directory-aux :${configurations-directory-aux}"/>
+		<echo message="dist-directory     :  ${dist-directory}"/>
+		<echo message="Se crean los directorio build, classes y dist"/>
+    	<mkdir dir="${build-directory}"/>
+    	<mkdir dir="${classes-directory}"/>
+    	<mkdir dir="${dist-directory}" />
+	<!--	<mkdir dir="${configurations-directory-aux}" />-->
+	</target>
+	<path id="classpath.runtime">
+		<fileset dir="${tomcat-directory}" includes="**/*.jar" />
+	</path>
+	<path id="classpath.lib">
+		<fileset dir="${lib-directory}" includes="**/*.jar" />
+	</path>
+	<path id="project.classpath">
+		<pathelement location="${classes-directory}" />
+		<path refid="classpath.runtime" />
+		<path refid="classpath.lib" />
+	</path>
+	<target name="compile" depends="init" >
+		<echo message="Se procede a compilar las clases"/>
+	   	<javac destdir="${classes-directory}" debug="true" srcdir="${source-directory}">
+			<classpath refid="project.classpath" />
+   	 	</javac>
+	</target>
+	<target name="war" depends="compile">
+		<echo message="copian los archivos de configuración exclusivos de test y se renombran"/>		
+		<copy file="${configurations-directory}/Banca.OracleConfig{TEST}.properties" tofile="${configurations-directory-aux}/Banca.OracleConfig.properties"/>
+		<copy file="${configurations-directory}/CIP.OracleConfig{TEST}.properties" 	 tofile="${configurations-directory-aux}/CIP.OracleConfig.properties"/>
+		<copy file="${configurations-directory}/logback{TEST}.xml"                   tofile="${configurations-directory-aux}/logback.xml"/>
+		<copy file="${configurations-directory}/MySqlConfig.properties"              tofile="${configurations-directory-aux}/MySqlConfig.properties"/>
+		<copy file="${configurations-directory}/RuralviaAddress.properties"          tofile="${configurations-directory-aux}/RuralviaAddress.properties"/>
+		<echo message="Se procede a empaquetar todo en el war"/>
+		<echo message="Se elimina el posible war anterior"/>
+		<delete file="${dist-directory}/${war-file-name}" />
+		<echo message="Se genera el nuevo war"/>
+		<war warfile="${dist-directory}/${war-file-name}" webxml="${web-xml-file}">
+			<classes dir="${classes-directory}" />
+			<!--<classes dir="${configurations-directory}" />-->
+			<classes dir="${configurations-directory-aux}" />
+			<classes file="${classes-directory}" />
+
+			<classes dir="${template-directory}" />
+			<fileset dir="${web-directory}">
+				<!-- Need to exclude it since webxml is an attribute of the war tag above -->
+				<exclude name="${web-xml-file}" />
+			</fileset>
+			<lib dir="${lib-directory}"/>
+			<!--<fileset dir="${template-directory}"></fileset>	-->
+		</war>
+	</target>
+</project>

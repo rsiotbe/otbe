@@ -230,9 +230,9 @@ public class TemplateManager
 		{
 			switch (pSessionRviaData.getCanalAix())
 			{
-				case BancaMóvil:
-				case BancaTablet:
-				case BancaTabletCAU:
+				case BANCA_MOVIL:
+				case BANCA_TABLET:
+				case BANCA_TABLET_CAU:
 					int nLastDot = strPathToTemplate.lastIndexOf('.');
 					if (nLastDot != -1)
 						strReturn = strPathToTemplate.substring(0, nLastDot) + "_movil"
@@ -240,16 +240,16 @@ public class TemplateManager
 					else
 						strReturn = strPathToTemplate + "_movil";
 					break;
-				case ValoresBancaInternet:
-				case ValoresBancaTelefónica:
-				case BancaInternet:
-				case BancaTelefonica:
-				case Abogados:
-				case AbogadosTelefonica:
-				case Oficina:
-				case Seguros:
-				case TPVVirtual:
-				case TPVVirtualTelefonica:
+				case VALORES_BANCA_INTERNET:
+				case VALORES_BANCA_TELEFONICA:
+				case BANCA_INTERNET:
+				case BANCA_TELEFONICA:
+				case ABOGADOS:
+				case ABOGADOS_TELEFONICA:
+				case OFICINA:
+				case SEGUROS:
+				case TPV_VIRTUAL:
+				case TPV_VIRTUAL_TELEFONICA:
 				default:
 					break;
 			}
