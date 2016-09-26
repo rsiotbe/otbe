@@ -261,7 +261,7 @@ public class OperationManager
 			else
 			{
 				// Else verificamos JWT
-				JWT = pRequest.getHeader("token");
+				JWT = pRequest.getHeader("Authorization");
 			}
 			HashMap<String, String> pParamsToInject = ManageJWToken.validateJWT(JWT);
 			if (pParamsToInject == null)
@@ -306,13 +306,13 @@ public class OperationManager
 				pLog.info("La petición utiliza plantilla XHTML");
 				strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
 			}
-			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).header("token", JWT).build();
+			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).header("Authorization",JWT).build();
 		}
 		catch (Exception ex)
 		{
 			pLog.error("Se ha generado un error al procesar la respuesta final", ex);
 			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-			pResponseConnector = Response.serverError().header("token", JWT).build();
+			pResponseConnector = Response.serverError().header("Authorization", JWT).build();
 		}
 		// Insertar siempre JWT en el response
 		return pResponseConnector;
