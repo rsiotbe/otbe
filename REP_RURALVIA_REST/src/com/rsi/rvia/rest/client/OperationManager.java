@@ -105,6 +105,7 @@ public class OperationManager
 			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
 			pResponseConnector = Response.serverError().encoding("UTF-8").build();
 		}
+		pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
 		return pResponseConnector;
 	}
 
@@ -175,6 +176,7 @@ public class OperationManager
 			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
 			pResponseConnector = Response.serverError().encoding("UTF-8").build();
 		}
+		pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
 		return pResponseConnector;
 	}
 

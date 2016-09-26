@@ -43,6 +43,7 @@
   </div>
   <a onclick="getData()" class="waves-effect waves-light btn light-green darken-1">Enviar</a>-->  
   <a onclick="getCashierClose()" class="waves-effect waves-light btn light-green darken-1">Buscar cajeros</a>
+  <a onclick="reloadPage()" class="waves-effect waves-light btn light-green darken-1">Recargar página</a>
 </div>
 <hr>
 <div id="resultado" style="display:none;margin-top:10px">
@@ -61,6 +62,11 @@
     <div class="col s12 m4 l2"></div>
   </div> --> 
 <script type="text/javascript">
+
+function reloadPage()
+{
+	$('<form action="/cashierLocatior" method="get"></form>').appendTo('body').submit();
+}
 
 function getCashierClose() {
       console.log("Entrando en getCashierClose");
