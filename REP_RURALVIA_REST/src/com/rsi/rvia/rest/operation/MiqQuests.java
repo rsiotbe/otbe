@@ -145,7 +145,7 @@ public class MiqQuests
 		strPath = strPath.replace("/help", "");
 		try
 		{
-			String strQuery = "select * from bdptb222_miq_quests where path_rest = ?";
+			String strQuery = "select * from bdptb222_miq_quests where trim(path_rest) =?";
 			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
 			pPreparedStatement.setString(1, strPath);

@@ -82,13 +82,13 @@ public class DDBBPoolFactory
 						{
 							/* por conexión con el pool del servidor */
 							pLog.debug("Se utiliza el pool de base de datos del servidor");
-							pOracleBanca = DDBBPool.getDatasourceFromCIPOracleServerPool();
+							pOracleCIP = DDBBPool.getDatasourceFromCIPOracleServerPool();
 						}
 						else
 						{
 							/* por conexión al pool interno generado por la aplicación */
 							pLog.debug("Se utiliza el pool local de base de datos");
-							pOracleBanca = DDBBPool.getDatasourceFromCIPOracleLocalPool(pPropOracleCIP);
+							pOracleCIP = DDBBPool.getDatasourceFromCIPOracleLocalPool(pPropOracleCIP);
 						}
 					}
 					pReturn = pOracleCIP.getConnection();
