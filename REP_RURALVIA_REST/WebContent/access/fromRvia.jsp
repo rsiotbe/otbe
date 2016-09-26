@@ -61,6 +61,7 @@
 		<input type="hidden" name="errorCode" value="<%=strError%>">
 	</form>
 	<script type="text/javascript">
+		alert("se procede a enviar");
 		document.getElementById('formRedirect').submit();
 	</script>
 </body>
