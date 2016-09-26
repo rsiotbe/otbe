@@ -1,5 +1,6 @@
 package com.rsi.rvia.rest.client;
 
+
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -81,7 +82,11 @@ public class OperationManager
 			MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
 			/* se instancia el conector y se solicitan los datos */
 			pRestConnector = new RestConnector();
-			pResponseConnector = pRestConnector.getData(pRequest, strData, pSessionRviaData, pMiqQuests, pListParams, null);
+			
+			
+			pResponseConnector = pRestConnector.getData(pRequest, strData, pSessionRviaData, pMiqQuests,strPrimaryPath, pListParams, null);		
+			
+			
 			pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
 			/* se procesa el resultado del conector paa evaluar y adaptar su contenido */
 			strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector, pMiqQuests);
@@ -195,8 +200,22 @@ public class OperationManager
 		return pResponseConnector;
 	}
 
-	/**
-	 * Se procesa una petición para consumo http, la cual puede ser ajena a Ruralvía
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/** Se procesa una petición para consumo http, la cual puede ser ajena a Ruralvía
+	 *  
 	 * 
 	 * @param pRequest
 	 *           Objeto petición original
@@ -206,13 +225,16 @@ public class OperationManager
 	 *           Datos asociados a la petición
 	 * @param pMediaType
 	 *           Tipo de mediatype que debe cumplir la petición
-	 * @return Objeto respuesta de Jersey
-	 */
+	 * @return Objeto respuesta de Jersey 
+	 * @throws JoseException 
+	 * @throws IOException 
+	 * @throws InvalidKeySpecException 
+	 * @throws NoSuchAlgorithmException */	
+	
 	public static Response proccesForAPI(HttpServletRequest pRequest, UriInfo pUriInfo, String strData,
 			MediaType pMediaType) throws JoseException, IOException, NoSuchAlgorithmException, InvalidKeySpecException
 	{
 		ErrorResponse pErrorCaptured = null;
-		MiqQuests pMiqQuests;
 		RestConnector pRestConnector;
 		String strJsonData = "";
 		int nReturnHttpCode = 200;
@@ -225,22 +247,21 @@ public class OperationManager
 		try
 		{
 			/* se obtiene los datos asociados a la petición de ruralvia */
-			// pSessionRviaData = new SessionRviaData(pRequest);
-			// if (pSessionRviaData != null)
-			// {
-			/* se establece el token de datos recibido desde ruralvia como dato de sesión */
-			// pSession.setAttribute("token", pSessionRviaData.getToken());
-			/* se comprueba si el servicio de isum está permitido */
-			// if (!IsumValidation.IsValidService(pSessionRviaData))
-			// throw new ISUMException(401, null, "Servicio no permitido",
-			// "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
-			/* se obtienen los datos necesario para realizar la petición al proveedor */
-			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
-			pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
-			MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
-			/* se instancia el conector y se solicitan los datos */
-			pRestConnector = new RestConnector();
-			pResponseConnector = pRestConnector.getData(pRequest, strData, pSessionRviaData, pMiqQuests, pListParams);
+//			pSessionRviaData = new SessionRviaData(pRequest);
+//			if (pSessionRviaData != null)
+//			{
+				/* se establece el token de datos recibido desde ruralvia como dato de sesión */
+				//pSession.setAttribute("token", pSessionRviaData.getToken());
+				/* se comprueba si el servicio de isum está permitido */
+				//if (!IsumValidation.IsValidService(pSessionRviaData))
+				//	throw new ISUMException(401, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+				/* se obtienen los datos necesario para realizar la petición al proveedor */
+				
+				strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
+				MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);			
+				/* se instancia el conector y se solicitan los datos */
+				pRestConnector = new RestConnector();
+			
 				
 				/* BEGIN: Gestión de login y token */
 				// Cuando exista un login rest hay que cambiar todos esto.
@@ -272,14 +293,15 @@ public class OperationManager
 				/* END: Gestión de login y token */
 	
 
-				pResponseConnector = pRestConnector.getData(pRequest, strData, pSessionRviaData, strPrimaryPath, pListParams, pParamsToInject);
-			pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
-			/* se procesa el resultado del conector paa evaluar y adaptar su contenido */
-			strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector, pMiqQuests);
-			pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
-			/* se obtiene la plantilla destino si es que existe */
-			strTemplate = pMiqQuests.getTemplate();
-			// }
+				pResponseConnector = pRestConnector.getData(pRequest, strData, pSessionRviaData, pRestConnector.getMiqQuests(), strPrimaryPath, pListParams, pParamsToInject);
+				pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
+				/* se procesa el resultado del conector paa evaluar y adaptar su contenido */
+
+				strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector, pRestConnector.getMiqQuests());
+				pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
+				/* se obtiene la plantilla destino si es que existe */
+				strTemplate = pRestConnector.getMiqQuests().getTemplate();
+//			}
 		}
 		catch (Exception ex)
 		{
@@ -304,20 +326,28 @@ public class OperationManager
 				pLog.info("La petición utiliza plantilla XHTML");
 				strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
 			}
-			pResponseConnector = Response.status(nReturnHttpCode).encoding("UTF-8").entity(strJsonData).build();
+			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).header("token", JWT).build();			
 		}
 		catch (Exception ex)
 		{
 			pLog.error("Se ha generado un error al procesar la respuesta final", ex);
 			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-			pResponseConnector = Response.serverError().encoding("UTF-8").build();
+			pResponseConnector = Response.serverError().header("token", JWT).build();			
 		}
 		
 	// Insertar siempre JWT en el response		
 		return pResponseConnector;
 	}
+	
+	
+	
+	
+	
+	
 	private static HashMap<String, String> doLogin () throws JoseException, IOException{		
 		HashMap<String, String> fields = new HashMap<String, String>();
+		
+		
 		String strBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 				"<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
 				"xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">" +
@@ -365,22 +395,42 @@ public class OperationManager
 	    httpPost.setEntity(stringEntity);
 	    httpPost.addHeader("Accept", "text/xml");
 	    httpPost.addHeader("SOAPAction", "");
+
 	    // Execute and get the response.
 	    HttpClient httpClient = new DefaultHttpClient();
+	    
 	    //HttpClient httpClient = new HttpClient();
 	    HttpResponse response = httpClient.execute(httpPost);
 	    HttpEntity entity = response.getEntity();
+
+	    String strResponse = null;
+	    if (entity != null) {
+	        strResponse = EntityUtils.toString(entity);
 	    }		
 	    strResponse = strResponse.replace("\n","");
 	    String codRetorno = strResponse.replaceAll("^.*<ee:codigoRetorno>([^<]*)</ee:codigoRetorno>.*$","$1");
+	    
 	    if(Integer.parseInt(codRetorno) == 0){
 	   	 //pLog.warning("->>>>>>>>>>>>>>>>>>>> Error en el servicio de login");
 	   	 return null;
 	    }
 	    else{
+	   	 
 		    String codEntidad = strResponse.replaceAll("^.*<ee:entidad>([^<]*)</ee:entidad>.*$","$1");		    
 		    String idInternoPe = strResponse.replaceAll("^.*<ee:idInternoPe>([^<]*)</ee:idInternoPe>.*$","$1");
 		    String nTarjeta = strResponse.replaceAll("^.*<ee:numeroTarjeta>([^<]*)</ee:numeroTarjeta>.*$","$1");
+		   
 			fields.put("codEntidad", codEntidad.replace(" ", ""));
 			fields.put("idInternoPe", idInternoPe.replace(" ", ""));
 			fields.put("nTarjeta", nTarjeta.replace(" ", ""));
+			
+			
+		    /*
+			fields.put("codEntidad", entidad);
+			fields.put("idInternoPe", idInternoPe);
+			fields.put("nTarjeta", nTarjeta);
+			*/
+			return fields;		   	 
+	    }
+	}
+}

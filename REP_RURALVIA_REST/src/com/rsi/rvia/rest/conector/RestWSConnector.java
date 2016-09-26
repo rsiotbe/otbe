@@ -56,8 +56,9 @@ public class RestWSConnector
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception
 	 */
+	
+	public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests, String strPathRest,
 			SessionRviaData pSessionRvia, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject) throws Exception
-			MultivaluedMap<String, String> pPathParams) throws Exception
 	{
 		Client pClient = RviaRestHttpClient.getClient();
 		String strQueryParams = pRequest.getQueryString();
@@ -177,7 +178,7 @@ public class RestWSConnector
 		 * definir este método desde cero
 		 */
 		pLog.warn("Se recibe un método PUT, pero se trata como si fuera un POST");
-		return post(pRequest, pMiqQuests, pSessionRvia, strJsonData, pPathParams, pParamsToInject));
+		return post(pRequest, pMiqQuests, pSessionRvia, strJsonData, pPathParams, pParamsToInject);
 	}
 
 	/**
