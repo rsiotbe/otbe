@@ -57,7 +57,7 @@
 	pResultSet.close();
 	pPreparedStatement.close();
 	pConnection.close();
-	pp.put("data", json);	
+	pp.put("data", json);
 	pJson.put("response",pp);
 	String respuesta=pJson.toString();
 	response.setHeader("content-type", "application/json");

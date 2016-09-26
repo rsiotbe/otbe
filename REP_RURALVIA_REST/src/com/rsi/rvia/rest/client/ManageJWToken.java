@@ -77,15 +77,9 @@ public class ManageJWToken
 	 *           Campos a insertar en la sección Claims del token. 
 	 * @return Token generado */
 	public static String generateJWT(HashMap<String, String> fields) throws JoseException, NoSuchAlgorithmException, InvalidKeySpecException, IOException{
-	    //
-	    // JSON Web Token is a compact URL-safe means of representing claims/attributes to be transferred between two parties.
-	    // This example demonstrates producing and consuming a signed JWT
-	    //
-
-	    // Generate an RSA key pair, which will be used for signing and verification of the JWT, wrapped in a JWK
+		 // Cargamos clave privada y generamos clave pública
 		 prepareRsaJsonWebKey();
 
-	    // Create the Claims, which will be the content of the JWT
 	    JwtClaims claims = new JwtClaims();
 	    claims.setIssuer(JWTCreator);  // who creates the token and signs it
 	    claims.setAudience(JWTAudience); // to whom the token is intended to be sent
@@ -97,30 +91,12 @@ public class ManageJWToken
 
 	    claims.setClaim("context", (Map<String, String>) fields); 
 	    
-	    // A JWT is a JWS and/or a JWE with JSON claims as the payload.
-	    // In this example it is a JWS so we create a JsonWebSignature object.
 	    JsonWebSignature jws = new JsonWebSignature();
-
-	    // The payload of the JWS is JSON content of the JWT Claims
 	    jws.setPayload(claims.toJson());
-
-	    
-	    // The JWT is signed using the private key
 	    jws.setKey(rsaJsonWebKey.getPrivateKey());	    
-	    
-	    // Set the Key ID (kid) header because it's just the polite thing to do.
-	    // We only have one key in this example but a using a Key ID helps
-	    // facilitate a smooth key rollover process
 	    jws.setKeyIdHeaderValue(rsaJsonWebKey.getKeyId());
-
-	    // Set the signature algorithm on the JWT/JWS that will integrity protect the claims
 	    jws.setAlgorithmHeaderValue(AlgorithmIdentifiers.RSA_USING_SHA256);
 
-	    // Sign the JWS and produce the compact serialization or the complete JWT/JWS
-	    // representation, which is a string consisting of three dot ('.') separated
-	    // base64url-encoded parts in the form Header.Payload.Signature
-	    // If you wanted to encrypt it, you can simply set this jwt as the payload
-	    // of a JsonWebEncryption object and set the cty (Content Type) header to "jwt".
 	    String jwt = jws.getCompactSerialization();
 
 	    // Now you can do something with the JWT. Like send it to some other party
