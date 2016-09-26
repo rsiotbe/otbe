@@ -56,10 +56,9 @@
 	}
 %>
 <body>
-	<form id="formRedirect" action="/api/rest<%=strPathRest%>"
-		method="<%=strMethod%>">
-		<input type="hidden" name="token" value="<%=strToken%>"> <input
-			type="hidden" name="errorCode" value="<%=strError%>">
+	<form id="formRedirect" action="/api/rest<%=strPathRest%>" method="<%=strMethod%>">
+		<input type="hidden" name="token" value="<%=strToken%>"> 
+		<input type="hidden" name="errorCode" value="<%=strError%>">
 	</form>
 	<script type="text/javascript">
 		document.getElementById('formRedirect').submit();

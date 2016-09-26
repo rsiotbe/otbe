@@ -17,7 +17,7 @@ import com.rsi.rvia.rest.client.OperationManager;
 @Path("/test")
 public class TestManager
 {
-	private static Logger pLog = LoggerFactory.getLogger(TestManager.class);
+	private static Logger	pLog	= LoggerFactory.getLogger(TestManager.class);
 
 	@GET
 	@Path("/cashierLocatior")
@@ -25,7 +25,8 @@ public class TestManager
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public Response getAllUserCards(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
 	{
-		pLog.info("Se recibe una peticion de cashierLocatior");
+		pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.MULTIPART_FORM_DATA + " que genera "
+				+ MediaType.TEXT_HTML);
 		String strData = "";
 		Response pReturn = OperationManager.processTemplateFromRvia(pRequest, pUriInfo, strData);
 		return pReturn;
@@ -37,7 +38,8 @@ public class TestManager
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response getAllUserCards2(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
 	{
-		pLog.info("Se recibe una peticion de cashierLocatior");
+		pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.APPLICATION_JSON + " que genera "
+				+ MediaType.APPLICATION_JSON);
 		Response pReturn = OperationManager.proccesDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
 		return pReturn;
 	}
@@ -82,7 +84,8 @@ public class TestManager
 							+ "\"description\":\"Error con el identificador de la operativa.\"" + "}";
 					break;
 				default:
-					strData = "{" + "\"code\":999999," + "\"httpCode\":500," + "\"message\":\"Error interno del servidor.\","
+					strData = "{" + "\"code\":999999," + "\"httpCode\":500,"
+							+ "\"message\":\"Error interno del servidor.\","
 							+ "\"description\":\"Se ha producido un error interno en el servidor.\"" + "}";
 					break;
 			}
