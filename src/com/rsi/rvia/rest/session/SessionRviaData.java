@@ -29,10 +29,10 @@ public class SessionRviaData
 	 */
 	public enum CanalAix
 	{
-		VALORES_BANCA_INTERNET(1), VALORES_BANCA_TELEFONICA(2), BANCA_INTERNET(3), BANCA_TELEFONICA(4), ABOGADOS(5), ABOGADOS_TELEFONICA(
-				6), TPV_VIRTUAL(7), SEGUROS(8), OFICINA(9), TPV_VIRTUAL_TELEFONICA(10), BANCA_MOVIL(11), BANCA_TABLET(13), BANCA_TABLET_CAU(
-				14);
-		private final int	value;
+		VALORES_BANCA_INTERNET(1), VALORES_BANCA_TELEFONICA(2), BANCA_INTERNET(3), BANCA_TELEFONICA(4), ABOGADOS(
+				5), ABOGADOS_TELEFONICA(6), TPV_VIRTUAL(7), SEGUROS(
+						8), OFICINA(9), TPV_VIRTUAL_TELEFONICA(10), BANCA_MOVIL(11), BANCA_TABLET(13), BANCA_TABLET_CAU(14);
+		private final int value;
 
 		CanalAix(int newValue)
 		{
@@ -93,6 +93,34 @@ public class SessionRviaData
 	public String getToken()
 	{
 		return strToken;
+	}
+
+	/**
+	 * Constructor para páginas públicas
+	 * 
+	 * @param strLang
+	 *           String con el lenguaje, por defecto si viene vacio o a null se pondra es_ES
+	 * @param strNRBE
+	 *           String con el NRBE, por defecto si viene vacio o a null se pondre 0198
+	 */
+	public SessionRviaData(String strLang, String strNRBE)
+	{
+		if (strLang == null || strLang.trim().isEmpty())
+		{
+			this.strLanguage = "es_ES";
+		}
+		else
+		{
+			this.strLanguage = strLang;
+		}
+		if (strNRBE == null || strNRBE.trim().isEmpty())
+		{
+			this.strNRBE = "0198";
+		}
+		else
+		{
+			this.strNRBE = strNRBE;
+		}
 	}
 
 	/**
