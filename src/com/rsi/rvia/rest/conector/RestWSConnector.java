@@ -56,7 +56,7 @@ public class RestWSConnector
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception
 	 */
-	public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests, SessionRviaData pSessionRvia,
+	public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests,
 			MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject) throws Exception
 	{
 		Client pClient = RviaRestHttpClient.getClient();
@@ -370,20 +370,23 @@ public class RestWSConnector
 	public static Hashtable<String, String> checkSessionValues(@Context HttpServletRequest pRequest,
 			Hashtable<String, String> pParameters)
 	{
-		HttpSession pSession = pRequest.getSession(false);
-		Iterator<String> pIterator = pParameters.keySet().iterator();
-		while (pIterator.hasNext())
+		if (pParameters != null)
 		{
-			String strKey = (String) pIterator.next();
-			String strSessionValue = (String) pSession.getAttribute(strKey);
-			if (strSessionValue != null)
+			HttpSession pSession = pRequest.getSession(false);
+			Iterator<String> pIterator = pParameters.keySet().iterator();
+			while (pIterator.hasNext())
 			{
-				pParameters.remove(strKey);
-				pParameters.put(strKey, strSessionValue);
-			}
-			else
-			{
-				pSession.setAttribute(strKey, pParameters.get(strKey));
+				String strKey = (String) pIterator.next();
+				String strSessionValue = (String) pSession.getAttribute(strKey);
+				if (strSessionValue != null)
+				{
+					pParameters.remove(strKey);
+					pParameters.put(strKey, strSessionValue);
+				}
+				else
+				{
+					pSession.setAttribute(strKey, pParameters.get(strKey));
+				}
 			}
 		}
 		return pParameters;

@@ -405,6 +405,12 @@ public class OperationManager
 		pSession = pRequest.getSession(true);
 		try
 		{
+			/*
+			 * Se crea el objeto SessionRviaData con los solo con los datos del lang y css para aplicarlos en el template
+			 */
+			String strLang = (String) pRequest.getParameter("lang");
+			String strNRBE = (String) pRequest.getParameter("NRBE");
+			pSessionRviaData = new SessionRviaData(strLang, strNRBE);
 			/* se obtienen los datos necesario para realizar la petición al proveedor */
 			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
 			pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);
@@ -457,7 +463,7 @@ public class OperationManager
 	 *           Tipo de mediatype que debe cumplir la petición
 	 * @return Objeto respuesta de Jersey
 	 */
-	public static Response processSimulatorAPP(HttpServletRequest pRequest, UriInfo pUriInfo, String strJsonData)
+	public static Response processGenericAPP(HttpServletRequest pRequest, UriInfo pUriInfo, String strJsonData)
 	{
 		MiqQuests pMiqQuests;
 		ErrorResponse pErrorCaptured = null;
@@ -469,6 +475,12 @@ public class OperationManager
 		pSession = pRequest.getSession(true);
 		try
 		{
+			/*
+			 * Se crea el objeto SessionRviaData con los solo con los datos del lang y css para aplicarlos en el template
+			 */
+			String strLang = (String) pRequest.getParameter("lang");
+			String strNRBE = (String) pRequest.getParameter("NRBE");
+			pSessionRviaData = new SessionRviaData(strLang, strNRBE);
 			/* se obtienen los datos necesario para realizar la petición al proveedor */
 			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
 			pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);

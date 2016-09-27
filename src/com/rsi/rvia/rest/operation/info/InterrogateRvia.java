@@ -133,7 +133,7 @@ public class InterrogateRvia
 		Hashtable<String, String> htReturn = new Hashtable<String, String>();
 		org.jsoup.nodes.Document pDocResp;
 		/* se obtienen los parametros de la petición a ruralvia */
-		if (pSessionRvia != null)
+		if (pSessionRvia != null && pSessionRvia.getRviaSessionId() != null && pSessionRvia.getUriRvia() != null)
 		{
 			strSesId = pSessionRvia.getRviaSessionId();
 			strHost = pSessionRvia.getUriRvia().toString();
@@ -160,7 +160,7 @@ public class InterrogateRvia
 			catch (Exception ex)
 			{
 				pLog.error("Error al recuperar parametros de la sesion de Rvia: " + ex);
-				htReturn = null;
+				htReturn = new Hashtable<String, String>();
 			}
 		}
 		return htReturn;

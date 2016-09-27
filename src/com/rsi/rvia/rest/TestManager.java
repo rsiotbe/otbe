@@ -34,10 +34,23 @@ public class TestManager
 	}
 
 	@GET
+	@Path("/cashierLocatior")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response getAllUserCards2(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
+	{
+		pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.APPLICATION_JSON + " que genera "
+				+ MediaType.APPLICATION_JSON);
+		Response pReturn = OperationManager.proccesDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+		pLog.info("Se devuelve la respuesta final al usuario");
+		return pReturn;
+	}
+
+	@GET
 	@Path("/simuladores")
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response index(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
+	public Response getSimuladoresJSON(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
 	{
 		pLog.info("Se recibe una peticion de simuladores de tipo " + MediaType.MULTIPART_FORM_DATA + " que genera "
 				+ MediaType.TEXT_HTML);
@@ -48,14 +61,15 @@ public class TestManager
 	}
 
 	@GET
-	@Path("/cashierLocatior")
+	@Path("/simuladores")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response getAllUserCards2(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
+	public Response getSimuladores(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
 	{
 		pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.APPLICATION_JSON + " que genera "
 				+ MediaType.APPLICATION_JSON);
-		Response pReturn = OperationManager.proccesDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+		String strData = "";
+		Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData);
 		pLog.info("Se devuelve la respuesta final al usuario");
 		return pReturn;
 	}
