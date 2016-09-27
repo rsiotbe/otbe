@@ -23,13 +23,13 @@ public class ServiceHelper
 	public static JSONObject getHelp(int nIdMiq) throws Exception, SQLException{
 		JSONObject jsonHelp = null;
 		JSONObject jsonSInfo = null;
-		JSONObject jsonAux = null;
-		JSONObject jsonAux2 = null;
+		//JSONObject jsonAux = null;
+		//JSONObject jsonAux2 = null;
 		try{
 			if(pConnection == null)
 				pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 			jsonHelp = new JSONObject();			
-			jsonAux =  new JSONObject();
+			//jsonAux =  new JSONObject();
 			jsonSInfo = getServiceInfo(nIdMiq).getJSONObject(0);
 			jsonSInfo.put("inputFields", getAvailableInputs(nIdMiq));
 			jsonSInfo.put("exitFields", getAvailableExits(nIdMiq));
@@ -78,11 +78,12 @@ public class ServiceHelper
 				" ,miq_name \"serviceName\"" +
 				" ,miq_description \"serviceDescription\"" +
 				" from  BEL.BDPTB222_MIQ_QUESTS" +
-				" where id_miq=2011" ;		
+				" where id_miq=?" ;		
 		try
 		{
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
-			pResultSet = pPreparedStatement.executeQuery();					
+			pPreparedStatement.setInt(1, nIdMiq);
+			pResultSet = pPreparedStatement.executeQuery();						
 			jsonAr = Utils.convertResultSet2JSON(pResultSet);			
 		}catch(Exception ex){
 			pLog.error(strQuery);
@@ -149,7 +150,8 @@ public class ServiceHelper
 				" 	on b.ID_MIQ_PARAM=c.ID_MIQ_PARAM" +
 				" 	left outer join BEL.BDPTB228_MIQ_PARAM_VALIDATION d" +
 				" 	on c.ID_MIQ_PARAM = d.ID_MIQ_PARAM" +
-				" where a.id_miq=?" ;				
+				" where a.id_miq=? " +
+				" and (b.opciones is null or b.opciones not like '%propagate=false%')" ;
 		try
 		{
 			pPreparedStatement = pConnection.prepareStatement(strQuery);

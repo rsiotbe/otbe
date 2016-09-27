@@ -20,7 +20,7 @@ import com.rsi.rvia.rest.tool.ServiceHelper;
  * Clase que responde a las peticiones REST para las acciones relacionadas con el control de costes
  *
  */
-@Path("/costcontrol") 
+@Path("/rsiapi") 
 public class CostControl
 {
 	private static Logger pLog = LoggerFactory.getLogger(CostControl.class);
@@ -62,18 +62,18 @@ public class CostControl
 		pLog.info("Lista de contratos");
 		return pReturn;		
 	}	
-	
+/*	
 	@GET
-	@Path("/contracts/help") 
+	@Path("/help/contracts") 
    @Produces(MediaType.APPLICATION_JSON)
 	public Response listaDeContratosHelp(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
 	{			
-		JSONObject jsonHelp = ServiceHelper.getHelp("/costcontrol/contracts");		
+		JSONObject jsonHelp = ServiceHelper.getHelp("/rsiapi/contracts");		
 		pLog.info("Lista de contratos. Proceso help");
 		return Response.ok(jsonHelp.toString()).build();			
 	}	
-	
+*/	
 	@GET
 	@Path("/contracts/{idContract: [0-9]+}") 
    @Produces(MediaType.APPLICATION_JSON)
@@ -85,39 +85,30 @@ public class CostControl
 		pLog.info("Movimientos de un contrato");
 		return pReturn;	
 	}
-	
+/*	
 	@GET
-	@Path("/contracts/{idContract: [0-9]+}/help") 
+	@Path("/help/contracts/{idContract: [0-9]+}") 
    @Produces(MediaType.APPLICATION_JSON)
 	public Response saldosDeUnContratoHelp(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
 	{	
+		
 		//return Response.ok("Movimientos de un contrato").build();
-		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-		pLog.info("Movimientos de un contrato. Proceso help");
-		return pReturn;	
+		JSONObject jsonHelp = ServiceHelper.getHelp("/rsiapi/contracts/{idContract}");	
+		pLog.info("Lista de contratos - Detalle. Proceso help");
+		return Response.ok(jsonHelp.toString()).build();
 	}	
-	
+*/	
+	/*
 	@GET
-	@Path("/contracts/cardsmov/{idContract}") 
-   @Produces(MediaType.APPLICATION_JSON)
-	public Response moviminetosTarjeta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			String strData) throws Exception
-	{	
-		//return Response.ok("Movimientos de un contrato").build();
-		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-		pLog.info("Movimientos de un contrato");
-		return pReturn;	
-	}
-	@GET
-	@Path("/contracts/line/{codLinea}") 
+	@Path("/help/contracts/line/{codLinea}") 
    @Produces(MediaType.APPLICATION_JSON)
 	public Response listaDeContratosPorLinea(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
 	{	
-		//return Response.ok("Lista de contratos").build();
-		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-		pLog.info("Lista de contratos");
-		return pReturn;		
+		JSONObject jsonHelp = ServiceHelper.getHelp("/rsiapi/contracts/line/{codLinea}");	
+		pLog.info("Lista de contratos - de una línea concreta. Proceso help");
+		return Response.ok(jsonHelp.toString()).build();	
 	}	
+	*/
 }

@@ -371,12 +371,16 @@ public class OperationManager
 			String codEntidad = strResponse.replaceAll("^.*<ee:entidad>([^<]*)</ee:entidad>.*$", "$1");
 			String idInternoPe = strResponse.replaceAll("^.*<ee:idInternoPe>([^<]*)</ee:idInternoPe>.*$", "$1");
 			String nTarjeta = strResponse.replaceAll("^.*<ee:numeroTarjeta>([^<]*)</ee:numeroTarjeta>.*$", "$1");
-			fields.put("codEntidad", codEntidad.replace(" ", ""));
-			fields.put("idInternoPe", idInternoPe.replace(" ", ""));
-			fields.put("nTarjeta", nTarjeta.replace(" ", ""));
-			/*
-			 * fields.put("codEntidad", entidad); fields.put("idInternoPe", idInternoPe); fields.put("nTarjeta", nTarjeta);
-			 */
+			
+			
+			fields.put("codEntidad", "3076");
+			fields.put("idInternoPe", "104955");
+			fields.put("nTarjeta", "307671667");			
+			
+			//fields.put("codEntidad", codEntidad.replace(" ", ""));
+			//fields.put("idInternoPe", idInternoPe.replace(" ", ""));
+			//fields.put("nTarjeta", nTarjeta.replace(" ", ""));
+
 			return fields;
 		}
 	}
