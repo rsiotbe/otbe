@@ -58,7 +58,6 @@ public class OperationManager
 		ErrorResponse pErrorCaptured = null;
 		RestConnector pRestConnector;
 		String strJsonData = "";
-		int nReturnHttpCode = 200;
 		String strTemplate = "";
 		Response pResponseConnector;
 		SessionRviaData pSessionRviaData = null;
@@ -94,23 +93,8 @@ public class OperationManager
 		}
 		try
 		{
-			/* Se comprueba si ha habido algun error para generar la respuesta adecuada */
-			if (pErrorCaptured != null)
-			{
-				pLog.info("Se procede a gestionar el error");
-				/* si la apliación debe responder un XHTML */
-				if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
-					strTemplate = ErrorManager.ERROR_TEMPLATE;
-				strJsonData = pErrorCaptured.getJsonError();
-				nReturnHttpCode = pErrorCaptured.getHttpCode();
-				pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
-			}
-			if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
-			{
-				pLog.info("La petición utiliza plantilla XHTML");
-				strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
-			}
-			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).encoding("UTF-8").build();
+			/* Se construye la respuesta ya sea error, o correcta, json o template */
+			pResponseConnector = buildResponse(pErrorCaptured, pMediaType, strTemplate, strJsonData, pSessionRviaData);
 		}
 		catch (Exception ex)
 		{
@@ -140,7 +124,6 @@ public class OperationManager
 	{
 		MiqQuests pMiqQuests;
 		ErrorResponse pErrorCaptured = null;
-		int nReturnHttpCode = 200;
 		String strTemplate = "";
 		Response pResponseConnector;
 		SessionRviaData pSessionRviaData = null;
@@ -169,19 +152,8 @@ public class OperationManager
 		}
 		try
 		{
-			/* Se comprueba si ha habido algun error para generar la respuesta adecuada */
-			if (pErrorCaptured != null)
-			{
-				pLog.info("Se procede a gestionar el error");
-				/* si la apliación debe responder un XHTML */
-				strTemplate = ErrorManager.ERROR_TEMPLATE;
-				strJsonData = pErrorCaptured.getJsonError();
-				nReturnHttpCode = pErrorCaptured.getHttpCode();
-				pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
-			}
-			pLog.info("La petición utiliza plantilla XHTML:" + strTemplate);
-			strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
-			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).encoding("UTF-8").build();
+			/* Se construye la respuesta ya sea error, o correcta, json o template */
+			pResponseConnector = buildResponse(pErrorCaptured, MediaType.APPLICATION_XHTML_XML_TYPE, strTemplate, strJsonData, pSessionRviaData);
 		}
 		catch (Exception ex)
 		{
@@ -398,7 +370,6 @@ public class OperationManager
 	{
 		MiqQuests pMiqQuests;
 		ErrorResponse pErrorCaptured = null;
-		int nReturnHttpCode = 200;
 		String strTemplate = "";
 		Response pResponseConnector;
 		SessionRviaData pSessionRviaData = null;
@@ -426,19 +397,8 @@ public class OperationManager
 		}
 		try
 		{
-			/* Se comprueba si ha habido algun error para generar la respuesta adecuada */
-			if (pErrorCaptured != null)
-			{
-				pLog.info("Se procede a gestionar el error");
-				/* si la apliación debe responder un XHTML */
-				strTemplate = ErrorManager.ERROR_TEMPLATE;
-				strJsonData = pErrorCaptured.getJsonError();
-				nReturnHttpCode = pErrorCaptured.getHttpCode();
-				pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
-			}
-			pLog.info("La petición utiliza plantilla XHTML:" + strTemplate);
-			strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
-			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).encoding("UTF-8").build();
+			/* Se construye la respuesta ya sea error, o correcta, json o template */
+			pResponseConnector = buildResponse(pErrorCaptured, MediaType.APPLICATION_XHTML_XML_TYPE, strTemplate, strJsonData, pSessionRviaData);
 		}
 		catch (Exception ex)
 		{
@@ -463,12 +423,12 @@ public class OperationManager
 	 *           Tipo de mediatype que debe cumplir la petición
 	 * @return Objeto respuesta de Jersey
 	 */
-	public static Response processGenericAPP(HttpServletRequest pRequest, UriInfo pUriInfo, String strJsonData)
+	public static Response processGenericAPP(HttpServletRequest pRequest, UriInfo pUriInfo, String strJsonData,
+			MediaType pMediaType)
 	{
 		MiqQuests pMiqQuests;
 		ErrorResponse pErrorCaptured = null;
 		RestConnector pRestConnector;
-		int nReturnHttpCode = 200;
 		String strTemplate = "";
 		Response pResponseConnector;
 		SessionRviaData pSessionRviaData = null;
@@ -504,19 +464,8 @@ public class OperationManager
 		}
 		try
 		{
-			/* Se comprueba si ha habido algun error para generar la respuesta adecuada */
-			if (pErrorCaptured != null)
-			{
-				pLog.info("Se procede a gestionar el error");
-				/* si la apliación debe responder un XHTML */
-				strTemplate = ErrorManager.ERROR_TEMPLATE;
-				strJsonData = pErrorCaptured.getJsonError();
-				nReturnHttpCode = pErrorCaptured.getHttpCode();
-				pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
-			}
-			pLog.info("La petición utiliza plantilla XHTML:" + strTemplate);
-			strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
-			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).encoding("UTF-8").build();
+			/* Se construye la respuesta ya sea error, o correcta, json o template */
+			pResponseConnector = buildResponse(pErrorCaptured, pMediaType, strTemplate, strJsonData, pSessionRviaData);
 		}
 		catch (Exception ex)
 		{
@@ -526,5 +475,45 @@ public class OperationManager
 		}
 		pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
 		return pResponseConnector;
+	}
+
+	/**
+	 * Último paso en el procesado de la respuesta, el resultado sera en forma de XHTML o JSON en funcion de el MediaType
+	 * que se le pase. Encapsula la respuesta en un objeto Response.
+	 * 
+	 * @param pErrorCaptured
+	 *           Capturador de errores previos al procesado del Template.
+	 * @param pMediaType
+	 *           MediaType del objeto respuesta.
+	 * @param strTemplate
+	 *           Ruta del template a aplicar. (Solo se aplicara con el mediatype de XHTML)
+	 * @param strJsonData
+	 *           Datos en formato JSON para añadir en el template o devolver directamente
+	 * @param pSessionRviaData
+	 *           Contiene información básica tanto del logueo como de la navegación (lang, id, etc)
+	 * @return Objeto Response con el resultado ya procesado
+	 * @throws Exception
+	 */
+	private static Response buildResponse(ErrorResponse pErrorCaptured, MediaType pMediaType, String strTemplate,
+			String strJsonData, SessionRviaData pSessionRviaData) throws Exception
+	{
+		int nReturnHttpCode = 200;
+		/* Se comprueba si ha habido algun error para generar la respuesta adecuada */
+		if (pErrorCaptured != null)
+		{
+			pLog.info("Se procede a gestionar el error");
+			/* si la apliación debe responder un XHTML */
+			if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
+				strTemplate = ErrorManager.ERROR_TEMPLATE;
+			strJsonData = pErrorCaptured.getJsonError();
+			nReturnHttpCode = pErrorCaptured.getHttpCode();
+			pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
+		}
+		if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
+		{
+			pLog.info("La petición utiliza plantilla XHTML");
+			strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
+		}
+		return (Response.status(nReturnHttpCode).entity(strJsonData).encoding("UTF-8").build());
 	}
 }
