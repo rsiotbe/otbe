@@ -17,7 +17,7 @@ import com.rsi.rvia.rest.client.OperationManager;
 @Path("/test")
 public class TestManager
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(TestManager.class);
+	private static Logger pLog = LoggerFactory.getLogger(TestManager.class);
 
 	@GET
 	@Path("/cashierLocatior")
@@ -29,6 +29,20 @@ public class TestManager
 				+ MediaType.TEXT_HTML);
 		String strData = "";
 		Response pReturn = OperationManager.processTemplateFromRvia(pRequest, pUriInfo, strData);
+		pLog.info("Se devuelve la respuesta final al usuario");
+		return pReturn;
+	}
+
+	@GET
+	@Path("/simuladores")
+	@Produces(MediaType.TEXT_HTML)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public Response index(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
+	{
+		pLog.info("Se recibe una peticion de simuladores de tipo " + MediaType.MULTIPART_FORM_DATA + " que genera "
+				+ MediaType.TEXT_HTML);
+		String strData = "";
+		Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, strData);
 		pLog.info("Se devuelve la respuesta final al usuario");
 		return pReturn;
 	}
@@ -86,13 +100,17 @@ public class TestManager
 							+ "\"description\":\"Error con el identificador de la operativa.\"" + "}";
 					break;
 				default:
-					strData = "{" + "\"code\":999999," + "\"httpCode\":500,"
-							+ "\"message\":\"Error interno del servidor.\","
+					strData = "{" + "\"code\":999999," + "\"httpCode\":500," + "\"message\":\"Error interno del servidor.\","
 							+ "\"description\":\"Se ha producido un error interno en el servidor.\"" + "}";
 					break;
 			}
 		}
-		Response pReturn = OperationManager.processTemplateFromRvia(pRequest, pUriInfo, strData);
+		else
+		{
+			strData = "{" + "\"code\":999999," + "\"httpCode\":500," + "\"message\":\"Error interno del servidor.\","
+					+ "\"description\":\"Se ha producido un error interno en el servidor.\"" + "}";
+		}
+		Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, strData);
 		return pReturn;
 	}
 }

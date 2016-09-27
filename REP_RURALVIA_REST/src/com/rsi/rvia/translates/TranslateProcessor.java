@@ -131,7 +131,17 @@ public class TranslateProcessor
 		String strLanguage = null;
 		Hashtable<String, TranslateEntry> htTransData = new Hashtable<String, TranslateEntry>();
 		if (pSessionRviaData == null)
+		{
 			pLog.warn("Los datos de sesión de ruralvia están vacios, se escoge el idioma español por defecto");
+		}
+		else
+		{
+			strLanguage = pSessionRviaData.getLanguage();
+			if (strLanguage == null || strLanguage.trim().isEmpty())
+			{
+				strLanguage = null;
+			}
+		}
 		pLog.debug("String XHTML parseado a Documento correctamente.");
 		if (pDocument != null)
 		{
