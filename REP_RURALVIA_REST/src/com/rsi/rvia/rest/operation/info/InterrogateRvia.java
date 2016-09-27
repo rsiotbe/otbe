@@ -18,36 +18,41 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import com.rsi.rvia.rest.session.SessionRviaData;
 
-/** Clase que gestiona el interrogatoria a ruralvia para conocer los datos de la operativa y los valores que el usuario
- * tiene para ellos dentro de al sesión */
+/**
+ * Clase que gestiona el interrogatoria a ruralvia para conocer los datos de la operativa y los valores que el usuario
+ * tiene para ellos dentro de al sesión
+ */
 public class InterrogateRvia
 {
 	public static final String	URI_INTERROGATE_SERVICE	= "/portal_rvia/rviaRestInfo?clave_pagina=";
 	private static Logger		pLog							= LoggerFactory.getLogger(InterrogateRvia.class);
 
-	/** Obtiene un documento de tipo XML con la información, es simmilar al fichero xml.dat de la operativa
+	/**
+	 * Obtiene un documento de tipo XML con la información, es simmilar al fichero xml.dat de la operativa
 	 * 
 	 * @param pRequest
 	 *           Petición original
 	 * @param strClavepagina
 	 *           Clave pagina de la operativa a preguntar
 	 * @return Documento Xml que contiene toda la info
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	public static Document getXmlDatAndUserInfo(HttpServletRequest pRequest, String strClavepagina) throws Exception
 	{
 		return getXmlDatAndUserInfo(new SessionRviaData(pRequest), strClavepagina);
 	}
 
-	/** Obtiene un documento de tipo XML con la información, es simmilar al fichero xml.dat de la operativa
+	/**
+	 * Obtiene un documento de tipo XML con la información, es simmilar al fichero xml.dat de la operativa
 	 * 
 	 * @param pSessionRviaData
 	 *           Objeto que contiene la información extraida de la sesión de ruralvia
 	 * @param strClavepagina
 	 *           Clave pagina de la operativa a preguntar
 	 * @return Documento Xml que contiene toda la info
-	 * @throws Exception */
-	public static Document getXmlDatAndUserInfo(SessionRviaData pSessionRviaData, String strClavepagina)
-			throws Exception
+	 * @throws Exception
+	 */
+	public static Document getXmlDatAndUserInfo(SessionRviaData pSessionRviaData, String strClavepagina) throws Exception
 	{
 		String strURL;
 		Client pClient;
@@ -107,16 +112,17 @@ public class InterrogateRvia
 		}
 		return pXmlDoc;
 	}
-	
 
-	/** Obtiene los valores de la sesión de ruralvia dao una lista de parámetros. Realiza una invoación a un servlet
+	/**
+	 * Obtiene los valores de la sesión de ruralvia dao una lista de parámetros. Realiza una invoación a un servlet
 	 * específico de ruralvia
 	 * 
 	 * @param strParameters
 	 *           Rarámetros a recuperar separados por el caracter ';'
 	 * @param pSessionRvia
 	 *           Datos de petición recibida desde ruralvia de Ruralvia
-	 * @return Hastable con los parámetros leidos desde ruralvia */
+	 * @return Hastable con los parámetros leidos desde ruralvia
+	 */
 	public static Hashtable<String, String> getParameterFromSession(String strParameters, SessionRviaData pSessionRvia)
 	{
 		String strSesId;
@@ -124,35 +130,38 @@ public class InterrogateRvia
 		String url;
 		String strHTML = "";
 		String[] strDatosParam = null;
-		Hashtable<String, String> htReturn;
+		Hashtable<String, String> htReturn = new Hashtable<String, String>();
 		org.jsoup.nodes.Document pDocResp;
 		/* se obtienen los parametros de la petición a ruralvia */
-		strSesId = pSessionRvia.getRviaSessionId();
-		strHost = pSessionRvia.getUriRvia().toString();
-		htReturn = new Hashtable<String, String>();
-		url = strHost + "/portal_rvia/RviaRestInfo;RVIASESION=" + strSesId + "?listAttributes=" + strParameters;
-		try
+		if (pSessionRvia != null)
 		{
-			/* Se fuerza que sea Document el tipo: org.jsoup.nodes.Document */
-			pDocResp = Jsoup.connect(url).get();
-			strHTML = pDocResp.html();
-			strDatosParam = strHTML.split(";");
-			if (strDatosParam != null)
+			strSesId = pSessionRvia.getRviaSessionId();
+			strHost = pSessionRvia.getUriRvia().toString();
+			htReturn = new Hashtable<String, String>();
+			url = strHost + "/portal_rvia/RviaRestInfo;RVIASESION=" + strSesId + "?listAttributes=" + strParameters;
+			try
 			{
-				for (String strParam : strDatosParam)
+				/* Se fuerza que sea Document el tipo: org.jsoup.nodes.Document */
+				pDocResp = Jsoup.connect(url).get();
+				strHTML = pDocResp.html();
+				strDatosParam = strHTML.split(";");
+				if (strDatosParam != null)
 				{
-					String[] strPartesParam = strParam.split("#-#");
-					if ((strPartesParam != null) && (strPartesParam.length >= 2))
+					for (String strParam : strDatosParam)
 					{
-						htReturn.put(strPartesParam[0], strPartesParam[1]);
+						String[] strPartesParam = strParam.split("#-#");
+						if ((strPartesParam != null) && (strPartesParam.length >= 2))
+						{
+							htReturn.put(strPartesParam[0], strPartesParam[1]);
+						}
 					}
 				}
 			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("Error al recuperar parametros de la sesion de Rvia: " + ex);
-			htReturn = null;
+			catch (Exception ex)
+			{
+				pLog.error("Error al recuperar parametros de la sesion de Rvia: " + ex);
+				htReturn = null;
+			}
 		}
 		return htReturn;
 	}
