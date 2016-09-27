@@ -39,11 +39,7 @@ public class CostControl
 		// Invocar servicio de login	desde operation manager?
 		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);	
 		pLog.info(" ---------> Login");
-		//int status = pReturn.getStatus();
-		//if(status != 200)
-		//	return Response.ok("{\"httpCode\":\"403\",\"message\":\"Login failed\"}").status(403).build();
-		//else	
-			return pReturn;
+		return pReturn;
 	}	
 	
 	/**
@@ -62,18 +58,6 @@ public class CostControl
 		pLog.info("Lista de contratos");
 		return pReturn;		
 	}	
-/*	
-	@GET
-	@Path("/help/contracts") 
-   @Produces(MediaType.APPLICATION_JSON)
-	public Response listaDeContratosHelp(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			String strData) throws Exception
-	{			
-		JSONObject jsonHelp = ServiceHelper.getHelp("/rsiapi/contracts");		
-		pLog.info("Lista de contratos. Proceso help");
-		return Response.ok(jsonHelp.toString()).build();			
-	}	
-*/	
 	@GET
 	@Path("/contracts/{idContract: [0-9]+}") 
    @Produces(MediaType.APPLICATION_JSON)
@@ -85,30 +69,14 @@ public class CostControl
 		pLog.info("Movimientos de un contrato");
 		return pReturn;	
 	}
-/*	
 	@GET
-	@Path("/help/contracts/{idContract: [0-9]+}") 
-   @Produces(MediaType.APPLICATION_JSON)
-	public Response saldosDeUnContratoHelp(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			String strData) throws Exception
-	{	
-		
-		//return Response.ok("Movimientos de un contrato").build();
-		JSONObject jsonHelp = ServiceHelper.getHelp("/rsiapi/contracts/{idContract}");	
-		pLog.info("Lista de contratos - Detalle. Proceso help");
-		return Response.ok(jsonHelp.toString()).build();
-	}	
-*/	
-	/*
-	@GET
-	@Path("/help/contracts/line/{codLinea}") 
+	@Path("/contracts/line/{codLinea}") 
    @Produces(MediaType.APPLICATION_JSON)
 	public Response listaDeContratosPorLinea(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
 	{	
-		JSONObject jsonHelp = ServiceHelper.getHelp("/rsiapi/contracts/line/{codLinea}");	
-		pLog.info("Lista de contratos - de una línea concreta. Proceso help");
-		return Response.ok(jsonHelp.toString()).build();	
+		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);	
+		pLog.info("Lista de contratos - de una línea concreta.");
+		return pReturn;
 	}	
-	*/
 }
