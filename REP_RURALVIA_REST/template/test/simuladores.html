@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+      <meta charset="utf-8"/>
+      <title>Cashier Sample</title>
+            <!-- Compiled and minified CSS -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css"/>
+
+      <!-- Compiled and minified JavaScript -->
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+       <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+       <script src="/api/js/manageRequestRviaRest.js"></script>
+</head>
+<body>
+
+<div id="formulario" style="text-align: center;margin-top: 30px;">
+ <!--      <div class="row">
+    <div class="col s12">
+      <div class="row">
+        <div class="input-field col s6">
+            <span>Código Entidad</span>
+          <input id="codigoEntidad" type="number" class="validate">
+          
+        </div>
+        <div class="input-field col s6">
+        <span>Longitud</span>
+          <input id="longitud" type="number" class="validate">
+         
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+        <span>Latitud</span>
+          <input id="latitud" type="number" class="validate">
+        </div>
+      
+      <div class="input-field col s6">
+         <span>Radio</span>
+         <input id="radio" type="number" class="validate">
+        </div>
+      </div>
+    </div>
+  </div>
+  <a onclick="getData()" class="waves-effect waves-light btn light-green darken-1">Enviar</a>-->  
+  <a onclick="getCashierClose()" class="waves-effect waves-light btn light-green darken-1">Buscar cajeros</a>
+  <a onclick="reloadPage()" class="waves-effect waves-light btn light-green darken-1">Recargar página</a>
+</div>
+<hr>
+<div id="resultado" style="display:none;margin-top:10px">
+	El cajero más cercano a RSI es:
+	<span id="spanNearest"></span>
+	
+	<br></br>
+	Aqui tienees un mapa con los cajeros alrededor.
+    <div id="contenido" style="text-align: centar;"></div>
+
+</div>
+
+<!-- <div class="row">
+    <div class="col s12 m4 l2"></div>
+    <div class="col s12 m4 l8" id="contenido"></div>
+    <div class="col s12 m4 l2"></div>
+  </div> --> 
+<script type="text/javascript">
+
+function reloadPage()
+{
+	$('<form action="/cashierLocatior" method="get"></form>').appendTo('body').submit();
+}
+
+function getCashierClose() {
+      console.log("Entrando en getCashierClose");
+      var strLatitud = '40.5991253';
+      var strLongitud = '-3.7030169';
+      var strCodigoEntidad = '3016';
+      var strRadio = '20';
+
+      var dataGet = {};
+      dataGet.codigoEntidad = strCodigoEntidad;
+      dataGet.longitud = strLongitud;
+      dataGet.latitud = strLatitud;
+      dataGet.radio = strRadio;
+
+      $.ajax({
+            url : '/api/rest/test/cashierLocatior',
+            data : dataGet,
+            type : 'GET',
+            dataType : 'json',
+            success : loadDataMap,
+            error : function(xhr, status) {
+                  console.log("Error al procesar la llamada ajax. xhr" + xhr + " - status: " + status);
+            }
+      });
+
+      function loadDataMap(json){
+            console.log("Cargando datos en el mapa: ");
+            var strReturn = getMap(json,strLatitud,strLongitud);
+            console.log("imagen: " + strReturn);
+            $('#contenido').html('<img id="imgMap" src="' + strReturn + '" style="display:none"/>');
+            $("#imgMap").show("slow");
+            var listCashier = json.response.data.ListaCajeros;
+            var cajero = listCashier[0];
+            /* se añade la info del más cercano */
+            var strText = "Cajero de " + cajero.nombreEntidad + "(" + cajero.codigoEntidad + ") en la calle " + cajero.direccion + " en " + 
+            cajero.nombreLocalidad + " (" + cajero.codigoPostal +'), está a ' + cajero.distancia + 
+            			 " metros de RSI y cobra una decomisión de " + cajero.comision + "€";
+            $('#spanNearest').text(strText);
+            $('#resultado').show();
+            
+      }
+}
+
+function getMap(json,latitud,longitud){
+      var APIkey = "&key=AIzaSyCShs_SweSfuTGvp6H068K0EUGKcy-4D7s";
+      var urlBase = "http://maps.googleapis.com/maps/api/staticmap?center=";
+      var urlConfig = "&zoom=10&size=550x400&sensor=false";
+      var listCashier = json.response.data.ListaCajeros;
+      var strMarkers = "";
+      for (cajero in listCashier) {
+          strMarkers += getMarker(listCashier[cajero].latitud,listCashier[cajero].longitud, 'green');
+      }
+      strMarkers += getMarker(latitud,longitud, 'red');
+      var imgUrl = urlBase + latitud + "," + longitud + urlConfig + strMarkers + APIkey;
+      return  imgUrl;
+}
+function getMarker(latitud,longitud, color) {
+      return "&markers=color:" + color + "%7C" + latitud + ',' + longitud;
+}
+function getData() {
+      var strCodigoEntidad = $("#codigoEntidad").val();
+      var strLongitud = $("#longitud").val();
+      var strLatitud =  $("#latitud").val();
+      var strRadio = $("#radio").val();
+
+
+      var dataGet = {};
+      dataGet.codigoEntidad = strCodigoEntidad;
+      dataGet.longitud = strLongitud;
+      dataGet.latitud = strLatitud;
+      dataGet.radio = strRadio;
+      $.ajax({
+            url : '/api/rest/test/cashierLocatior',
+            data : dataGet,
+            type : 'GET',
+            dataType : 'json',
+            success : loadData,
+            error : function(xhr, status) {
+                  console.log("Error al procesar la llamada ajax. xhr" + xhr + " - status: " + status);
+            }
+      });
+      console.log("Llamada ajax normal terminada.");
+}
+
+function loadData(pJson){
+      console.log('Datos recuperados correctamente.');
+      var strList = addContent(pJson);
+
+      $("#contenido").html(strList);
+      $("li").first().show( "fast", function showNext() {
+            $( this ).next( "li" ).show( "fast", showNext );
+       });
+}
+function addContent(json) {
+      var strReturn = '';
+      strReturn += '<ul class="collection">';
+      var listCashier = json.response.data.ListaCajeros;
+      if(Array.isArray(listCashier)){
+            for (cajero in listCashier ) {
+                  strReturn += prepareContent(listCashier[cajero]);
+            }
+      }else{
+            strReturn += prepareContent(listCashier);
+      }
+      strReturn += '</ul>';
+      return strReturn;
+}
+
+function prepareContent(object) {
+      var strReturn = "";
+      strReturn += '<li class="collection-item id="itemList" style="display:none;">';
+      strReturn += '<span class="title">'+ object.nombreEntidad +'</span>';
+      strReturn += '<p>';
+      strReturn += '<div class="chip">'+ object.codigoEntidad +'</div><div class="chip">'+ object.codigoCajeros +'</div>';
+      strReturn += '<div class="chip">'+ object.direccion +'</div><div class="chip">'+ object.codigoPostal +'</div>';
+      strReturn += '<div class="chip">'+ object.indicadorCajero +'</div><div class="chip">'+ object.indicadorComision +'</div>';
+      strReturn += '<div class="chip">'+ object.longitud +'</div><div class="chip">'+ object.latitud +'</div>';
+      strReturn += '<div class="chip">'+ object.distancia +'</div><div class="chip">'+ object.nombreLocalidad +'</div>';
+      strReturn += '</p>';
+      strReturn += '<span class="secondary-content">'+ object.comision +'</span>';
+      strReturn += '</li>';
+      return strReturn;
+}
+
+var pJsonOk = '__JSONDATA__';
+
+ 
+</script>
+</body>
+</html>

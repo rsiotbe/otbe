@@ -253,9 +253,9 @@ public class TemplateManager
 				default:
 					break;
 			}
+			pLog.debug("Se cambia si es necesario el nombre del template según el canal. CanalAix:"
+					+ pSessionRviaData.getCanalAix().name() + " - CAMBIO: " + strPathToTemplate + " -> " + strReturn);
 		}
-		pLog.debug("Se cambia si es necesario el nombre del template según el canal. CanalAix:"
-				+ pSessionRviaData.getCanalAix().name() + " - CAMBIO: " + strPathToTemplate + " -> " + strReturn);
 		return strReturn;
 	}
 }
