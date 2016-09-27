@@ -67,8 +67,12 @@
 	}
 %>		
 	</form>
-	<script type="text/javascript">
+	<script type="text/javascript">	
 		document.getElementById('formRedirect').submit();
+		
+		
 	</script>
+	
+	
 </body>
 </html>
