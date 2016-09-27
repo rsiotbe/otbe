@@ -443,4 +443,76 @@ public class OperationManager
 		pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
 		return pResponseConnector;
 	}
+
+	/**
+	 * Se procesa la petición sin validar sesion en ISUM para devolver un template.
+	 * 
+	 * @param pRequest
+	 *           Objeto petición original
+	 * @param pUriInfo
+	 *           Uri asociada a la petición
+	 * @param strData
+	 *           Datos asociados a la petición
+	 * @param pMediaType
+	 *           Tipo de mediatype que debe cumplir la petición
+	 * @return Objeto respuesta de Jersey
+	 */
+	public static Response processSimulatorAPP(HttpServletRequest pRequest, UriInfo pUriInfo, String strJsonData)
+	{
+		MiqQuests pMiqQuests;
+		ErrorResponse pErrorCaptured = null;
+		RestConnector pRestConnector;
+		int nReturnHttpCode = 200;
+		String strTemplate = "";
+		Response pResponseConnector;
+		SessionRviaData pSessionRviaData = null;
+		pSession = pRequest.getSession(true);
+		try
+		{
+			/* se obtienen los datos necesario para realizar la petición al proveedor */
+			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
+			pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);
+			pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
+			pLog.debug("MiqQuest a procesar: " + pMiqQuests);
+			MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
+			/* se instancia el conector y se solicitan los datos */
+			pRestConnector = new RestConnector();
+			pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pSessionRviaData, pMiqQuests, pListParams, null);
+			pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
+			/* se procesa el resultado del conector paa evaluar y adaptar su contenido */
+			strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector, pMiqQuests);
+			pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
+			/* se obtiene la plantilla destino si es que existe */
+			strTemplate = pMiqQuests.getTemplate();
+		}
+		catch (Exception ex)
+		{
+			pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
+		}
+		try
+		{
+			/* Se comprueba si ha habido algun error para generar la respuesta adecuada */
+			if (pErrorCaptured != null)
+			{
+				pLog.info("Se procede a gestionar el error");
+				/* si la apliación debe responder un XHTML */
+				strTemplate = ErrorManager.ERROR_TEMPLATE;
+				strJsonData = pErrorCaptured.getJsonError();
+				nReturnHttpCode = pErrorCaptured.getHttpCode();
+				pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
+			}
+			pLog.info("La petición utiliza plantilla XHTML:" + strTemplate);
+			strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
+			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).encoding("UTF-8").build();
+		}
+		catch (Exception ex)
+		{
+			pLog.error("Se ha generado un error al procesar la respuesta final", ex);
+			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
+			pResponseConnector = Response.serverError().encoding("UTF-8").build();
+		}
+		pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
+		return pResponseConnector;
+	}
 }
