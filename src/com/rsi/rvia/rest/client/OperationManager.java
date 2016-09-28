@@ -37,6 +37,7 @@ public class OperationManager
 {
 	private static final String	ENCODING_UTF8			= "UTF-8";
 	private static final int		ISUM_ERROR_CODE_EX	= 401;
+	private static final int		HTTP_CODE_OK			= 200;
 	private static HttpSession		pSession;
 	private static Logger			pLog						= LoggerFactory.getLogger(OperationManager.class);
 
@@ -456,7 +457,7 @@ public class OperationManager
 	private static Response buildResponse(ErrorResponse pErrorCaptured, MediaType pMediaType, MiqQuests pMiqQuests,
 			String strJsonData, SessionRviaData pSessionRviaData) throws Exception
 	{
-		int nReturnHttpCode = 200;
+		int nReturnHttpCode = HTTP_CODE_OK;
 		String strTemplate = "";
 		if (pMiqQuests != null)
 		{
