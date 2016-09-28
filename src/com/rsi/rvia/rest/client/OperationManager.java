@@ -35,8 +35,10 @@ import com.rsi.rvia.rest.tool.Utils;
 /** Clase que gestiona cualquier petición que llega a la apliación RviaRest */
 public class OperationManager
 {
-	private static HttpSession	pSession;
-	private static Logger		pLog	= LoggerFactory.getLogger(OperationManager.class);
+	private static final String	ENCODING_UTF8			= "UTF-8";
+	private static final int		ISUM_ERROR_CODE_EX	= 401;
+	private static HttpSession		pSession;
+	private static Logger			pLog						= LoggerFactory.getLogger(OperationManager.class);
 
 	/**
 	 * Se procesa una petición que llega desde la antigua apliación de ruralvia
@@ -51,7 +53,7 @@ public class OperationManager
 	 *           Tipo de mediatype que debe cumplir la petición
 	 * @return Objeto respuesta de Jersey
 	 */
-	public static Response proccesDataFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String strData,
+	public static Response processDataFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String strData,
 			MediaType pMediaType)
 	{
 		MiqQuests pMiqQuests = null;
@@ -84,7 +86,7 @@ public class OperationManager
 		{
 			pLog.error("Se ha generado un error al procesar la respuesta final", ex);
 			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-			pResponseConnector = Response.serverError().encoding("UTF-8").build();
+			pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).build();
 		}
 		pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
 		return pResponseConnector;
@@ -135,7 +137,7 @@ public class OperationManager
 		{
 			pLog.error("Se ha generado un error al procesar la respuesta final", ex);
 			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-			pResponseConnector = Response.serverError().encoding("UTF-8").build();
+			pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).build();
 		}
 		pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
 		return pResponseConnector;
@@ -375,7 +377,7 @@ public class OperationManager
 		{
 			pLog.error("Se ha generado un error al procesar la respuesta final", ex);
 			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-			pResponseConnector = Response.serverError().encoding("UTF-8").build();
+			pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).build();
 		}
 		pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
 		return pResponseConnector;
@@ -428,7 +430,7 @@ public class OperationManager
 		{
 			pLog.error("Se ha generado un error al procesar la respuesta final", ex);
 			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-			pResponseConnector = Response.serverError().encoding("UTF-8").build();
+			pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).build();
 		}
 		pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
 		return pResponseConnector;
@@ -485,7 +487,7 @@ public class OperationManager
 			pLog.info("La petición utiliza plantilla XHTML");
 			strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
 		}
-		return (Response.status(nReturnHttpCode).entity(strJsonData).encoding("UTF-8").build());
+		return (Response.status(nReturnHttpCode).entity(strJsonData).encoding(ENCODING_UTF8).build());
 	}
 
 	/**
@@ -504,7 +506,7 @@ public class OperationManager
 		pSession.setAttribute("token", pSessionRviaData.getToken());
 		/* se comprueba si el servicio de isum está permitido */
 		if (!IsumValidation.IsValidService(pSessionRviaData))
-			throw new ISUMException(401, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+			throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
 		return pSessionRviaData;
 	}
 
