@@ -69,7 +69,7 @@ public class TestManager
 		pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.APPLICATION_JSON + " que genera "
 				+ MediaType.APPLICATION_JSON);
 		String strData = "";
-		Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData);
+		Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
 		pLog.info("Se devuelve la respuesta final al usuario");
 		return pReturn;
 	}

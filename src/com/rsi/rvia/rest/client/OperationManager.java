@@ -56,7 +56,6 @@ public class OperationManager
 	{
 		MiqQuests pMiqQuests;
 		ErrorResponse pErrorCaptured = null;
-		RestConnector pRestConnector;
 		String strJsonData = "";
 		String strTemplate = "";
 		Response pResponseConnector;
@@ -64,24 +63,12 @@ public class OperationManager
 		pSession = pRequest.getSession(true);
 		try
 		{
-			/* se obtiene los datos asociados a la petición de ruralvia */
-			pSessionRviaData = new SessionRviaData(pRequest);
-			/* se establece el token de datos recibido desde ruralvia como dato de sesión */
-			pSession.setAttribute("token", pSessionRviaData.getToken());
-			/* se comprueba si el servicio de isum está permitido */
-			if (!IsumValidation.IsValidService(pSessionRviaData))
-				throw new ISUMException(401, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+			/* se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM */
+			pSessionRviaData = validateSession(pRequest);
 			/* se obtienen los datos necesario para realizar la petición al proveedor */
-			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
-			pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
-			pLog.debug("MiqQuest a procesar: " + pMiqQuests);
-			MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
+			pMiqQuests = createMiqQuests(pUriInfo);
 			/* se instancia el conector y se solicitan los datos */
-			pRestConnector = new RestConnector();
-			pResponseConnector = pRestConnector.getData(pRequest, strData, pSessionRviaData, pMiqQuests, pListParams, null);
-			pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
-			/* se procesa el resultado del conector paa evaluar y adaptar su contenido */
-			strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector, pMiqQuests);
+			strJsonData = doRestConector(pUriInfo, pRequest, pSessionRviaData, pMiqQuests, strData);
 			pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
 			/* se obtiene la plantilla destino si es que existe */
 			strTemplate = pMiqQuests.getTemplate();
@@ -130,13 +117,8 @@ public class OperationManager
 		pSession = pRequest.getSession(true);
 		try
 		{
-			/* se obtiene los datos asociados a la petición de ruralvia */
-			pSessionRviaData = new SessionRviaData(pRequest);
-			/* se establece el token de datos recibido desde ruralvia como dato de sesión */
-			pSession.setAttribute("token", pSessionRviaData.getToken());
-			/* se comprueba si el servicio de isum está permitido */
-			if (!IsumValidation.IsValidService(pSessionRviaData))
-				throw new ISUMException(401, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+			/* se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM */
+			pSessionRviaData = validateSession(pRequest);
 			/* se obtienen los datos necesario para realizar la petición al proveedor */
 			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
 			pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);
@@ -379,9 +361,7 @@ public class OperationManager
 			/*
 			 * Se crea el objeto SessionRviaData con los solo con los datos del lang y css para aplicarlos en el template
 			 */
-			String strLang = (String) pRequest.getParameter("lang");
-			String strNRBE = (String) pRequest.getParameter("NRBE");
-			pSessionRviaData = new SessionRviaData(strLang, strNRBE);
+			pSessionRviaData = noValidateSession(pRequest);
 			/* se obtienen los datos necesario para realizar la petición al proveedor */
 			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
 			pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);
@@ -428,7 +408,6 @@ public class OperationManager
 	{
 		MiqQuests pMiqQuests;
 		ErrorResponse pErrorCaptured = null;
-		RestConnector pRestConnector;
 		String strTemplate = "";
 		Response pResponseConnector;
 		SessionRviaData pSessionRviaData = null;
@@ -438,21 +417,11 @@ public class OperationManager
 			/*
 			 * Se crea el objeto SessionRviaData con los solo con los datos del lang y css para aplicarlos en el template
 			 */
-			String strLang = (String) pRequest.getParameter("lang");
-			String strNRBE = (String) pRequest.getParameter("NRBE");
-			pSessionRviaData = new SessionRviaData(strLang, strNRBE);
+			pSessionRviaData = noValidateSession(pRequest);
 			/* se obtienen los datos necesario para realizar la petición al proveedor */
-			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
-			pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);
-			pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
-			pLog.debug("MiqQuest a procesar: " + pMiqQuests);
-			MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
-			/* se instancia el conector y se solicitan los datos */
-			pRestConnector = new RestConnector();
-			pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pSessionRviaData, pMiqQuests, pListParams, null);
-			pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
+			pMiqQuests = createMiqQuests(pUriInfo);
 			/* se procesa el resultado del conector paa evaluar y adaptar su contenido */
-			strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector, pMiqQuests);
+			strJsonData = doRestConector(pUriInfo, pRequest, pSessionRviaData, pMiqQuests, strJsonData);
 			pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
 			/* se obtiene la plantilla destino si es que existe */
 			strTemplate = pMiqQuests.getTemplate();
@@ -515,5 +484,90 @@ public class OperationManager
 			strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
 		}
 		return (Response.status(nReturnHttpCode).entity(strJsonData).encoding("UTF-8").build());
+	}
+
+	/**
+	 * Crea el objeto SessionRviaData validando la sesión contra ISUM (Recibe el token)
+	 * 
+	 * @param pRequest
+	 * @return SessionRviaData con todos los datos cargados del token
+	 * @throws Exception
+	 */
+	private static SessionRviaData validateSession(HttpServletRequest pRequest) throws Exception
+	{
+		SessionRviaData pSessionRviaData = null;
+		/* se obtiene los datos asociados a la petición de ruralvia */
+		pSessionRviaData = new SessionRviaData(pRequest);
+		/* se establece el token de datos recibido desde ruralvia como dato de sesión */
+		pSession.setAttribute("token", pSessionRviaData.getToken());
+		/* se comprueba si el servicio de isum está permitido */
+		if (!IsumValidation.IsValidService(pSessionRviaData))
+			throw new ISUMException(401, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+		return pSessionRviaData;
+	}
+
+	/**
+	 * Crea el objeto SessionRviaData sin validando la sesión contra ISUM (no recibe el token)
+	 * 
+	 * @param pRequest
+	 * @return SessionRviaData solo con el lang y NRBE
+	 * @throws Exception
+	 */
+	private static SessionRviaData noValidateSession(HttpServletRequest pRequest)
+	{
+		SessionRviaData pSessionRviaData = null;
+		/* Se recuperan los valores lang y NRBE por si vinieran por parametros */
+		String strLang = (String) pRequest.getParameter("lang");
+		String strNRBE = (String) pRequest.getParameter("NRBE");
+		/* Se inicializa SessionRviaData con los parametros minimos, por defecto pone lang a 'es_ES' y NRBE a '0198' */
+		pSessionRviaData = new SessionRviaData(strLang, strNRBE);
+		return pSessionRviaData;
+	}
+
+	/**
+	 * Crea el objeto miqQuests a raiz de un UriInfo, Si pUriInfo viene a null devuelve MiqQuests a null
+	 * 
+	 * @param pUriInfo
+	 * @return MiqQuests construido
+	 * @throws Exception
+	 */
+	private static MiqQuests createMiqQuests(UriInfo pUriInfo) throws Exception
+	{
+		MiqQuests pMiqQuests = null;
+		if (pUriInfo != null)
+		{
+			/* se obtienen los datos necesario para realizar la petición al proveedor */
+			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
+			pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);
+			pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
+			pLog.debug("MiqQuest a procesar: " + pMiqQuests);
+		}
+		return pMiqQuests;
+	}
+
+	/**
+	 * Realiza una peteción al rest conector que devolvera los datos de un end point en formato JSON
+	 * 
+	 * @param pUriInfo
+	 *           Necesario para sacar los parametros del path
+	 * @param pRequest
+	 * @param pSessionRviaData
+	 * @param pMiqQuests
+	 * @param strJsonData
+	 * @return String en formato JSON con la información recuperada del endpoint
+	 * @throws Exception
+	 */
+	private static String doRestConector(UriInfo pUriInfo, HttpServletRequest pRequest, SessionRviaData pSessionRviaData,
+			MiqQuests pMiqQuests, String strJsonData) throws Exception
+	{
+		RestConnector pRestConnector = null;
+		Response pResponseConnector = null;
+		MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
+		/* se instancia el conector y se solicitan los datos */
+		pRestConnector = new RestConnector();
+		pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pSessionRviaData, pMiqQuests, pListParams, null);
+		pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
+		/* se procesa el resultado del conector paa evaluar y adaptar su contenido */
+		return (ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector, pMiqQuests));
 	}
 }
