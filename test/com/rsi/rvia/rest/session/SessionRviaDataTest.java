@@ -14,6 +14,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import com.rsi.rvia.rest.session.SessionRviaData.CanalAix;
 
 public class SessionRviaDataTest
 {
@@ -59,64 +60,73 @@ public class SessionRviaDataTest
 	}
 
 	@Test
-	@Ignore
 	public void testGetUriRvia() throws Exception
 	{
-		URI uriRvia = buildSession(false, true).getUriRvia();
-		fail("Not yet implemented");
+		URI uriRvia = sessionRvia.getUriRvia();
+		assertNotNull("testGetUriRvia: uriRvia es null", uriRvia);
+		assertTrue("testGetUriRvia: uriRvia no es instancia de URI", uriRvia instanceof URI);
 	}
 
 	@Test
-	@Ignore
 	public void testGetRviaSessionId()
 	{
-		fail("Not yet implemented");
+		String rviaSessionId = sessionRvia.getRviaSessionId();
+		assertNotNull("testGetRviaSessionId: rviaSessionId es null", rviaSessionId);
+		assertTrue("testGetRviaSessionId: rviaSessionId no es instancia de String", rviaSessionId instanceof String);
 	}
 
 	@Test
-	@Ignore
 	public void testGetIsumUserProfile()
 	{
-		fail("Not yet implemented");
+		String isumUserProfile = sessionRvia.getIsumUserProfile();
+		assertNotNull("testGetIsumUserProfile: isumUserProfile es null", isumUserProfile);
+		assertTrue("testGetIsumUserProfile: isumUserProfile no es instancia de String", isumUserProfile instanceof String);
 	}
 
 	@Test
-	@Ignore
 	public void testGetIsumServiceId()
 	{
-		fail("Not yet implemented");
+		String isumServiceId = sessionRvia.getIsumServiceId();
+		assertNotNull("testGetIsumServiceId: isumServiceId es null", isumServiceId);
+		assertTrue("testGetIsumServiceId: isumServiceId no es instancia de String", isumServiceId instanceof String);
 	}
 
 	@Test
 	@Ignore
 	public void testGetLanguage()
 	{
-		fail("Not yet implemented");
+		String language = sessionRvia.getLanguage();
+		assertNotNull("testGetLanguage: language es null", language);
+		assertTrue("testGetLanguage: language no es instancia de String", language instanceof String);
 	}
 
 	@Test
-	@Ignore
 	public void testGetNRBE()
 	{
-		fail("Not yet implemented");
+		String nrbe = sessionRvia.getNRBE();
+		assertNotNull("testGetNRBE: nrbe es null", nrbe);
+		assertTrue("testGetNRBE: nrbe no es instancia de URI", nrbe instanceof String);
 	}
 
 	@Test
 	@Ignore
 	public void testGetCanalAix()
 	{
-		fail("Not yet implemented");
+		CanalAix canalAix = sessionRvia.getCanalAix();
+		assertNotNull("testGetCanalAix: canalAix es null", canalAix);
+		assertTrue("testGetCanalAix: canalAix no es instancia de URI", canalAix instanceof CanalAix);
 	}
 
 	@Test
-	@Ignore
 	public void testGetToken()
 	{
-		fail("Not yet implemented");
+		String nrbe = sessionRvia.getNRBE();
+		assertNotNull("testGetNRBE: nrbe es null", nrbe);
+		assertTrue("testGetNRBE: nrbe no es instancia de URI", nrbe instanceof String);
 	}
 
-	@Test
 	@Ignore
+	@Test
 	public void testToString()
 	{
 		fail("Not yet implemented");

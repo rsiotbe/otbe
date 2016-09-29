@@ -11,18 +11,44 @@ import com.rsi.rvia.rest.tool.RviaConnectCipher;
 
 public class SessionRviaData
 {
-	private static Logger		pLog						= LoggerFactory.getLogger(SessionRviaData.class);
-	private String					strNodeRvia;
-	private Cookie[]				pCookiesRviaData;
-	private static Properties	pAddressRviaProp		= new Properties();
-	private URI						pUriRvia					= null;
-	private String					strRviaSessionId		= "";
-	private String					strIsumUserProfile	= "";
-	private String					strIsumServiceId		= "";
-	private String					strLanguage				= "";
-	private String					strNRBE					= "";
-	private String					strToken					= "";
-	private CanalAix				pCanalAix				= CanalAix.BANCA_INTERNET;
+	private static Logger			pLog										= LoggerFactory.getLogger(SessionRviaData.class);
+	private static final String	CODIGO_BANCO_COOPERATIVO_ESPAÑOL	= "0198";
+	private static final String	DEFAULT_LANGUAGE						= "es_ES";
+	private String						strNodeRvia;
+	private Cookie[]					pCookiesRviaData;
+	private static Properties		pAddressRviaProp						= new Properties();
+	private URI							pUriRvia									= null;
+	private String						strRviaSessionId						= "";
+	private String						strIsumUserProfile					= "";
+	private String						strIsumServiceId						= "";
+	private String						strLanguage								= "";
+	private String						strNRBE									= "";
+	private String						strToken									= "";
+	private CanalAix					pCanalAix								= CanalAix.BANCA_INTERNET;
+
+	private static enum TokenKey
+	{
+		NODE("node"), RVIASESION("RVIASESION"), ISUMUSERPROFILE("isumUserProfile"), ISUMSERVICEID("isumServiceId"), LANG(
+				"lang"), NRBE("NRBE"), CANALAIX("canalAix");
+		private String value;
+
+		private TokenKey(String newValue)
+		{
+			value = newValue;
+		}
+
+		private static TokenKey getValue(String value)
+		{
+			for (TokenKey e : TokenKey.values())
+			{
+				if (e.value.equals(value))
+				{
+					return e;
+				}
+			}
+			return null;
+		}
+	}
 
 	/**
 	 * Enumeración de canal aix recibido desde ruralvia
@@ -99,15 +125,15 @@ public class SessionRviaData
 	 * Constructor para páginas públicas
 	 * 
 	 * @param strLang
-	 *           String con el lenguaje, por defecto si viene vacio o a null se pondra es_ES
+	 *           String con el lenguaje, por defecto si viene vacio o a null se pondra al idioma por defecto, es_ES
 	 * @param strNRBE
-	 *           String con el NRBE, por defecto si viene vacio o a null se pondre 0198
+	 *           String con el NRBE, por defecto si viene vacio o a null se pondre el de el Banco Cooperativo Español
 	 */
 	public SessionRviaData(String strLang, String strNRBE)
 	{
 		if (strLang == null || strLang.trim().isEmpty())
 		{
-			this.strLanguage = "es_ES";
+			this.strLanguage = DEFAULT_LANGUAGE;
 		}
 		else
 		{
@@ -115,7 +141,7 @@ public class SessionRviaData
 		}
 		if (strNRBE == null || strNRBE.trim().isEmpty())
 		{
-			this.strNRBE = "0198";
+			this.strNRBE = CODIGO_BANCO_COOPERATIVO_ESPAÑOL;
 		}
 		else
 		{
@@ -156,46 +182,39 @@ public class SessionRviaData
 				for (int i = 0; i < strParameters.length; i++)
 				{
 					String[] strAux = strParameters[i].split("=");
-					String strName = strAux[0];
+					TokenKey strName = TokenKey.getValue(strAux[0]);
 					String strValue = null;
 					if (strAux.length > 1)
 						strValue = strAux[1];
-					if ("node".equals(strName))
+					if (strValue != null)
 					{
-						if (strValue != null)
-							strNodeRvia = strValue;
-					}
-					else if ("RVIASESION".equals(strName))
-					{
-						if (strValue != null)
-							strRviaSessionId = strValue;
-					}
-					else if ("isumUserProfile".equals(strName))
-					{
-						if (strValue != null)
-							strIsumUserProfile = new String(strValue);
-					}
-					else if ("isumServiceId".equals(strName))
-					{
-						if (strValue != null)
-							strIsumServiceId = strValue;
-					}
-					else if ("lang".equals(strName))
-					{
-						if (strValue != null)
-							strLanguage = strValue;
-					}
-					else if ("NRBE".equals(strName))
-					{
-						if (strValue != null)
-							strNRBE = strValue;
-					}
-					else if ("canalAix".equals(strName))
-					{
-						if (strValue != null)
+						switch (strName)
 						{
-							/* se buscan en todas los posibles valores de la enumeración */
-							pCanalAix = obtainCanalAixFromStringValue(strValue);
+							case NODE:
+								strNodeRvia = strValue;
+								break;
+							case RVIASESION:
+								strRviaSessionId = strValue;
+								break;
+							case ISUMUSERPROFILE:
+								strIsumUserProfile = new String(strValue);
+								break;
+							case ISUMSERVICEID:
+								strIsumServiceId = strValue;
+								break;
+							case LANG:
+								strLanguage = strValue;
+								break;
+							case NRBE:
+								strNRBE = strValue;
+								break;
+							case CANALAIX:
+								// Se buscan en todas los posibles valores de la enumeración
+								pCanalAix = obtainCanalAixFromStringValue(strValue);
+								break;
+							default:
+								// No hace nada.
+								break;
 						}
 					}
 				}

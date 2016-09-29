@@ -12,7 +12,7 @@ import com.rsi.rvia.rest.session.SessionRviaData;
 
 public class IsumValidation
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(IsumValidation.class);
+	private static Logger pLog = LoggerFactory.getLogger(IsumValidation.class);
 
 	/**
 	 * Comprueba si el servicio solicitado por el usuario es accesible para el perfil del usuario
@@ -58,8 +58,6 @@ public class IsumValidation
 		{
 			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
-		// return fReturn;
-		// /???
-		return true;
+		return fReturn;
 	}
 }
