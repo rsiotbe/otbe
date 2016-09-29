@@ -12,7 +12,7 @@ import com.rsi.rvia.rest.tool.RviaConnectCipher;
 public class SessionRviaData
 {
 	private static Logger			pLog										= LoggerFactory.getLogger(SessionRviaData.class);
-	private static final String	CODIGO_BANCO_COOPERATIVO_ESPAÑOL	= "0198";
+	private static final String	CODIGO_BANCO_COOPERATIVO_ESPANOL	= "0198";
 	private static final String	DEFAULT_LANGUAGE						= "es_ES";
 	private String						strNodeRvia;
 	private Cookie[]					pCookiesRviaData;
@@ -141,7 +141,7 @@ public class SessionRviaData
 		}
 		if (strNRBE == null || strNRBE.trim().isEmpty())
 		{
-			this.strNRBE = CODIGO_BANCO_COOPERATIVO_ESPAÑOL;
+			this.strNRBE = CODIGO_BANCO_COOPERATIVO_ESPANOL;
 		}
 		else
 		{
