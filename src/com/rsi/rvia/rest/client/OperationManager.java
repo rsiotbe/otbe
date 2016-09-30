@@ -539,14 +539,11 @@ public class OperationManager
 	private static MiqQuests createMiqQuests(UriInfo pUriInfo) throws Exception
 	{
 		MiqQuests pMiqQuests = null;
-		if (pUriInfo != null)
-		{
-			/* se obtienen los datos necesario para realizar la petición al proveedor */
-			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
-			pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);
-			pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
-			pLog.debug("MiqQuest a procesar: " + pMiqQuests);
-		}
+		/* se obtienen los datos necesario para realizar la petición al proveedor */
+		String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
+		pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);
+		pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
+		pLog.debug("MiqQuest a procesar: " + pMiqQuests);
 		return pMiqQuests;
 	}
 
@@ -562,8 +559,8 @@ public class OperationManager
 	 * @return String en formato JSON con la información recuperada del endpoint
 	 * @throws Exception
 	 */
-	private static String doRestConector(UriInfo pUriInfo, HttpServletRequest pRequest, SessionRviaData pSessionRviaData,
-			MiqQuests pMiqQuests, String strJsonData) throws Exception
+	private static String doRestConector(UriInfo pUriInfo, HttpServletRequest pRequest,
+			SessionRviaData pSessionRviaData, MiqQuests pMiqQuests, String strJsonData) throws Exception
 	{
 		RestConnector pRestConnector = null;
 		Response pResponseConnector = null;

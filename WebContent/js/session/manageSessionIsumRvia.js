@@ -2,9 +2,7 @@ var updateIsumUrl = '/isum/srv.BDP_RVIA05_SOLICITAR_TARJ_PAR.BDP_RVIA05_SERV_CAM
 
 function updateSessionIsumRvia(settings) 
 {
-	
 		console.log('Refresco de sesión ISUM-RVIA solicitado');
-
 		$.ajax({
 			url : updateIsumUrl,
 			type : 'POST',
