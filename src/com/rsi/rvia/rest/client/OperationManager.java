@@ -459,19 +459,8 @@ public class OperationManager
 	{
 		int nReturnHttpCode = HTTP_CODE_OK;
 		String strTemplate = "";
-		if (pMiqQuests != null)
-		{
-			/* se obtiene la plantilla destino si es que existe */
-			strTemplate = pMiqQuests.getTemplate();
-		}
-		else
-		{
-			/* se inicializa si es necesario pErrorCaptured para que se genere un error controlado */
-			if (pErrorCaptured == null)
-			{
-				pErrorCaptured = new ErrorResponse();
-			}
-		}
+		/* se obtiene la plantilla destino si es que existe */
+		strTemplate = pMiqQuests.getTemplate();
 		/* Se comprueba si ha habido algun error para generar la respuesta adecuada */
 		if (pErrorCaptured != null)
 		{
