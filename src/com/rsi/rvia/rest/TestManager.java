@@ -36,7 +36,8 @@ public class TestManager
 	@GET
 	@Path("/cashierLocatior")
 	@Produces({ MediaType.TEXT_HTML })
-	@Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED })
+	@Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
+			"application/x-ms-application" })
 	public Response getAllUserCards(@Context HttpServletRequest pRequest, @Context HttpServletResponse pResponse,
 			@Context UriInfo pUriInfo) throws Exception
 	{

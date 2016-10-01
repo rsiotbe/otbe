@@ -14,13 +14,14 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 /** Objeto que representa una operativa o operación definida en la aplicación */
 public class MiqQuests
 {
-	private static Logger								pLog			= LoggerFactory.getLogger(MiqQuests.class);
+	private static Logger								pLog					= LoggerFactory.getLogger(MiqQuests.class);
 	private int												nIdMiq;
 	private String											strPathRest;
 	private String											strComponentType;
 	private String											strEndPoint;
 	private String											strTemplate;
-	public static Hashtable<Integer, MiqQuests>	htCacheData	= new Hashtable<Integer, MiqQuests>();
+	public static Hashtable<Integer, MiqQuests>	htCacheDataId		= new Hashtable<Integer, MiqQuests>();
+	public static Hashtable<String, MiqQuests>	htCacheDataPath	= new Hashtable<String, MiqQuests>();
 
 	/**
 	 * Devuelve el tamaño de la cache
@@ -30,9 +31,13 @@ public class MiqQuests
 	public static int getSizeCache()
 	{
 		int nReturn = 0;
-		if (htCacheData != null)
+		if (htCacheDataId != null)
 		{
-			nReturn = htCacheData.size();
+			nReturn = +htCacheDataId.size();
+		}
+		if (htCacheDataPath != null)
+		{
+			nReturn = +htCacheDataPath.size();
 		}
 		return nReturn;
 	}
@@ -42,10 +47,8 @@ public class MiqQuests
 	 */
 	public static void restartCache()
 	{
-		if (htCacheData != null)
-		{
-			htCacheData = new Hashtable<Integer, MiqQuests>();
-		}
+		htCacheDataId = new Hashtable<Integer, MiqQuests>();
+		htCacheDataPath = new Hashtable<String, MiqQuests>();
 	}
 
 	public int getIdMiq()
@@ -155,10 +158,13 @@ public class MiqQuests
 			while (pResultSet.next())
 			{
 				MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"));
-				if (!htCacheData.containsKey(pResultSet.getInt("id_miq")))
-					htCacheData.put(pResultSet.getInt("id_miq"), pMiqQuests);
+				if (!htCacheDataId.containsKey(pResultSet.getInt("id_miq")))
+					htCacheDataId.put(pResultSet.getInt("id_miq"), pMiqQuests);
+				if (!htCacheDataPath.containsKey(pResultSet.getString("path_rest")))
+					htCacheDataPath.put(pResultSet.getString("path_rest"), pMiqQuests);
 			}
-			pLog.debug("Se carga la cache de MiqQuest con " + getSizeCache() + " elementos");
+			pLog.debug("Se carga la cache de MiqQuest con " + getSizeCache()
+					+ " elementos. (La mitad es por id y la otra mitad por Path");
 		}
 		catch (Exception ex)
 		{
@@ -197,34 +203,15 @@ public class MiqQuests
 	public static MiqQuests getMiqQuests(String strPath) throws Exception
 	{
 		MiqQuests pMiqQuests = null;
-		Connection pConnection = null;
-		PreparedStatement pPreparedStatement = null;
-		ResultSet pResultSet = null;
 		/*
 		 * en caso de contener el path la coletilla /help, se elilina para obtener el path original sobre el cual se
 		 * pregunta la ayuda
 		 */
 		strPath = strPath.replace("/help", "");
-		try
-		{
-			String strQuery = "select * from bdptb222_miq_quests where trim(path_rest) =?";
-			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-			pPreparedStatement = pConnection.prepareStatement(strQuery);
-			pPreparedStatement.setString(1, strPath);
-			pResultSet = pPreparedStatement.executeQuery();
-			while (pResultSet.next())
-			{
-				pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"));
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("error al obtener la informacion de MiqQuest con path: " + strPath, ex);
-		}
-		finally
-		{
-			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
-		}
+		/* si la caché no está cargada se carga */
+		if (getSizeCache() == 0)
+			loadDDBBCache();
+		pMiqQuests = htCacheDataPath.get(strPath);
 		return pMiqQuests;
 	}
 
@@ -240,29 +227,10 @@ public class MiqQuests
 	public static MiqQuests getMiqQuests(int nMiqQuestId) throws Exception
 	{
 		MiqQuests pMiqQuests = null;
-		Connection pConnection = null;
-		PreparedStatement pPreparedStatement = null;
-		ResultSet pResultSet = null;
-		try
-		{
-			String strQuery = "select * from bdptb222_miq_quests where id_miq = ?";
-			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-			pPreparedStatement = pConnection.prepareStatement(strQuery);
-			pPreparedStatement.setInt(1, nMiqQuestId);
-			pResultSet = pPreparedStatement.executeQuery();
-			while (pResultSet.next())
-			{
-				pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"));
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("error al obtener la informacion de MiqQuest con id: " + nMiqQuestId, ex);
-		}
-		finally
-		{
-			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
-		}
+		/* si la caché no está cargada se carga */
+		if (getSizeCache() == 0)
+			loadDDBBCache();
+		pMiqQuests = htCacheDataId.get(nMiqQuestId);
 		return pMiqQuests;
 	}
 }
