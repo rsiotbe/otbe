@@ -34,7 +34,7 @@ function loadAlgorithm()
 {
 	var dataGet = {};
 	dataGet.codEntidad = "9997";
-	dataGet.funciones = "calculateMortgageFee;";
+	dataGet.funciones = "calculateMortgageFee";
 	  $.ajax({
 		    type: "GET",
 		    url: "/api/rest/test/simuladores",
@@ -44,7 +44,7 @@ function loadAlgorithm()
 		    success: function (json)
 		    {
 		    	var response = json;
-		    	var strFucntion = json.response.data.algorithm;
+		    	var strFucntion = json.response.data.calculateMortgageFee;
 		    	eval(strFucntion);
 		    	window.calculateMortgageFee = calculateMortgageFee;
 		    },
