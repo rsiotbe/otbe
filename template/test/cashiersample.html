@@ -56,7 +56,7 @@
 		}
 		</style>
 </head>
-<body style="background-color: #AAFFFF">
+<body>
 
 <div id="formulario" style="text-align: center;margin-top: 30px;"> 
   <button  onclick="getCashierClose()" class="button">Buscar cajeros</button>
@@ -107,14 +107,14 @@ function getCashierClose() {
     	  	html += '\n<div style="border:1px solid gray;">\n';
     	  	html += '<p>El cajero más cercano a RSI es:</p>\n';
     	  	html += '<span id="spanNearest">\n';
-    	  	html += 'Cajero de ' + cajero.nombreEntidad + '(' + cajero.codigoEntidad + ') en la calle ' + cajero.direccion + ' en ' + 
-          			 cajero.nombreLocalidad + ' (' + cajero.codigoPostal +'), está a ' + cajero.distancia + 
-            	     ' metros de RSI y cobra una decomisión de ' + cajero.comision + '€';
+    	  	html += 'Cajero de <b>' + cajero.nombreEntidad + '(' + cajero.codigoEntidad + ') </b>en la calle <b>' + cajero.direccion + '</b> en ' + 
+          			 cajero.nombreLocalidad + ' (' + cajero.codigoPostal +')</b>, está a <b>' + cajero.distancia + 
+            	     ' </b> metros de RSI y cobra una decomisión de <b>' + cajero.comision + ' € </b>';
     	  	html += '</span>\n';
     	  	html += '<br></br>';	
-        	html += '<p>Aqui tienees un mapa con los cajeros alrededor:</p>\n';
+        	html += '<p>Aqui tienes un mapa con los cajeros alrededor:</p>\n';
         	html += '<div style="text-align: center;">\n';
-        	html += '<img id="imgMap" src="' + strMap + '"/>\n';
+        	html += '<img id="imgMap" src="' + strMap + '" style="max-width:100%"/>\n';
         	html += '</div>\n';
             $('#resultado').append(html);
             $('#resultado').show();        
