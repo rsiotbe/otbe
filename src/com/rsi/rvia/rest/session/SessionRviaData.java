@@ -265,7 +265,9 @@ public class SessionRviaData
          }
          /* se obtiene la maquina y puerto en la que existe la sesión del usuario */
          if (strNodeRvia == null)
+         {
             pLog.error("No se ha podido leer el parámetro nodo de ruralvia, esto va a generar un error al obtener el nodo origen de la petición");
+         }
          pUriRvia = new URI(pAddressRviaProp.getProperty(strNodeRvia));
       }
       catch (Exception ex)
@@ -318,13 +320,13 @@ public class SessionRviaData
       pSb.append("NRBE            :" + strNRBE + "\n");
       pSb.append("Token           :" + strToken + "\n");
       pSb.append("CanalAix        :" + pCanalAix.name() + "\n");
-      pSb.append("Cookie          :" + strToken + "\n");
       if (pCookiesRviaData != null)
       {
+         pSb.append("Cookies         :\n");
          for (int i = 0; i < pCookiesRviaData.length; i++)
          {
-            pSb.append("Cookie " + (i + 1) + "         :" + pCookiesRviaData[i].getName() + " -> "
-                  + pCookiesRviaData[i].getValue() + pCookiesRviaData[i - 1].getValue());
+            pSb.append("                 [" + (i) + "] " + pCookiesRviaData[i].getName() + " -> "
+                  + pCookiesRviaData[i].getValue());
             if (i < pCookiesRviaData.length - 1)
                pSb.append("\n");
          }
