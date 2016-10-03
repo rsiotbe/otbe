@@ -72,7 +72,7 @@ public class SimuladoresManager
 					{
 						String strJSMin = (String) pResultSet.getString("javascript_min");
 						pLog.trace("Funcion encontrada y recuperada: " + strFunction);
-						htReturn.put(strFunction, "var calcLoan = " + strJSMin + ";");
+						htReturn.put(strFunction, "var " + strItem + " = " + strJSMin + ";");
 					}
 				}
 			}

@@ -46,7 +46,7 @@ function loadAlgorithm()
 		    	var response = json;
 		    	var strFucntion = json.response.data.algorithm;
 		    	eval(strFucntion);
-		    	window.calcLoad = calcLoad;
+		    	window.calculateMortgageFee = calculateMortgageFee;
 		    },
 		    error: function(xhr, textStatus, errorThrown) {
 				console.log('ERROR: ' + textStatus + ' - ' + errorThrown);
