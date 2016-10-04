@@ -3,7 +3,7 @@
  		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
 		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider,
 		 com.rsi.rvia.rest.tool.Utils,
-		 com.rsi.rvia.rest.simulators.SimulatorsManager,		 
+		 com.rsi.rvia.rest.applications.SimuladoresManager,		 
 		 java.sql.PreparedStatement,
 		 java.sql.ResultSet,
 		 java.util.Hashtable,
@@ -21,11 +21,12 @@
 	String strEntity = (String) request.getParameter("codEntidad");
 	/* Las funciones tienen que venir separadas por punto y coma a;b;c */
 	String strFunctions = (String) request.getParameter("funciones");
-	strResponse = SimulatorsManager.getJSFunctionsByEntity(strEntity, strFunctions);
+	strResponse = SimuladoresManager.getFunctions4Entity(strEntity, strFunctions);
 	JSONObject pJsonResponse = new JSONObject(strResponse);
 	
 	pJsonData.put("data",pJsonResponse);
 	pJson.put("response",pJsonData);
 	strResponse = pJson.toString();
 	response.setContentType("text/json");
+	
 %><%=strResponse%>
