@@ -11,52 +11,74 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 
 public class SimulatorsManager
 {
 	private static Logger pLog = LoggerFactory.getLogger(SimulatorsManager.class);
 
-	public static String getFunctions4Entity(String strEntity, String strFunctions) throws JSONException
+	public static String getFunctions4Entity(String strEntity, String strFunctions, String strJSType)
+			throws JSONException, ApplicationException
 	{
 		String strReturn = "{}";
 		JSONObject pJson = new JSONObject();
-		Hashtable<String, String> htFunctions;
+		Hashtable<String, String> htFunctions = new Hashtable<String, String>();
 		Hashtable<String, String> htConfig;
-		htFunctions = getFunctionsFromDDBB(strFunctions);
-		htConfig = getParamConfigFromDDBB(strEntity);
-		String strJSMin = "";
-		/* Se sustituyen en todos los algoritmos, y se añaden a el JSON de respuesta */
-		for (Enumeration e = htFunctions.keys(); e.hasMoreElements();)
+		try
 		{
-			String strFunction = (String) e.nextElement();
-			strJSMin = htFunctions.get(strFunction);
-			for (Enumeration en = htConfig.keys(); en.hasMoreElements();)
+			htFunctions = getFunctionsFromDDBB(strFunctions, strJSType);
+			htConfig = getParamConfigFromDDBB(strEntity);
+			String strJSMin = "";
+			/* Se sustituyen en todos los algoritmos, y se añaden a el JSON de respuesta */
+			for (Enumeration e = htFunctions.keys(); e.hasMoreElements();)
 			{
-				String strReplace = (String) en.nextElement();
-				String strValue = htConfig.get(strReplace);
-				strJSMin = strJSMin.replace(strReplace, strValue);
+				String strFunction = (String) e.nextElement();
+				strJSMin = htFunctions.get(strFunction);
+				for (Enumeration en = htConfig.keys(); en.hasMoreElements();)
+				{
+					String strReplace = (String) en.nextElement();
+					String strValue = htConfig.get(strReplace);
+					strJSMin = strJSMin.replace(strReplace, strValue);
+				}
+				pLog.debug("Añadiendo algoritmo al JSON.");
+				// pJson.put(strFunction, "var " + strFunction + " = " + strJSMin);
+				pJson.put(strFunction, strJSMin);
 			}
-			pLog.debug("Añadiendo algoritmo al JSON.");
-			// pJson.put(strFunction, "var " + strFunction + " = " + strJSMin);
-			pJson.put(strFunction, strJSMin);
+			strReturn = pJson.toString();
 		}
-		strReturn = pJson.toString();
+		catch (ApplicationException ex)
+		{
+			throw ex;
+		}
 		return strReturn;
 	}
 
-	private static Hashtable<String, String> getFunctionsFromDDBB(String strFunctions)
+	private static Hashtable<String, String> getFunctionsFromDDBB(String strFunctions, String strJSType)
+			throws ApplicationException
 	{
 		Hashtable<String, String> htReturn = new Hashtable<String, String>();
 		Connection pConnection = null;
 		PreparedStatement pPreparedStatement = null;
 		ResultSet pResultSet = null;
-		String[] pPartes = strFunctions.split(";");
+		if (strJSType == null || strJSType.trim().isEmpty())
+		{
+			strJSType = "min";
+		}
 		try
 		{
+			String[] pPartes = strFunctions.split(";");
 			String strQuery = "select * from bdptb235_functions_simuladores";
 			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
 			pResultSet = pPreparedStatement.executeQuery();
+			if ("normal".equals(strJSType))
+			{
+				strJSType = "javascript";
+			}
+			else
+			{
+				strJSType = "javascript_min";
+			}
 			/*
 			 * Recupera el JS minificado, dentro de la tabla BDPTB235_FUNCTIONS_SIMULADORES tambien esta la versión sin
 			 * minificar. Si se realiza un cambio en cualquiera de las dos versión hay que modificarlo en la otra. La
@@ -70,7 +92,7 @@ public class SimulatorsManager
 				{
 					if (strItem.equals(strFunction))
 					{
-						String strJSMin = (String) pResultSet.getString("javascript_min");
+						String strJSMin = (String) pResultSet.getString(strJSType);
 						pLog.trace("Funcion encontrada y recuperada: " + strFunction);
 						htReturn.put(strFunction, "var " + strItem + " = " + strJSMin + ";");
 					}
@@ -80,6 +102,7 @@ public class SimulatorsManager
 		catch (Exception ex)
 		{
 			pLog.error("Error al realizar la consulta a la BBDD.");
+			throw new ApplicationException(500, 999999, "No se han podido recuperar las funciones.", "Error al obtener obtener las funciones JS para simuladores.", ex);
 		}
 		finally
 		{
@@ -88,7 +111,7 @@ public class SimulatorsManager
 		return htReturn;
 	}
 
-	private static Hashtable<String, String> getParamConfigFromDDBB(String strEntity)
+	public static Hashtable<String, String> getParamConfigFromDDBB(String strEntity)
 	{
 		Hashtable<String, String> htReturn = new Hashtable<String, String>();
 		Connection pConnection = null;
