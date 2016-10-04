@@ -17,13 +17,14 @@
 	<property name="build-directory" value="${base-directory}/build" />
 	<property name="classes-directory" value="${build-directory}/classes" />
 	<property name="configurations-directory" value="${base-directory}/configurations" />
-	<property name="configurations-directory-aux" value="${base-directory}/aux" />
 	<property name="dist-directory" value="${base-directory}/dist" />
+	<property name="configurations-directory-aux" value="${base-directory}/configAux" />
 	<property name="tomcat-directory" value="D:/Aplicaciones/Tomcat 7/lib" />
 	
 	<target name="clean">
 		<echo message="Se procede a eliminar las rutas build y dist" />
     	<rmdir dir="${build-directory}"/>
+		<delete file="${dist-directory}/*.*" />
     	<rmdir dir="${dist-directory}" />
 		<rmdir dir="${configurations-directory-aux}" />
 	</target>	
@@ -77,9 +78,7 @@
 		<echo message="Se genera el nuevo war"/>
 		<war warfile="${dist-directory}/${war-file-name}" webxml="${web-xml-file}">
 			<classes dir="${classes-directory}" />
-			<!--<classes dir="${configurations-directory}" />-->
 			<classes dir="${configurations-directory-aux}" />
-			<classes file="${classes-directory}" />
 
 			<classes dir="${template-directory}" />
 			<fileset dir="${web-directory}">
@@ -87,7 +86,9 @@
 				<exclude name="${web-xml-file}" />
 			</fileset>
 			<lib dir="${lib-directory}"/>
-			<!--<fileset dir="${template-directory}"></fileset>	-->
 		</war>
+		<delete dir="${configurations-directory-aux}" />
+		<echo message="para que funcione el comando scp es necesario añadir el jar jsch.jar de la url http://www.jcraft.com/jsch/index.html y añadirlo como una entrada de classpath -> jar externo en la configuracion de la ejecución ant"/>
+		<scp file="${dist-directory}/${war-file-name}" todir="cnlcloud:cloud$16@lnxntf05.risa:/cloud-disk/tomcat/omnicanal/apache-tomcat-7.0.70/webapps" trust="true" />  
 	</target>
 </project>

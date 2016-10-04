@@ -9,8 +9,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
 <title></title>
-<script type="text/javascript"
-	src="https://cdn.jsdelivr.net/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js"></script>
+<script src="/api/js/iframe/iframeResizer.contentWindow.min.js"></script>
 </head>
 <%
 	Logger pLog = LoggerFactory.getLogger("access.jsp");
