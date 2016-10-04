@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 
-public class SimuladoresManager
+public class SimulatorsManager
 {
-	private static Logger pLog = LoggerFactory.getLogger(SimuladoresManager.class);
+	private static Logger pLog = LoggerFactory.getLogger(SimulatorsManager.class);
 
 	public static String getFunctions4Entity(String strEntity, String strFunctions) throws JSONException
 	{
