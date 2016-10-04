@@ -3,69 +3,76 @@
 <head>
       <meta charset="utf-8"/>
       <title>Cashier Sample</title>
-            <!-- Compiled and minified CSS -->
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css"/>
+      <style>
+      body{
+			font-family: Arial, "sans-serif";
+			padding: 5px 5px 5px;
+		}
+      .button {
+			background-color: #71c100;
+			border: none;
+			color: white;
+			padding: 10px 20px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 14px;
+			margin: 4px 2px;
+			cursor: pointer;
+			width: 170px;
+		} 
+		.button:hover:enabled {
+			background-color: #2ABB04;
+			font-style: italic;
+		}
 
-      <!-- Compiled and minified JavaScript -->
-       <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
-       <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-       <script src="/api/js/manageRequestRviaRest.js"></script>
+		.button:active:enabled {
+			background-color: white;
+			color: #71c100;
+		}		
+		.button span {
+			cursor: pointer;
+			display: inline-block;
+			position: relative;
+			transition: 0.5s;
+		}
+		
+		.button span:after {
+			content: '>';
+			position: absolute;
+			opacity: 0;
+			top: 0;
+			right: -20px;
+			transition: 0.5s;
+		}
+		
+		.button:hover:enabled span {
+			padding-right: 25px;
+		}
+		
+		.button:hover:enabled span:after {
+			opacity: 1;
+			right: 0;
+		}
+		</style>
 </head>
 <body>
 
-<div id="formulario" style="text-align: center;margin-top: 30px;">
- <!--      <div class="row">
-    <div class="col s12">
-      <div class="row">
-        <div class="input-field col s6">
-            <span>Código Entidad</span>
-          <input id="codigoEntidad" type="number" class="validate">
-          
-        </div>
-        <div class="input-field col s6">
-        <span>Longitud</span>
-          <input id="longitud" type="number" class="validate">
-         
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-        <span>Latitud</span>
-          <input id="latitud" type="number" class="validate">
-        </div>
-      
-      <div class="input-field col s6">
-         <span>Radio</span>
-         <input id="radio" type="number" class="validate">
-        </div>
-      </div>
-    </div>
-  </div>
-  <a onclick="getData()" class="waves-effect waves-light btn light-green darken-1">Enviar</a>-->  
-  <a onclick="getCashierClose()" class="waves-effect waves-light btn light-green darken-1">Buscar cajeros</a>
-  <a onclick="reloadPage()" class="waves-effect waves-light btn light-green darken-1">Recargar página</a>
+<div id="formulario" style="text-align: center;margin-top: 30px;"> 
+  <button  onclick="getCashierClose()" class="button">Buscar cajeros</button>
+  <button  onclick="reloadPage()" class="button">Recargar página</button>
 </div>
 <hr>
 <div id="resultado" style="display:none;margin-top:10px">
-	El cajero más cercano a RSI es:
-	<span id="spanNearest"></span>
-	
-	<br></br>
-	Aqui tienees un mapa con los cajeros alrededor.
-    <div id="contenido" style="text-align: centar;"></div>
+
 
 </div>
 
-<!-- <div class="row">
-    <div class="col s12 m4 l2"></div>
-    <div class="col s12 m4 l8" id="contenido"></div>
-    <div class="col s12 m4 l2"></div>
-  </div> --> 
 <script type="text/javascript">
 
 function reloadPage()
 {
-	$('<form action="/cashierLocatior" method="get"></form>').appendTo('body').submit();
+	$('<form action="/api/rest/test/cashierLocatior" method="get"></form>').appendTo('body').submit();
 }
 
 function getCashierClose() {
@@ -93,26 +100,30 @@ function getCashierClose() {
       });
 
       function loadDataMap(json){
-            console.log("Cargando datos en el mapa: ");
-            var strReturn = getMap(json,strLatitud,strLongitud);
-            console.log("imagen: " + strReturn);
-            $('#contenido').html('<img id="imgMap" src="' + strReturn + '" style="display:none"/>');
-            $("#imgMap").show("slow");
+    	  	var html ="";
             var listCashier = json.response.data.ListaCajeros;
             var cajero = listCashier[0];
-            /* se añade la info del más cercano */
-            var strText = "Cajero de " + cajero.nombreEntidad + "(" + cajero.codigoEntidad + ") en la calle " + cajero.direccion + " en " + 
-            cajero.nombreLocalidad + " (" + cajero.codigoPostal +'), está a ' + cajero.distancia + 
-            			 " metros de RSI y cobra una decomisión de " + cajero.comision + "€";
-            $('#spanNearest').text(strText);
-            $('#resultado').show();
-            
+            var strMap = getMap(json,strLatitud,strLongitud);
+    	  	html += '\n<div style="border:1px solid gray;">\n';
+    	  	html += '<p>El cajero más cercano a RSI es:</p>\n';
+    	  	html += '<span id="spanNearest">\n';
+    	  	html += 'Cajero de <b>' + cajero.nombreEntidad + '(' + cajero.codigoEntidad + ') </b>en la calle <b>' + cajero.direccion + '</b> en ' + 
+          			 cajero.nombreLocalidad + ' (' + cajero.codigoPostal +')</b>, está a <b>' + cajero.distancia + 
+            	     ' </b> metros de RSI y cobra una decomisión de <b>' + cajero.comision + ' € </b>';
+    	  	html += '</span>\n';
+    	  	html += '<br></br>';	
+        	html += '<p>Aqui tienes un mapa con los cajeros alrededor:</p>\n';
+        	html += '<div style="text-align: center;">\n';
+        	html += '<img id="imgMap" src="' + strMap + '" style="max-width:100%"/>\n';
+        	html += '</div>\n';
+            $('#resultado').append(html);
+            $('#resultado').show();        
       }
 }
 
 function getMap(json,latitud,longitud){
       var APIkey = "&key=AIzaSyCShs_SweSfuTGvp6H068K0EUGKcy-4D7s";
-      var urlBase = "http://maps.googleapis.com/maps/api/staticmap?center=";
+      var urlBase = "https://maps.googleapis.com/maps/api/staticmap?center=";
       var urlConfig = "&zoom=10&size=550x400&sensor=false";
       var listCashier = json.response.data.ListaCajeros;
       var strMarkers = "";

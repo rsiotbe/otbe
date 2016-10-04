@@ -1,10 +1,8 @@
 var updateIsumUrl = '/isum/srv.BDP_RVIA05_SOLICITAR_TARJ_PAR.BDP_RVIA05_SERV_CAM_CLA_CONTRA';
 
-function updateSessionIsumRvia(settings) 
+function updateSessionIsumRvia() 
 {
-	
 		console.log('Refresco de sesión ISUM-RVIA solicitado');
-
 		$.ajax({
 			url : updateIsumUrl,
 			type : 'POST',
@@ -23,7 +21,9 @@ $(document).ajaxSend(function(event,request, settings)
 {
 	if(updateIsumUrl != settings.url)
 	{	
-		updateSessionIsumRvia(settings);
+		updateSessionIsumRvia();
 	}
 
 });
+
+$('form').on('submit',updateSessionIsumRvia);

@@ -474,19 +474,8 @@ public class OperationManager
 	{
 		int nReturnHttpCode = HTTP_CODE_OK;
 		String strTemplate = "";
-		if (pMiqQuests != null)
-		{
-			/* se obtiene la plantilla destino si es que existe */
-			strTemplate = pMiqQuests.getTemplate();
-		}
-		else
-		{
-			/* se inicializa si es necesario pErrorCaptured para que se genere un error controlado */
-			if (pErrorCaptured == null)
-			{
-				pErrorCaptured = new ErrorResponse();
-			}
-		}
+		/* se obtiene la plantilla destino si es que existe */
+		strTemplate = pMiqQuests.getTemplate();
 		/* Se comprueba si ha habido algun error para generar la respuesta adecuada */
 		if (pErrorCaptured != null)
 		{
@@ -554,14 +543,11 @@ public class OperationManager
 	private static MiqQuests createMiqQuests(UriInfo pUriInfo) throws Exception
 	{
 		MiqQuests pMiqQuests = null;
-		if (pUriInfo != null)
-		{
-			/* se obtienen los datos necesario para realizar la petición al proveedor */
-			String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
-			pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);
-			pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
-			pLog.debug("MiqQuest a procesar: " + pMiqQuests);
-		}
+		/* se obtienen los datos necesario para realizar la petición al proveedor */
+		String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
+		pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);
+		pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
+		pLog.debug("MiqQuest a procesar: " + pMiqQuests);
 		return pMiqQuests;
 	}
 
@@ -577,8 +563,8 @@ public class OperationManager
 	 * @return String en formato JSON con la información recuperada del endpoint
 	 * @throws Exception
 	 */
-	private static String doRestConector(UriInfo pUriInfo, HttpServletRequest pRequest, SessionRviaData pSessionRviaData,
-			MiqQuests pMiqQuests, String strJsonData) throws Exception
+	private static String doRestConector(UriInfo pUriInfo, HttpServletRequest pRequest,
+			SessionRviaData pSessionRviaData, MiqQuests pMiqQuests, String strJsonData) throws Exception
 	{
 		RestConnector pRestConnector = null;
 		Response pResponseConnector = null;

@@ -1,3 +1,4 @@
+<%@page import="com.rsi.rvia.rest.operation.MiqQuests"%>
 <%@page
 	import="com.rsi.rvia.rest.template.TemplateManager
 	,com.rsi.rvia.translates.TranslateProcessor
@@ -10,6 +11,7 @@
 <%
 	Hashtable<String,String> htCaches = new Hashtable<String,String>();
 	/* Se añaden las caches */
+	htCaches.put("MiqQuests", (String) String.valueOf(MiqQuests.getSizeCache()));
 	htCaches.put("Plantillas HTML", (String) String.valueOf(TemplateManager.getSizeCache()));
 	htCaches.put("Traducciones", (String) String.valueOf(TranslateProcessor.getSizeCache()));
 	htCaches.put("CSS Multientidad", (String) String.valueOf(CssMultiBankProcessor.getSizeCache()));

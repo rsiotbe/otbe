@@ -49,9 +49,9 @@ public class ErrorResponse
 		return strDescription;
 	}
 
-	public void setDescription(String strDescriptción)
+	public void setDescription(String strDescriptcion)
 	{
-		this.strDescription = strDescriptción;
+		this.strDescription = strDescriptcion;
 	}
 
 	public ErrorResponse(ApplicationException ex)
@@ -71,14 +71,6 @@ public class ErrorResponse
 	}
 
 	public ErrorResponse(Exception ex)
-	{
-		nHttpCode = 500;
-		nInnerErrorCode = 9999999;
-		strMessage = "Error de la aplicación";
-		strDescription = "Error no controlado de la aplicación";
-	}
-
-	public ErrorResponse()
 	{
 		nHttpCode = 500;
 		nInnerErrorCode = 9999999;

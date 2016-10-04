@@ -7,6 +7,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Entities.EscapeMode;
 import org.jsoup.parser.Parser;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.multibank.CssMultiBankProcessor;
@@ -22,8 +23,10 @@ public class TemplateManager
 {
 	static Logger										pLog							= LoggerFactory.getLogger(TemplateManager.class);
 	public final static String						JSON_DATA_TAG				= "'__JSONDATA__'";
-	private final static String					IFRAME_SCRIPT_ADAPTER	= "https://cdn.jsdelivr.net/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js";
-	private final static String					UPDATE_RVIA_SESSION		= "/api/js/manageRequestRviaRest.js";
+	private final static String					IFRAME_SCRIPT_ADAPTER	= "/api/js/iframe/iframeResizer.contentWindow.min.js";
+	private final static String					UPDATE_RVIA_SESSION		= "/api/js/session/manageSessionIsumRvia.js";
+	private final static String					JQUERY						= "/api/js/jquery/jquery-1.11.3.min.js";
+	// private final static String JQUERY = "/api/js/jquery/jquery-2.2.4.min.js";
 	public static Hashtable<String, Document>	htCacheTemplate			= new Hashtable<String, Document>();
 
 	/**
@@ -145,6 +148,26 @@ public class TemplateManager
 	 */
 	private static Document includeUpdateRviaScript(Document pDocument)
 	{
+		boolean fInsert = true;
+		Elements pJsScript = pDocument.select("script[src]");
+		for (Element pItem : pJsScript)
+		{
+			if (pItem != null)
+			{
+				String strSrc = pItem.attr("abs:src");
+				if (strSrc != null && strSrc.toLowerCase().contains("jquery"))
+				{
+					fInsert = false;
+					break;
+				}
+			}
+		}
+		if (fInsert)
+		{
+			Element pScript = pDocument.createElement("script");
+			pScript.attr("src", JQUERY);
+			pDocument.body().appendChild(pScript);
+		}
 		Element pScript = pDocument.createElement("script");
 		pScript.attr("src", UPDATE_RVIA_SESSION);
 		pDocument.body().appendChild(pScript);
