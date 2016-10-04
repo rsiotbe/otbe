@@ -20,7 +20,7 @@
 	if(strLinea != null){
 		whereLineaEq=" AND T1.COD_LINEA = '" + strLinea + "'";
 	}
-	String q =
+	String strQuery =
 		" SELECT" +   
 		" 	t1.NUM_SEC_AC \"acuerdo\", trim(t2.NOMB_GRP_PD) \"nombreGrupo\"," +
 		" 	trim(nvl(t3.NOMB_PDV, t2.NOMB_GRP_PD)) \"nombreProducto\"" +
@@ -52,13 +52,13 @@
 
 	qCustomizer.setFieldsList(request.getParameter("fieldslist"));
 	qCustomizer.setSortersList(request.getParameter("sorterslist"));
-	q = qCustomizer.getParsedQuery(q);
+	strQuery = qCustomizer.getParsedQuery(strQuery);
 	
 	Connection pConnection = null;
 	PreparedStatement pPreparedStatement = null;
 	ResultSet pResultSet = null;
 	pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleCIP);
-	pPreparedStatement = pConnection.prepareStatement(q);
+	pPreparedStatement = pConnection.prepareStatement(strQuery);
 	pResultSet = pPreparedStatement.executeQuery();
 	
 	JSONArray json = Utils.convertResultSet2JSON(pResultSet);

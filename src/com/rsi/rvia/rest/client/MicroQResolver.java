@@ -75,7 +75,7 @@ public class MicroQResolver
 
 	private static URI getBaseWSURI()
 	{
-		return UriBuilder.fromUri("http://localhost:8080/api/").build();
+		return UriBuilder.fromUri("http://xxx.xxx:/api/").build();
 	}
 
 	private static URI getBaseWSURI(String url)
