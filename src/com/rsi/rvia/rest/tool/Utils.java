@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.ws.rs.core.MultivaluedMap;
@@ -36,27 +37,18 @@ public class Utils
 	public static String getPrimaryPath(UriInfo pUriInfo)
 	{
 		String strKeys = "";
+		String strPath = pUriInfo.getPath();
 		MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
+		//LinkedHashMap<String, String> pListParameters = (LinkedHashMap) pUriInfo.getPathParameters();
 		Iterator<String> pIterator = pListParameters.keySet().iterator();
 		while (pIterator.hasNext())
 		{
 			String strKeyName = (String) pIterator.next();
-			strKeys += "/{";
-			strKeys += strKeyName;
-			strKeys += "}";
+			String strValue = pListParameters.get(strKeyName).get(0);
+			strPath = strPath.replaceFirst(strValue, "{" + strKeyName + "}");
 		}
-		String strPath = pUriInfo.getPath();
-		String[] pStrPathParts = strPath.split("/");
-		strPath = "";
-		for (int i = 0; i <= (pStrPathParts.length - pListParameters.size()) - 1; i++)
-		{
-			if (!strPath.isEmpty())
-			{
-				strPath += "/";
-			}
-			strPath += pStrPathParts[i];
-		}
-		return ("/" + strPath + strKeys);
+		pLog.debug("StrPath: " + strPath);
+		return ("/" + strPath);
 	}
 
 	/**

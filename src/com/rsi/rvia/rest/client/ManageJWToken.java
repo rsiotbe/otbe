@@ -84,7 +84,7 @@ public class ManageJWToken
 	    JwtClaims claims = new JwtClaims();
 	    claims.setIssuer(JWTCreator);  // who creates the token and signs it
 	    claims.setAudience(JWTAudience); // to whom the token is intended to be sent
-	    claims.setExpirationTimeMinutesInTheFuture(10); // time when the token will expire (10 minutes from now)
+	    claims.setExpirationTimeMinutesInTheFuture(100); // time when the token will expire (10 minutes from now)
 	    claims.setGeneratedJwtId(); // a unique identifier for the token
 	    claims.setIssuedAtToNow();  // when the token was issued/created (now)
 	    claims.setNotBeforeMinutesInThePast(2); // time before which the token is not yet valid (2 minutes ago)

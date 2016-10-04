@@ -3,7 +3,8 @@
  	import="java.sql.Connection,
  		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
 		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider,
-		 com.rsi.rvia.rest.tool.Utils,		 
+		 com.rsi.rvia.rest.tool.Utils,
+		 com.rsi.rvia.rest.client.QueryCustomizer,		 
 		 java.sql.PreparedStatement,
 		 java.sql.ResultSet,		 
 		 org.json.JSONArray,
@@ -13,6 +14,12 @@
 "
 %>
 <%
+	QueryCustomizer qCustomizer=new QueryCustomizer();
+	String strLinea = request.getParameter("codLinea");
+	String whereLineaEq="";
+	if(strLinea != null){
+		whereLineaEq=" AND T1.COD_LINEA = '" + strLinea + "'";
+	}
 	String q =
 		" SELECT" +   
 		" 	t1.NUM_SEC_AC \"acuerdo\", trim(t2.NOMB_GRP_PD) \"nombreGrupo\"," +
@@ -31,26 +38,27 @@
 		" 		AND t1.cod_nrbe_en = t3.cod_nrbe_en" +
 		" 		and t3.mi_fecha_fin = t2.mi_fecha_fin" +
 		" WHERE  t1.MI_FECHA_FIN = to_date('31.12.9999','dd.mm.yyyy')" +
-		" 	AND t1.COD_NRBE_EN =?" +
+		" 	AND t1.COD_NRBE_EN = '" + request.getParameter("codEntidad") + "'" +
 		" 	AND t1.COD_RL_PERS_AC = '01'" +
 		" 	AND t1.NUM_RL_ORDEN = 1" +
-		" 	AND t1.COD_ECV_PERS_AC = '2'" +
-		" 	AND t1.ID_INTERNO_PE =?" +
+		" 	AND t1.COD_ECV_PERS_AC = '2'" + whereLineaEq +
+		" 	AND t1.ID_INTERNO_PE = " + request.getParameter("idInternoPe") +
 		" 	and t2.mi_fecha_fin = (select MI_FECHA_PROCESO from rdwc01.ce_carga_tabla" +
 		" 		where nomtabla='MI_LINEA_GRUPO')";
+
 	JSONObject pp= new JSONObject();
 	JSONObject pJson = new JSONObject();
 	Logger	pLog = LoggerFactory.getLogger("jsp");
 
-	//pLog.info("--------------------------------: " + request.getParameter("idMiq"));
-		
+	qCustomizer.setFieldsList(request.getParameter("fieldslist"));
+	qCustomizer.setSortersList(request.getParameter("sorterslist"));
+	q = qCustomizer.getParsedQuery(q);
+	
 	Connection pConnection = null;
 	PreparedStatement pPreparedStatement = null;
 	ResultSet pResultSet = null;
 	pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleCIP);
 	pPreparedStatement = pConnection.prepareStatement(q);
-	pPreparedStatement.setString(1, request.getParameter("codEntidad"));
-	pPreparedStatement.setString(2, request.getParameter("idInternoPe"));
 	pResultSet = pPreparedStatement.executeQuery();
 	
 	JSONArray json = Utils.convertResultSet2JSON(pResultSet);
@@ -61,6 +69,5 @@
 	pJson.put("response",pp);
 	String respuesta=pJson.toString();
 	response.setHeader("content-type", "application/json");
-	//pLog.info("------------------------------- " + json.toString());
 %>
 <%=respuesta %>

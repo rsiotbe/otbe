@@ -29,6 +29,7 @@ import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.template.TemplateManager;
+import com.rsi.rvia.rest.tool.ServiceHelper;
 import com.rsi.rvia.rest.tool.Utils;
 
 // import org.apache.http.impl.client.DefaultHttpClient;
@@ -237,7 +238,17 @@ public class OperationManager
 			// throw new ISUMException(401, null, "Servicio no permitido",
 			// "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
 			/* se obtienen los datos necesario para realizar la petición al proveedor */
+			
 			strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
+			
+			// Si existe el parámetro help, invocamos a la ayuda y escapamos
+			if(pRequest.getParameter("help") != null){
+				//JSONObject jsonHelp = ServiceHelperL.getHelp(strPrimaryPath);	
+				String strJsonHelp = ServiceHelper.getHelp(strPrimaryPath);	
+				pLog.info("Invocando proceso help para " + strPrimaryPath);
+				return Response.ok(strJsonHelp).build();
+			}
+			
 			pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
 			MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
 			/* se instancia el conector y se solicitan los datos */
