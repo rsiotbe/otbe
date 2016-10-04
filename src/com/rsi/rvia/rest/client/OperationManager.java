@@ -29,6 +29,7 @@ import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.session.SessionRviaData;
 import com.rsi.rvia.rest.template.TemplateManager;
+import com.rsi.rvia.rest.tool.ServiceHelper;
 import com.rsi.rvia.rest.tool.Utils;
 
 // import org.apache.http.impl.client.DefaultHttpClient;
@@ -188,7 +189,17 @@ public class OperationManager
          // throw new ISUMException(401, null, "Servicio no permitido",
          // "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
          // Se obtienen los datos necesario para realizar la petición al proveedor.
+			
          strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
+			
+			// Si existe el parámetro help, invocamos a la ayuda y escapamos
+			if(pRequest.getParameter("help") != null){
+				//JSONObject jsonHelp = ServiceHelperL.getHelp(strPrimaryPath);	
+				String strJsonHelp = ServiceHelper.getHelp(strPrimaryPath);	
+				pLog.info("Invocando proceso help para " + strPrimaryPath);
+				return Response.ok(strJsonHelp).build();
+			}
+			
          pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
          MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
          // Se instancia el conector y se solicitan los datos.
@@ -322,12 +333,16 @@ public class OperationManager
          String codEntidad = strResponse.replaceAll("^.*<ee:entidad>([^<]*)</ee:entidad>.*$", "$1");
          String idInternoPe = strResponse.replaceAll("^.*<ee:idInternoPe>([^<]*)</ee:idInternoPe>.*$", "$1");
          String nTarjeta = strResponse.replaceAll("^.*<ee:numeroTarjeta>([^<]*)</ee:numeroTarjeta>.*$", "$1");
-         fields.put("codEntidad", codEntidad.replace(" ", ""));
-         fields.put("idInternoPe", idInternoPe.replace(" ", ""));
-         fields.put("nTarjeta", nTarjeta.replace(" ", ""));
-         /*
-          * fields.put("codEntidad", entidad); fields.put("idInternoPe", idInternoPe); fields.put("nTarjeta", nTarjeta);
-          */
+         
+        fields.put("codEntidad", "3076");
+        fields.put("idInternoPe", "104955");
+        fields.put("nTarjeta", "307671667");			
+
+        // FIXME: Pendiente de cambiar en producci´on.
+        //fields.put("codEntidad", codEntidad.replace(" ", ""));
+        //fields.put("idInternoPe", idInternoPe.replace(" ", ""));
+        //fields.put("nTarjeta", nTarjeta.replace(" ", ""));
+
          return fields;
       }
    }
