@@ -41,7 +41,7 @@ public class TestManager
 	{
 		pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.APPLICATION_JSON + " que genera "
 				+ MediaType.APPLICATION_JSON);
-		Response pReturn = OperationManager.proccesDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+		Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
 		pLog.info("Se devuelve la respuesta final al usuario");
 		return pReturn;
 	}
@@ -69,7 +69,7 @@ public class TestManager
 		pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.APPLICATION_JSON + " que genera "
 				+ MediaType.APPLICATION_JSON);
 		String strData = "";
-		Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData);
+		Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
 		pLog.info("Se devuelve la respuesta final al usuario");
 		return pReturn;
 	}
@@ -81,7 +81,7 @@ public class TestManager
 			throws Exception
 	{
 		pLog.info("Se recibe una peticion de cards");
-		Response pReturn = OperationManager.proccesDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);
+		Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);
 		return pReturn;
 	}
 
@@ -92,7 +92,7 @@ public class TestManager
 			throws Exception
 	{
 		pLog.info("Se recibe una peticion de cards/{card}");
-		Response pReturn = OperationManager.proccesDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
+		Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
 		return pReturn;
 	}
 
