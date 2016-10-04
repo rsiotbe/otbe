@@ -13,52 +13,51 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
 import com.rsi.rvia.rest.tool.ServiceHelper;
-//import javax.ws.rs.Consumes;
-
+// import javax.ws.rs.Consumes;
 
 /**
  * Clase que responde a las peticiones REST para las acciones relacionadas con el control de costes
- *
  */
-@Path("/rsiapi") 
+@Path("/rsiapi")
 public class CostControl
 {
-	private static Logger pLog = LoggerFactory.getLogger(CostControl.class);
+   private static Logger pLog = LoggerFactory.getLogger(CostControl.class);
 
-	/**
-	 * Obtiene el listado completo de tarjetas de un usuario
-	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
-	 * @throws Exception 
-	 */
-	@GET
-	@Path("/login") 
+   /**
+    * Obtiene el listado completo de tarjetas de un usuario
+    * 
+    * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+    * @throws Exception
+    */
+   @GET
+   @Path("/login")
    @Produces(MediaType.APPLICATION_JSON)
-	public Response loginProcess(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			String strData) throws Exception
-	{	
-		// Invocar servicio de login	desde operation manager?
-		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);	
-		pLog.info(" ---------> Login");
-		return pReturn;
-	}	
-	
-	/**
+   public Response loginProcess(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+         throws Exception
+   {
+      // Invocar servicio de login desde operation manager?
+      Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+      pLog.info(" ---------> Login");
+      return pReturn;
+   }
+
+   /**
 	 * Obtiene el listado completo de acuerdos de un usuario
 	 * En el documento Webservice1 
-	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
-	 * @throws Exception 
-	 */
-	@GET
-	@Path("/contracts") 
+    * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+    * @throws Exception
+    */
+   @GET
+   @Path("/contracts")
    @Produces(MediaType.APPLICATION_JSON)
-	public Response listaDeContratos(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			String strData) throws Exception
-	{	
-		//return Response.ok("Lista de contratos").build();
-		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-		pLog.info("Lista de contratos");
-		return pReturn;		
-	}	
+   public Response listaDeContratos(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+         throws Exception
+   {
+      // return Response.ok("Lista de contratos").build();
+      Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+      pLog.info("Lista de contratos");
+      return pReturn;
+   }
 	/**
 	 * Obtiene el listado de acuerdos de un usuario  para una línea concreta
 	 * En el documento Webservice1 
@@ -81,25 +80,25 @@ public class CostControl
 	 * @return Objeto que contiene la respuesta y en caso positivo los saldos por fin de mes
 	 * @throws Exception 
 	 */
-	
-	@GET
+
+   @GET
 	@Path("/contracts/balances/{idContract: [0-9]+}/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}/to/{fechaFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}") 
    @Produces(MediaType.APPLICATION_JSON)
 	public Response saldosDeUnContratoDesdeHasta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			String strData) throws Exception
+         throws Exception
 	{	
 		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Movimientos de un contrato");
 		return pReturn;	
 	}
-	
+
 	/**
 	 * Obtiene posiciones de saldos a fin de mes para un acuerdo desde fecha inicio hasta hoy
 	 * En el documento Webservice2
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
 	 * @throws Exception 
 	 */	
-	@GET
+   @GET
 	@Path("/contracts/balances/{idContract: [0-9]+}/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}/uptodate") 
    @Produces(MediaType.APPLICATION_JSON)
 	public Response saldosDeUnContratoDesdeHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
@@ -123,13 +122,12 @@ public class CostControl
 	@Path("/contracts/movementsbymonth/{idContract: [0-9]+}/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}/to/{fechaFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}") 
    @Produces(MediaType.APPLICATION_JSON)
 	public Response sumaMovimientosMesAcuerdoDesdeHasta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			String strData) throws Exception
-	{	
-		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-		pLog.info("Movimientos de un contrato");
-		return pReturn;	
-	}
-	
+   {
+      Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+      pLog.info("Movimientos de un contrato");
+      return pReturn;
+   }
+
 	/**
 	 * Obtiene un agregado de movimientos por mes y signo para un acuerdo concreto, y a partir de una fecha, hasta última fecha disponible
 	 * Adeudo y abonos históricos en acuerdos
@@ -137,13 +135,13 @@ public class CostControl
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
 	 * @throws Exception 
 	 */		
-	@GET
+   @GET
 	@Path("/contracts/movementsbymonth/{idContract: [0-9]+}/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}/uptodate") 
    @Produces(MediaType.APPLICATION_JSON)
 	public Response sumaMovimientosMesAcuerdoDesdeHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			String strData) throws Exception
-	{	
-		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+         String strData) throws Exception
+   {
+      Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Movimientos de un contrato");
 		return pReturn;	
 	}		
@@ -162,8 +160,8 @@ public class CostControl
 	{	
 		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Movimientos de un contrato");
-		return pReturn;	
-	}	
+      return pReturn;
+   }
 
 	/**
 	 * Obtiene un agregado de movimientos por mes y signo para una línea, y a partir de una fecha, hasta hoy
@@ -172,15 +170,15 @@ public class CostControl
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
 	 * @throws Exception 
 	 */		
-	@GET
+   @GET
 	@Path("/contracts/movementsbymonth/line/{codLinea}/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}/uptodate") 
    @Produces(MediaType.APPLICATION_JSON)
 	public Response sumaMovimientosMesLineaDesdeHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			String strData) throws Exception
-	{	
-		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-		pLog.info("Movimientos de un contrato");
-		return pReturn;	
+         throws Exception
+   {
+      Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+      pLog.info("Movimientos de un contrato");
+      return pReturn;
 	}	
 	
 	
@@ -192,13 +190,13 @@ public class CostControl
 	 * @throws Exception 
 	 */	
 	/*
-	@GET
+   @GET
 	@Path("/contracts/movementsbymonth/line/{codLinea}/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}") 
    @Produces(MediaType.APPLICATION_JSON)
 	public Response detalleMovimientos(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			String strData) throws Exception
-	{	
-		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+         String strData) throws Exception
+   {
+      Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Movimientos de un contrato");
 		return pReturn;	
 	}		

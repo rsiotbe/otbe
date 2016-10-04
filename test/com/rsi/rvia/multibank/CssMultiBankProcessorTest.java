@@ -7,22 +7,18 @@ import java.util.Hashtable;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import com.rsi.BaseTest;
 import com.rsi.rvia.rest.session.SessionRviaData;
 
-public class CssMultiBankProcessorTest
+public class CssMultiBankProcessorTest extends BaseTest
 {
    @Before
    public void setUp() throws Exception
    {
+      super.setUp();
       CssMultiBankProcessor.htCacheData = new Hashtable<String, String>();
-   }
-
-   @After
-   public void tearDown() throws Exception
-   {
    }
 
    @Test

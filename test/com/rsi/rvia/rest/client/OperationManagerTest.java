@@ -25,19 +25,35 @@ public class OperationManagerTest extends BaseTest
    @Test
    public void testProcessDataFromRvia() throws Exception
    {
-      String strData = null;
+      String strData = "";
       MediaType mediaType = null;
       MultivaluedMap<String, String> map = new MultivaluedHashMap<String, String>();
-      map.add("foo", "bar");
       when(request.getSession(true)).thenReturn(session);
       when(request.getParameter("token")).thenReturn(TOKEN);
       when(request.getMethod()).thenReturn("GET");
       Mockito.when(uriInfo.getPathParameters()).thenReturn(map);
-      Mockito.when(uriInfo.getPath()).thenReturn("/foo/bar");
+      Mockito.when(uriInfo.getPath()).thenReturn("/rsiapi/contracts");
+      Mockito.when(miqQuests.getComponentType()).thenReturn("API");
+      Response response = OperationManager.processDataFromRvia(request, uriInfo, strData, mediaType);
+      assertNotNull("testProcessDataFromRvia: response es null", response);
+      assertEquals("testProcessDataFromRvia: response erronea", response.getStatus(), 200);
+   }
+
+   @Test
+   public void testProcessDataFromRviaError() throws Exception
+   {
+      String strData = "";
+      MediaType mediaType = null;
+      MultivaluedMap<String, String> map = new MultivaluedHashMap<String, String>();
+      map.add("card", "foo");
+      when(request.getSession(true)).thenReturn(session);
+      when(request.getParameter("token")).thenReturn(TOKEN);
+      when(request.getMethod()).thenReturn("GET");
+      Mockito.when(uriInfo.getPathParameters()).thenReturn(map);
+      Mockito.when(uriInfo.getPath()).thenReturn("/foo/card");
       Mockito.when(miqQuests.getComponentType()).thenReturn("RVIA");
       Response response = OperationManager.processDataFromRvia(request, uriInfo, strData, mediaType);
       assertNotNull("testProcessDataFromRvia: response es null", response);
-      // FIXME: No se crean los MiqQuests.
       assertEquals("testProcessDataFromRvia: response es null", response.getStatus(), 500);
    }
 
