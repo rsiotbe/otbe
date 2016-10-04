@@ -203,11 +203,6 @@ public class MiqQuests
 	public static MiqQuests getMiqQuests(String strPath) throws Exception
 	{
 		MiqQuests pMiqQuests = null;
-		/*
-		 * en caso de contener el path la coletilla /help, se elilina para obtener el path original sobre el cual se
-		 * pregunta la ayuda
-		 */
-		strPath = strPath.replace("/help", "");
 		/* si la caché no está cargada se carga */
 		if (getSizeCache() == 0)
 			loadDDBBCache();
