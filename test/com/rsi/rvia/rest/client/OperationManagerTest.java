@@ -32,7 +32,7 @@ public class OperationManagerTest extends BaseTest
       when(request.getParameter("token")).thenReturn(TOKEN);
       when(request.getMethod()).thenReturn("GET");
       Mockito.when(uriInfo.getPathParameters()).thenReturn(map);
-      Mockito.when(uriInfo.getPath()).thenReturn("/rsiapi/contracts");
+      Mockito.when(uriInfo.getPath()).thenReturn("rsiapi/contracts");
       Mockito.when(miqQuests.getComponentType()).thenReturn("API");
       Response response = OperationManager.processDataFromRvia(request, uriInfo, strData, mediaType);
       assertNotNull("testProcessDataFromRvia: response es null", response);
@@ -50,7 +50,7 @@ public class OperationManagerTest extends BaseTest
       when(request.getParameter("token")).thenReturn(TOKEN);
       when(request.getMethod()).thenReturn("GET");
       Mockito.when(uriInfo.getPathParameters()).thenReturn(map);
-      Mockito.when(uriInfo.getPath()).thenReturn("/foo/card");
+      Mockito.when(uriInfo.getPath()).thenReturn("foo/card");
       Mockito.when(miqQuests.getComponentType()).thenReturn("RVIA");
       Response response = OperationManager.processDataFromRvia(request, uriInfo, strData, mediaType);
       assertNotNull("testProcessDataFromRvia: response es null", response);
@@ -67,7 +67,7 @@ public class OperationManagerTest extends BaseTest
       when(request.getParameter("token")).thenReturn(TOKEN);
       when(request.getMethod()).thenReturn("GET");
       Mockito.when(uriInfo.getPathParameters()).thenReturn(map);
-      Mockito.when(uriInfo.getPath()).thenReturn("/foo/bar");
+      Mockito.when(uriInfo.getPath()).thenReturn("foo/bar");
       Mockito.when(miqQuests.getComponentType()).thenReturn("RVIA");
       Response response = OperationManager.processTemplateFromRvia(request, uriInfo, strData);
       assertNotNull("testProcessTemplateFromRvia: response es null", response);
@@ -86,7 +86,7 @@ public class OperationManagerTest extends BaseTest
       when(request.getParameter("token")).thenReturn(TOKEN);
       when(request.getMethod()).thenReturn("GET");
       Mockito.when(uriInfo.getPathParameters()).thenReturn(map);
-      Mockito.when(uriInfo.getPath()).thenReturn("/foo/bar");
+      Mockito.when(uriInfo.getPath()).thenReturn("foo/bar");
       Mockito.when(miqQuests.getComponentType()).thenReturn("RVIA");
       Response response = OperationManager.processForAPI(request, uriInfo, strData, mediaType);
       assertNotNull("testProcessForAPI: response es null", response);
@@ -104,7 +104,7 @@ public class OperationManagerTest extends BaseTest
       when(request.getParameter("token")).thenReturn(TOKEN);
       when(request.getMethod()).thenReturn("GET");
       Mockito.when(uriInfo.getPathParameters()).thenReturn(map);
-      Mockito.when(uriInfo.getPath()).thenReturn("/foo/login");
+      Mockito.when(uriInfo.getPath()).thenReturn("foo/login");
       Mockito.when(miqQuests.getComponentType()).thenReturn("RVIA");
       Response response = OperationManager.processForAPI(request, uriInfo, strData, mediaType);
       assertNotNull("testProcessForAPILogin: response es null", response);
@@ -119,7 +119,7 @@ public class OperationManagerTest extends BaseTest
       MultivaluedMap<String, String> map = new MultivaluedHashMap<String, String>();
       map.add("foo", "bar");
       Mockito.when(uriInfo.getPathParameters()).thenReturn(map);
-      Mockito.when(uriInfo.getPath()).thenReturn("/foo/bar");
+      Mockito.when(uriInfo.getPath()).thenReturn("foo/bar");
       Response response = OperationManager.processTemplate(request, uriInfo, strData);
       assertNotNull("testProcessTemplate: response es null", response);
       // No se crean los MiqQuests.
@@ -137,7 +137,7 @@ public class OperationManagerTest extends BaseTest
       when(request.getParameter("token")).thenReturn(TOKEN);
       when(request.getMethod()).thenReturn("GET");
       Mockito.when(uriInfo.getPathParameters()).thenReturn(map);
-      Mockito.when(uriInfo.getPath()).thenReturn("/foo/bar");
+      Mockito.when(uriInfo.getPath()).thenReturn("foo/bar");
       Mockito.when(miqQuests.getComponentType()).thenReturn("RVIA");
       Response response = OperationManager.processGenericAPP(request, uriInfo, strData, mediaType);
       assertNotNull("testProcessGenericAPP: response es null", response);
