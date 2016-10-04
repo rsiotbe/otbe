@@ -37,7 +37,7 @@ public class CostControl
 			String strData) throws Exception
 	{	
 		// Invocar servicio de login	desde operation manager?
-		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);	
+		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);	
 		pLog.info(" ---------> Login");
 		//int status = pReturn.getStatus();
 		//if(status != 200)
@@ -58,7 +58,7 @@ public class CostControl
 			String strData) throws Exception
 	{	
 		//return Response.ok("Lista de contratos").build();
-		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Lista de contratos");
 		return pReturn;		
 	}	
@@ -81,7 +81,7 @@ public class CostControl
 			String strData) throws Exception
 	{	
 		//return Response.ok("Movimientos de un contrato").build();
-		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Movimientos de un contrato");
 		return pReturn;	
 	}
@@ -93,7 +93,7 @@ public class CostControl
 			String strData) throws Exception
 	{	
 		//return Response.ok("Movimientos de un contrato").build();
-		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Movimientos de un contrato. Proceso help");
 		return pReturn;	
 	}	
@@ -105,7 +105,7 @@ public class CostControl
 			String strData) throws Exception
 	{	
 		//return Response.ok("Movimientos de un contrato").build();
-		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Movimientos de un contrato");
 		return pReturn;	
 	}
@@ -116,7 +116,7 @@ public class CostControl
 			String strData) throws Exception
 	{	
 		//return Response.ok("Lista de contratos").build();
-		Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
 		pLog.info("Lista de contratos");
 		return pReturn;		
 	}	
