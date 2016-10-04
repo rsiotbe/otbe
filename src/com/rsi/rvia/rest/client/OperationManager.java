@@ -271,7 +271,6 @@ public class OperationManager
 
    private static HashMap<String, String> doLogin() throws JoseException, IOException
    {
-      HashMap<String, String> fields = new HashMap<String, String>();
       String strBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
             + "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" "
             + "xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">" + "<soap:Header>"
@@ -319,6 +318,7 @@ public class OperationManager
       }
       else
       {
+         HashMap<String, String> fields = new HashMap<String, String>();
          String codEntidad = strResponse.replaceAll("^.*<ee:entidad>([^<]*)</ee:entidad>.*$", "$1");
          String idInternoPe = strResponse.replaceAll("^.*<ee:idInternoPe>([^<]*)</ee:idInternoPe>.*$", "$1");
          String nTarjeta = strResponse.replaceAll("^.*<ee:numeroTarjeta>([^<]*)</ee:numeroTarjeta>.*$", "$1");
