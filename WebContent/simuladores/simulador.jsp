@@ -3,7 +3,7 @@
  		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
 		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider,
 		 com.rsi.rvia.rest.tool.Utils,
-		 com.rsi.rvia.rest.applications.SimuladoresManager,		 
+		 com.rsi.rvia.rest.applications.SimulatorsManager,		 
 		 java.sql.PreparedStatement,
 		 java.sql.ResultSet,
 		 java.util.Hashtable,
@@ -21,8 +21,18 @@
 	String strEntity = (String) request.getParameter("codEntidad");
 	/* Las funciones tienen que venir separadas por punto y coma a;b;c */
 	String strFunctions = (String) request.getParameter("funciones");
-	strResponse = SimuladoresManager.getFunctions4Entity(strEntity, strFunctions);
+	/* Recibe el tipo de JS, minificado o sin minificar */
+	String strType = (String) request.getParameter("jstype");
+	strResponse = SimulatorsManager.getFunctions4Entity(strEntity, strFunctions,strType);
 	JSONObject pJsonResponse = new JSONObject(strResponse);
+	Hashtable<String,String> htConfig = SimulatorsManager.getParamConfigFromDDBB(strEntity);
+	
+	for (Enumeration en = htConfig.keys(); en.hasMoreElements();)
+	{
+		String strKey = (String) en.nextElement();
+		String strValue = htConfig.get(strKey);
+		pJsonResponse.put(strKey, strValue);
+	}
 	
 	pJsonData.put("data",pJsonResponse);
 	pJson.put("response",pJsonData);
