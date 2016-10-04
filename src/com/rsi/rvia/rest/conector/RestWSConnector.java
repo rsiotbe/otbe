@@ -27,14 +27,15 @@ import com.rsi.rvia.rest.client.RviaRestHttpClient;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
-import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.session.RequestConfig;
+import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.tool.GettersRequestParams;
 import com.rsi.rvia.rest.tool.Utils;
 
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
 public class RestWSConnector
 {
-	private static Logger pLog = LoggerFactory.getLogger(RestWSConnector.class);
+	private static Logger	pLog	= LoggerFactory.getLogger(RestWSConnector.class);
 
 	/**
 	 * Realiza una petición de tipo get restFull al proveedor de datos (Ruralvia o WS dependiendo de la configuración)
@@ -98,9 +99,9 @@ public class RestWSConnector
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception
 	 */
-	public static Response post(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests, SessionRviaData pSessionRvia,
-			String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject)
-			throws Exception
+	public static Response post(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests,
+			RequestConfig pRequestConfig, String strJsonData, MultivaluedMap<String, String> pPathParams,
+			HashMap<String, String> pParamsToInject) throws Exception
 	{
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = RviaRestHttpClient.getClient();
@@ -116,7 +117,7 @@ public class RestWSConnector
 		pLog.info("Query Params: " + strParameters);
 		if (!strParameters.isEmpty())
 		{
-			htDatesParameters = InterrogateRvia.getParameterFromSession(strParameters, pSessionRvia);
+			htDatesParameters = InterrogateRvia.getParameterFromSession(strParameters, (RequestConfigRvia) pRequestConfig);
 			htDatesParameters = checkSessionValues(pRequest, htDatesParameters);
 		}
 		ObjectMapper pMapper = new ObjectMapper();
@@ -154,7 +155,7 @@ public class RestWSConnector
 	 *           petición del cliente
 	 * @param strPathRest
 	 *           path de la petición
-	 * @param pSessionRvia
+	 * @param pRequestConfig
 	 *           Datos de la petición recibida desde ruralvia
 	 * @param strJsonData
 	 *           Datos a enviar
@@ -165,7 +166,7 @@ public class RestWSConnector
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception
 	 */
-	public static Response put(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests, SessionRviaData pSessionRvia,
+	public static Response put(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests, RequestConfig pRequestConfig,
 			String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject)
 			throws Exception
 	{
@@ -174,7 +175,7 @@ public class RestWSConnector
 		 * definir este método desde cero
 		 */
 		pLog.warn("Se recibe un método PUT, pero se trata como si fuera un POST");
-		return post(pRequest, pMiqQuests, pSessionRvia, strJsonData, pPathParams, pParamsToInject);
+		return post(pRequest, pMiqQuests, pRequestConfig, strJsonData, pPathParams, pParamsToInject);
 	}
 
 	/**

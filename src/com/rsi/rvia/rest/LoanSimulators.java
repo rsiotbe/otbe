@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.rvia.rest.client.OperationManager;
 
 @Path("/simuladores")
 public class LoanSimulators
@@ -29,8 +30,7 @@ public class LoanSimulators
 		pLog.info("Se recibe una peticion de pagina inical de todos los simuladores");
 		pLog.info("entidad: " + strBankName);
 		pLog.info("idioma: " + strlanguage);
-		// Response pReturn = OperationManager.processTemplateFromRvia(pRequest, pUriInfo, strData);
-		Response pReturn = Response.status(200).build();
+		Response pReturn = OperationManager.processDataFromSimulators(pRequest, pUriInfo, strBankName, strlanguage, MediaType.TEXT_HTML_TYPE);
 		pLog.info("Se devuelve la respuesta final al usuario");
 		return pReturn;
 	}
@@ -43,11 +43,9 @@ public class LoanSimulators
 	public Response getAllSimulators(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			@PathParam("entidad") String strBankName) throws Exception
 	{
-		pLog.info("Se recibe una peticion de pagina inical de todos los simuladores");
+		pLog.info("Se recibe una peticion de pagina inical de todos los simuladores sin idioma específico");
 		pLog.info("entidad: " + strBankName);
-		pLog.info("idioma: " + "es_ES");
-		// Response pReturn = OperationManager.processTemplateFromRvia(pRequest, pUriInfo, strData);
-		Response pReturn = Response.status(200).build();
+		Response pReturn = OperationManager.processDataFromSimulators(pRequest, pUriInfo, strBankName, null, MediaType.TEXT_HTML_TYPE);
 		pLog.info("Se devuelve la respuesta final al usuario");
 		return pReturn;
 	}

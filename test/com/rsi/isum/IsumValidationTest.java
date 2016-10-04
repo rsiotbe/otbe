@@ -9,14 +9,14 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import com.rsi.rvia.rest.error.exceptions.ISUMException;
-import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.session.RequestConfigRvia;
 
 public class IsumValidationTest
 {
 	@Mock
 	HttpServletRequest	request;
 	@Mock
-	SessionRviaData		session;
+	RequestConfigRvia		session;
 
 	@Before
 	public void setUp() throws Exception

@@ -3,7 +3,7 @@
 	,com.rsi.rvia.translates.TranslateProcessor
 	,java.util.Hashtable
 	,java.util.Enumeration
-	,com.rsi.rvia.multibank.CssMultiBankProcessor"%>
+	,com.rsi.rvia.rest.multibank.CssMultiBankProcessor"%>
 <%@ page language="java" contentType="text/html"
 	pageEncoding="UTF-8"%>
 
@@ -19,14 +19,14 @@
 	String strJson = "{\"caches\":[";
 	
 	/* Se generan las tablas HTML y el Json para el Javascript */
-	for (Enumeration e = htCaches.keys(); e.hasMoreElements(); ) 
+	for (Enumeration<String> e = htCaches.keys(); e.hasMoreElements(); ) 
 	{ 
 		
 		String strKey = (String) e.nextElement();
 		String strBaseName = strKey.trim().replace(" ", "");
 		strTable += "<tr class=\"lineaGris centered\">\n" +
 					"<td>" + strKey + "</td>\n" +
-					"<td class=\"cacheSize\" id=\"cache" + strBaseName + "\">" + htCaches.get(strKey) + "</td>\n" +
+					"<td class=\"cacheSize\" id=\"cache" + strBaseName + "\">" + htCaches.get(strKey) + "<button></td>\n" +
 					"<td><input id=\"check" + strBaseName + "\" class=\"largeCheckBox\" type=\"checkbox\"></td>\n" +
 					"</tr>";
 		if(fFirst){
@@ -40,10 +40,6 @@
 		fFirst = true;
 	}
 		strJson += "]}";
-	
-	
-	
-
 	
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"/>
@@ -734,9 +730,7 @@ input:disabled+label {
 			var strParams = '';
 			
 			
-			var dataGet = {};
-			var pCacheSizes = document.getElementsByClassName("cacheSize");
-			
+			var dataGet = {};		
 			for (item in  listCaches) {					
 				if(document.getElementById(listCaches[item].idCheck).checked){
 					document.getElementById(listCaches[item].idSize).innerHTML = pLoading;

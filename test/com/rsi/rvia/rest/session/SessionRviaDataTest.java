@@ -21,7 +21,7 @@ public class SessionRviaDataTest
 	HttpServletRequest	request;
 	@Mock
 	HttpSession				session;
-	SessionRviaData		sessionRvia;
+	RequestConfigRvia		sessionRvia;
 
 	@Before
 	public void setUp() throws Exception
@@ -39,7 +39,7 @@ public class SessionRviaDataTest
 	public void testSessionRviaData() throws Exception
 	{
 		assertNotNull("testSessionRviaData: session es null", sessionRvia);
-		assertTrue("testSessionRviaData: session no es instancia de SessionRviaData", sessionRvia instanceof SessionRviaData);
+		assertTrue("testSessionRviaData: session no es instancia de SessionRviaData", sessionRvia instanceof RequestConfigRvia);
 	}
 
 	@Test
@@ -122,7 +122,7 @@ public class SessionRviaDataTest
 		fail("Not yet implemented");
 	}
 
-	private SessionRviaData buildSession(boolean hasRequestToken, boolean hasSessionToken) throws Exception
+	private RequestConfigRvia buildSession(boolean hasRequestToken, boolean hasSessionToken) throws Exception
 	{
 		final String TOKEN = "HqJ/6fJk2+8jXi90/VU/H29V08ygqXMTqSbSkP+r715kWSdhPR6eEGqAM86sATxKgtnVPHAee2dLyX+MjxGQCqA2U6MTejqDbcjvidfIemotQcsYp/GzRhPLqFds+S6nt3MMpTchkEpTzoH0IRuTy3LaZaNghZmC+iOdiEMRiN7GGnVyJrD/P0y2hrwScmOm96Xjlu4nAAPc/+cRUyrzKtBzNcxyYxbiII8rw4S0dbruN9mPQMTFJCVPK425UWSmP3eQ/FbElgu3wZxMy/Ekgw==";
 		if (hasRequestToken)
@@ -135,6 +135,6 @@ public class SessionRviaDataTest
 			when(request.getSession(false)).thenReturn(session);
 			when(session.getAttribute("token")).thenReturn(hasSessionToken ? TOKEN : null);
 		}
-		return new SessionRviaData(request);
+		return new RequestConfigRvia(request);
 	}
 }

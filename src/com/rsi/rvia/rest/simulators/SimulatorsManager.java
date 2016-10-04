@@ -1,50 +1,53 @@
-package com.rsi.rvia.rest.applications;
+package com.rsi.rvia.rest.simulators;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Properties;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.rvia.rest.error.exceptions.ApplicationException;
+import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 
 public class SimulatorsManager
 {
-	private static Logger pLog = LoggerFactory.getLogger(SimulatorsManager.class);
+	private static Logger		pLog	= LoggerFactory.getLogger(SimulatorsManager.class);
+	private static Properties	pPropNRBENames;
 
-	public static String getFunctions4Entity(String strEntity, String strFunctions) throws JSONException
+	public static String getJSFunctionsByEntity(String strEntity, String strFunctions) throws JSONException
 	{
 		String strReturn = "{}";
 		JSONObject pJson = new JSONObject();
 		Hashtable<String, String> htFunctions;
 		Hashtable<String, String> htConfig;
-		htFunctions = getFunctionsFromDDBB(strFunctions);
+		htFunctions = getJSFunctionsFromDDBB(strFunctions);
 		htConfig = getParamConfigFromDDBB(strEntity);
 		String strJSMin = "";
 		/* Se sustituyen en todos los algoritmos, y se añaden a el JSON de respuesta */
-		for (Enumeration e = htFunctions.keys(); e.hasMoreElements();)
+		for (Enumeration<String> e = htFunctions.keys(); e.hasMoreElements();)
 		{
 			String strFunction = (String) e.nextElement();
 			strJSMin = htFunctions.get(strFunction);
-			for (Enumeration en = htConfig.keys(); en.hasMoreElements();)
+			for (Enumeration<String> en = htConfig.keys(); en.hasMoreElements();)
 			{
 				String strReplace = (String) en.nextElement();
 				String strValue = htConfig.get(strReplace);
 				strJSMin = strJSMin.replace(strReplace, strValue);
 			}
 			pLog.debug("Añadiendo algoritmo al JSON.");
-			// pJson.put(strFunction, "var " + strFunction + " = " + strJSMin);
 			pJson.put(strFunction, strJSMin);
 		}
 		strReturn = pJson.toString();
 		return strReturn;
 	}
 
-	private static Hashtable<String, String> getFunctionsFromDDBB(String strFunctions)
+	private static Hashtable<String, String> getJSFunctionsFromDDBB(String strFunctions)
 	{
 		Hashtable<String, String> htReturn = new Hashtable<String, String>();
 		Connection pConnection = null;
@@ -144,5 +147,28 @@ public class SimulatorsManager
 			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
 		return htReturn;
+	}
+
+	public static String getNRBEFromBankName(String strBankName) throws Exception
+	{
+		String strReturn;
+		/* se carga el fichero de propiedades que contien la resolución de nombres */
+		if (pPropNRBENames == null)
+		{
+			pPropNRBENames = new Properties();
+			try
+			{
+				pPropNRBENames.load(SimulatorsManager.class.getResourceAsStream("/NRBE.properties"));
+			}
+			catch (Exception ex)
+			{
+				throw new ApplicationException(500, 9999, "Se ha producido un error interno de la aplicación", "No ha sido posible recuperar la información necesaria para la entidad", ex);
+			}
+		}
+		/* se obtiene el codigo de entidad para el nombre dado */
+		strReturn = (String) pPropNRBENames.get(strBankName);
+		if (strReturn == null || strReturn.trim().isEmpty())
+			throw new LogicalErrorException(400, 9998, "No se ha encontrado información para esta entidad", "No ha sido posible recuperar la información necesaria para esta entidad", null);
+		return strBankName;
 	}
 }

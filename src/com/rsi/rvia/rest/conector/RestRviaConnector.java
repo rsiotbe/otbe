@@ -28,7 +28,7 @@ import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.error.exceptions.RestConnectorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
-import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.session.RequestConfigRvia;
 
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
 public class RestRviaConnector
@@ -42,23 +42,23 @@ public class RestRviaConnector
 	 *           petición del cliente
 	 * @param pMiqQuests
 	 *           Objeto MiqQuests con la información de la operativa
-	 * @param pSessionRvia
+	 * @param pRequestConfigRvia
 	 *           datos de la petición recibida desde ruralvia
 	 * @param strData
 	 *           datos a enviar al proveedor
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception
 	 */
-	public static Response doConnection(HttpServletRequest pRequest, MiqQuests pMiqQuests, SessionRviaData pSessionRvia,
-			String strData) throws RestConnectorException
+	public static Response doConnection(HttpServletRequest pRequest, MiqQuests pMiqQuests,
+			RequestConfigRvia pRequestConfigRvia, String strData) throws RestConnectorException
 	{
 		WebTarget pTarget;
 		Response pReturn;
 		try
 		{
 			MultivaluedMap<String, String> pSessionFields = new MultivaluedHashMap<String, String>();
-			String strSesId = pSessionRvia.getRviaSessionId();
-			String strHost = pSessionRvia.getUriRvia().toString();
+			String strSesId = pRequestConfigRvia.getRviaSessionId();
+			String strHost = pRequestConfigRvia.getUriRvia().toString();
 			String strClavePagina = pMiqQuests.getEndPoint();
 			String strUrl = strHost + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + strSesId + "?clavePagina="
 					+ strClavePagina;
@@ -471,7 +471,7 @@ public class RestRviaConnector
 	 * @return Indica si se ha llegado ha lanzar una excepción de error
 	 * @throws LogicalErrorException
 	 */
-	public static boolean throwRVIAError(SessionRviaData pSessionRviaData, MiqQuests pMiqQuests, JSONObject pJsonData)
+	public static boolean throwRVIAError(RequestConfigRvia pSessionRviaData, MiqQuests pMiqQuests, JSONObject pJsonData)
 			throws LogicalErrorException
 	{
 		boolean fReturn = false;

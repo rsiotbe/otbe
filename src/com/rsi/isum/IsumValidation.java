@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.error.exceptions.ISUMException;
-import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.session.RequestConfigRvia;
 
 public class IsumValidation
 {
@@ -17,12 +17,12 @@ public class IsumValidation
 	/**
 	 * Comprueba si el servicio solicitado por el usuario es accesible para el perfil del usuario
 	 * 
-	 * @param pSessionRviaData
+	 * @param pRequestConfigRvia
 	 *           Datos de sesión de la apliación de ruralvia
 	 * @return Booleano indicando si está disponible el servicio
 	 * @throws Exception
 	 */
-	public static boolean IsValidService(SessionRviaData pSessionRviaData) throws Exception
+	public static boolean IsValidService(RequestConfigRvia pRequestConfigRvia) throws Exception
 	{
 		boolean fReturn = false;
 		Connection pConnection = null;
@@ -35,8 +35,8 @@ public class IsumValidation
 					+ "and p.prf_code = ? and s.ser_code = ? and sp.SPR_PRF_STATUS='A'";
 			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
-			String strUserIsumProfile = pSessionRviaData.getIsumUserProfile();
-			String strServiceIsumId = pSessionRviaData.getIsumServiceId();
+			String strUserIsumProfile = pRequestConfigRvia.getIsumUserProfile();
+			String strServiceIsumId = pRequestConfigRvia.getIsumServiceId();
 			pPreparedStatement.setString(1, strUserIsumProfile);
 			pPreparedStatement.setString(2, strServiceIsumId);
 			pResultSet = pPreparedStatement.executeQuery();

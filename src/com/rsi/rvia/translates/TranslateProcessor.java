@@ -18,7 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
-import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.session.RequestConfig;
+import com.rsi.rvia.rest.session.RequestConfigRvia;
 
 /** Clase que gestiona el cambio de idioma en el contenido HTML de la web. */
 public class TranslateProcessor
@@ -107,13 +108,13 @@ public class TranslateProcessor
 	 * 
 	 * @param strHtmlt
 	 *           Texto html
-	 * @param pSessionRviaData
+	 * @param pRequestConfigRvia
 	 *           Dattos de sessión de usuario de ruralvia
 	 * @return Documento jsoup con el HTML con la nueva traducción ya aplicada.
 	 */
-	public static Document processXHTML(String strHtmlt, SessionRviaData pSessionRviaData)
+	public static Document processXHTML(String strHtmlt, RequestConfigRvia pRequestConfigRvia)
 	{
-		return processXHTML(new Document(strHtmlt), pSessionRviaData);
+		return processXHTML(new Document(strHtmlt), pRequestConfigRvia);
 	}
 
 	/**
@@ -121,26 +122,19 @@ public class TranslateProcessor
 	 * 
 	 * @param pDocument
 	 *           Documento jsoup que contien el html
-	 * @param pSessionRviaData
+	 * @param pRequestConfig
 	 *           Dattos de sessión de usuario de ruralvia
 	 * @return Documento jsoup con el HTML con la nueva traducción ya aplicada.
 	 */
-	public static Document processXHTML(Document pDocument, SessionRviaData pSessionRviaData)
+	public static Document processXHTML(Document pDocument, RequestConfig pRequestConfig)
 	{
 		ArrayList<String> alIdsTrans = null;
 		String strLanguage = null;
 		Hashtable<String, TranslateEntry> htTransData = new Hashtable<String, TranslateEntry>();
-		if (pSessionRviaData == null)
+		strLanguage = pRequestConfig.getLanguage();
+		if (strLanguage == null || strLanguage.trim().isEmpty())
 		{
-			pLog.warn("Los datos de sesión de ruralvia están vacios, se escoge el idioma español por defecto");
-		}
-		else
-		{
-			strLanguage = pSessionRviaData.getLanguage();
-			if (strLanguage == null || strLanguage.trim().isEmpty())
-			{
-				strLanguage = null;
-			}
+			strLanguage = null;
 		}
 		pLog.debug("String XHTML parseado a Documento correctamente.");
 		if (pDocument != null)
