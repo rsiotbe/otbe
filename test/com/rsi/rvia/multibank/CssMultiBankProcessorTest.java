@@ -9,10 +9,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
 import org.junit.Before;
 import org.junit.Test;
-import com.rsi.BaseTest;
 import com.rsi.Constantes;
+import com.rsi.TestBase;
 
-public class CssMultiBankProcessorTest extends BaseTest
+public class CssMultiBankProcessorTest extends TestBase
 {
    @Before
    public void setUp() throws Exception

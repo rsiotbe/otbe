@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="david-rsi.local" name="com.rsi.rvia.rest.client.SaveExitHierarchyTest" skipped="0" tests="1" time="0.838" timestamp="2016-10-05T23:14:50">
+  <properties>
+    <property name="java.vendor" value="Oracle Corporation" />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="eclipse.pdebuild.templates" value="/Users/U020976/eclipse/jee-neon/Eclipse.app/Contents/MacOS/../../../../../.p2/pool/plugins/org.eclipse.pde.build_3.9.200.v20160204-0642/templates//" />
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers" />
+    <property name="deploy-name" value="api" />
+    <property name="ant.file.type.REP_RURALVIA_REST" value="file" />
+    <property name="os.name" value="Mac OS X" />
+    <property name="sun.boot.class.path" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre/classes" />
+    <property name="ant.file.REP_RURALVIA_REST" value="/Users/U020976/Documents/workspace/OPC/construccion/build.xml" />
+    <property name="TODAY" value="October 5 2016" />
+    <property name="java.vm.specification.vendor" value="Oracle Corporation" />
+    <property name="ant.home" value="/Users/U020976/.p2/pool/plugins/org.apache.ant_1.9.6.v201510161327" />
+    <property name="reports-directory" value="../reports" />
+    <property name="java.runtime.version" value="1.7.0_79-b15" />
+    <property name="tomcat.lib" value="/Library/Tomcat/lib" />
+    <property name="user.name" value="U020976" />
+    <property name="user.language" value="es" />
+    <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre/lib" />
+    <property name="ant.project.default-target" value="war" />
+    <property name="ant.project.name" value="REP_RURALVIA_REST" />
+    <property name="DSTAMP" value="20161005" />
+    <property name="java.version" value="1.7.0_79" />
+    <property name="user.timezone" value="" />
+    <property name="sun.arch.data.model" value="64" />
+    <property name="java.endorsed.dirs" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre/lib/endorsed" />
+    <property name="sun.cpu.isalist" value="" />
+    <property name="sun.jnu.encoding" value="UTF-8" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="file.separator" value="/" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="java.class.version" value="51.0" />
+    <property name="lib-directory" value="../WebContent/WEB-INF/lib" />
+    <property name="source-directory" value="../src" />
+    <property name="user.country" value="ES" />
+    <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre" />
+    <property name="java.vm.info" value="mixed mode" />
+    <property name="ant.file" value="/Users/U020976/Documents/workspace/OPC/construccion/build.xml" />
+    <property name="os.version" value="10.11.6" />
+    <property name="configurations-directory" value="../configurations" />
+    <property name="path.separator" value=":" />
+    <property name="java.vm.version" value="24.79-b02" />
+    <property name="ant.library.dir" value="/Users/U020976/.p2/pool/plugins/org.apache.ant_1.9.6.v201510161327/lib" />
+    <property name="template-directory" value="../template" />
+    <property name="java.awt.printerjob" value="sun.lwawt.macosx.CPrinterJob" />
+    <property name="web-xml-file" value="../WebContent/WEB-INF/web.xml" />
+    <property name="sun.io.unicode.encoding" value="UnicodeBig" />
+    <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit" />
+    <property name="eclipse.pdebuild.scripts" value="/Users/U020976/eclipse/jee-neon/Eclipse.app/Contents/MacOS/../../../../../.p2/pool/plugins/org.eclipse.pde.build_3.9.200.v20160204-0642/scripts//" />
+    <property name="user.home" value="/Users/U020976" />
+    <property name="java.specification.vendor" value="Oracle Corporation" />
+    <property name="java.library.path" value="/Users/U020976/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:." />
+    <property name="java.vendor.url" value="http://java.oracle.com/" />
+    <property name="java.vm.vendor" value="Oracle Corporation" />
+    <property name="gopherProxySet" value="false" />
+    <property name="war-file-name" value="api##20161005_1614.war" />
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment" />
+    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner com.rsi.rvia.rest.client.SaveExitHierarchyTest skipNonTests=false filtertrace=true haltOnError=false haltOnFailure=true formatter=org.apache.tools.ant.taskdefs.optional.junit.SummaryJUnitResultFormatter showoutput=false outputtoformatters=true logfailedtests=true threadid=0 logtestlistenerevents=false formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,/Users/U020976/Documents/workspace/OPC/reports/TEST-com.rsi.rvia.rest.client.SaveExitHierarchyTest.xml crashfile=/Users/U020976/Documents/workspace/OPC/construccion/junitvmwatcher9086191728883899198.properties propsfile=/Users/U020976/Documents/workspace/OPC/construccion/junit4693271137496390635.properties" />
+    <property name="java.class.path" value="/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/junit-4.12.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/hamcrest-core-1.3.jar:/Users/U020976/Documents/workspace/OPC/build/classes:/Users/U020976/Documents/workspace/OPC/build/classes-tests:/Users/U020976/Documents/workspace/OPC/configurations:/Library/Tomcat/lib/annotations-api.jar:/Library/Tomcat/lib/catalina-ant.jar:/Library/Tomcat/lib/catalina-ha.jar:/Library/Tomcat/lib/catalina-tribes.jar:/Library/Tomcat/lib/catalina.jar:/Library/Tomcat/lib/ecj-4.4.2.jar:/Library/Tomcat/lib/el-api.jar:/Library/Tomcat/lib/jasper-el.jar:/Library/Tomcat/lib/jasper.jar:/Library/Tomcat/lib/jsp-api.jar:/Library/Tomcat/lib/servlet-api.jar:/Library/Tomcat/lib/tomcat-api.jar:/Library/Tomcat/lib/tomcat-coyote.jar:/Library/Tomcat/lib/tomcat-dbcp.jar:/Library/Tomcat/lib/tomcat-i18n-es.jar:/Library/Tomcat/lib/tomcat-i18n-fr.jar:/Library/Tomcat/lib/tomcat-i18n-ja.jar:/Library/Tomcat/lib/tomcat-jdbc.jar:/Library/Tomcat/lib/tomcat-util.jar:/Library/Tomcat/lib/tomcat7-websocket.jar:/Library/Tomcat/lib/websocket-api.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/aopalliance-repackaged-2.4.0-b34.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/asm-debug-all-5.0.4.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/commons-codec-1.10.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/commons-collections4-4.1.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/commons-dbcp2-2.1.1.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/commons-logging-1.1.2.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/commons-pool2-2.4.2.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/fluent-hc-4.5.2.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/hk2-api-2.4.0-b34.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/hk2-locator-2.4.0-b34.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/hk2-utils-2.4.0-b34.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/httpclient-4.5.2.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/httpclient-cache-4.5.2.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/httpclient-win-4.5.2.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/httpcore-4.4.4.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/httpmime-4.5.2.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/jackson-all-1.7.3.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/java-json.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/javassist-3.18.1-GA.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/javax.annotation-api-1.2.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/javax.inject-2.4.0-b34.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/javax.servlet-api-3.0.1.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/javax.ws.rs-api-2.0.1.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/jaxb-api-2.2.7.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/jersey-client.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/jersey-common.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/jersey-container-servlet-core.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/jersey-container-servlet.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/jersey-guava-2.23.1.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/jersey-media-jaxb.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/jersey-server.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/jna-4.1.0.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/jna-platform-4.1.0.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/jose4j-0.5.2.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/jsoup-1.9.2.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/logback-RSI-1.0.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/logback-access-1.1.7.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/logback-classic-1.1.7.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/logback-core-1.1.7.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/mockito-all-1.10.19.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/mysql-connector-java-5.0.8-bin.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/ojdbc6.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/org.osgi.core-4.2.0.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/osgi-resource-locator-1.0.1.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/persistence-api-1.0.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/slf4j-api-1.7.21.jar:/Users/U020976/Documents/workspace/OPC/WebContent/WEB-INF/lib/validation-api-1.1.0.Final.jar:/Users/U020976/.p2/pool/plugins/org.apache.ant_1.9.6.v201510161327/lib/ant-launcher.jar:/Users/U020976/.p2/pool/plugins/org.apache.ant_1.9.6.v201510161327/lib/ant.jar:/Users/U020976/.p2/pool/plugins/org.apache.ant_1.9.6.v201510161327/lib/ant-junit.jar:/Users/U020976/.p2/pool/plugins/org.apache.ant_1.9.6.v201510161327/lib/ant-junit4.jar" />
+    <property name="ant.version" value="Apache Ant(TM) version 1.9.6 compiled on June 29 2015" />
+    <property name="timestamp" value="20161005_1614" />
+    <property name="TSTAMP" value="1614" />
+    <property name="classes-directory" value="../build/classes" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="java.vm.specification.version" value="1.7" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="sun.os.patch.level" value="unknown" />
+    <property name="eclipse.pdebuild.home" value="/Users/U020976/eclipse/jee-neon/Eclipse.app/Contents/MacOS/../../../../../.p2/pool/plugins/org.eclipse.pde.build_3.9.200.v20160204-0642/.//" />
+    <property name="java.io.tmpdir" value="/var/folders/n3/w3qcjtwd2q74v48j79kj_2f40000gp/T/" />
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/" />
+    <property name="os.arch" value="x86_64" />
+    <property name="java.awt.graphicsenv" value="sun.awt.CGraphicsEnvironment" />
+    <property name="java.ext.dirs" value="/Users/U020976/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java" />
+    <property name="user.dir" value="/Users/U020976/Documents/workspace/OPC/construccion" />
+    <property name="line.separator" value="&#xa;" />
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM" />
+    <property name="dist-directory" value="../dist" />
+    <property name="project-name" value="REP_RUALVIA_REST" />
+    <property name="//tomcat.lib" value="/cloud-disk/tomcat/omnicanal/apache-tomcat-7.0.70/lib" />
+    <property name="tomcat-directory" value="/Library/Tomcat/lib" />
+    <property name="basedir" value="/Users/U020976/Documents/workspace/OPC/construccion" />
+    <property name="tests-directory" value="../test" />
+    <property name="web-directory" value="../WebContent" />
+    <property name="build-directory" value="../build" />
+    <property name="ant.java.version" value="1.7" />
+    <property name="ant.core.lib" value="/Users/U020976/.p2/pool/plugins/org.apache.ant_1.9.6.v201510161327/lib/ant.jar" />
+    <property name="file.encoding" value="UTF-8" />
+    <property name="java.specification.version" value="1.7" />
+    <property name="ant.project.invoked-targets" value="test" />
+    <property name="base-directory" value=".." />
+  </properties>
+  <testcase classname="com.rsi.rvia.rest.client.SaveExitHierarchyTest" name="testProcess" time="0.793" />
+  <system-out><![CDATA[16:14:50,584 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback.groovy]
+16:14:50,585 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.xml]
+16:14:50,585 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found resource [logback.xml] at [file:/Users/U020976/Documents/workspace/OPC/configurations/logback.xml]
+16:14:50,629 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - debug attribute not set
+16:14:50,637 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - Will scan for changes in [file:/Users/U020976/Documents/workspace/OPC/configurations/logback.xml] 
+16:14:50,637 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - Setting ReconfigureOnChangeTask scanning period to 5 minutes
+16:14:50,641 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+16:14:50,644 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [stdout]
+16:14:50,678 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+16:14:50,680 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [file]
+16:14:50,688 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@1093797345 - Achive files will be limied to [30MB] each.
+16:14:50,691 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@1093797345 - No compression will be used
+16:14:50,692 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@1093797345 - Will use the pattern /tmp/REP_RURALVIA_REST/REP_RURALVIA_REST-%d{yyyy-MM-dd}.%i.log for the active file
+16:14:50,693 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP@3b201837 - The date pattern is 'yyyy-MM-dd' from file name pattern '/tmp/REP_RURALVIA_REST/REP_RURALVIA_REST-%d{yyyy-MM-dd}.%i.log'.
+16:14:50,693 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP@3b201837 - Roll-over at midnight.
+16:14:50,696 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP@3b201837 - Setting initial period to Wed Oct 05 16:14:50 PDT 2016
+16:14:50,714 |-WARN in ch.qos.logback.core.rolling.RollingFileAppender[file] - Setting "File" property to null on account of prudent mode
+16:14:50,714 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[file] - Active log file name: /tmp/REP_RURALVIA_REST/REP_RURALVIA_REST-2016-10-05.18.log
+16:14:50,714 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[file] - File property is set to [null]
+16:14:50,715 |-INFO in ch.qos.logback.classic.joran.action.RootLoggerAction - Setting level of ROOT logger to TRACE
+16:14:50,715 |-INFO in ch.qos.logback.core.joran.action.AppenderRefAction - Attaching appender named [file] to Logger[ROOT]
+16:14:50,716 |-INFO in ch.qos.logback.classic.joran.action.RootLoggerAction - Setting level of ROOT logger to TRACE
+16:14:50,716 |-INFO in ch.qos.logback.core.joran.action.AppenderRefAction - Attaching appender named [stdout] to Logger[ROOT]
+16:14:50,716 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - End of configuration.
+16:14:50,717 |-INFO in ch.qos.logback.classic.joran.JoranConfigurator@3815e134 - Registering current configuration as safe fallback point
+
+*2016-10-05 16:14:50.0721 LOCAL:main	INFO 	SaveExitHierarchy:save	- .foo
+*2016-10-05 16:14:50.0729 LOCAL:main	DEBUG	DDBBPoolFactory:getDDBB	- Se procede a conectar con la base de datos de Oracle-Banca
+*2016-10-05 16:14:50.0729 LOCAL:main	DEBUG	DDBBPoolFactory:getDDBB	- Se utiliza el pool local de base de datos
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
