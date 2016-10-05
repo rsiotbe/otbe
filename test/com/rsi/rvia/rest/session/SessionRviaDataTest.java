@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import com.rsi.BaseTest;
+import com.rsi.Constantes;
 import com.rsi.rvia.rest.session.SessionRviaData.CanalAix;
 
 public class SessionRviaDataTest extends BaseTest
@@ -38,7 +39,7 @@ public class SessionRviaDataTest extends BaseTest
    @Test
    public void testSessionRviaDataFromStrings() throws Exception
    {
-      SessionRviaData sessionRviaStrs = new SessionRviaData("es_ES", "MOCKED NRBE");
+      SessionRviaData sessionRviaStrs = new SessionRviaData(Constantes.DEFAULT_LANGUAGE, "MOCKED NRBE");
       assertNotNull("testSessionRviaDataFromStrings: session es null", sessionRviaStrs);
       assertTrue("testSessionRviaDataFromStrings: sessionRviaStrs no es instancia de SessionRviaData", sessionRviaStrs instanceof SessionRviaData);
    }

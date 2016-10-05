@@ -6,25 +6,24 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constantes;
 import com.rsi.rvia.rest.error.exceptions.SessionException;
 import com.rsi.rvia.rest.tool.RviaConnectCipher;
 
 public class SessionRviaData
 {
-   private static Logger      pLog                             = LoggerFactory.getLogger(SessionRviaData.class);
-   public static final String CODIGO_BANCO_COOPERATIVO_ESPANOL = "0198";
-   public static final String DEFAULT_LANGUAGE                 = "es_ES";
-   private String             strNodeRvia;
-   private Cookie[]           pCookiesRviaData;
-   private static Properties  pAddressRviaProp                 = new Properties();
-   private URI                pUriRvia                         = null;
-   private String             strRviaSessionId                 = "";
-   private String             strIsumUserProfile               = "";
-   private String             strIsumServiceId                 = "";
-   private String             strLanguage                      = "";
-   private String             strNRBE                          = "";
-   private String             strToken                         = "";
-   private CanalAix           pCanalAix                        = CanalAix.BANCA_INTERNET;
+   private static Logger     pLog               = LoggerFactory.getLogger(SessionRviaData.class);
+   private String            strNodeRvia;
+   private Cookie[]          pCookiesRviaData;
+   private static Properties pAddressRviaProp   = new Properties();
+   private URI               pUriRvia           = null;
+   private String            strRviaSessionId   = "";
+   private String            strIsumUserProfile = "";
+   private String            strIsumServiceId   = "";
+   private String            strLanguage        = "";
+   private String            strNRBE            = "";
+   private String            strToken           = "";
+   private CanalAix          pCanalAix          = CanalAix.BANCA_INTERNET;
 
    private static enum TokenKey
    {
@@ -133,7 +132,7 @@ public class SessionRviaData
    {
       if (strLang == null || strLang.trim().isEmpty())
       {
-         this.strLanguage = DEFAULT_LANGUAGE;
+         this.strLanguage = Constantes.DEFAULT_LANGUAGE;
       }
       else
       {
@@ -141,7 +140,7 @@ public class SessionRviaData
       }
       if (strNRBE == null || strNRBE.trim().isEmpty())
       {
-         this.strNRBE = CODIGO_BANCO_COOPERATIVO_ESPANOL;
+         this.strNRBE = Constantes.CODIGO_BANCO_COOPERATIVO_ESPANOL;
       }
       else
       {

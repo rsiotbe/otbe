@@ -10,7 +10,7 @@ import org.jsoup.parser.Parser;
 import org.junit.Before;
 import org.junit.Test;
 import com.rsi.BaseTest;
-import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.Constantes;
 
 public class CssMultiBankProcessorTest extends BaseTest
 {
@@ -47,8 +47,7 @@ public class CssMultiBankProcessorTest extends BaseTest
    public void testProcessXHTML() throws Exception
    {
       final String TARGET_URL = "http://bar";
-      CssMultiBankProcessor.htCacheData.put(SessionRviaData.CODIGO_BANCO_COOPERATIVO_ESPANOL
-            + "_http://foo", TARGET_URL);
+      CssMultiBankProcessor.htCacheData.put(Constantes.CODIGO_BANCO_COOPERATIVO_ESPANOL + "_http://foo", TARGET_URL);
       String documentStr = "<html><link href=\"http://foo\" rel=\"stylesheet\"></html>";
       Document document = Jsoup.parse(documentStr, "", Parser.htmlParser());
       Document processed = CssMultiBankProcessor.processXHTML(document, null);
