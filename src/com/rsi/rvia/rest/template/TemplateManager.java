@@ -34,7 +34,7 @@ public class TemplateManager
 	 * 
 	 * @return int con el tamaño de la cache
 	 */
-	public static int getSizeCache()
+	public static int getCacheSize()
 	{
 		int nReturn = 0;
 		if (htCacheTemplate != null)
@@ -47,12 +47,25 @@ public class TemplateManager
 	/**
 	 * Reinicia la Cache
 	 */
-	public static void restartCache()
+	public static void resetCache()
 	{
 		if (htCacheTemplate != null)
 		{
 			htCacheTemplate = new Hashtable<String, Document>();
 		}
+	}
+
+	/**
+	 * Devuelve los datos de la cache en formato texto
+	 * 
+	 * @return Contenido de la caché
+	 * @throws Exception
+	 */
+	public static String cacheToString() throws Exception
+	{
+		String strReturn;
+		strReturn = Utils.hastablePrettyPrint(htCacheTemplate, "htCacheTemplate");
+		return strReturn;
 	}
 
 	/**

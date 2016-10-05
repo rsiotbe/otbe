@@ -19,18 +19,18 @@ public class TranslateProcessorTest extends BaseTest
    @Test
    public void testGetSizeCache()
    {
-      int size = TranslateProcessor.getSizeCache();
+      int size = TranslateProcessor.getCacheSize();
       assertTrue("testGetSizeCache: size es valor numérico negativo", size > -1);
    }
 
    @Test
    public void testRestartCache()
    {
-      TranslateProcessor.restartCache();
+      TranslateProcessor.resetCache();
       assertNull("testRestartCache: no es null", TranslateProcessor.htCacheData);
       TranslateProcessor.htCacheData = new Hashtable<String, TranslateEntry>();
       TranslateProcessor.htCacheData.put("foo", new TranslateEntry("foo"));
-      TranslateProcessor.restartCache();
+      TranslateProcessor.resetCache();
       assertNotNull("testRestartCache: es null", TranslateProcessor.htCacheData);
       assertTrue("testRestartCache: tiene longitud", TranslateProcessor.htCacheData.size() == 0);
    }

@@ -24,7 +24,7 @@ public class CssMultiBankProcessorTest extends BaseTest
    @Test
    public void testGetSizeCacheNoData()
    {
-      int size = CssMultiBankProcessor.getSizeCache();
+      int size = CssMultiBankProcessor.getCacheSize();
       assertTrue("testGetSizeCacheNoData: size no es 0", size == 0);
    }
 
@@ -32,14 +32,14 @@ public class CssMultiBankProcessorTest extends BaseTest
    public void testGetSizeCache()
    {
       CssMultiBankProcessor.htCacheData.put("foo", "bar");
-      int size = CssMultiBankProcessor.getSizeCache();
+      int size = CssMultiBankProcessor.getCacheSize();
       assertTrue("testGetSizeCache: size es 0", size != 0);
    }
 
    @Test
    public void testRestartCache()
    {
-      CssMultiBankProcessor.restartCache();
+      CssMultiBankProcessor.resetCache();
       assertNotNull("testRestartCache: htCacheData es null", CssMultiBankProcessor.htCacheData);
    }
 

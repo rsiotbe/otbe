@@ -13,6 +13,7 @@ import com.rsi.Constantes;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.tool.Utils;
 
 /** Clase que gestiona el los CSS de multientidad para adaptar el estilo de la web. */
 public class CssMultiBankProcessor
@@ -25,7 +26,7 @@ public class CssMultiBankProcessor
     * 
     * @return int con el tamaño de la cache
     */
-   public static int getSizeCache()
+	public static int getCacheSize()
    {
       int nReturn = 0;
       if (htCacheData != null)
@@ -38,7 +39,7 @@ public class CssMultiBankProcessor
    /**
     * Reinicia la Cache
     */
-   public static void restartCache()
+	public static void resetCache()
    {
       if (htCacheData != null)
       {
@@ -47,6 +48,19 @@ public class CssMultiBankProcessor
    }
 
    /**
+	 * Devuelve los datos de la cache en formato texto
+	 * 
+	 * @return Contenido de la caché
+	 * @throws Exception
+	 */
+	public static String cacheToString() throws Exception
+	{
+		String strReturn;
+		strReturn = Utils.hastablePrettyPrint(htCacheData, "htCacheData");
+		return strReturn;
+	}
+
+	/**
     * Funcion que carga la cache desde base de datos
     * 
     * @throws Exception
@@ -71,7 +85,7 @@ public class CssMultiBankProcessor
             if (!htCacheData.containsKey(strKey))
                htCacheData.put(strKey, strNewLink);
          }
-         pLog.debug("Se carga la cache de CssMultiBank con " + getSizeCache() + " elementos");
+            pLog.debug("Se carga la cache de CssMultiBank con " + getCacheSize() + " elementos");
       }
       catch (Exception ex)
       {
@@ -156,7 +170,7 @@ public class CssMultiBankProcessor
    private static Document adjustCSSLink(Document pDocument, String strNRBE) throws Exception
    {
       Elements pLinksCss = pDocument.select("link[href]");
-      if (htCacheData == null || getSizeCache() < 1)
+      if (htCacheData == null || getCacheSize() < 1)
       {
          pLog.debug("La caché no está inicializada se procede a inicializarla");
          loadDDBBCache();
