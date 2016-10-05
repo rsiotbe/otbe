@@ -150,7 +150,7 @@ public class TranslateProcessor
          pLog.debug("IDs de traducciones extraidos correctamente.");
          pLog.debug("alIdsTrans lenght: " + alIdsTrans.size());
       }
-      if (alIdsTrans != null && alIdsTrans.size() > 0)
+      if (alIdsTrans != null && !alIdsTrans.isEmpty())
       {
          try
          {
@@ -162,7 +162,7 @@ public class TranslateProcessor
             pLog.error("Error al intentar recuperar las Traducciones de la BBDD", ex);
          }
       }
-      if (htTransData != null && htTransData.size() > 0)
+      if (htTransData != null && !htTransData.isEmpty())
       {
          if (strLanguage == null)
             strLanguage = Constantes.DEFAULT_LANGUAGE;

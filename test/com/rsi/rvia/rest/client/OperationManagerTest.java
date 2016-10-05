@@ -149,5 +149,6 @@ public class OperationManagerTest extends BaseTest
    @Test
    public void testGetValidateSession()
    {
+      // TODO: Pendiente.
    }
 }

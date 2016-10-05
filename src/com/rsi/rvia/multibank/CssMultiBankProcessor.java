@@ -9,6 +9,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constantes;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.session.SessionRviaData;
@@ -125,7 +126,7 @@ public class CssMultiBankProcessor
       if (pSessionRviaData == null)
       {
          pLog.warn("Los datos de sesión de ruralvia están vacios, se escoge la entidad del cooperativo por defecto");
-         strNRBE = SessionRviaData.CODIGO_BANCO_COOPERATIVO_ESPANOL;
+         strNRBE = Constantes.CODIGO_BANCO_COOPERATIVO_ESPANOL;
       }
       else
       {
