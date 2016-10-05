@@ -55,7 +55,7 @@ public class CssMultiBankProcessor
 	public static String cacheToString() throws Exception
 	{
 		String strReturn;
-		strReturn = Utils.hastablePrettyPrint(htCacheData, "htCacheData");
+		strReturn = Utils.hastablePrettyPrintHtml(htCacheData);
 		return strReturn;
 	}
 

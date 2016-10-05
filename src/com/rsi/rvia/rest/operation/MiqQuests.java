@@ -61,9 +61,9 @@ public class MiqQuests
 	public static String cacheToString() throws Exception
 	{
 		String strReturn;
-		strReturn = Utils.hastablePrettyPrint(htCacheDataId, "htCacheDataId");
+		strReturn = Utils.hastablePrettyPrintHtml(htCacheDataId);
 		strReturn += "\n";
-		strReturn = Utils.hastablePrettyPrint(htCacheDataPath, "htCacheDataPath");
+		strReturn = Utils.hastablePrettyPrintHtml(htCacheDataPath);
 		return strReturn;
 	}
 

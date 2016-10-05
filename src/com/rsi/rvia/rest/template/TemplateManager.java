@@ -64,7 +64,7 @@ public class TemplateManager
 	public static String cacheToString() throws Exception
 	{
 		String strReturn;
-		strReturn = Utils.hastablePrettyPrint(htCacheTemplate, "htCacheTemplate");
+		strReturn = Utils.hastablePrettyPrintHtml(htCacheTemplate);
 		return strReturn;
 	}
 

@@ -13,10 +13,10 @@ import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.ws.rs.core.MultivaluedMap;
@@ -44,7 +44,7 @@ public class Utils
 		String strKeys = "";
 		String strPath = pUriInfo.getPath();
 		MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
-		//LinkedHashMap<String, String> pListParameters = (LinkedHashMap) pUriInfo.getPathParameters();
+		// LinkedHashMap<String, String> pListParameters = (LinkedHashMap) pUriInfo.getPathParameters();
 		Iterator<String> pIterator = pListParameters.keySet().iterator();
 		while (pIterator.hasNext())
 		{
@@ -290,5 +290,28 @@ public class Utils
 			strReturn = "<<Error al generar la información, ver log>>";
 		}
 		return strReturn;
+	}
+
+	/**
+	 * Devuelve un string con los datos de un hastable en formato cadena
+	 * 
+	 * @param pHashtable
+	 *           Hashtable con los datos
+	 * @return
+	 */
+	public static String hastablePrettyPrintHtml(Hashtable<?, ?> pHashtable)
+	{
+		String strHtml = "";
+		for (Enumeration<?> e = (Enumeration<?>) pHashtable.keys(); e.hasMoreElements();)
+		{
+			Object objKey = e.nextElement();
+			String strKey = objKey.toString();
+			strHtml += "<div class=\"hastableElement\">";
+			strHtml += "<div class=\"hastableKey\"><span class=\"hastableKeySpan\">" + strKey + "</span></div>";
+			strHtml += "<div class=\"hastableValue\"><span class=\"hastableValueSpan\">" + pHashtable.get(strKey)
+					+ "</span></div>";
+			strHtml += "</div>";
+		}
+		return strHtml;
 	}
 }

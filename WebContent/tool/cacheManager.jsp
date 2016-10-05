@@ -621,6 +621,39 @@ input:disabled+label {
 	color: #FFFFFF;
 	background: #000000;
 }
+
+.hastableElement{
+	line-height:15pt;
+	font-size: 11px;
+	display: block;
+	
+}
+
+.hastableElement:nth-child(odd){
+    background:#EEEEEE;
+}
+.hastableElement:nth-child(even){
+    background:#CDCDCD;
+}
+.hastableKey{
+	padding-left: 10px;
+	display: inline;
+	display: inline-block;
+    width: 480px;
+}
+
+.hastableKeySpan{
+	font-size: 12px;
+}
+
+.hastableValue{
+	padding-left: 10px;
+	display: inline-flex;
+	border-left: 1px dotted black;
+}
+
+.hastableValueSpan{
+}
 </style>
 </head>
 <body>
@@ -686,7 +719,7 @@ for (Enumeration<String> e = htCaches.keys(); e.hasMoreElements(); )
 				</div>				
 			</div>
 		</div>	
-	<div id="divData" style="font-size: small;">
+	<div id="divData" style="font-size: small; margin-top:25px; border-top: 1px dotted black;">
       <% 
 		String strData ="";
 	   	if (strParamViewData != null && !strParamViewData.trim().isEmpty())
@@ -696,7 +729,8 @@ for (Enumeration<String> e = htCaches.keys(); e.hasMoreElements(); )
 	   	    {
 	   	   	  Method method = oCacheClass.getMethod("cacheToString");
 	   	   	  strData = (String)method.invoke(oCacheClass);
-	   	   	  strData = strData.replace("\n", "<br/>").replace("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
+	   	   	  strData = strData.replace("\n", "<br/>");
+
 	   	   	}
 	   		catch (Exception ex)
 	   		{
