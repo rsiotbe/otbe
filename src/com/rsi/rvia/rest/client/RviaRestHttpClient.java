@@ -31,6 +31,6 @@ public class RviaRestHttpClient
 	 * @return Objeto Client (Jersey) */
 	public static Client getClient()
 	{
-		return getClient(12000, 10000);
+		return getClient(120000, 100000);
 	}
 }

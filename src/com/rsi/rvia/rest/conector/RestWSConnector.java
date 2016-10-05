@@ -73,7 +73,8 @@ public class RestWSConnector
 		pathQueryParams = Utils.multiValuedMap2QueryString(pPathParams) + Utils.hashMap2QueryString(pParamsToInject);
 		String urlQueryString = ((strQueryParams == null) ? "" : strQueryParams) + "&idMiq=" + pMiqQuests.getIdMiq()
 				+ pathQueryParams;
-		WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint() + "?" + urlQueryString);
+		String strUrlTotal = pMiqQuests.getBaseWSEndPoint() + "?" + urlQueryString;
+		WebTarget pTarget = pClient.target(strUrlTotal);
 		pLog.info("END_POINT:" + pMiqQuests.getEndPoint());
 		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
 		pLog.info("GET: " + pReturn.toString());
