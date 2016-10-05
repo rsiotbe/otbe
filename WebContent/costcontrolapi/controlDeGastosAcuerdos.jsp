@@ -16,7 +16,7 @@
 <%
 	QueryCustomizer qCustomizer=new QueryCustomizer();
 	String strLinea = request.getParameter("codLinea");
-	String whereLineaEq="";
+    String whereLineaEq="";
 	if(strLinea != null){
 		whereLineaEq=" AND T1.COD_LINEA = '" + strLinea + "'";
 	}
