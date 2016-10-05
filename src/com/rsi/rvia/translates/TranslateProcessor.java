@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.tool.Utils;
 
 /** Clase que gestiona el cambio de idioma en el contenido HTML de la web. */
 public class TranslateProcessor
@@ -31,7 +32,7 @@ public class TranslateProcessor
 	 * 
 	 * @return int con el tamaño de la cache
 	 */
-	public static int getSizeCache()
+	public static int getCacheSize()
 	{
 		int nReturn = 0;
 		if (htCacheData != null)
@@ -44,12 +45,25 @@ public class TranslateProcessor
 	/**
 	 * Reinicia la Cache
 	 */
-	public static void restartCache()
+	public static void resetCache()
 	{
 		if (htCacheData != null)
 		{
 			htCacheData = new Hashtable<String, TranslateEntry>();
 		}
+	}
+
+	/**
+	 * Devuelve los datos de la cache en formato texto
+	 * 
+	 * @return Contenido de la caché
+	 * @throws Exception
+	 */
+	public static String cacheToString() throws Exception
+	{
+		String strReturn;
+		strReturn = Utils.hastablePrettyPrint(htCacheData, "htCacheData");
+		return strReturn;
 	}
 
 	/**

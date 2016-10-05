@@ -1,54 +1,49 @@
 <%@page import="com.rsi.rvia.rest.operation.MiqQuests"%>
-<%@page
-	import="com.rsi.rvia.rest.template.TemplateManager
-	,com.rsi.rvia.translates.TranslateProcessor
-	,java.util.Hashtable
-	,java.util.Enumeration
-	,com.rsi.rvia.multibank.CssMultiBankProcessor"%>
+<%@page import="com.rsi.rvia.rest.template.TemplateManager"%>
+<%@page import="com.rsi.rvia.translates.TranslateProcessor"%>
+<%@page import="java.util.Hashtable"%>
+<%@page import="java.util.Enumeration"%>
+<%@page import="org.slf4j.Logger"%>
+<%@page import="org.slf4j.LoggerFactory"%>
+<%@page import="com.rsi.rvia.multibank.CssMultiBankProcessor"%>
+<%@page import="java.lang.reflect.*"%>
+
 <%@ page language="java" contentType="text/html"
 	pageEncoding="UTF-8"%>
 
 <%
-	Hashtable<String,String> htCaches = new Hashtable<String,String>();
+	Logger pLog = LoggerFactory.getLogger("cacheManager.jsp");
+	Hashtable<String,Object> htCaches = new Hashtable<String,Object>();
 	/* Se añaden las caches */
-	htCaches.put("MiqQuests", (String) String.valueOf(MiqQuests.getSizeCache()));
-	htCaches.put("Plantillas HTML", (String) String.valueOf(TemplateManager.getSizeCache()));
-	htCaches.put("Traducciones", (String) String.valueOf(TranslateProcessor.getSizeCache()));
-	htCaches.put("CSS Multientidad", (String) String.valueOf(CssMultiBankProcessor.getSizeCache()));
-	
-	boolean fFirst = false;
-	String strTable = "";
-	String strJson = "{\"caches\":[";
-	
-	/* Se generan las tablas HTML y el Json para el Javascript */
-	for (Enumeration e = htCaches.keys(); e.hasMoreElements(); ) 
-	{ 
+	htCaches.put("MiqQuests", MiqQuests.class);
+	htCaches.put("Plantillas_HTML", TemplateManager.class);
+	htCaches.put("Traducciones", TranslateProcessor.class);
+	htCaches.put("CSS_Multientidad", CssMultiBankProcessor.class);
 		
-		String strKey = (String) e.nextElement();
-		String strBaseName = strKey.trim().replace(" ", "");
-		strTable += "<tr class=\"lineaGris centered\">\n" +
-					"<td>" + strKey + "</td>\n" +
-					"<td class=\"cacheSize\" id=\"cache" + strBaseName + "\">" + htCaches.get(strKey) + "</td>\n" +
-					"<td><input id=\"check" + strBaseName + "\" class=\"largeCheckBox\" type=\"checkbox\"></td>\n" +
-					"</tr>";
-		if(fFirst){
-			strJson += ",";
+	String strParamClean 	= (String) request.getParameter("clean");
+	String strParamViewData	= (String) request.getParameter("viewData");
+	
+	/*si se pide una limpieza de cachés */
+	if (strParamClean != null && !strParamClean.trim().isEmpty())
+	{
+		pLog.info("Liberando Caches: " + strParamClean);
+		String[] astrPartes = strParamClean.split(",");
+		for (String strItem : astrPartes)
+		{
+			pLog.trace("Libero cache: " + strItem);
+		    try {
+			  Class<?> oCacheClass = (Class<?>)htCaches.get(strItem);
+		   	  Method method = oCacheClass.getMethod("resetCache");
+		   	  method.invoke(oCacheClass);
+		   	} 
+		    catch (Exception e) 
+		   	{ 
+		   		pLog.error("Error al borrar cache de " + strItem +". Error: " + e);
+		   	}
 		}
-		strJson += "{" +
-					"\"cacheName\":\"" + strKey + "\"," +
-					"\"idSize\":\"cache" + strBaseName + "\"," +
-					"\"idCheck\":\"check" + strBaseName + "\"" +
-					"}";
-		fFirst = true;
-	}
-		strJson += "]}";
-	
-	
-	
-
-	
+	}	
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"/>
+<!DOCTYPE html>
 <html>
 <head>
 
@@ -83,18 +78,9 @@ body {
 	text-decoration: none;
 	display: inline-block;
 	font-size: 14px;
-	margin: 4px 2px;
+	margin: 4px 10px;
 	cursor: pointer;
-	width: 170px;
-}
-
-.buttonStop {
-	background-color: #E07A00;
-}
-
-.button.buttonStop:hover:enabled {
-	background-color: #B76503;
-	font-style: italic;
+	width: 165px;
 }
 
 .button:hover:enabled {
@@ -138,15 +124,16 @@ body {
 }
 
 .botonera {
-	width: 100%;
+	width: 820px;
 	height: 45px;
 	background-color: #EAEAEA;
 	display: block;
 	text-align: center;
+	margin: 0 auto;
 }
 
 .bloqueBotoneraLeft {
-	width: 540px;
+	width: 100%;
 	display: block;
 	float: left;
 	padding-top: 11px;
@@ -190,6 +177,7 @@ body {
 .contenedorServers {
 	margin-top: 15px;
 	border-spacing: 0px;
+	width: 820px;
 }
 
 .contenedorApps {
@@ -484,9 +472,12 @@ black
 	-moz-animation-iteration-count: infinite;
 	-moz-animation-timing-function: cubic-bezier(0.21, 0.87, 0.35, 0.85);
 }
-
+table 
+{
+ margin: 0 auto
+ }
 table td {
-	width: 8%;
+	width: 25%;
 	white-space: nowrap;
 }
 
@@ -496,7 +487,7 @@ table td:last-child {
 }
 
 table th {
-	width: 8%;
+	width: 25%;
 	white-space: nowrap;
 }
 
@@ -613,17 +604,13 @@ input:disabled+label {
 }
 
 .divDetails {
-	padding-bottom: 80px;
-	display: block;
-}
-
-.divBodyApps {
+	padding-bottom: 20px;
 	display: block;
 }
 
 .largeCheckBox {
-	width: 20px;
-	height: 20px;
+	width: 17px;
+	height: 17px;
 	padding: 2px;
 }
 .centered{
@@ -635,33 +622,10 @@ input:disabled+label {
 	background: #000000;
 }
 </style>
-
-
 </head>
 <body>
 	<div id="staticHeader" class="headerFix">
 		<div id="tittle">Cache Manager</div>
-		<div class="botonera">
-			<div class="bloqueBotoneraLeft">
-				<div style="margin-top: -10px;">
-					<button id="botonLanzar" class="button" type="button"
-						onclick="freeCache()">
-						<span id="spanBotonLanzar">Liberar Caches</span>
-					</button>
-				</div>
-			</div>
-			<div class="bloqueBotoneraCenter">
-				<div style="margin-top: -10px;">
-					<button id="botonLanzar" class="button" type="button"
-						onclick="refreshCache()">
-						<span id="spanBotonLanzar">Actualizar</span>
-					</button>
-				</div>
-			</div>
-			<div class="bloqueBotoneraRight">
-				<div style="margin-top: -10px;"></div>
-			</div>
-		</div>
 	</div>
 
 	<div id="divDetails" class="divDetails">
@@ -670,116 +634,111 @@ input:disabled+label {
 				<tr class="centered textColorHTable">
 					<th>Clase</th>
 					<th>Numero Elementos</th>
-					<th>Accion</th>
+					<th>Accion 	(Todas<input onclick="checkAll()" id="checkAll" class="largeCheckBox" type="checkbox">)
+					</th>
 				</tr>
-				<tr class="lineaGris centered">
-					<td>Todas</td>
-					<td>-</td>
-					<td><input onclick="checkAll()" id="checkAll" class="largeCheckBox" type="checkbox">
-					</td>
-				</tr>
-				<%=strTable%>			
+<%
+String strHtmlTable = "";
+/* Se generan las tablas HTML y el Json para el Javascript */
+for (Enumeration<String> e = htCaches.keys(); e.hasMoreElements(); ) 
+{ 
+	String strKey = (String) e.nextElement();
+    Class<?> oCacheClass = (Class<?>)htCaches.get(strKey);
+    int nValue = -1;
+    try 
+    {
+   	  Method method = oCacheClass.getMethod("getCacheSize");
+   	  nValue = (Integer)method.invoke(oCacheClass);
+   	} 
+    catch (Exception ex) 
+   	{ 
+   		pLog.error("Error al obtener los tamaños de las caches. Error: " + ex);
+   	}
+    
+	strHtmlTable += "<tr class=\"lineaGris centered\">\n" +
+				"<td style=\"text-align:left;padding-left:10px ;\">" + strKey + "</td>\n" +
+				"<td><div style=\"width:80px;float:left;height: 35px;padding-top: 12px;\">" + nValue + "</div>" +
+					"<button class=\"button\" style=\"width:95px;height:35px;font-size: 11px;\" onclick=\"location.href ='/api/tool/cacheManager.jsp?viewData=" + strKey + "'\"> Ver datos </button>" + 
+				"</td>\n" +
+				"<td><input id=\"" + strKey + "\" class=\"largeCheckBox\" type=\"checkbox\"></td>\n" +
+				"</tr>";	
+}
+
+
+
+%>		
+<%=strHtmlTable%>	
+
 			</tbody>
-
 		</table>
-
-
-
+	</div>
+		<div class="botonera">
+			<div class="bloqueBotoneraLeft">
+				<div style="margin-top: -10px;">
+					<button id="botonLanzar" class="button" type="button"
+						onclick="location.href='/api/tool/cacheManager.jsp'">
+						<span id="spanBotonLanzar">Refrescar</span>
+					</button>
+					<button id="botonLanzar" class="button" type="button"
+						onclick="freeCache()">
+						<span id="spanBotonLanzar">Liberar Caches</span>
+					</button>
+				</div>				
+			</div>
+		</div>	
+	<div id="divData" style="font-size: small;">
+      <% 
+		String strData ="";
+	   	if (strParamViewData != null && !strParamViewData.trim().isEmpty())
+	   	{
+	   	    Class<?> oCacheClass = (Class<?>)htCaches.get(strParamViewData);
+	   	    try 
+	   	    {
+	   	   	  Method method = oCacheClass.getMethod("cacheToString");
+	   	   	  strData = (String)method.invoke(oCacheClass);
+	   	   	  strData = strData.replace("\n", "<br/>").replace("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
+	   	   	}
+	   		catch (Exception ex)
+	   		{
+	      			pLog.error("Error al obtener el contenido de la cache. Error: " + ex);
+	   		}
+	   	}	
+      %>			
+		<%=strData %>
 	</div>
 
 	<script type="text/javascript">
-	
-	var pJsonData = <%=strJson%>;
-	var listCaches =  pJsonData.caches;
-	var pLoading = '<div class="bola_warning">-</div>';
-	
-		function refreshCache(){
-			var strRefresh = "true";
-			var dataGet = {};
+		
+		function freeCache() 
+		{
+			var targets ="";
 			
-			/* Se ponen las caches en estado de cargando */
-			for (item in  listCaches) {
-				console.log("Item: " + item + ", listCaches[item].idSize: " + listCaches[item].idSize);
-				document.getElementById(listCaches[item].idSize).innerHTML = pLoading;
+			<%
+			String strJsScript = "";
+			/* Se generan las tablas HTML y el Json para el Javascript */
+			for (Enumeration<String> e = htCaches.keys(); e.hasMoreElements(); ) 
+			{ 
+				String strKey = (String) e.nextElement();
+				strJsScript += "if($('#" + strKey + "').is(':checked'))\n" + 
+								"    targets += '" + strKey + ",';\n";
 			}
-			
-			dataGet.refresh = strRefresh;
-			console.log("Refresh: " + strRefresh);
-			var strUrl = '/api/tool/cleanCache.jsp';
-			$.ajax({
-				url : strUrl,
-				data : dataGet,
-				type : 'GET',
-				dataType : 'json',
-				success : refreshData,
-				error : function(xhr, status) {
-					console.log("Error al liberar caches. xhr" + xhr
-							+ " - status: " + status);
-				}
-			});
+			%>
+			<%=strJsScript%>
+			if(targets != '')
+			{
+				targets = targets.substring(0, targets.length - 1);
+				location.href = '/api/tool/cacheManager.jsp?clean=' + targets;
+			}
 		}
 		
-		function refreshData(pJsonResponse) {
-			/* Se actualizan los valores conforme a la respuesta de la petición ajax */
-			for (item in  listCaches) {
-				console.log("Item: " + item + ", listCaches[item].idSize: " + listCaches[item].idSize);
-				for(cache in pJsonResponse.caches){
-					if(listCaches[item].cacheName === pJsonResponse.caches[cache].cacheName){
-						document.getElementById(listCaches[item].idSize).innerHTML = pJsonResponse.caches[cache].size;
-					}
-				}
-			}
-			
-		}
-		
-		function freeCache() {
-			var strParams = '';
-			
-			
-			var dataGet = {};
-			var pCacheSizes = document.getElementsByClassName("cacheSize");
-			
-			for (item in  listCaches) {					
-				if(document.getElementById(listCaches[item].idCheck).checked){
-					document.getElementById(listCaches[item].idSize).innerHTML = pLoading;
-					strParams += listCaches[item].cacheName + ";";
-				}
-			}
-			console.log("StrParams: " + strParams);
-			
-			dataGet.clean = strParams;
-			console.log("StrParams: " + strParams);
-			var strUrl = '/api/tool/cleanCache.jsp';
-			$.ajax({
-				url : strUrl,
-				data : dataGet,
-				type : 'GET',
-				dataType : 'json',
-				success : refreshData,
-				error : function(xhr, status) {
-					console.log("Error al liberar caches. xhr" + xhr
-							+ " - status: " + status);
-				}
-			});
-		}
-		
-		function checkAll() {
+		function checkAll() 
+		{
 			var allCheckBox = document.getElementById("checkAll");
-			if(allCheckBox.checked){
-				/* Se activan todos los Ticks */
-				for (item in  listCaches) {					
-					document.getElementById(listCaches[item].idCheck).checked = true;
-				}
-			}else{
-				/* Se desactivan todos los ticks */
-				for (item in  listCaches) {
-					
-					document.getElementById(listCaches[item].idCheck).checked = false;
-				}
-			}
-			
+			$('.largeCheckBox').each(function(){
+				//$(this).attr('checked', allCheckBox.checked);
+				$(this).prop('checked', allCheckBox.checked);
+			});			
 		}
-
 		
 	</script>
 </body>

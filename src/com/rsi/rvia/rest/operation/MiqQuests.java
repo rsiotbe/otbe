@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.rvia.rest.tool.Utils;
 
 /** Objeto que representa una operativa o operación definida en la aplicación */
 public class MiqQuests
@@ -28,7 +29,7 @@ public class MiqQuests
 	 * 
 	 * @return int con el tamaño de la cache
 	 */
-	public static int getSizeCache()
+	public static int getCacheSize()
 	{
 		int nReturn = 0;
 		if (htCacheDataId != null)
@@ -45,10 +46,25 @@ public class MiqQuests
 	/**
 	 * Reinicia la Cache
 	 */
-	public static void restartCache()
+	public static void resetCache()
 	{
 		htCacheDataId = new Hashtable<Integer, MiqQuests>();
 		htCacheDataPath = new Hashtable<String, MiqQuests>();
+	}
+
+	/**
+	 * Devuelve los datos de la cache en formato texto
+	 * 
+	 * @return COnenido de la caché
+	 * @throws Exception
+	 */
+	public static String cacheToString() throws Exception
+	{
+		String strReturn;
+		strReturn = Utils.hastablePrettyPrint(htCacheDataId, "htCacheDataId");
+		strReturn += "\n";
+		strReturn = Utils.hastablePrettyPrint(htCacheDataPath, "htCacheDataPath");
+		return strReturn;
 	}
 
 	public int getIdMiq()
@@ -163,7 +179,7 @@ public class MiqQuests
 				if (!htCacheDataPath.containsKey(pResultSet.getString("path_rest")))
 					htCacheDataPath.put(pResultSet.getString("path_rest"), pMiqQuests);
 			}
-			pLog.debug("Se carga la cache de MiqQuest con " + getSizeCache()
+			pLog.debug("Se carga la cache de MiqQuest con " + getCacheSize()
 					+ " elementos. (La mitad es por id y la otra mitad por Path");
 		}
 		catch (Exception ex)
@@ -209,7 +225,7 @@ public class MiqQuests
 		 */
 		strPath = strPath.replace("/help", "");
 		/* si la caché no está cargada se carga */
-		if (getSizeCache() == 0)
+		if (getCacheSize() == 0)
 			loadDDBBCache();
 		pMiqQuests = htCacheDataPath.get(strPath);
 		return pMiqQuests;
@@ -228,7 +244,7 @@ public class MiqQuests
 	{
 		MiqQuests pMiqQuests = null;
 		/* si la caché no está cargada se carga */
-		if (getSizeCache() == 0)
+		if (getCacheSize() == 0)
 			loadDDBBCache();
 		pMiqQuests = htCacheDataId.get(nMiqQuestId);
 		return pMiqQuests;

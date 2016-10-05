@@ -1,11 +1,15 @@
 package com.rsi.rvia.rest.tool;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -16,6 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
+import org.apache.commons.collections4.MapUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -271,5 +276,27 @@ public class Utils
 		StringWriter errors = new StringWriter();
 		ex.printStackTrace(new PrintWriter(errors));
 		return errors.toString();
+	}
+
+	public static String hastablePrettyPrint(Hashtable<?, ?> pHashtable, String strTitle)
+	{
+		String strReturn = "";
+		ByteArrayOutputStream pBaos;
+		PrintStream pPs;
+		try
+		{
+			pBaos = new ByteArrayOutputStream();
+			pPs = new PrintStream(pBaos);
+			MapUtils.debugPrint(pPs, strTitle, pHashtable);
+			strReturn = new String(pBaos.toByteArray(), StandardCharsets.UTF_8);
+			pPs.close();
+			pBaos.close();
+		}
+		catch (IOException e)
+		{
+			pLog.error("Error al convertir un hashtable a String", e);
+			strReturn = "<<Error al generar la información, ver log>>";
+		}
+		return strReturn;
 	}
 }
