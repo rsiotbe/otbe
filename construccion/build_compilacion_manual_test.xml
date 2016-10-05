@@ -19,7 +19,15 @@
 	<property name="configurations-directory" value="${base-directory}/configurations" />
 	<property name="dist-directory" value="${base-directory}/dist" />
 	<property name="configurations-directory-aux" value="${base-directory}/configAux" />
+	
+	
+	
+	
 	<property name="tomcat-directory" value="D:/Aplicaciones/Tomcat 7/lib" />
+	
+	<!-- <property name="tomcat-directory" value="/opt/apache-tomcat-7.0.70/lib" / -->
+	
+	
 	
 	<target name="clean">
 		<echo message="Se procede a eliminar las rutas build y dist" />
