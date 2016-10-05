@@ -4,3 +4,5 @@
 /.classpath
 .DS_Store
 /bin/
+local.properties
+
