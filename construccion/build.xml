@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="REP_RURALVIA_REST" default="war" basedir=".">
 	<property file="build.scm.properties" />
+	<property file="local.properties" />
 	<property name="project-name" value="REP_RUALVIA_REST" />
 	<property name="deploy-name" value="api" />
 	<tstamp>
@@ -10,6 +11,7 @@
 	<property name="war-file-name" value="${deploy-name}##${timestamp}.war" />
 	<property name="base-directory" value=".." />
 	<property name="source-directory" value="${base-directory}/src" />
+	<property name="tests-directory" value="${base-directory}/test" />
 	<property name="template-directory" value="${base-directory}/template" />
 	<property name="web-directory" value="${base-directory}/WebContent" />
 	<property name="web-xml-file" value="${web-directory}/WEB-INF/web.xml" />
@@ -18,30 +20,35 @@
 	<property name="classes-directory" value="${build-directory}/classes" />
 	<property name="configurations-directory" value="${base-directory}/configurations" />
 	<property name="dist-directory" value="${base-directory}/dist" />
-	<property name="tomcat-directory" value="/cloud-disk/tomcat/omnicanal/apache-tomcat-7.0.70/lib" />
+	<property name="reports-directory" value="${base-directory}/reports" />
+	<property name="tomcat-directory" value="${tomcat.lib}" />
 	
 	<target name="clean">
-		<echo message="Se procede a eliminar las rutas build y dist" />
-    	<rmdir dir="${build-directory}"/>
-    	<rmdir dir="${dist-directory}" />
+		<echo message="Se procede a eliminar las rutas build, dist y reports" />
+    	<delete dir="${build-directory}"/>
+    	<delete dir="${dist-directory}" />
+    	<delete dir="${reports-directory}" />
 	</target>	
 	<target name="init">
-		<echo message="project-name       : ${project-name}"/>
-		<echo message="war-file-name      : ${war-file-name}"/>
-		<echo message="base-directory     : ${base-directory}"/>
-		<echo message="source-directory   : ${source-directory}"/>
-		<echo message="template-directory : ${template-directory}"/>
-		<echo message="web-directory      : ${web-directory}"/>
-		<echo message="web-xml-file       : ${web-xml-file}"/>
-		<echo message="lib-directory      : ${lib-directory}"/>
-		<echo message="build-directory    : ${build-directory}"/>
-		<echo message="classes-directory  : ${classes-directory}"/>
-		<echo message="configurations-directory :${configurations-directory}"/>
-		<echo message="dist-directory     :  ${dist-directory}"/>
+		<echo message="project-name             : ${project-name}"/>
+		<echo message="war-file-name            : ${war-file-name}"/>
+		<echo message="base-directory           : ${base-directory}"/>
+		<echo message="source-directory         : ${source-directory}"/>
+		<echo message="tests-directory          : ${tests-directory}"/>
+		<echo message="template-directory       : ${template-directory}"/>
+		<echo message="web-directory            : ${web-directory}"/>
+		<echo message="web-xml-file             : ${web-xml-file}"/>
+		<echo message="lib-directory            : ${lib-directory}"/>
+		<echo message="build-directory          : ${build-directory}"/>
+		<echo message="classes-directory        : ${classes-directory}"/>
+		<echo message="configurations-directory : ${configurations-directory}"/>
+		<echo message="dist-directory           : ${dist-directory}"/>
 		<echo message="Se crean los directorio build, classes y dist"/>
     	<mkdir dir="${build-directory}"/>
+        <mkdir dir="${classes-directory}-tests"/>
     	<mkdir dir="${classes-directory}"/>
     	<mkdir dir="${dist-directory}" />
+    	<mkdir dir="${reports-directory}" />
 	</target>
 	<path id="classpath.runtime">
 		<fileset dir="${tomcat-directory}" includes="**/*.jar" />
@@ -56,11 +63,41 @@
 	</path>
 	<target name="compile" depends="init" >
 		<echo message="Se procede a compilar las clases"/>
-	   	<javac destdir="${classes-directory}" debug="true" srcdir="${source-directory}">
+	   	<javac destdir="${classes-directory}" debug="true" srcdir="${source-directory}" includeantruntime="false">
 			<classpath refid="project.classpath" />
    	 	</javac>
 	</target>
-	<target name="war" depends="compile">
+    <target name="compile-tests" depends="compile">
+		<echo message="Se procede a compilar los tests"/>
+        <javac fork="true" srcdir="${tests-directory}" destdir="${classes-directory}-tests" includeantruntime="false">
+		    <classpath>
+		        <pathelement location="${lib-directory}/junit-4.12.jar"/>
+		        <path refid="project.classpath"/>
+		    </classpath>
+        </javac>
+    </target>
+    <target name="test" depends="compile-tests">
+		<junit printsummary="yes" haltonfailure="true">
+		    <classpath>
+	    	    <pathelement location="${lib-directory}/junit-4.12.jar"/>
+	        	<pathelement location="${lib-directory}/hamcrest-core-1.3.jar"/>
+		    	<pathelement location="${classes-directory}" />
+		    	<pathelement location="${classes-directory}-tests" />
+				<pathelement location="${configurations-directory}" />
+	    	</classpath>
+		    <classpath>
+		        <pathelement location="${lib.dir}/junit-4.11.jar"/>
+		        <path refid="project.classpath"/>
+		    </classpath>
+			<formatter type="xml"/>
+			<batchtest fork="yes" todir="${base-directory}/reports">
+				<fileset dir="${tests-directory}">
+					<include name="**/*Test.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+	<target name="war" depends="clean, test">
 		<echo message="Se procede a empaquetar todo en el war"/>
 		<echo message="Se elimina el posible war anterior"/>
 		<delete file="${dist-directory}/${war-file-name}" />

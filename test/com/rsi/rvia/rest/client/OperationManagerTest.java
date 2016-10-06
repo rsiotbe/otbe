@@ -12,10 +12,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import com.rsi.BaseTest;
+import com.rsi.TestBase;
 import com.rsi.rvia.rest.operation.MiqQuests;
 
-public class OperationManagerTest extends BaseTest
+public class OperationManagerTest extends TestBase
 {
    @Mock
    UriInfo   uriInfo;
