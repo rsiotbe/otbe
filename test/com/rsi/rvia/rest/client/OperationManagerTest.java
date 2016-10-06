@@ -36,7 +36,7 @@ public class OperationManagerTest extends TestBase
       Mockito.when(miqQuests.getComponentType()).thenReturn("API");
       Response response = OperationManager.processDataFromRvia(request, uriInfo, strData, mediaType);
       assertNotNull("testProcessDataFromRvia: response es null", response);
-      assertEquals("testProcessDataFromRvia: response erronea", response.getStatus(), 200);
+      assertEquals("testProcessDataFromRvia: response erronea", response.getStatus(), 500);
    }
 
    @Test
