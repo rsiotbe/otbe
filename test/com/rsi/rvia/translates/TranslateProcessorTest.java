@@ -5,9 +5,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import java.util.Hashtable;
 import org.junit.Test;
-import com.rsi.BaseTest;
+import com.rsi.TestBase;
 
-public class TranslateProcessorTest extends BaseTest
+public class TranslateProcessorTest extends TestBase
 {
    @Override
    public void setUp() throws Exception
