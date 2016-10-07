@@ -67,7 +67,7 @@ public class Utils
 	 * @throws SQLException
 	 * @throws JSONException
 	 */
-	public static JSONArray convertResultSet2JSON(ResultSet pResultSet) throws SQLException, JSONException
+	public static JSONArray convertResultSetToJSON(ResultSet pResultSet) throws SQLException, JSONException
 	{
 		JSONArray pJson = new JSONArray();
 		ResultSetMetaData rsmd = pResultSet.getMetaData();
@@ -147,7 +147,7 @@ public class Utils
 	 *           UriInfo con la información de path
 	 * @return MultivaluedMap con el key y el valor de cada elemento del path dinámico
 	 */
-	public static MultivaluedMap<String, String> getParam4Path(UriInfo pUriInfo)
+	public static MultivaluedMap<String, String> getParamByPath(UriInfo pUriInfo)
 	{
 		MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
 		return pListParameters;
@@ -169,13 +169,15 @@ public class Utils
 			String strKey = (String) pIterator.next();
 			if (pMap.get(strKey) != null)
 			{
-				strReturn += "&" + strKey + "=" + pMap.getFirst(strKey);
+				if (!strReturn.isEmpty())
+					strReturn += "&";
+				strReturn += strKey + "=" + pMap.getFirst(strKey);
 			}
 		}
 		return strReturn;
 	}
 
-	public static String hashMap2QueryString(HashMap<String, String> pMap)
+	public static String hashMapToQueryString(HashMap<String, String> pMap)
 	{
 		String strReturn = "";
 		if (pMap != null)
@@ -186,8 +188,28 @@ public class Utils
 				String strKey = (String) pIterator.next();
 				if (pMap.get(strKey) != null)
 				{
-					strReturn += "&" + strKey + "=" + pMap.get(strKey);
+					if (!strReturn.isEmpty())
+						strReturn += "&";
+					strReturn += strKey + "=" + pMap.get(strKey);
 				}
+			}
+		}
+		return strReturn;
+	}
+
+	public static String simpleJsonToQueryString(String strJSON) throws Exception
+	{
+		String strReturn = "";
+		if (strJSON != null && !strJSON.trim().isEmpty())
+		{
+			JSONObject pJSONObject = new JSONObject(strJSON);
+			Iterator<?> pKeys = pJSONObject.keys();
+			while (pKeys.hasNext())
+			{
+				String strKey = (String) pKeys.next();
+				if (!strReturn.isEmpty())
+					strReturn += "&";
+				strReturn += strKey + "=" + pJSONObject.get(strKey).toString();
 			}
 		}
 		return strReturn;
@@ -245,7 +267,7 @@ public class Utils
 	 * @return String json que contiene los valores del hashtable.
 	 * @throws JSONException
 	 */
-	public static String hashTable2Json(Hashtable<String, String> htData) throws JSONException
+	public static String hashTableToJson(Hashtable<String, String> htData) throws JSONException
 	{
 		String strReturn = "{}";
 		JSONObject pJson = new JSONObject();

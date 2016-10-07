@@ -61,10 +61,11 @@ public class RestConnector
 				break;
 			case "WS":
 			case "API":
+			case "SIMULATOR":
 				switch (strMethod)
 				{
 					case "GET":
-						pReturn = RestWSConnector.get(pRequest, pMiqQuests, pPathParams, pParamsToInject);
+						pReturn = RestWSConnector.get(pRequest, pMiqQuests, strData, pPathParams, pParamsToInject);
 						break;
 					case "POST":
 						pReturn = RestWSConnector.post(pRequest, pMiqQuests, pRequestConfig, strData, pPathParams, pParamsToInject);

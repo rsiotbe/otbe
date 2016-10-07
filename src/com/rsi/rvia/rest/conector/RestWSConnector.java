@@ -46,8 +46,6 @@ public class RestWSConnector
 	 *           path de la petición
 	 * @param pMiqQuests
 	 *           Objeto MiqQuests con la información de la operativa
-	 * @param pSessionRvia
-	 *           datos de la petición recibida desde ruralvia
 	 * @param strJsonData
 	 *           Datos a enviar
 	 * @param strEndPoint
@@ -57,11 +55,11 @@ public class RestWSConnector
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception
 	 */
-	public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests,
+	public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests, String strJsonData,
 			MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject) throws Exception
 	{
 		Client pClient = RviaRestHttpClient.getClient();
-		String strQueryParams = pRequest.getQueryString();
+		String strQueryParams = ((pRequest.getQueryString() == null) ? "" : pRequest.getQueryString());
 		/* se obtienen lso header necesarios para realizar la petición al WS */
 		String strCODSecEnt = GettersRequestParams.getCODSecEnt(pRequest);
 		String strCODSecUser = GettersRequestParams.getCODSecUser(pRequest);
@@ -71,9 +69,17 @@ public class RestWSConnector
 		String strCODCanal = GettersRequestParams.getCODCanal(pRequest);
 		String strCODSecIp = GettersRequestParams.getCODSecIp(pRequest);
 		String pathQueryParams = "";
-		pathQueryParams = Utils.multiValuedMap2QueryString(pPathParams) + Utils.hashMap2QueryString(pParamsToInject);
-		String urlQueryString = ((strQueryParams == null) ? "" : strQueryParams) + "&idMiq=" + pMiqQuests.getIdMiq()
-				+ pathQueryParams;
+		pathQueryParams = Utils.multiValuedMap2QueryString(pPathParams);
+		if (!pathQueryParams.isEmpty() && !pathQueryParams.endsWith("&"))
+			pathQueryParams += "&";
+		pathQueryParams += Utils.hashMapToQueryString(pParamsToInject);
+		if (!pathQueryParams.isEmpty() && !pathQueryParams.endsWith("&"))
+			pathQueryParams += "&";
+		pathQueryParams += Utils.simpleJsonToQueryString(strJsonData);
+		String urlQueryString = strQueryParams;
+		if (!urlQueryString.isEmpty() && !urlQueryString.endsWith("&"))
+			urlQueryString += "&";
+		urlQueryString += "idMiq=" + pMiqQuests.getIdMiq() + "&" + pathQueryParams;
 		WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint() + "?" + urlQueryString);
 		pLog.info("END_POINT:" + pMiqQuests.getEndPoint());
 		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
@@ -88,8 +94,6 @@ public class RestWSConnector
 	 *           petición del cliente
 	 * @param strPathRest
 	 *           path de la petición
-	 * @param pSessionRvia
-	 *           Datos de la petición recibida desde ruralvia
 	 * @param strJsonData
 	 *           Datos a enviar
 	 * @param pMiqQuests

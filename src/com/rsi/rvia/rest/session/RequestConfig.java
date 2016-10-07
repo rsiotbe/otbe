@@ -66,7 +66,15 @@ public class RequestConfig
 	{
 		pLog.debug("Se procede a cargar la configuración de la petición leyendo objeto request");
 		strLanguage = request.getParameter("lang");
+		if (strLanguage == null)
+		{
+			strLanguage = (String) request.getAttribute("lang");
+		}
 		strNRBE = request.getParameter("NRBE");
+		if (strLanguage == null)
+		{
+			strNRBE = (String) request.getAttribute("NRBE");
+		}
 		if (strLanguage == null || strLanguage.trim().isEmpty())
 		{
 			this.strLanguage = "es_ES";

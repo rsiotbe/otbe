@@ -29,6 +29,7 @@ import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
+import com.rsi.rvia.rest.simulators.SimulatorsManager;
 import com.rsi.rvia.rest.template.TemplateManager;
 import com.rsi.rvia.rest.tool.Utils;
 
@@ -191,7 +192,7 @@ public class OperationManager
 			/* se obtienen los datos necesario para realizar la petición al proveedor */
 			strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
 			pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
-			MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
+			MultivaluedMap<String, String> pListParams = Utils.getParamByPath(pUriInfo);
 			/* se instancia el conector y se solicitan los datos */
 			pRestConnector = new RestConnector();
 			/* BEGIN: Gestión de login y token */
@@ -456,19 +457,26 @@ public class OperationManager
 	{
 		MiqQuests pMiqQuests = null;
 		ErrorResponse pErrorCaptured = null;
-		String strJsonData = "";
+		String strNRBE;
+		String strDataJson;
+		String strJsonResponse = "";
 		Response pResponseConnector;
 		RequestConfig pRequestConfig = null;
 		pSession = pRequest.getSession(true);
 		try
 		{
 			/* se obtiene el objeto petición */
+			strNRBE = SimulatorsManager.getNRBEFromBankName(strBankName);
+			pRequest.setAttribute("NRBE", strNRBE);
+			pRequest.setAttribute("lang", strLanguage);
 			pRequestConfig = new RequestConfig(pRequest);
 			/* se obtienen los datos necesario para realizar la petición al proveedor */
 			pMiqQuests = createMiqQuests(pUriInfo);
+			/* se obtiene el codigo de entidad de donde procede la llamada */
+			strDataJson = "{\"codEntidad\":\"" + strNRBE + "\"}";
 			/* se instancia el conector y se solicitan los datos */
-			strJsonData = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, "{}");
-			pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
+			strJsonResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, strDataJson);
+			pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonResponse);
 		}
 		catch (Exception ex)
 		{
@@ -478,7 +486,7 @@ public class OperationManager
 		try
 		{
 			/* Se construye la respuesta ya sea error, o correcta, json o template */
-			pResponseConnector = buildResponse(pErrorCaptured, pMediaType, pMiqQuests, strJsonData, pRequestConfig);
+			pResponseConnector = buildResponse(pErrorCaptured, pMediaType, pMiqQuests, strJsonResponse, pRequestConfig);
 		}
 		catch (Exception ex)
 		{
@@ -602,7 +610,7 @@ public class OperationManager
 	{
 		RestConnector pRestConnector = null;
 		Response pResponseConnector = null;
-		MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
+		MultivaluedMap<String, String> pListParams = Utils.getParamByPath(pUriInfo);
 		/* se instancia el conector y se solicitan los datos */
 		pRestConnector = new RestConnector();
 		pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pListParams, null);

@@ -1,12 +1,9 @@
 package com.rsi.rvia.rest.simulators;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Properties;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,139 +11,81 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
+import com.rsi.rvia.rest.tool.Utils;
 
 public class SimulatorsManager
 {
 	private static Logger		pLog	= LoggerFactory.getLogger(SimulatorsManager.class);
-	private static Properties	pPropNRBENames;
+	private static JSONObject	pPropNRBENames;
 
-	public static String getJSFunctionsByEntity(String strEntity, String strFunctions) throws JSONException
+	/**
+	 * Obtiene la información de simuladores de la entidad
+	 * 
+	 * @param strSimulatorName
+	 *           Nombre del siumulador especifico que se queire recuperar, si se pasa null se obtieen todos los
+	 *           disponibles para la entidad
+	 * @param strNRBE
+	 *           Codio de entidad con 4 digitos
+	 * @return Datos de la configuración
+	 * @throws Exception
+	 */
+	public static SimulatorObjectArray getSimulatorsFromDDBB(String strNRBE, String strEntityName,
+			String strSimulatorName) throws Exception
 	{
-		String strReturn = "{}";
-		JSONObject pJson = new JSONObject();
-		Hashtable<String, String> htFunctions;
-		Hashtable<String, String> htConfig;
-		htFunctions = getJSFunctionsFromDDBB(strFunctions);
-		htConfig = getParamConfigFromDDBB(strEntity);
-		String strJSMin = "";
-		/* Se sustituyen en todos los algoritmos, y se añaden a el JSON de respuesta */
-		for (Enumeration<String> e = htFunctions.keys(); e.hasMoreElements();)
-		{
-			String strFunction = (String) e.nextElement();
-			strJSMin = htFunctions.get(strFunction);
-			for (Enumeration<String> en = htConfig.keys(); en.hasMoreElements();)
-			{
-				String strReplace = (String) en.nextElement();
-				String strValue = htConfig.get(strReplace);
-				strJSMin = strJSMin.replace(strReplace, strValue);
-			}
-			pLog.debug("Añadiendo algoritmo al JSON.");
-			pJson.put(strFunction, strJSMin);
-		}
-		strReturn = pJson.toString();
-		return strReturn;
-	}
-
-	private static Hashtable<String, String> getJSFunctionsFromDDBB(String strFunctions)
-	{
-		Hashtable<String, String> htReturn = new Hashtable<String, String>();
-		Connection pConnection = null;
-		PreparedStatement pPreparedStatement = null;
-		ResultSet pResultSet = null;
-		String[] pPartes = strFunctions.split(";");
-		try
-		{
-			String strQuery = "select * from bdptb235_functions_simuladores";
-			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-			pPreparedStatement = pConnection.prepareStatement(strQuery);
-			pResultSet = pPreparedStatement.executeQuery();
-			/*
-			 * Recupera el JS minificado, dentro de la tabla BDPTB235_FUNCTIONS_SIMULADORES tambien esta la versión sin
-			 * minificar. Si se realiza un cambio en cualquiera de las dos versión hay que modificarlo en la otra. La
-			 * aplicación que se ha usado para minificar es: https://jscompress.com/
-			 */
-			/* Se recogen de la BBDD las funciones y su JS que se reciben por parametro */
-			while (pResultSet.next())
-			{
-				String strFunction = (String) pResultSet.getString("funcion");
-				for (String strItem : pPartes)
-				{
-					if (strItem.equals(strFunction))
-					{
-						String strJSMin = (String) pResultSet.getString("javascript_min");
-						pLog.trace("Funcion encontrada y recuperada: " + strFunction);
-						htReturn.put(strFunction, "var " + strItem + " = " + strJSMin + ";");
-					}
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("Error al realizar la consulta a la BBDD.");
-		}
-		finally
-		{
-			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
-		}
-		return htReturn;
-	}
-
-	private static Hashtable<String, String> getParamConfigFromDDBB(String strEntity)
-	{
-		Hashtable<String, String> htReturn = new Hashtable<String, String>();
+		SimulatorObjectArray alReturn = new SimulatorObjectArray();
 		Connection pConnection = null;
 		PreparedStatement pPreparedStatement = null;
 		ResultSet pResultSet = null;
 		try
 		{
-			String strQuery = "select * from bdptb234_param_simuladores where entidad = ?";
+			String strQuery = "select * from BDPTB235_SIMULADORES s, BDPTB236_PARAM_SIMULADORES p where s.entidad = ? and s.activo = '1' and s.id_simulador=p.id_simulador order by s.id_simulador";
 			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
-			pPreparedStatement.setString(1, strEntity);
+			pPreparedStatement.setString(1, strNRBE);
 			pResultSet = pPreparedStatement.executeQuery();
 			/* Recupera los parametros de configuración */
+			int nSimulatorIdRef = -1;
+			int nSimulatorId;
+			SimulatorObject pSimulatorObject = null;
 			while (pResultSet.next())
 			{
-				String strKey = (String) pResultSet.getString("clave");
-				String strValue = (String) pResultSet.getString("valor");
-				String strReplace = "";
-				/* Se mira que tipo de parametro es para sustituirlo */
-				if ("minCuota".equals(strKey))
+				nSimulatorId = pResultSet.getInt("ID_SIMULADOR");
+				/* se comprueba si el registo pertenece a un simulador no evaluado todavia */
+				if (nSimulatorIdRef != nSimulatorId)
 				{
-					strReplace = "__MIN_FEE__";
+					nSimulatorIdRef = nSimulatorId;
+					/*
+					 * si el obtejo simulador esta vacio siginifa que el la primera iteración, si no lo esta es un objeto
+					 * anterior y es necsario guardarlo en el arraylist de resultado
+					 */
+					if (pSimulatorObject != null)
+					{
+						alReturn.addSimulator(pSimulatorObject);
+					}
+					/* se crea el nuevo sinulador y posteriormente se añaden sus campos */
+					pSimulatorObject = new SimulatorObject(nSimulatorId, pResultSet.getString("ENTIDAD"), strEntityName, pResultSet.getString("CATEGORIA"), pResultSet.getString("NOMBRE_COMERCIAL"), pResultSet.getString("TIPO_CALCULO"), pResultSet.getBoolean("ACTIVO"), pResultSet.getBoolean("CONTRATAR"), pResultSet.getBoolean("CONTACTO_EMAIL"), pResultSet.getBoolean("CONTACTO_TELEF"));
 				}
-				else if ("maxCuota".equals(strKey))
-				{
-					strReplace = "__MAX_FEE__";
-				}
-				else if ("minImporte".equals(strKey))
-				{
-					strReplace = "__MIN_INITIAL_AMOUNT__";
-				}
-				else if ("maxImporte".equals(strKey))
-				{
-					strReplace = "__MAX_INITIAL_AMOUNT__";
-				}
-				else if ("minPlazos".equals(strKey))
-				{
-					strReplace = "__MIN_DEADLINES__";
-				}
-				else if ("maxPlazos".equals(strKey))
-				{
-					strReplace = "__MAX_DEADLINES__";
-				}
-				htReturn.put(strReplace, strValue);
+				pSimulatorObject.pConfigParams.put(pResultSet.getString("CLAVE"), pResultSet.getString("VALOR"));
+			}
+			/* se añade el último elemento si existe al menos uno */
+			if (pSimulatorObject != null)
+			{
+				alReturn.addSimulator(pSimulatorObject);
 			}
 		}
 		catch (Exception ex)
 		{
-			pLog.error("Error al realizar la consulta a la BBDD.");
+			pLog.error("Error al cargar la configuración de algoritmos para la entidad " + strNRBE);
+			throw ex;
 		}
 		finally
 		{
 			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
-		return htReturn;
+		// if (alReturn.isEmpty())
+		// throw new LogicalErrorException(400, 99988, "Error al procesar la petición",
+		// "No se ha encontrado configuración de simuladores para esta entidad", null);
+		return alReturn;
 	}
 
 	public static String getNRBEFromBankName(String strBankName) throws Exception
@@ -155,10 +94,12 @@ public class SimulatorsManager
 		/* se carga el fichero de propiedades que contien la resolución de nombres */
 		if (pPropNRBENames == null)
 		{
-			pPropNRBENames = new Properties();
+			String strJsonContent;
 			try
 			{
-				pPropNRBENames.load(SimulatorsManager.class.getResourceAsStream("/NRBE.properties"));
+				InputStream pInputStream = (SimulatorsManager.class.getResourceAsStream("/NRBE.properties"));
+				strJsonContent = Utils.getStringFromInputStream(pInputStream);
+				pPropNRBENames = new JSONObject(strJsonContent);
 			}
 			catch (Exception ex)
 			{
@@ -166,9 +107,18 @@ public class SimulatorsManager
 			}
 		}
 		/* se obtiene el codigo de entidad para el nombre dado */
-		strReturn = (String) pPropNRBENames.get(strBankName);
-		if (strReturn == null || strReturn.trim().isEmpty())
+		JSONObject pDataObject = pPropNRBENames.getJSONObject(strBankName);
+		if (pDataObject == null)
+		{
 			throw new LogicalErrorException(400, 9998, "No se ha encontrado información para esta entidad", "No ha sido posible recuperar la información necesaria para esta entidad", null);
-		return strBankName;
+		}
+		strReturn = pDataObject.getString("NRBE");
+		if (strReturn == null || strReturn.trim().isEmpty())
+		{
+			throw new LogicalErrorException(400, 9997, "No se ha encontrado información para esta entidad", "No ha sido posible recuperar la información necesaria para esta entidad", null);
+		}
+		while (strReturn.length() < 4)
+			strReturn = "0" + strReturn;
+		return strReturn;
 	}
 }
