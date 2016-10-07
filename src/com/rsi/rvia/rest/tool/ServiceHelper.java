@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 
 public class ServiceHelper
 {
@@ -23,33 +26,65 @@ public class ServiceHelper
 
 	public static JSONObject getHelp(int nIdMiq) throws Exception, SQLException
 	{
-		JSONObject jsonHelp = null;
-		JSONObject jsonSInfo = null;
-		JSONObject jsonAux = null;
-		JSONObject jsonAux2 = null;
+	public static String getHelp(int nIdMiq) throws Exception, SQLException{
+		JSONObject jsonPrevious = null;
+		Map mapHelp = null;
+		Map mapSInfo = null;
+		Map mapModifiers = null;
+		Map mapModifier = null;
+		//Map mapAux = null;
+		//Map mapAux2 = null;
 		try
 		{
 			if (pConnection == null)
 				pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-			jsonHelp = new JSONObject();
-			jsonAux = new JSONObject();
-			jsonSInfo = getServiceInfo(nIdMiq).getJSONObject(0);
-			jsonSInfo.put("inputFields", getAvailableInputs(nIdMiq));
-			jsonSInfo.put("exitFields", getAvailableExits(nIdMiq));
-			jsonHelp.put("response", jsonSInfo);
+			mapHelp = new LinkedHashMap();			
+			mapSInfo =  new LinkedHashMap();		
+			jsonPrevious=getServiceInfo(nIdMiq).getJSONObject(0);			
+			Iterator it=jsonPrevious.keys();
+			while(it.hasNext()){
+				String key = (String) it.next();
+				mapSInfo.put(key, jsonPrevious.getString(key));
+			}
+			
+			mapSInfo.put("inputFields", getAvailableInputs(nIdMiq));
+			mapSInfo.put("exitFields", getAvailableExits(nIdMiq));
+			
+			mapModifiers = new LinkedHashMap();
+			mapModifiers.put("description", "Modificadores de comportamiento que pueden usarse como parámetros");
+			
+			mapModifier = new LinkedHashMap();
+			mapModifier.put("description", "Lista de campos a solicitar___ dentro de los disponibles___ y separados por coma.");
+			mapModifier.put("example", "..../path?fieldslist··field1___field2...");			
+			mapModifiers.put("fieldslist", mapModifier);
+
+			mapModifier = new LinkedHashMap();
+			mapModifier.put("description", "Lista de campos por los que ordenar___ dentro de los disponibles___ y separados por coma.");
+			mapModifier.put("example", "..../path?sorterslist··field1___field2...");			
+			mapModifiers.put("sorterslist", mapModifier);
+			
+			mapModifier = new LinkedHashMap();
+			mapModifier.put("description", "Muestra este sistema de ayuda.");
+			mapModifier.put("example", "..../path?help");			
+			mapModifiers.put("help", mapModifier);			
+			
+			mapSInfo.put("modifiers", mapModifiers);			
+			mapHelp.put("response", mapSInfo);
 		}
 		catch (Exception ex)
-		{
-			throw new Exception();
+			throw new LogicalErrorException(	500, 9999, "Internal server error", "Error en la lectura de entradas", new Exception());
 		}
 		finally
 		{
 			pConnection.close();
-		}
-		return jsonHelp;
+		}		
+		String strResultado = mapHelp.toString().replaceAll("([A-z]*)=", "\"$1\":").replaceAll("(:)([^{])([^,}]*)([,}])", "$1\"$2$3\"$4");
+		strResultado = strResultado.replaceAll("··", "=").replaceAll("___", ",");
+		strResultado = strResultado.replaceAll("##","{").replaceAll("@@", "}").replaceAll("zCOMAz", ",");		
+		return strResultado;
 	}
-
-	public static JSONObject getHelp(String strPathRest) throws Exception, SQLException
+	
+	public static String getHelp(String strPathRest) throws Exception, SQLException{
 	{
 		pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 		PreparedStatement pPreparedStatement = null;
@@ -57,6 +92,7 @@ public class ServiceHelper
 		int nIdMiq = 0;
 		strPathRest = strPathRest.replace("/help", "");
 		String strQuery = " select id_miq" + " from  BEL.BDPTB222_MIQ_QUESTS" + " where path_rest=?";
+				" where trim(path_rest)=?" ;
 		try
 		{
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
@@ -84,14 +120,17 @@ public class ServiceHelper
 	{
 		PreparedStatement pPreparedStatement = null;
 		ResultSet pResultSet = null;
-		JSONArray jsonAr = null;
+		JSONArray mapAr = null;
 		String strQuery = " select" + "  path_rest \"url\"" + " ,miq_name \"serviceName\""
-				+ " ,miq_description \"serviceDescription\"" + " from  BEL.BDPTB222_MIQ_QUESTS" + " where id_miq=2011";
+				"  replace(replace(path_rest,'{','##'),'}','@@') \"url\"" +
+				" ,replace(miq_description,',','zCOMAz') \"serviceDescription\"" +
+				" where id_miq=?" ;		
 		try
 		{
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
-			pResultSet = pPreparedStatement.executeQuery();
-			jsonAr = Utils.convertResultSetToJSON(pResultSet);
+			pPreparedStatement.setInt(1, nIdMiq);
+			pResultSet = pPreparedStatement.executeQuery();		
+			mapAr = Utils.convertResultSet2JSON(pResultSet);		
 		}
 		catch (Exception ex)
 		{
@@ -102,14 +141,14 @@ public class ServiceHelper
 			pResultSet.close();
 			pPreparedStatement.close();
 		}
-		return jsonAr;
+		return mapAr;	
 	}
-
+	private static LinkedHashMap getAvailableExits (int nIdMiq) throws SQLException, JSONException{
 	private static JSONObject getAvailableExits(int nIdMiq) throws SQLException, JSONException
 	{
 		PreparedStatement pPreparedStatement = null;
 		ResultSet pResultSet = null;
-		JSONArray jsonAr = null;
+		JSONArray mapAr = null;
 		String strQuery = " select" + " 	 c.exitname \"exitName\"" + " 	,case"
 				+ " 		when trim(c.exitdesc) is not null then c.exitdesc"
 				+ " 		when trim(c.exitdesc) is null then c.exitname else c.exitdesc end  \"exitDescription\"" + " from"
@@ -122,7 +161,7 @@ public class ServiceHelper
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
 			pPreparedStatement.setInt(1, nIdMiq);
 			pResultSet = pPreparedStatement.executeQuery();
-			jsonAr = Utils.convertResultSetToJSON(pResultSet);
+			mapAr = Utils.convertResultSet2JSON(pResultSet);			
 		}
 		catch (Exception ex)
 		{
@@ -133,14 +172,14 @@ public class ServiceHelper
 			pResultSet.close();
 			pPreparedStatement.close();
 		}
-		return formatJson(jsonAr, "exit");
+		return formatJson(mapAr,"exit");		
 	}
-
+	private static LinkedHashMap getAvailableInputs (int nIdMiq) throws SQLException, JSONException, LogicalErrorException{
 	private static JSONObject getAvailableInputs(int nIdMiq) throws SQLException, JSONException
 	{
 		PreparedStatement pPreparedStatement = null;
 		ResultSet pResultSet = null;
-		JSONArray jsonAr = null;
+		JSONArray mapAr = null;
 		String strQuery = " select"
 				+ " 	 case when trim(aliasname) is null then paramname else aliasname end  \"inputName\""
 				+ " 	,case"
@@ -157,62 +196,60 @@ public class ServiceHelper
 				+ " 	on a.id_miq=b.id_miq" + " 	left join BEL.BDPTB225_MIQ_SESSION_PARAMS c"
 				+ " 	on b.ID_MIQ_PARAM=c.ID_MIQ_PARAM" + " 	left outer join BEL.BDPTB228_MIQ_PARAM_VALIDATION d"
 				+ " 	on c.ID_MIQ_PARAM = d.ID_MIQ_PARAM" + " where a.id_miq=?";
+				" where a.id_miq=? " +
+				" and (b.opciones is null or b.opciones not like '%propagate=false%')" ;
 		try
 		{
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
 			pPreparedStatement.setInt(1, nIdMiq);
-			pResultSet = pPreparedStatement.executeQuery();
-			jsonAr = Utils.convertResultSetToJSON(pResultSet);
-		}
-		catch (Exception ex)
-		{
+			pResultSet = pPreparedStatement.executeQuery();		
+			
+			
+			
+			mapAr = Utils.convertResultSet2JSON(pResultSet);	
 			pLog.error(strQuery);
-		}
-		finally
-		{
+			throw new LogicalErrorException(	500, 9999, "Internal server error", "Error en la configuración de parámetros de entradas", new Exception());
+			//throw new LogicalErrorException(	500, 9999, "Internal server error", "Parámetro de entrada no censado.", new Exception());
+			
 			pResultSet.close();
 			pPreparedStatement.close();
 		}
-		return formatJson(jsonAr, "input");
+		return formatJson(mapAr,"input");		
 	}
-
+	private static LinkedHashMap formatJson(JSONArray datos, String strTipo) throws JSONException{
 	private static JSONObject formatJson(JSONArray datos, String strTipo) throws JSONException
 	{
 		int i;
-		JSONObject json = new JSONObject();
+		Map map = new LinkedHashMap();
 		for (i = 0; i < datos.length(); i++)
 		{
 			JSONObject foo = (JSONObject) datos.get(i);
 			if (strTipo.equals("input"))
-			{
-				json.put((String) foo.get("inputName"), formatOneInput(foo));
+				map.put((String) foo.get("inputName"), formatOneInput(foo));
 			}
 			else
-			{
-				json.put((String) foo.get("exitName"), formatOneExit(foo));
+				map.put((String) foo.get("exitName"), formatOneExit(foo));
 			}
 		}
-		return json;
+		return (LinkedHashMap) map;
 	}
-
-	private static JSONObject formatOneInput(JSONObject jsonInput) throws JSONException
-	{
-		JSONObject jsonField = new JSONObject();
-		JSONObject jsonValidatons = new JSONObject();
-		jsonValidatons.put("inputType", jsonInput.getString("inputType"));
-		jsonValidatons.put("inputLong", jsonInput.getString("inputLong"));
-		jsonValidatons.put("inputMask", jsonInput.getString("inputMask"));
-		jsonValidatons.put("inputMax", jsonInput.getString("inputMax"));
-		jsonValidatons.put("inputMin", jsonInput.getString("inputMin"));
-		jsonField.put("description", jsonInput.getString("inputDescription"));
-		jsonField.put("validations", jsonValidatons);
-		return jsonField;
+	private static LinkedHashMap formatOneInput(JSONObject mapInput) throws JSONException{
+		Map mapField = new LinkedHashMap();
+		Map mapValidatons= new LinkedHashMap();
+		mapValidatons.put("inputType",mapInput.getString("inputType"));
+		mapValidatons.put("inputLong",mapInput.getString("inputLong"));
+		mapValidatons.put("inputMask",mapInput.getString("inputMask"));
+		mapValidatons.put("inputMax",mapInput.getString("inputMax"));
+		mapValidatons.put("inputMin",mapInput.getString("inputMin"));
+		mapField.put("description", mapInput.getString("inputDescription"));
+		mapField.put("validations", mapValidatons);
+		
+		
+		return (LinkedHashMap) mapField;
 	}
-
-	private static JSONObject formatOneExit(JSONObject jsonInput) throws JSONException
-	{
-		JSONObject jsonField = new JSONObject();
-		jsonField.put("description", jsonInput.getString("exitDescription"));
-		return jsonField;
+	private static LinkedHashMap formatOneExit(JSONObject mapInput) throws JSONException{
+		Map mapField = new LinkedHashMap();
+		mapField.put("description", mapInput.getString("exitDescription"));
+		return (LinkedHashMap) mapField;
 	}
 }

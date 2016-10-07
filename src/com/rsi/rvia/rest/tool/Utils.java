@@ -1,14 +1,19 @@
 package com.rsi.rvia.rest.tool;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -16,6 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
+import org.apache.commons.collections4.MapUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,27 +42,18 @@ public class Utils
 	public static String getPrimaryPath(UriInfo pUriInfo)
 	{
 		String strKeys = "";
+		String strPath = pUriInfo.getPath();
 		MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
+		// LinkedHashMap<String, String> pListParameters = (LinkedHashMap) pUriInfo.getPathParameters();
 		Iterator<String> pIterator = pListParameters.keySet().iterator();
 		while (pIterator.hasNext())
 		{
 			String strKeyName = (String) pIterator.next();
-			strKeys += "/{";
-			strKeys += strKeyName;
-			strKeys += "}";
+			String strValue = pListParameters.get(strKeyName).get(0);
+			strPath = strPath.replaceFirst(strValue, "{" + strKeyName + "}");
 		}
-		String strPath = pUriInfo.getPath();
-		String[] pStrPathParts = strPath.split("/");
-		strPath = "";
-		for (int i = 0; i <= (pStrPathParts.length - pListParameters.size()) - 1; i++)
-		{
-			if (!strPath.isEmpty())
-			{
-				strPath += "/";
-			}
-			strPath += pStrPathParts[i];
-		}
-		return ("/" + strPath + strKeys);
+		pLog.debug("StrPath: " + strPath);
+		return ("/" + strPath);
 	}
 
 	/**
@@ -293,5 +290,50 @@ public class Utils
 		StringWriter errors = new StringWriter();
 		ex.printStackTrace(new PrintWriter(errors));
 		return errors.toString();
+	}
+
+	public static String hastablePrettyPrint(Hashtable<?, ?> pHashtable, String strTitle)
+	{
+		String strReturn = "";
+		ByteArrayOutputStream pBaos;
+		PrintStream pPs;
+		try
+		{
+			pBaos = new ByteArrayOutputStream();
+			pPs = new PrintStream(pBaos);
+			MapUtils.debugPrint(pPs, strTitle, pHashtable);
+			strReturn = new String(pBaos.toByteArray(), StandardCharsets.UTF_8);
+			pPs.close();
+			pBaos.close();
+		}
+		catch (IOException e)
+		{
+			pLog.error("Error al convertir un hashtable a String", e);
+			strReturn = "<<Error al generar la información, ver log>>";
+		}
+		return strReturn;
+	}
+
+	/**
+	 * Devuelve un string con los datos de un hastable en formato cadena
+	 * 
+	 * @param pHashtable
+	 *           Hashtable con los datos
+	 * @return
+	 */
+	public static String hastablePrettyPrintHtml(Hashtable<?, ?> pHashtable)
+	{
+		String strHtml = "";
+		for (Enumeration<?> e = (Enumeration<?>) pHashtable.keys(); e.hasMoreElements();)
+		{
+			Object objKey = e.nextElement();
+			String strKey = objKey.toString();
+			strHtml += "<div class=\"hastableElement\">";
+			strHtml += "<div class=\"hastableKey\"><span class=\"hastableKeySpan\">" + strKey + "</span></div>";
+			strHtml += "<div class=\"hastableValue\"><span class=\"hastableValueSpan\">" + pHashtable.get(strKey)
+					+ "</span></div>";
+			strHtml += "</div>";
+		}
+		return strHtml;
 	}
 }

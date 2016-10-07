@@ -4,203 +4,257 @@ import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Hashtable;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.rvia.rest.tool.Utils;
 
 /** Objeto que representa una operativa o operación definida en la aplicación */
 public class MiqQuests
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(MiqQuests.class);
-	private int					nIdMiq;
-	private String				strPathRest;
-	private String				strComponentType;
-	private String				strEndPoint;
-	private String				strTemplate;
+   private static Logger                       pLog            = LoggerFactory.getLogger(MiqQuests.class);
+   private int                                 nIdMiq;
+   private String                              strPathRest;
+   private String                              strComponentType;
+   private String                              strEndPoint;
+   private String                              strTemplate;
+   public static Hashtable<Integer, MiqQuests> htCacheDataId   = new Hashtable<Integer, MiqQuests>();
+   public static Hashtable<String, MiqQuests>  htCacheDataPath = new Hashtable<String, MiqQuests>();
 
-	public int getIdMiq()
-	{
-		return nIdMiq;
-	}
+   /**
+    * Devuelve el tamaño de la cache
+    * 
+    * @return int con el tamaño de la cache
+    */
+   public static int getCacheSize()
+   {
+      int nReturn = 0;
+      if (htCacheDataId != null)
+      {
+         nReturn = +htCacheDataId.size();
+      }
+      if (htCacheDataPath != null)
+      {
+         nReturn = +htCacheDataPath.size();
+      }
+      return nReturn;
+   }
 
-	public void setIdMiq(int nIdMiq)
-	{
-		this.nIdMiq = nIdMiq;
-	}
+   /**
+    * Reinicia la Cache
+    */
+   public static void resetCache()
+   {
+      htCacheDataId = new Hashtable<Integer, MiqQuests>();
+      htCacheDataPath = new Hashtable<String, MiqQuests>();
+   }
 
-	public String getPathRest()
-	{
-		return strPathRest;
-	}
+   /**
+    * Devuelve los datos de la cache en formato texto
+    * 
+    * @return COnenido de la caché
+    * @throws Exception
+    */
+   public static String cacheToString() throws Exception
+   {
+      String strReturn;
+      strReturn = Utils.hastablePrettyPrintHtml(htCacheDataId);
+      strReturn += "\n";
+      strReturn = Utils.hastablePrettyPrintHtml(htCacheDataPath);
+      return strReturn;
+   }
 
-	public void setPathRest(String strPathRest)
-	{
-		this.strPathRest = strPathRest;
-	}
+   public int getIdMiq()
+   {
+      return nIdMiq;
+   }
 
-	public String getComponentType()
-	{
-		return strComponentType;
-	}
+   public void setIdMiq(int nIdMiq)
+   {
+      this.nIdMiq = nIdMiq;
+   }
 
-	public void setComponentType(String strComponentType)
-	{
-		this.strComponentType = strComponentType;
-	}
+   public String getPathRest()
+   {
+      return strPathRest;
+   }
 
-	public String getEndPoint()
-	{
-		return strEndPoint;
-	}
+   public void setPathRest(String strPathRest)
+   {
+      this.strPathRest = strPathRest;
+   }
 
-	public void setEndPoint(String strEndPoint)
-	{
-		this.strEndPoint = strEndPoint;
-	}
+   public String getComponentType()
+   {
+      return strComponentType;
+   }
 
-	public String getTemplate()
-	{
-		return strTemplate;
-	}
+   public void setComponentType(String strComponentType)
+   {
+      this.strComponentType = strComponentType;
+   }
 
-	public void setTemplate(String strTemplate)
-	{
-		this.strTemplate = strTemplate;
-	}
+   public String getEndPoint()
+   {
+      return strEndPoint;
+   }
 
-	/**
-	 * Obtiene un objeto URI a del valor de EndPoint
-	 * 
-	 * @param strEndPoint
-	 *           String que contiene la uri
-	 * @return Objeto URI
-	 */
-	public URI getBaseWSEndPoint()
-	{
-		return UriBuilder.fromUri(this.strEndPoint).build();
-	}
+   public void setEndPoint(String strEndPoint)
+   {
+      this.strEndPoint = strEndPoint;
+   }
 
-	/** Contructor generico */
-	public MiqQuests()
-	{
-	}
+   public String getTemplate()
+   {
+      return strTemplate;
+   }
 
-	/**
-	 * Contructor con parámetros
-	 * 
-	 * @param nIdMiq
-	 *           Identificador de operación
-	 * @param strComponentType
-	 *           Tipo de componente
-	 * @param strEndPoint
-	 *           Dirección endPoint
-	 * @param strTemplate
-	 *           Plantilla asociada
-	 */
-	public MiqQuests(int nIdMiq, String strPathRest, String strComponentType, String strEndPoint, String strTemplate)
-	{
-		this.nIdMiq = nIdMiq;
-		this.strPathRest = strPathRest;
-		this.strComponentType = strComponentType;
-		this.strEndPoint = strEndPoint;
-		this.strTemplate = strTemplate;
-	}
+   public void setTemplate(String strTemplate)
+   {
+      this.strTemplate = strTemplate;
+   }
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString()
-	{
-		StringBuilder pSb = new StringBuilder();
-		pSb.append("IdMiq         :" + nIdMiq + "\n");
-		pSb.append("PathRest :" + strPathRest + "\n");
-		pSb.append("ComponentType :" + strComponentType + "\n");
-		pSb.append("EndPoint      :" + strEndPoint + "\n");
-		pSb.append("Template      :" + strTemplate);
-		return pSb.toString();
-	}
+   /**
+    * Obtiene un objeto URI a del valor de EndPoint
+    * 
+    * @param strEndPoint
+    *           String que contiene la uri
+    * @return Objeto URI
+    */
+   public URI getBaseWSEndPoint(HttpServletRequest pRequest)
+   {
+      String strRealEndPoint = "";
+      URI pUriReturn = null;
+      if (this.strEndPoint != null && this.strEndPoint.startsWith("/api/"))
+      {
+         strRealEndPoint = "http://localhost:" + pRequest.getLocalPort() + this.strEndPoint;
+         pUriReturn = UriBuilder.fromUri(strRealEndPoint).build();
+      }
+      else
+      {
+         pUriReturn = UriBuilder.fromUri(this.strEndPoint).build();
+      }
+      pLog.debug("Uri final: " + strRealEndPoint);
+      return pUriReturn;
+   }
 
-	/**
-	 * Realiza una conexión a la BBDD para obtener los datos necesarios para crear un objeto MiqQuests y darlo como
-	 * respuesta.
-	 * 
-	 * @param strPath
-	 *           String path primario para la clausula where de la consulta
-	 * @return MiqQuests con el id:miq, el component_type, el end_point y el template.
-	 * @throws Exception
-	 */
-	public static MiqQuests getMiqQuests(String strPath) throws Exception
-	{
-		MiqQuests pMiqQuests = null;
-		Connection pConnection = null;
-		PreparedStatement pPreparedStatement = null;
-		ResultSet pResultSet = null;
-		/*
-		 * en caso de contener el path la coletilla /help, se elilina para obtener el path original sobre el cual se
-		 * pregunta la ayuda
-		 */
-		strPath = strPath.replace("/help", "");
-		try
-		{
-			String strQuery = "select * from bdptb222_miq_quests where trim(path_rest) =?";
-			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-			pPreparedStatement = pConnection.prepareStatement(strQuery);
-			pPreparedStatement.setString(1, strPath);
-			pResultSet = pPreparedStatement.executeQuery();
-			while (pResultSet.next())
-			{
-				pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"));
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("error al obtener la informacion de MiqQuest con path: " + strPath, ex);
-		}
-		finally
-		{
-			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
-		}
-		return pMiqQuests;
-	}
+   /** Contructor generico */
+   public MiqQuests()
+   {
+   }
 
-	/**
-	 * Realiza una conexión a la BBDD para obtener los datos necesarios para crear un objeto MiqQuests y darlo como
-	 * respuesta.
-	 * 
-	 * @param nMiqQuestId
-	 *           identificador de la operación
-	 * @return MiqQuests con el id:miq, el component_type, el end_point y el template.
-	 * @throws Exception
-	 */
-	public static MiqQuests getMiqQuests(int nMiqQuestId) throws Exception
-	{
-		MiqQuests pMiqQuests = null;
-		Connection pConnection = null;
-		PreparedStatement pPreparedStatement = null;
-		ResultSet pResultSet = null;
-		try
-		{
-			String strQuery = "select * from bdptb222_miq_quests where id_miq = ?";
-			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-			pPreparedStatement = pConnection.prepareStatement(strQuery);
-			pPreparedStatement.setInt(1, nMiqQuestId);
-			pResultSet = pPreparedStatement.executeQuery();
-			while (pResultSet.next())
-			{
-				pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"));
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("error al obtener la informacion de MiqQuest con id: " + nMiqQuestId, ex);
-		}
-		finally
-		{
-			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
-		}
-		return pMiqQuests;
-	}
+   /**
+    * Contructor con parámetros
+    * 
+    * @param nIdMiq
+    *           Identificador de operación
+    * @param strComponentType
+    *           Tipo de componente
+    * @param strEndPoint
+    *           Dirección endPoint
+    * @param strTemplate
+    *           Plantilla asociada
+    */
+   public MiqQuests(int nIdMiq, String strPathRest, String strComponentType, String strEndPoint, String strTemplate)
+   {
+      this.nIdMiq = nIdMiq;
+      this.strPathRest = strPathRest;
+      this.strComponentType = strComponentType;
+      this.strEndPoint = strEndPoint;
+      this.strTemplate = strTemplate;
+   }
+
+   /**
+    * Funcion que carga la cache desde base de datos
+    * 
+    * @throws Exception
+    */
+   private static void loadDDBBCache() throws Exception
+   {
+      Connection pConnection = null;
+      PreparedStatement pPreparedStatement = null;
+      ResultSet pResultSet = null;
+      try
+      {
+         String strQuery = "SELECT * from bel.bdptb222_miq_quests";
+         pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
+         pPreparedStatement = pConnection.prepareStatement(strQuery);
+         pResultSet = pPreparedStatement.executeQuery();
+         while (pResultSet.next())
+         {
+            MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"));
+            if (!htCacheDataId.containsKey(pResultSet.getInt("id_miq")))
+               htCacheDataId.put(pResultSet.getInt("id_miq"), pMiqQuests);
+            if (!htCacheDataPath.containsKey(pResultSet.getString("path_rest")))
+               htCacheDataPath.put(pResultSet.getString("path_rest"), pMiqQuests);
+         }
+         pLog.debug("Se carga la cache de MiqQuest con " + getCacheSize()
+               + " elementos. (La mitad es por id y la otra mitad por Path");
+      }
+      catch (Exception ex)
+      {
+         pLog.error("Error al realizar la consulta a la BBDD.");
+      }
+      finally
+      {
+         DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
+      }
+   }
+
+   /*
+    * (non-Javadoc)
+    * @see java.lang.Object#toString()
+    */
+   public String toString()
+   {
+      StringBuilder pSb = new StringBuilder();
+      pSb.append("IdMiq         :" + nIdMiq + "\n");
+      pSb.append("PathRest :" + strPathRest + "\n");
+      pSb.append("ComponentType :" + strComponentType + "\n");
+      pSb.append("EndPoint      :" + strEndPoint + "\n");
+      pSb.append("Template      :" + strTemplate);
+      return pSb.toString();
+   }
+
+   /**
+    * Realiza una conexión a la BBDD para obtener los datos necesarios para crear un objeto MiqQuests y darlo como
+    * respuesta.
+    * 
+    * @param strPath
+    *           String path primario para la clausula where de la consulta
+    * @return MiqQuests con el id:miq, el component_type, el end_point y el template.
+    * @throws Exception
+    */
+   public static MiqQuests getMiqQuests(String strPath) throws Exception
+   {
+      MiqQuests pMiqQuests = null;
+      /* si la caché no está cargada se carga */
+      if (getCacheSize() == 0)
+         loadDDBBCache();
+      pMiqQuests = htCacheDataPath.get(strPath);
+      return pMiqQuests;
+   }
+
+   /**
+    * Realiza una conexión a la BBDD para obtener los datos necesarios para crear un objeto MiqQuests y darlo como
+    * respuesta.
+    * 
+    * @param nMiqQuestId
+    *           identificador de la operación
+    * @return MiqQuests con el id:miq, el component_type, el end_point y el template.
+    * @throws Exception
+    */
+   public static MiqQuests getMiqQuests(int nMiqQuestId) throws Exception
+   {
+      MiqQuests pMiqQuests = null;
+      /* si la caché no está cargada se carga */
+      if (getCacheSize() == 0)
+         loadDDBBCache();
+      pMiqQuests = htCacheDataId.get(nMiqQuestId);
+      return pMiqQuests;
+   }
 }
