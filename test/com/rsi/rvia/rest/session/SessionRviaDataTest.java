@@ -9,11 +9,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
-import com.rsi.BaseTest;
+import com.rsi.TestBase;
 import com.rsi.Constantes;
 import com.rsi.rvia.rest.session.SessionRviaData.CanalAix;
 
-public class SessionRviaDataTest extends BaseTest
+public class SessionRviaDataTest extends TestBase
 {
    SessionRviaData sessionRvia;
 

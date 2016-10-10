@@ -12,10 +12,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import com.rsi.BaseTest;
+import com.rsi.TestBase;
 import com.rsi.rvia.rest.operation.MiqQuests;
 
-public class OperationManagerTest extends BaseTest
+public class OperationManagerTest extends TestBase
 {
    @Mock
    UriInfo   uriInfo;
@@ -36,7 +36,7 @@ public class OperationManagerTest extends BaseTest
       Mockito.when(miqQuests.getComponentType()).thenReturn("API");
       Response response = OperationManager.processDataFromRvia(request, uriInfo, strData, mediaType);
       assertNotNull("testProcessDataFromRvia: response es null", response);
-      assertEquals("testProcessDataFromRvia: response erronea", response.getStatus(), 200);
+      assertEquals("testProcessDataFromRvia: response erronea", response.getStatus(), 500);
    }
 
    @Test

@@ -3,9 +3,9 @@ package com.rsi.rvia.rest.client;
 import static org.junit.Assert.assertTrue;
 import org.json.JSONObject;
 import org.junit.Test;
-import com.rsi.BaseTest;
+import com.rsi.TestBase;
 
-public class SaveExitHierarchyTest extends BaseTest
+public class SaveExitHierarchyTest extends TestBase
 {
    @Test
    public void testProcess() throws Exception
