@@ -59,7 +59,9 @@ public class RestWSConnector
 	public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests,
 			MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject) throws Exception
 	{
+		
 		Client pClient = RviaRestHttpClient.getClient();
+		String JWT = pRequest.getHeader("Authorization");
 		String strQueryParams = pRequest.getQueryString();
 		/* se obtienen lso header necesarios para realizar la petición al WS */
 		String strCODSecEnt = GettersRequestParams.getCODSecEnt(pRequest);
@@ -76,7 +78,7 @@ public class RestWSConnector
 		String strUrlTotal = pMiqQuests.getBaseWSEndPoint() + "?" + urlQueryString;
 		WebTarget pTarget = pClient.target(strUrlTotal);
 		pLog.info("END_POINT:" + pMiqQuests.getEndPoint());
-		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
+		Response pReturn = pTarget.request().header("Authorization",JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
 		pLog.info("GET: " + pReturn.toString());
 		return pReturn;
 	}
@@ -103,9 +105,12 @@ public class RestWSConnector
 			String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject)
 			throws Exception
 	{
+		
+		
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = RviaRestHttpClient.getClient();
 		// Headers
+		String JWT = pRequest.getHeader("Authorization");
 		String strCODSecEnt = GettersRequestParams.getCODSecEnt(pRequest);
 		String strCODSecUser = GettersRequestParams.getCODSecUser(pRequest);
 		String strCODSecTrans = GettersRequestParams.getCODSecTrans(pRequest);
@@ -143,7 +148,7 @@ public class RestWSConnector
 		pJson.put("idMiq", pMiqQuests.getIdMiq());
 		strJsonData = pJson.toString();
 		WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint());
-		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).post(Entity.json(strJsonData));
+		Response pReturn = pTarget.request().header("Authorization",JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).post(Entity.json(strJsonData));
 		pLog.info("Respose POST: " + pReturn.toString());
 		return pReturn;
 	}

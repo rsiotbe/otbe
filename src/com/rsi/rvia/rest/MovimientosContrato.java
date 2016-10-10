@@ -22,7 +22,6 @@ public class MovimientosContrato
 {
     private static Logger pLog = LoggerFactory.getLogger(MovimientosContrato.class);
 
-
     /**
      * Obtiene un agregado de movimientos por mes y signo para un acuerdo concreto, y a partir de una fecha, hasta una fecha fin
      * Adeudo y abonos históricos en acuerdos
@@ -37,12 +36,11 @@ public class MovimientosContrato
     public Response sumaMovimientosMesAcuerdoDesdeHasta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
     {    
-        Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
         pLog.info("Movimientos de un contrato");
         return pReturn;    
     }   
     
-
     /**
      * Obtiene un agregado de movimientos por mes y signo para un acuerdo concreto, y a partir de una fecha, hasta última fecha disponible
      * Adeudo y abonos históricos en acuerdos
@@ -55,12 +53,10 @@ public class MovimientosContrato
     @Produces(MediaType.APPLICATION_JSON)
     public Response sumaMovimientosMesAcuerdoDesdeHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
-    {           Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+    {           Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
         pLog.info("Movimientos de un contrato");
         return pReturn;
     }   
-    
-    
     
     /**
      * Obtiene un agregado de movimientos por mes y signo para una línea, y a partir de una fecha
@@ -75,7 +71,7 @@ public class MovimientosContrato
     public Response sumaMovimientosMesLineaDesdeHasta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
     {    
-        Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
         pLog.info("Movimientos de un contrato");
         return pReturn;
     }    
@@ -93,9 +89,60 @@ public class MovimientosContrato
     public Response sumaMovimientosMesLineaDesdeHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
     {    
-        Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
         pLog.info("Movimientos de un contrato");
         return pReturn;
     }    
+
+    /**
+     * Obtiene sumarizado de movimientos por concepto y tipo de movimiento en un mes
+     * En el documento WebService4
+     * @return Objeto que contiene la respuesta de resultado
+     * @throws Exception 
+     */
+    @GET
+    @Path("/contracts/movementsbyconcept/{idContract}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}") 
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response sumaMovimientosConceptoYTipo(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            String strData) throws Exception
+    {    
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }      
+    
+    /**
+     * Obtiene el detalle de movimientos por mes y signo para un contrato y mes.
+     * En el documento WebService3b
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception 
+     */
+    @GET
+    @Path("/contracts/detailmovements/{idContract}/type/{tipoApunte}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}") 
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesParaTipoApunte(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            String strData) throws Exception
+    {    
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    } 
+
+    /**
+     * Obtiene el detalle de movimientos por mes y signo para un contrato y mes.
+     * En el documento WebService3b
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception 
+     */
+    @GET
+    @Path("/contracts/detailmovements/{idContract}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}") 
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMes(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            String strData) throws Exception
+    {    
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }      
 }
 

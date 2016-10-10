@@ -35,7 +35,7 @@ public class Contratos
             String strData) throws Exception
     {   
         //return Response.ok("Lista de contratos").build();
-        Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
         pLog.info("Lista de contratos");
         return pReturn;     
     }   
@@ -51,7 +51,7 @@ public class Contratos
     public Response listaDeContratosPorLinea(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
     {   
-        Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);  
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);  
         pLog.info("Lista de contratos - de una línea concreta.");
         return pReturn;
     }

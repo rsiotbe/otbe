@@ -28,12 +28,11 @@ public class Login
     */
    @GET
    @Path("/login") 
-  @Produces(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
    public Response loginProcess(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
            String strData) throws Exception
    {   
-       // Invocar servicio de login    desde operation manager?
-       Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);  
+       Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);  
        pLog.info(" ---------> Login");
        return pReturn;
    }  

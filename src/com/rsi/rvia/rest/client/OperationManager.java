@@ -230,12 +230,8 @@ public class OperationManager
          {
             throw new LogicalErrorException(401, 9999, "Unauthorized", "Sesión no válida", new Exception());
          }
-         // else{
-         // Forzamos regeneración de token tras una verificación correcta.
-         // JWT = ManageJWToken.generateJWT(pParamsToInject);
-         // }
-         // pRestConnector.setParamsToInject( pParamsToInject );
          /* END: Gestión de login y token */
+         
          pResponseConnector = pRestConnector.getData(pRequest, strData, pSessionRviaData, pMiqQuests, pListParams, pParamsToInject);
          pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
          /* se procesa el resultado del conector paa evaluar y adaptar su contenido */
@@ -243,7 +239,6 @@ public class OperationManager
          pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
          /* se obtiene la plantilla destino si es que existe */
          strTemplate = pMiqQuests.getTemplate();
-         // }
       }
       catch (Exception ex)
       {
@@ -335,8 +330,8 @@ public class OperationManager
          String nTarjeta = strResponse.replaceAll("^.*<ee:numeroTarjeta>([^<]*)</ee:numeroTarjeta>.*$", "$1");
          
         fields.put("codEntidad", "3076");
-        fields.put("idInternoPe", "104955");
-        fields.put("nTarjeta", "307671667");			
+        fields.put("idInternoPe", "1834908");
+        fields.put("codTarjeta", "307671667");			
 
         // FIXME: Pendiente de cambiar en producci´on.
         //fields.put("codEntidad", codEntidad.replace(" ", ""));

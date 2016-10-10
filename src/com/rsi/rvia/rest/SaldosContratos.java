@@ -34,7 +34,7 @@ public class SaldosContratos
     public Response saldosDeUnContratoDesdeHasta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
     {   
-        Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
         pLog.info("Movimientos de un contrato");
         return pReturn; 
     }
@@ -53,7 +53,7 @@ public class SaldosContratos
     {   
         pLog.info(strData);
         //strData=strData + "&fechaFin=9999-12-31";
-        Response pReturn = OperationManager.proccesForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);      
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);      
         return pReturn; 
     }   
     
