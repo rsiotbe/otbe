@@ -19,7 +19,6 @@
 "
 %>
 <%
-
 	// Validación de forma de número de acuerdo
 	QueryCustomizer qCustomizer=new QueryCustomizer();
 	String strJsonError = "{}";
@@ -53,22 +52,22 @@
 		
 	// Query si todo en orden
 		String q =
-				" select" +
-				" 	mi_fecha_fin_mes \"finMes\"," +
-				" 	mi_sdo_ac_p \"saldoPuntual\"," +
-				" 	mi_sdo_dispble_p \"saldoDisponible\"," +
-				" 	mi_sdo_acr_p \"saldoAcreedor\"," +
-				" 	mi_sdo_deu_p \"saldoDeudor\"" +
-				" from rdwc01.mi_ac_eco_gen" +
-				" where cod_nrbe_en='" + request.getParameter("codEntidad") + "'" +
-				" and num_sec_ac =" + request.getParameter("idContract") + 
-				" and mi_fecha_fin_mes >= to_date('" + strDateIni + "','yyyy-mm-dd')" +
-				" and mi_fecha_fin_mes <= to_date('" + strDateFin + "','yyyy-mm-dd')";
+		" select" +
+		" 	mi_fecha_fin_mes \"finMes\"," +
+		" 	mi_sdo_ac_p \"saldoPuntual\"," +
+		" 	mi_sdo_dispble_p \"saldoDisponible\"," +
+		" 	mi_sdo_acr_p \"saldoAcreedor\"," +
+		" 	mi_sdo_deu_p \"saldoDeudor\"" +
+		" from rdwc01.mi_ac_eco_gen" +
+		" where cod_nrbe_en='" + request.getParameter("codEntidad") + "'" +
+		" and num_sec_ac =" + request.getParameter("idContract") + 
+		" and mi_fecha_fin_mes >= to_date('" + strDateIni + "','yyyy-mm-dd')" +
+		" and mi_fecha_fin_mes <= to_date('" + strDateFin + "','yyyy-mm-dd')";
 
 		qCustomizer.setFieldsList(request.getParameter("fieldslist"));
 		qCustomizer.setSortersList(request.getParameter("sorterslist"));
 		q = qCustomizer.getParsedQuery(q);				
-				
+		
 		Connection pConnection = null;
 		PreparedStatement pPreparedStatement = null;
 		ResultSet pResultSet = null;
@@ -85,7 +84,7 @@
 		JSONObject pJsonExit= new JSONObject();
 		Logger	pLog = LoggerFactory.getLogger("jsp");	
 		
-		JSONArray json = Utils.convertResultSet2JSON(pResultSet);
+		JSONArray json = Utils.convertResultSetToJSON(pResultSet);
 		pResultSet.close();
 		pPreparedStatement.close();
 		pConnection.close();

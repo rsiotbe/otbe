@@ -120,7 +120,7 @@ public class ServiceHelper
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
 			pPreparedStatement.setInt(1, nIdMiq);
 			pResultSet = pPreparedStatement.executeQuery();		
-			mapAr = Utils.convertResultSet2JSON(pResultSet);		
+			mapAr = Utils.convertResultSetToJSON(pResultSet);		
 		}catch(Exception ex){
 			pLog.error(strQuery);
 		}finally{
@@ -153,7 +153,7 @@ public class ServiceHelper
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
 			pPreparedStatement.setInt(1, nIdMiq);
 			pResultSet = pPreparedStatement.executeQuery();					
-			mapAr = Utils.convertResultSet2JSON(pResultSet);			
+			mapAr = Utils.convertResultSetToJSON(pResultSet);			
 		}catch(Exception ex){
 			pLog.error(strQuery);
 		}finally{
@@ -196,7 +196,7 @@ public class ServiceHelper
 			
 			
 			
-			mapAr = Utils.convertResultSet2JSON(pResultSet);	
+			mapAr = Utils.convertResultSetToJSON(pResultSet);	
 		}catch(Exception ex){
 			pLog.error(strQuery);
 			throw new LogicalErrorException(	500, 9999, "Internal server error", "Error en la configuración de parámetros de entradas", new Exception());

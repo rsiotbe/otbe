@@ -70,7 +70,7 @@ public class RestWSConnector
       String strCODCanal = GettersRequestParams.getCODCanal(pRequest);
       String strCODSecIp = GettersRequestParams.getCODSecIp(pRequest);
       String pathQueryParams = "";
-      pathQueryParams = Utils.multiValuedMap2QueryString(pPathParams) + Utils.hashMap2QueryString(pParamsToInject);
+      pathQueryParams = Utils.multiValuedMapToQueryString(pPathParams) + Utils.hashMapToQueryString(pParamsToInject);
       String urlQueryString = ((strQueryParams == null) ? "" : strQueryParams) + "&idMiq=" + pMiqQuests.getIdMiq()
             + pathQueryParams;
       String strUrlTotal = pMiqQuests.getBaseWSEndPoint(pRequest) + "?" + urlQueryString;

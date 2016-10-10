@@ -61,7 +61,7 @@
 	pPreparedStatement = pConnection.prepareStatement(strQuery);
 	pResultSet = pPreparedStatement.executeQuery();
 	
-	JSONArray json = Utils.convertResultSet2JSON(pResultSet);
+	JSONArray json = Utils.convertResultSetToJSON(pResultSet);
 	pResultSet.close();
 	pPreparedStatement.close();
 	pConnection.close();

@@ -64,7 +64,7 @@ public class Utils
 	 * @throws SQLException
 	 * @throws JSONException
 	 */
-	public static JSONArray convertResultSet2JSON(ResultSet pResultSet) throws SQLException, JSONException
+	public static JSONArray convertResultSetToJSON(ResultSet pResultSet) throws SQLException, JSONException
 	{
 		JSONArray pJson = new JSONArray();
 		ResultSetMetaData rsmd = pResultSet.getMetaData();
@@ -144,7 +144,7 @@ public class Utils
 	 *           UriInfo con la información de path
 	 * @return MultivaluedMap con el key y el valor de cada elemento del path dinámico
 	 */
-	public static MultivaluedMap<String, String> getParam4Path(UriInfo pUriInfo)
+	public static MultivaluedMap<String, String> getParamByPath(UriInfo pUriInfo)
 	{
 		MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
 		return pListParameters;
@@ -157,7 +157,7 @@ public class Utils
 	 *           MultivaluedMap a convertir
 	 * @return String en formato queryString del tipo "&key=value"
 	 */
-	public static String multiValuedMap2QueryString(MultivaluedMap<String, String> pMap)
+	public static String multiValuedMapToQueryString(MultivaluedMap<String, String> pMap)
 	{
 		String strReturn = "";
 		Iterator<String> pIterator = pMap.keySet().iterator();
@@ -172,7 +172,7 @@ public class Utils
 		return strReturn;
 	}
 
-	public static String hashMap2QueryString(HashMap<String, String> pMap)
+	public static String hashMapToQueryString(HashMap<String, String> pMap)
 	{
 		String strReturn = "";
 		if (pMap != null)
@@ -242,7 +242,7 @@ public class Utils
 	 * @return String json que contiene los valores del hashtable.
 	 * @throws JSONException
 	 */
-	public static String hashTable2Json(Hashtable<String, String> htData) throws JSONException
+	public static String hashTableToJson(Hashtable<String, String> htData) throws JSONException
 	{
 		String strReturn = "{}";
 		JSONObject pJson = new JSONObject();

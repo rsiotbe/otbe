@@ -17,22 +17,22 @@
 	int contrato = Integer.parseInt(request.getParameter("idContract"));
 	String entidad = request.getParameter("codEntidad");
 	String q =
-			" select /*+ FULL(e) */" +
-			" NUM_SEC_AC," +
-			" FECHA_OPRCN," +
-			" HORA_OPRCN_U," +
-			" IMPTRN," +
-			" CODRESPU," +
-			" NOMCOMRED," +
-			" CLAMONTRN," +
-			" CENTAUT," +
-			" LOCALIDAD2" +
-			" from rdwc01.MI_MPA2_OPERAC_TARJETAS e" +
-			" WHERE COD_NRBE_EN = '3076'" +
-			" and MI_FECHA_FIN = to_date('9999.12.31', 'YYYY.MM.DD')" +
-			" and FECHA_OPRCN >= to_date('01.01.2016','dd.mm.yyyy')" +
-			" AND NUM_SEC_AC=2092922182;" ;			
-			
+	" select /*+ FULL(e) */" +
+	" NUM_SEC_AC," +
+	" FECHA_OPRCN," +
+	" HORA_OPRCN_U," +
+	" IMPTRN," +
+	" CODRESPU," +
+	" NOMCOMRED," +
+	" CLAMONTRN," +
+	" CENTAUT," +
+	" LOCALIDAD2" +
+	" from rdwc01.MI_MPA2_OPERAC_TARJETAS e" +
+	" WHERE COD_NRBE_EN = '3076'" +
+	" and MI_FECHA_FIN = to_date('9999.12.31', 'YYYY.MM.DD')" +
+	" and FECHA_OPRCN >= to_date('01.01.2016','dd.mm.yyyy')" +
+	" AND NUM_SEC_AC=2092922182;" ;			
+	
 
 	Connection pConnection = null;
 	PreparedStatement pPreparedStatement = null;
@@ -47,7 +47,7 @@
 	//jsonExit.put("token", "sitio para el token");
 	Logger	pLog = LoggerFactory.getLogger("jsp");	
 	
-	JSONArray json = Utils.convertResultSet2JSON(pResultSet);
+	JSONArray json = Utils.convertResultSetToJSON(pResultSet);
 	pResultSet.close();
 	pPreparedStatement.close();
 	pConnection.close();

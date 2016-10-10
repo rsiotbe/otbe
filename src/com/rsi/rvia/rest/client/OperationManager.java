@@ -201,7 +201,7 @@ public class OperationManager
 			}
 			
          pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
-         MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
+         MultivaluedMap<String, String> pListParams = Utils.getParamByPath(pUriInfo);
          // Se instancia el conector y se solicitan los datos.
          pRestConnector = new RestConnector();
          // BEGIN: Gestión de login y token.
@@ -570,7 +570,7 @@ public class OperationManager
    {
       RestConnector pRestConnector = null;
       Response pResponseConnector = null;
-      MultivaluedMap<String, String> pListParams = Utils.getParam4Path(pUriInfo);
+      MultivaluedMap<String, String> pListParams = Utils.getParamByPath(pUriInfo);
       // Se instancia el conector y se solicitan los datos.
       pRestConnector = new RestConnector();
       pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pSessionRviaData, pMiqQuests, pListParams, null);
