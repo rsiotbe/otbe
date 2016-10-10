@@ -29,19 +29,29 @@ public class SimulatorsManager
 	 * @return Datos de la configuración
 	 * @throws Exception
 	 */
-	public static SimulatorObjectArray getSimulatorsFromDDBB(String strNRBE, String strEntityName,
-			String strSimulatorName) throws Exception
+	public static SimulatorObjectArray getSimulatorsData(String strNRBE, String strEntityName, String strSimulatorName)
+			throws Exception
 	{
 		SimulatorObjectArray alReturn = new SimulatorObjectArray();
 		Connection pConnection = null;
 		PreparedStatement pPreparedStatement = null;
 		ResultSet pResultSet = null;
+		String strQuery;
 		try
 		{
-			String strQuery = "select * from BDPTB235_SIMULADORES s, BDPTB236_PARAM_SIMULADORES p where s.entidad = ? and s.activo = '1' and s.id_simulador=p.id_simulador order by s.id_simulador";
+			strQuery = "select * from BDPTB235_SIMULADORES s, BDPTB236_PARAM_SIMULADORES p where s.entidad = ? and s.activo = '1' and s.id_simulador=p.id_simulador ";
+			if (strSimulatorName != null && !strSimulatorName.trim().isEmpty() && !"null".equals(strSimulatorName.trim()))
+			{
+				strQuery += "and NOMBRE_COMERCIAL = ? ";
+			}
+			strQuery += "order by s.ID_SIMULADOR";
 			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
 			pPreparedStatement.setString(1, strNRBE);
+			if (strSimulatorName != null && !strSimulatorName.trim().isEmpty() && !"null".equals(strSimulatorName.trim()))
+			{
+				pPreparedStatement.setString(2, strSimulatorName);
+			}
 			pResultSet = pPreparedStatement.executeQuery();
 			/* Recupera los parametros de configuración */
 			int nSimulatorIdRef = -1;
@@ -63,9 +73,9 @@ public class SimulatorsManager
 						alReturn.addSimulator(pSimulatorObject);
 					}
 					/* se crea el nuevo sinulador y posteriormente se añaden sus campos */
-					pSimulatorObject = new SimulatorObject(nSimulatorId, pResultSet.getString("ENTIDAD"), strEntityName, pResultSet.getString("CATEGORIA"), pResultSet.getString("NOMBRE_COMERCIAL"), pResultSet.getString("TIPO_CALCULO"), pResultSet.getBoolean("ACTIVO"), pResultSet.getBoolean("CONTRATAR"), pResultSet.getBoolean("CONTACTO_EMAIL"), pResultSet.getBoolean("CONTACTO_TELEF"));
+					pSimulatorObject = new SimulatorObject(nSimulatorId, pResultSet.getString("ENTIDAD"), strEntityName, pResultSet.getString("CATEGORIA"), pResultSet.getString("NOMBRE_COMERCIAL"), pResultSet.getString("TIPO_CALCULO"), pResultSet.getBoolean("ACTIVO"), pResultSet.getBoolean("CONTRATAR"), pResultSet.getBoolean("CONTACTO_EMAIL"), pResultSet.getBoolean("CONTACTO_TELEF"), pResultSet.getString("ENTIDAD_EMAIL"), pResultSet.getString("ENTIDAD_TELEF"));
 				}
-				pSimulatorObject.pConfigParams.put(pResultSet.getString("CLAVE"), pResultSet.getString("VALOR"));
+				pSimulatorObject.addConfigParam(pResultSet.getString("CLAVE"), pResultSet.getString("VALOR"));
 			}
 			/* se añade el último elemento si existe al menos uno */
 			if (pSimulatorObject != null)
