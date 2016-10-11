@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.session.RequestConfigRvia;
 
 /**
  * Clase que gestiona el interrogatoria a ruralvia para conocer los datos de la operativa y los valores que el usuario
@@ -39,20 +39,21 @@ public class InterrogateRvia
 	 */
 	public static Document getXmlDatAndUserInfo(HttpServletRequest pRequest, String strClavepagina) throws Exception
 	{
-		return getXmlDatAndUserInfo(new SessionRviaData(pRequest), strClavepagina);
+		return getXmlDatAndUserInfo(new RequestConfigRvia(pRequest), strClavepagina);
 	}
 
 	/**
 	 * Obtiene un documento de tipo XML con la información, es simmilar al fichero xml.dat de la operativa
 	 * 
-	 * @param pSessionRviaData
+	 * @param pRequestConfigRvia
 	 *           Objeto que contiene la información extraida de la sesión de ruralvia
 	 * @param strClavepagina
 	 *           Clave pagina de la operativa a preguntar
 	 * @return Documento Xml que contiene toda la info
 	 * @throws Exception
 	 */
-	public static Document getXmlDatAndUserInfo(SessionRviaData pSessionRviaData, String strClavepagina) throws Exception
+	public static Document getXmlDatAndUserInfo(RequestConfigRvia pRequestConfigRvia, String strClavepagina)
+			throws Exception
 	{
 		String strURL;
 		Client pClient;
@@ -66,13 +67,13 @@ public class InterrogateRvia
 		try
 		{
 			/* se compone la url a invocar, para ello se accede a la inforamción de la sesión */
-			strURL = pSessionRviaData.getUriRvia() + URI_INTERROGATE_SERVICE + strClavepagina;
+			strURL = pRequestConfigRvia.getUriRvia() + URI_INTERROGATE_SERVICE + strClavepagina;
 			pLog.info("se compone la URL para interrogar a RVIA. URL: " + strURL);
 			/* se utiliza el objeto cliente de peticiones http de Jersey */
 			pClient = ClientBuilder.newClient(new ClientConfig());
 			pWebTarget = pClient.target(strURL);
 			/* se añade la cookie recuperada de la sesión para poder obtener los datos del usuario */
-			pCookieRvia = new Cookie("RVIASESION", pSessionRviaData.getRviaSessionId());
+			pCookieRvia = new Cookie("RVIASESION", pRequestConfigRvia.getRviaSessionId());
 			pLog.debug("se procede a invocar a la url con los datos de sesión");
 			pResponseService = pWebTarget.request().cookie(pCookieRvia).get();
 			pLog.debug("El servidor ha respondido");
@@ -123,7 +124,7 @@ public class InterrogateRvia
 	 *           Datos de petición recibida desde ruralvia de Ruralvia
 	 * @return Hastable con los parámetros leidos desde ruralvia
 	 */
-	public static Hashtable<String, String> getParameterFromSession(String strParameters, SessionRviaData pSessionRvia)
+	public static Hashtable<String, String> getParameterFromSession(String strParameters, RequestConfigRvia pSessionRvia)
 	{
 		String strSesId;
 		String strHost;

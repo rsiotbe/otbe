@@ -10,8 +10,9 @@ import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.rsi.rvia.multibank.CssMultiBankProcessor;
-import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.multibank.CssMultiBankProcessor;
+import com.rsi.rvia.rest.session.RequestConfig;
+import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.tool.Utils;
 import com.rsi.rvia.translates.TranslateProcessor;
 
@@ -73,13 +74,14 @@ public class TemplateManager
 	 * para multicanalidad
 	 * 
 	 * @param strPathToTemplate
-	 * @param pSessionRviaData
+	 * @param pRequestConfigRvia
 	 * @return
 	 * @throws Exception
 	 */
-	public static String processTemplate(String strPathToTemplate, SessionRviaData pSessionRviaData) throws Exception
+	public static String processTemplate(String strPathToTemplate, RequestConfigRvia pRequestConfigRvia)
+			throws Exception
 	{
-		return processTemplate(strPathToTemplate, pSessionRviaData, "{}");
+		return processTemplate(strPathToTemplate, pRequestConfigRvia, "{}");
 	}
 
 	/**
@@ -88,14 +90,14 @@ public class TemplateManager
 	 * 
 	 * @param strPathToTemplate
 	 *           Ruta del template
-	 * @param pSessionRviaData
+	 * @param pRequestConfig
 	 *           Objeto datos de sesion ruralvia
 	 * @param strDataJson
 	 *           Datos en formato JSON.
 	 * @return Template procesado.
 	 * @throws Exception
 	 */
-	public static String processTemplate(String strPathToTemplate, SessionRviaData pSessionRviaData, String strDataJson)
+	public static String processTemplate(String strPathToTemplate, RequestConfig pRequestConfig, String strDataJson)
 			throws Exception
 	{
 		String strReturn;
@@ -103,10 +105,13 @@ public class TemplateManager
 		try
 		{
 			String strCacheKey = strPathToTemplate;
-			/* en función del canalAix de la petición se obtiene la plantilla adecuada */
-			strPathToTemplate = adjustTemplateNameByChannel(strPathToTemplate, pSessionRviaData);
-			if (pSessionRviaData != null)
-				strCacheKey = strPathToTemplate + "_" + pSessionRviaData.getLanguage();
+			/* si se rtata de una petición codatos de ruralvia se itneta recupera la información */
+			if (RequestConfigRvia.class.isAssignableFrom(pRequestConfig.getClass()))
+			{
+				/* en función del canalAix de la petición se obtiene la plantilla adecuada */
+				strPathToTemplate = adjustTemplateNameByChannel(strPathToTemplate, (RequestConfigRvia) pRequestConfig);
+			}
+			strCacheKey = strPathToTemplate + "_" + pRequestConfig.getLanguage();
 			pLog.debug("strCacheKey:" + strCacheKey);
 			if (htCacheTemplate.containsKey(strCacheKey))
 			{
@@ -118,13 +123,13 @@ public class TemplateManager
 			{
 				pLog.info("Template NO cacheado, se procede a leerlo, tratarlo y cachearlo");
 				pDocument = readTemplate(strPathToTemplate);
-				pDocument = translateXhtml(pDocument, pSessionRviaData);
+				pDocument = translateXhtml(pDocument, pRequestConfig);
 				htCacheTemplate.put(strCacheKey, pDocument);
 				pDocument = Jsoup.parse(pDocument.toString(), "", Parser.htmlParser());
 			}
 			pDocument = includeIframeScript(pDocument);
 			pDocument = includeUpdateRviaScript(pDocument);
-			pDocument = adjustCssMultiBank(pDocument, pSessionRviaData);
+			pDocument = adjustCssMultiBank(pDocument, pRequestConfig);
 			pDocument.outputSettings().escapeMode(EscapeMode.base);
 			strReturn = pDocument.html();
 			strReturn = includeJsonData(strReturn, strDataJson);
@@ -207,13 +212,13 @@ public class TemplateManager
 	 * 
 	 * @param pDocument
 	 *           Documento html en jsoup
-	 * @param pSessionRviaData
+	 * @param pRequestConfig
 	 *           Datos de sesión de ruralvia para el usuario
 	 * @return Documento HTML con las traducciones
 	 */
-	private static Document translateXhtml(Document pDocument, SessionRviaData pSessionRviaData)
+	private static Document translateXhtml(Document pDocument, RequestConfig pRequestConfig)
 	{
-		return TranslateProcessor.processXHTML(pDocument, pSessionRviaData);
+		return TranslateProcessor.processXHTML(pDocument, pRequestConfig);
 	}
 
 	/**
@@ -238,14 +243,14 @@ public class TemplateManager
 	 * 
 	 * @param pDocument
 	 *           Documento html en jsoup
-	 * @param pSessionRviaData
+	 * @param pRequestConfig
 	 *           Datos de sesión de ruralvia para el usuario
 	 * @return
 	 * @throws Exception
 	 */
-	private static Document adjustCssMultiBank(Document pDocument, SessionRviaData pSessionRviaData) throws Exception
+	private static Document adjustCssMultiBank(Document pDocument, RequestConfig pRequestConfig) throws Exception
 	{
-		return CssMultiBankProcessor.processXHTML(pDocument, pSessionRviaData);
+		return CssMultiBankProcessor.processXHTML(pDocument, pRequestConfig);
 	}
 
 	/**
@@ -253,45 +258,41 @@ public class TemplateManager
 	 * 
 	 * @param strPathToTemplate
 	 *           Nombre de la plantilla
-	 * @param pSessionRviaData
+	 * @param pRequestConfigRvia
 	 *           Datos de sesión de ruralvia para el usuario
 	 * @return
 	 * @throws Exception
 	 */
-	private static String adjustTemplateNameByChannel(String strPathToTemplate, SessionRviaData pSessionRviaData)
+	private static String adjustTemplateNameByChannel(String strPathToTemplate, RequestConfigRvia pRequestConfigRvia)
 	{
 		String strReturn = null;
 		strReturn = strPathToTemplate;
-		if (pSessionRviaData != null)
+		switch (pRequestConfigRvia.getCanalAix())
 		{
-			switch (pSessionRviaData.getCanalAix())
-			{
-				case BANCA_MOVIL:
-				case BANCA_TABLET:
-				case BANCA_TABLET_CAU:
-					int nLastDot = strPathToTemplate.lastIndexOf('.');
-					if (nLastDot != -1)
-						strReturn = strPathToTemplate.substring(0, nLastDot) + "_movil"
-								+ strPathToTemplate.substring(nLastDot);
-					else
-						strReturn = strPathToTemplate + "_movil";
-					break;
-				case VALORES_BANCA_INTERNET:
-				case VALORES_BANCA_TELEFONICA:
-				case BANCA_INTERNET:
-				case BANCA_TELEFONICA:
-				case ABOGADOS:
-				case ABOGADOS_TELEFONICA:
-				case OFICINA:
-				case SEGUROS:
-				case TPV_VIRTUAL:
-				case TPV_VIRTUAL_TELEFONICA:
-				default:
-					break;
-			}
-			pLog.debug("Se cambia si es necesario el nombre del template según el canal. CanalAix:"
-					+ pSessionRviaData.getCanalAix().name() + " - CAMBIO: " + strPathToTemplate + " -> " + strReturn);
+			case BANCA_MOVIL:
+			case BANCA_TABLET:
+			case BANCA_TABLET_CAU:
+				int nLastDot = strPathToTemplate.lastIndexOf('.');
+				if (nLastDot != -1)
+					strReturn = strPathToTemplate.substring(0, nLastDot) + "_movil" + strPathToTemplate.substring(nLastDot);
+				else
+					strReturn = strPathToTemplate + "_movil";
+				break;
+			case VALORES_BANCA_INTERNET:
+			case VALORES_BANCA_TELEFONICA:
+			case BANCA_INTERNET:
+			case BANCA_TELEFONICA:
+			case ABOGADOS:
+			case ABOGADOS_TELEFONICA:
+			case OFICINA:
+			case SEGUROS:
+			case TPV_VIRTUAL:
+			case TPV_VIRTUAL_TELEFONICA:
+			default:
+				break;
 		}
+		pLog.debug("Se cambia si es necesario el nombre del template según el canal. CanalAix:"
+				+ pRequestConfigRvia.getCanalAix().name() + " - CAMBIO: " + strPathToTemplate + " -> " + strReturn);
 		return strReturn;
 	}
 }

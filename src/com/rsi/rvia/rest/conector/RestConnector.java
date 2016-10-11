@@ -7,7 +7,8 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.operation.MiqQuests;
-import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.session.RequestConfig;
+import com.rsi.rvia.rest.session.RequestConfigRvia;
 
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
 public class RestConnector
@@ -32,7 +33,7 @@ public class RestConnector
 	 *           petición del cliente
 	 * @param strData
 	 *           datos a enviar al proveedor
-	 * @param pSessionRvia
+	 * @param pRequestConfig
 	 *           datos de la petición recibida desde ruralvia
 	 * @param strPrimaryPath
 	 *           path original de la petición
@@ -41,7 +42,7 @@ public class RestConnector
 	 * @return Respuesta del proveedor de datos
 	 * @throws Exception
 	 */
-	public Response getData(HttpServletRequest pRequest, String strData, SessionRviaData pSessionRvia,
+	public Response getData(HttpServletRequest pRequest, String strData, RequestConfig pRequestConfig,
 			MiqQuests pMiqQuests, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject)
 			throws Exception
 	{
@@ -56,20 +57,21 @@ public class RestConnector
 		switch (strComponentType)
 		{
 			case "RVIA":
-				pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, pSessionRvia, strData);
+				pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, (RequestConfigRvia) pRequestConfig, strData);
 				break;
 			case "WS":
 			case "API":
+			case "SIMULATOR":
 				switch (strMethod)
 				{
 					case "GET":
-						pReturn = RestWSConnector.get(pRequest, pMiqQuests, pPathParams, pParamsToInject);
+						pReturn = RestWSConnector.get(pRequest, pMiqQuests, strData, pPathParams, pParamsToInject);
 						break;
 					case "POST":
-						pReturn = RestWSConnector.post(pRequest, pMiqQuests, pSessionRvia, strData, pPathParams, pParamsToInject);
+						pReturn = RestWSConnector.post(pRequest, pMiqQuests, pRequestConfig, strData, pPathParams, pParamsToInject);
 						break;
 					case "PUT":
-						pReturn = RestWSConnector.put(pRequest, pMiqQuests, pSessionRvia, strData, pPathParams, pParamsToInject);
+						pReturn = RestWSConnector.put(pRequest, pMiqQuests, pRequestConfig, strData, pPathParams, pParamsToInject);
 						break;
 					case "PATCH":
 						pLog.warn("No existe ninguna acción para este método");

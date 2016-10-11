@@ -7,12 +7,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import com.rsi.TestBase;
 import com.rsi.rvia.rest.error.exceptions.ISUMException;
-import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.session.RequestConfigRvia;
 
 public class IsumValidationTest extends TestBase
 {
    @Mock
-   SessionRviaData session;
+	RequestConfigRvia		session;
 
    @Test
    public void testIsValidServiceOk() throws Exception

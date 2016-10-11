@@ -49,7 +49,7 @@ public class TranslateService extends HttpServlet
 		htTranslates = TranslateProcessor.processIds(astrIds, strlanguage);
 		try
 		{
-			strJSONReturn = Utils.hashTable2Json(htTranslates);
+			strJSONReturn = Utils.hashTableToJson(htTranslates);
 		}
 		catch (JSONException e)
 		{

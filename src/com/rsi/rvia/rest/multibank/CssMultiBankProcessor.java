@@ -1,4 +1,4 @@
-package com.rsi.rvia.multibank;
+package com.rsi.rvia.rest.multibank;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.rsi.Constantes;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
-import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.tool.Utils;
 
 /** Clase que gestiona el los CSS de multientidad para adaptar el estilo de la web. */
@@ -129,29 +129,17 @@ public class CssMultiBankProcessor
     * 
     * @param pDocument
     *           Documento html en jsoup
-    * @param pSessionRviaData
+	 * @param pRequestConfig
     *           Datos de sesión de ruralvia para el usuario
     * @return String con el HTML con los reemplazos de css ya realizados.
     * @throws Exception
     */
-   public static Document processXHTML(Document pDocument, SessionRviaData pSessionRviaData) throws Exception
+	public static Document processXHTML(Document pDocument, RequestConfig pRequestConfig) throws Exception
    {
-      String strNRBE;
-      if (pSessionRviaData == null)
       {
-         pLog.warn("Los datos de sesión de ruralvia están vacios, se escoge la entidad del cooperativo por defecto");
-         strNRBE = Constantes.CODIGO_BANCO_COOPERATIVO_ESPANOL;
       }
-      else
-      {
-         strNRBE = pSessionRviaData.getNRBE();
-      }
-      pLog.debug("String XHTML parseado a Documento correctamente.");
-      if (pDocument != null)
-      {
-         pLog.debug("Se procede a modificar los enlaces css si es necesario");
-         pDocument = adjustCSSLink(pDocument, strNRBE);
-      }
+		pLog.debug("Se procede a modificar los enlaces css si es necesario");
+		pDocument = adjustCSSLink(pDocument, pRequestConfig.getNRBE());
       return pDocument;
    }
 
