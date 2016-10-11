@@ -157,7 +157,7 @@ public class Utils
 	 *           MultivaluedMap a convertir
 	 * @return String en formato queryString del tipo "&key=value"
 	 */
-	public static String multiValuedMap2QueryString(MultivaluedMap<String, String> pMap)
+	public static String multiValuedMapToQueryString(MultivaluedMap<String, String> pMap)
 	{
 		String strReturn = "";
 		Iterator<String> pIterator = pMap.keySet().iterator();
