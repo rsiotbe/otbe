@@ -24,6 +24,8 @@
 	<property name="reports-directory" value="${base-directory}/reports" />
 	<property name="tomcat-directory" value="${tomcat.lib}" />
 	
+	
+		
 	<target name="clean">
 		<echo message="Se procede a eliminar las rutas build, dist, reports y configuración auxiliar" />
     	<delete dir="${build-directory}"/>

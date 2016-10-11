@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+<%@page
+	import="com.rsi.rvia.rest.template.TemplateManager
+	,com.rsi.rvia.translates.TranslateProcessor
+	,java.util.Hashtable
+	,java.util.Enumeration
+	,com.rsi.rvia.rest.multibank.CssMultiBankProcessor"%>
+=======
 <%@page import="com.rsi.rvia.rest.operation.MiqQuests"%>
 <%@page import="com.rsi.rvia.rest.template.TemplateManager"%>
 <%@page import="com.rsi.rvia.translates.TranslateProcessor"%>
@@ -5,9 +13,10 @@
 <%@page import="java.util.Enumeration"%>
 <%@page import="org.slf4j.Logger"%>
 <%@page import="org.slf4j.LoggerFactory"%>
-<%@page import="com.rsi.rvia.rest.multibank.CssMultiBankProcessor"%>
+<%@page import="com.rsi.rvia.multibank.CssMultiBankProcessor"%>
 <%@page import="java.lang.reflect.*"%>
 
+>>>>>>> master
 <%@ page language="java" contentType="text/html"
 	pageEncoding="UTF-8"%>
 
@@ -15,6 +24,39 @@
 	Logger pLog = LoggerFactory.getLogger("cacheManager.jsp");
 	Hashtable<String,Object> htCaches = new Hashtable<String,Object>();
 	/* Se añaden las caches */
+<<<<<<< HEAD
+	htCaches.put("Plantillas HTML", (String) String.valueOf(TemplateManager.getSizeCache()));
+	htCaches.put("Traducciones", (String) String.valueOf(TranslateProcessor.getSizeCache()));
+	htCaches.put("CSS Multientidad", (String) String.valueOf(CssMultiBankProcessor.getSizeCache()));
+	
+	boolean fFirst = false;
+	String strTable = "";
+	String strJson = "{\"caches\":[";
+	
+	/* Se generan las tablas HTML y el Json para el Javascript */
+	for (Enumeration<String> e = htCaches.keys(); e.hasMoreElements(); ) 
+	{ 
+		
+		String strKey = (String) e.nextElement();
+		String strBaseName = strKey.trim().replace(" ", "");
+		strTable += "<tr class=\"lineaGris centered\">\n" +
+					"<td>" + strKey + "</td>\n" +
+					"<td class=\"cacheSize\" id=\"cache" + strBaseName + "\">" + htCaches.get(strKey) + "<button></td>\n" +
+					"<td><input id=\"check" + strBaseName + "\" class=\"largeCheckBox\" type=\"checkbox\"></td>\n" +
+					"</tr>";
+		if(fFirst){
+			strJson += ",";
+		}
+		strJson += "{" +
+					"\"cacheName\":\"" + strKey + "\"," +
+					"\"idSize\":\"cache" + strBaseName + "\"," +
+					"\"idCheck\":\"check" + strBaseName + "\"" +
+					"}";
+		fFirst = true;
+	}
+		strJson += "]}";
+	
+=======
 	htCaches.put("MiqQuests", MiqQuests.class);
 	htCaches.put("Plantillas_HTML", TemplateManager.class);
 	htCaches.put("Traducciones", TranslateProcessor.class);
@@ -42,6 +84,7 @@
 		   	}
 		}
 	}	
+>>>>>>> master
 %>
 <!DOCTYPE html>
 <html>
@@ -743,6 +786,31 @@ for (Enumeration<String> e = htCaches.keys(); e.hasMoreElements(); )
 
 	<script type="text/javascript">
 		
+<<<<<<< HEAD
+		function refreshData(pJsonResponse) {
+			/* Se actualizan los valores conforme a la respuesta de la petición ajax */
+			for (item in  listCaches) {
+				console.log("Item: " + item + ", listCaches[item].idSize: " + listCaches[item].idSize);
+				for(cache in pJsonResponse.caches){
+					if(listCaches[item].cacheName === pJsonResponse.caches[cache].cacheName){
+						document.getElementById(listCaches[item].idSize).innerHTML = pJsonResponse.caches[cache].size;
+					}
+				}
+			}
+			
+		}
+		
+		function freeCache() {
+			var strParams = '';
+			
+			
+			var dataGet = {};		
+			for (item in  listCaches) {					
+				if(document.getElementById(listCaches[item].idCheck).checked){
+					document.getElementById(listCaches[item].idSize).innerHTML = pLoading;
+					strParams += listCaches[item].cacheName + ";";
+				}
+=======
 		function freeCache() 
 		{
 			var targets ="";
@@ -762,6 +830,7 @@ for (Enumeration<String> e = htCaches.keys(); e.hasMoreElements(); )
 			{
 				targets = targets.substring(0, targets.length - 1);
 				location.href = '/api/tool/cacheManager.jsp?clean=' + targets;
+>>>>>>> master
 			}
 		}
 		
