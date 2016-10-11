@@ -10,9 +10,9 @@ import com.rsi.Constantes;
 import com.rsi.rvia.rest.error.exceptions.SessionException;
 import com.rsi.rvia.rest.tool.RviaConnectCipher;
 
-public class SessionRviaData
+public class RequestConfigRvia extends RequestConfig
 {
-   private static Logger     pLog               = LoggerFactory.getLogger(SessionRviaData.class);
+	private static Logger		pLog						= LoggerFactory.getLogger(RequestConfigRvia.class);
    private String            strNodeRvia;
    private Cookie[]          pCookiesRviaData;
    private static Properties pAddressRviaProp   = new Properties();
@@ -20,8 +20,6 @@ public class SessionRviaData
    private String            strRviaSessionId   = "";
    private String            strIsumUserProfile = "";
    private String            strIsumServiceId   = "";
-   private String            strLanguage        = "";
-   private String            strNRBE            = "";
    private String            strToken           = "";
    private CanalAix          pCanalAix          = CanalAix.BANCA_INTERNET;
 
@@ -54,10 +52,10 @@ public class SessionRviaData
     */
    public enum CanalAix
    {
-      VALORES_BANCA_INTERNET(1), VALORES_BANCA_TELEFONICA(2), BANCA_INTERNET(3), BANCA_TELEFONICA(4), ABOGADOS(
-            5), ABOGADOS_TELEFONICA(6), TPV_VIRTUAL(7), SEGUROS(
-                  8), OFICINA(9), TPV_VIRTUAL_TELEFONICA(10), BANCA_MOVIL(11), BANCA_TABLET(13), BANCA_TABLET_CAU(14);
-      private final int value;
+		VALORES_BANCA_INTERNET(1), VALORES_BANCA_TELEFONICA(2), BANCA_INTERNET(3), BANCA_TELEFONICA(4), ABOGADOS(5), ABOGADOS_TELEFONICA(
+				6), TPV_VIRTUAL(7), SEGUROS(8), OFICINA(9), TPV_VIRTUAL_TELEFONICA(10), BANCA_MOVIL(11), BANCA_TABLET(13), BANCA_TABLET_CAU(
+				14);
+		private final int	value;
 
       CanalAix(int newValue)
       {
@@ -100,16 +98,6 @@ public class SessionRviaData
       return strIsumServiceId;
    }
 
-   public String getLanguage()
-   {
-      return strLanguage;
-   }
-
-   public String getNRBE()
-   {
-      return strNRBE;
-   }
-
    public CanalAix getCanalAix()
    {
       return pCanalAix;
@@ -121,42 +109,15 @@ public class SessionRviaData
    }
 
    /**
-    * Constructor para páginas públicas
-    * 
-    * @param strLang
-    *           String con el lenguaje, por defecto si viene vacio o a null se pondra al idioma por defecto, es_ES
-    * @param strNRBE
-    *           String con el NRBE, por defecto si viene vacio o a null se pondre el de el Banco Cooperativo Español
-    */
-   public SessionRviaData(String strLang, String strNRBE)
-   {
-      if (strLang == null || strLang.trim().isEmpty())
-      {
-         this.strLanguage = Constantes.DEFAULT_LANGUAGE;
-      }
-      else
-      {
-         this.strLanguage = strLang;
-      }
-      if (strNRBE == null || strNRBE.trim().isEmpty())
-      {
-         this.strNRBE = Constantes.CODIGO_BANCO_COOPERATIVO_ESPANOL;
-      }
-      else
-      {
-         this.strNRBE = strNRBE;
-      }
-   }
-
-   /**
     * Constructor de la clase
     * 
     * @param request
     *           Objeto request recibido
     * @throws Exception
     */
-   public SessionRviaData(HttpServletRequest request) throws Exception
+	public RequestConfigRvia(HttpServletRequest request) throws Exception
    {
+		super(request);
       try
       {
          String[] strParameters;
@@ -306,7 +267,7 @@ public class SessionRviaData
 
    /*
     * (non-Javadoc)
-    * @see java.lang.Object#toString()
+	 * @see com.rsi.rvia.rest.session.RequestConfig#toString()
     */
    public String toString()
    {
