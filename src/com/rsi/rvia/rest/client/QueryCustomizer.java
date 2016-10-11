@@ -53,7 +53,7 @@ public class QueryCustomizer
 	   pResultSet = pPreparedStatement.executeQuery();
 	   JSONObject pJson = new JSONObject();
 	   JSONObject pJsonExit= new JSONObject();
-	   JSONArray json = Utils.convertResultSet2JSON(pResultSet);
+	   JSONArray json = Utils.convertResultSetToJSON(pResultSet);
 	   pResultSet.close();
 	   pPreparedStatement.close();
 	   pConnection.close();

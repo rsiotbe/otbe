@@ -128,10 +128,12 @@ public class RestWSConnector
     * @return Respuesta del proveedor de datos
     * @throws Exception
     */
+		/*
    public static Response post(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests, SessionRviaData pSessionRvia,
          String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject)
          throws Exception
    {
+   */
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = RviaRestHttpClient.getClient();
 		// Headers
