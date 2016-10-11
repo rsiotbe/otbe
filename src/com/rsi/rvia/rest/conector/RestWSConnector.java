@@ -58,8 +58,10 @@ public class RestWSConnector
 	public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests, String strJsonData,
 			MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject) throws Exception
 	{
+		
 		Client pClient = RviaRestHttpClient.getClient();
 		String strQueryParams = ((pRequest.getQueryString() == null) ? "" : pRequest.getQueryString());
+		String JWT = pRequest.getHeader("Authorization");
 		/* se obtienen lso header necesarios para realizar la petición al WS */
 		String strCODSecEnt = GettersRequestParams.getCODSecEnt(pRequest);
 		String strCODSecUser = GettersRequestParams.getCODSecUser(pRequest);
@@ -83,7 +85,7 @@ public class RestWSConnector
 		String strUrlTotal = pMiqQuests.getBaseWSEndPoint(pRequest) + "?" + urlQueryString;
 		WebTarget pTarget = pClient.target(strUrlTotal);
 		pLog.info("END_POINT:" + pMiqQuests.getEndPoint());
-		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
+		Response pReturn = pTarget.request().header("Authorization",JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
 		pLog.info("GET: " + pReturn.toString());
 		return pReturn;
 	}
@@ -108,9 +110,32 @@ public class RestWSConnector
 			RequestConfig pRequestConfig, String strJsonData, MultivaluedMap<String, String> pPathParams,
 			HashMap<String, String> pParamsToInject) throws Exception
 	{
+   /**
+    * Realiza una petición de tipo post restFull al proveedor de datos (Ruralvia o WS dependiendo de la configuración)
+    * 
+    * @param pRequest
+    *           petición del cliente
+    * @param strPathRest
+    *           path de la petición
+    * @param pSessionRvia
+    *           Datos de la petición recibida desde ruralvia
+    * @param strJsonData
+    *           Datos a enviar
+    * @param pMiqQuests
+    *           Objeto MiqQuests con la información de la operativa
+    * @param pPathParams
+    *           Parámetros asociados al path
+    * @return Respuesta del proveedor de datos
+    * @throws Exception
+    */
+   public static Response post(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests, SessionRviaData pSessionRvia,
+         String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject)
+         throws Exception
+   {
 		Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
 		Client pClient = RviaRestHttpClient.getClient();
 		// Headers
+		String JWT = pRequest.getHeader("Authorization");
 		String strCODSecEnt = GettersRequestParams.getCODSecEnt(pRequest);
 		String strCODSecUser = GettersRequestParams.getCODSecUser(pRequest);
 		String strCODSecTrans = GettersRequestParams.getCODSecTrans(pRequest);
@@ -148,7 +173,7 @@ public class RestWSConnector
 		pJson.put("idMiq", pMiqQuests.getIdMiq());
 		strJsonData = pJson.toString();
 		WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint(pRequest));
-		Response pReturn = pTarget.request().header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).post(Entity.json(strJsonData));
+		Response pReturn = pTarget.request().header("Authorization",JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).post(Entity.json(strJsonData));
 		pLog.info("Respose POST: " + pReturn.toString());
 		return pReturn;
 	}
