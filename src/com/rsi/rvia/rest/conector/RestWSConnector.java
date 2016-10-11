@@ -71,7 +71,7 @@ public class RestWSConnector
 		String strCODCanal = GettersRequestParams.getCODCanal(pRequest);
 		String strCODSecIp = GettersRequestParams.getCODSecIp(pRequest);
 		String pathQueryParams = "";
-		pathQueryParams = Utils.multiValuedMap2QueryString(pPathParams);
+      pathQueryParams = Utils.multiValuedMapToQueryString(pPathParams) + Utils.hashMapToQueryString(pParamsToInject);
 		if (!pathQueryParams.isEmpty() && !pathQueryParams.endsWith("&"))
 			pathQueryParams += "&";
 		pathQueryParams += Utils.hashMapToQueryString(pParamsToInject);
