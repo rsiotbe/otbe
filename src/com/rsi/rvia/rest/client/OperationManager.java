@@ -231,17 +231,11 @@ public class OperationManager
 			{
 				throw new LogicalErrorException(401, 9999, "Unauthorized", "Sesión no válida", new Exception());
 			}
-			// else{
-			// Forzamos regeneración de token tras una verificación correcta.
-			// JWT = ManageJWToken.generateJWT(pParamsToInject);
-			// }
-			// pRestConnector.setParamsToInject( pParamsToInject );
-			/* END: Gestión de login y token */
-         
-         pResponseConnector = pRestConnector.getData(pRequest, strData, pSessionRviaData, pMiqQuests, pListParams, pParamsToInject);
+       
+         pResponseConnector = pRestConnector.getData(pRequest, strData, null, pMiqQuests, pListParams, pParamsToInject);
          pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
          /* se procesa el resultado del conector paa evaluar y adaptar su contenido */
-         strJsonData = ResponseManager.processResponseConnector(pSessionRviaData, pRestConnector, pResponseConnector, pMiqQuests);
+         strJsonData = ResponseManager.processResponseConnector(null, pRestConnector, pResponseConnector, pMiqQuests);
          pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
          /* se obtiene la plantilla destino si es que existe */
          strTemplate = pMiqQuests.getTemplate();
@@ -267,7 +261,7 @@ public class OperationManager
          if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
          {
             pLog.info("La petición utiliza plantilla XHTML");
-            strJsonData = TemplateManager.processTemplate(strTemplate, pSessionRviaData, strJsonData);
+            strJsonData = TemplateManager.processTemplate(strTemplate, null, strJsonData);
          }
          pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).header("Authorization", JWT).build();
       }

@@ -4,22 +4,30 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import java.util.Hashtable;
+import javax.ws.rs.core.UriInfo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import com.rsi.Constantes;
 import com.rsi.TestBase;
 import com.rsi.rvia.rest.multibank.CssMultiBankProcessor;
+import com.rsi.rvia.rest.session.RequestConfig;
 
 public class CssMultiBankProcessorTest extends TestBase
 {
+   @Mock
+   RequestConfig   reqConf;
+   
 	@Before
 	public void setUp() throws Exception
 	{
 		super.setUp();
 		CssMultiBankProcessor.htCacheData = new Hashtable<String, String>();
+		 Mockito.when(reqConf.getNRBE()).thenReturn(Constantes.CODIGO_BANCO_COOPERATIVO_ESPANOL);
 	}
 
 	@Test
@@ -50,8 +58,9 @@ public class CssMultiBankProcessorTest extends TestBase
 		final String TARGET_URL = "http://bar";
 		CssMultiBankProcessor.htCacheData.put(Constantes.CODIGO_BANCO_COOPERATIVO_ESPANOL + "_http://foo", TARGET_URL);
 		String documentStr = "<html><link href=\"http://foo\" rel=\"stylesheet\"></html>";
+     
 		Document document = Jsoup.parse(documentStr, "", Parser.htmlParser());
-		Document processed = CssMultiBankProcessor.processXHTML(document, null);
+		Document processed = CssMultiBankProcessor.processXHTML(document, reqConf);
 		assertNotNull("testProcessXHTML: processed es null", processed);
 		assertEquals("testProcessXHTML: el documento no ha sido procesado", processed.select("link[href]").attr("href"), TARGET_URL);
 	}
@@ -61,7 +70,7 @@ public class CssMultiBankProcessorTest extends TestBase
 	{
 		String documentStr = "<html><link href=\"http://foo\" rel=\"stylesheet\"></html>";
 		Document document = Jsoup.parse(documentStr, "", Parser.htmlParser());
-		Document processed = CssMultiBankProcessor.processXHTML(document, null);
+		Document processed = CssMultiBankProcessor.processXHTML(document, reqConf);
 		assertNotNull("testProcessXHTML: processed es null", processed);
 	}
 }
