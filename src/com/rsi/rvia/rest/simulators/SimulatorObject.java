@@ -117,7 +117,7 @@ public class SimulatorObject
 				pConfig.put("amount", getAmountJson());
 				pConfig.put("interest", getInterestOneRange());
 				pConfig.put("term", getTerms());
-				pConfig.put("commision", getCommisions());
+				pConfig.put("fee", getFees());
 				break;
 			case MORTGAGE:
 				pConfig.put("amount", getAmountJson());
@@ -126,7 +126,7 @@ public class SimulatorObject
 				pTerms = getTerms();
 				pTerms.put("deadlinePerYear", Integer.parseInt((String) pConfigParams.get("deadlinePerYear")));
 				pConfig.put("term", pTerms);
-				pConfig.put("commision", getCommisions());
+				pConfig.put("fee", getFees());
 				/* porcentage maximo hipotecable de la vivienda */
 				pConfig.put("loanPercentMax", Double.parseDouble((String) pConfigParams.get("loanAmountPercentMax")));
 				break;
@@ -136,7 +136,7 @@ public class SimulatorObject
 				/* se añade el parámetro especial de plazos por año */
 				pTerms = getTerms();
 				pTerms.put("deadlinePerYear", Integer.parseInt((String) pConfigParams.get("deadlinePerYear")));
-				pConfig.put("commision", getCommisions());
+				pConfig.put("fee", getFees());
 				/* porcentage maximo hipotecable de la vivienda */
 				pConfig.put("loanPercentMax", Double.parseDouble((String) pConfigParams.get("loanAmountPercentMax")));
 				break;
@@ -271,11 +271,11 @@ public class SimulatorObject
 		return pReturn;
 	}
 
-	private JSONObject getCommisions() throws JSONException
+	private JSONObject getFees() throws JSONException
 	{
 		JSONObject pReturn = new JSONObject();
-		JSONObject pCommisionsOpening = new JSONObject();
-		JSONObject pCommisionsOperating = new JSONObject();
+		JSONObject pOpeningFee = new JSONObject();
+		JSONObject pOperatingFee = new JSONObject();
 		double dbOpeningFix;
 		double dbOpeningPercent;
 		double dbOpeningMax;
@@ -284,24 +284,24 @@ public class SimulatorObject
 		double dbOperatingPercent;
 		double dbOperatingMax;
 		double dbOperatingMin;
-		dbOpeningFix = Double.parseDouble((String) pConfigParams.get("commisionOpeningFix"));
-		dbOpeningPercent = Double.parseDouble((String) pConfigParams.get("commisionOpeningPercent"));
-		dbOpeningMax = Double.parseDouble((String) pConfigParams.get("commisionOpeningMax"));
-		dbOpeningMin = Double.parseDouble((String) pConfigParams.get("commisionOpeningMin"));
-		dbOperatingFix = Double.parseDouble((String) pConfigParams.get("commisionOperatingFix"));
-		dbOperatingPercent = Double.parseDouble((String) pConfigParams.get("commisionOperatingPercent"));
-		dbOperatingMax = Double.parseDouble((String) pConfigParams.get("commisionOperatingMax"));
-		dbOperatingMin = Double.parseDouble((String) pConfigParams.get("commisionOperatingMin"));
-		pCommisionsOpening.put("fix", dbOpeningFix);
-		pCommisionsOpening.put("percent", dbOpeningPercent);
-		pCommisionsOpening.put("max", dbOpeningMax);
-		pCommisionsOpening.put("min", dbOpeningMin);
-		pReturn.put("opening", pCommisionsOpening);
-		pCommisionsOperating.put("fix", dbOperatingFix);
-		pCommisionsOperating.put("percent", dbOperatingPercent);
-		pCommisionsOperating.put("max", dbOperatingMax);
-		pCommisionsOperating.put("min", dbOperatingMin);
-		pReturn.put("operation", pCommisionsOperating);
+		dbOpeningFix = Double.parseDouble((String) pConfigParams.get("openingFeeFix"));
+		dbOpeningPercent = Double.parseDouble((String) pConfigParams.get("openingFeePercent"));
+		dbOpeningMax = Double.parseDouble((String) pConfigParams.get("openingFeeMax"));
+		dbOpeningMin = Double.parseDouble((String) pConfigParams.get("openingFeeMin"));
+		dbOperatingFix = Double.parseDouble((String) pConfigParams.get("operatingFeeFix"));
+		dbOperatingPercent = Double.parseDouble((String) pConfigParams.get("operatingFeePercent"));
+		dbOperatingMax = Double.parseDouble((String) pConfigParams.get("operatingFeeMax"));
+		dbOperatingMin = Double.parseDouble((String) pConfigParams.get("operatingFeeMin"));
+		pOpeningFee.put("fix", dbOpeningFix);
+		pOpeningFee.put("percent", dbOpeningPercent);
+		pOpeningFee.put("max", dbOpeningMax);
+		pOpeningFee.put("min", dbOpeningMin);
+		pReturn.put("opening", pOpeningFee);
+		pOperatingFee.put("fix", dbOperatingFix);
+		pOperatingFee.put("percent", dbOperatingPercent);
+		pOperatingFee.put("max", dbOperatingMax);
+		pOperatingFee.put("min", dbOperatingMin);
+		pReturn.put("operation", pOperatingFee);
 		return pReturn;
 	}
 }
