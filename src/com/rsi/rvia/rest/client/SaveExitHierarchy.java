@@ -68,7 +68,6 @@ public class SaveExitHierarchy
 			}
 			else
 			{ // Es un campo del objeto
-				pLog.info(key + " ------- " + strThisPath);
 				save(key, toPath);
 			}
 		}
