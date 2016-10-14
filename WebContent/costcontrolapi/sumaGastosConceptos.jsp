@@ -7,10 +7,8 @@
 <%
 	String strContrato = request.getParameter("idContract");  
 	String strEntidad = request.getParameter("codEntidad");
-	String strDateIni = request.getParameter("mesFin");    
-	strDateIni = strDateIni + "-01";  
 	String strDateFin = request.getParameter("mesFin");    
-	strDateFin = strDateFin + "-20"; 
+	strDateFin = strDateFin + "-01";  
     String strQuery =
           " select" +
           "    sgn  \"tipoApunte\"" +
@@ -19,8 +17,7 @@
           " from rdwc01.mi_do_apte_cta t1" +
           " where cod_nrbe_en='" + strEntidad + "'" +
           " and num_sec_ac =" + strContrato +
-          " and fecha_oprcn_dif >= round(to_date('" + strDateIni + "','yyyy-mm-dd'),'mm')" +
-          " and fecha_oprcn_dif <= round(to_date('" + strDateFin + "','yyyy-mm-dd'),'mm')" +
+          " and fecha_oprcn_dif = round(to_date('" + strDateFin + "','yyyy-mm-dd'),'mm')" +
           " and ind_accion <> 3" +
           " and ind_2 in ('S','N','O')" +
           " and cod_numrco_moneda = '978'" +          

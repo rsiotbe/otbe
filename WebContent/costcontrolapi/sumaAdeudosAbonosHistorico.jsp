@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     import="
-         com.rsi.rvia.rest.client.QueryCustomizer
+         com.rsi.rvia.rest.client.QueryCustomizer,
+         java.util.Calendar
 "
 %>
 <%
@@ -10,8 +11,7 @@
     String strIdInternoPe = request.getParameter("idInternoPe");
     String strEntidad = request.getParameter("codEntidad").toString();
     String strDateIni = request.getParameter("mesInicio").toString();
-    String strDateFin = request.getParameter("mesFin");    
-    strDateIni = strDateIni + "-01";  
+    String strDateFin = request.getParameter("mesFin");     
     String strResponse = "{}";
    String strQuery =
            " select" +
@@ -19,16 +19,30 @@
            "   ,sgn  \"tipoApunte\"" +
            "   ,sum(imp_apnte) \"importe\"" +
            " from rdwc01.mi_do_apte_cta t1" +
-           " where cod_nrbe_en='" + strEntidad + "'" +
-           " and fecha_oprcn_dif >= round(to_date('" + strDateIni + "','yyyy-mm-dd'),'mm')";
+           " where cod_nrbe_en='" + strEntidad + "'" ;
+           
    if(strDateFin == null){
-      strQuery = strQuery + " and fecha_oprcn_dif <= (select max(fecha_oprcn_dif) from rdwc01.mi_do_apte_cta where cod_nrbe_en='" + request.getParameter("codEntidad") + "')";
+      strQuery = strQuery + " and fecha_oprcn_dif <= (select max(fecha_oprcn_dif) from rdwc01.mi_do_apte_cta where cod_nrbe_en='" + 
+            strEntidad + "')";
    }
    else{
- 	  strDateFin = strDateFin + "-21";
- 	  strQuery = strQuery + " and fecha_oprcn_dif <= round(to_date('" + strDateFin + "','yyyy-mm-dd'),'mm')";
-   }
- 	 
+      if(strDateIni.equals(strDateFin)){
+          strDateFin = strDateFin + "-01";
+          String partes[] = strDateFin.split("-");
+          Calendar dateDateFin = Calendar.getInstance();    
+          dateDateFin.set(Integer.parseInt(partes[0]),Integer.parseInt(partes[1]),Integer.parseInt(partes[2]));
+          dateDateFin.add(Calendar.MONTH, 1);
+          strDateFin=dateDateFin.toString();
+          strDateFin = dateDateFin.get(Calendar.YEAR) + "-" + dateDateFin.get(Calendar.MONTH) + "-" +dateDateFin.get(Calendar.DATE);
+          strQuery = strQuery + " and fecha_oprcn_dif < round(to_date('" + strDateFin + "','yyyy-mm-dd'),'mm')";
+      }
+      else{
+        strDateFin = strDateFin + "-21";
+        strQuery = strQuery + " and fecha_oprcn_dif <= round(to_date('" + strDateFin + "','yyyy-mm-dd'),'mm')";
+      }    
+   }   
+   strDateIni = strDateIni + "-01";         
+   strQuery = strQuery + " and fecha_oprcn_dif >= round(to_date('" + strDateIni + "','yyyy-mm-dd'),'mm')";	 
    strQuery = strQuery + " and ind_accion <> 3" +
            " and ind_2 in ('S','N','O')" +
            " and cod_numrco_moneda = '978'";   
