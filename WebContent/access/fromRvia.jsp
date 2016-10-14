@@ -55,7 +55,7 @@
 	}
 %>
 <body>
-	<form id="formRedirect" action="/api/rest<%=strPathRest%>" method="<%=strMethod%>" encType="multipart/form-data">
+	<form id="formRedirect" action="/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
 		<input type="hidden" name="token" value="<%=strToken%>"> 
 <%
 	if(!strError.trim().isEmpty())
@@ -68,10 +68,6 @@
 	</form>
 	<script type="text/javascript">	
 		document.getElementById('formRedirect').submit();
-		
-		
 	</script>
-	
-	
 </body>
 </html>
