@@ -106,7 +106,7 @@
 		" SELECT" +   
 		" 	t1.NUM_SEC_AC \"acuerdo\", trim(t2.NOMB_GRP_PD) \"nombreGrupo\"," +
 		" 	trim(nvl(t3.NOMB_PDV, t2.NOMB_GRP_PD)) \"nombreProducto\"," +				
-		"   decode (t1.num_sec_ac," + strAliases + ") \"aliasBanca\"" +
+		"   decode (t1.num_sec_ac," + strAliases + ") \"aliasBanca\", t1.COD_LINEA \"codLinea\"" +
 		" FROM" +
 		" 	rdwc01.mi_clte_rl_ac t1" +
 		" 	left join rdwc01.MI_LINEA_GRUPO t2" +
