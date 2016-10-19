@@ -12,7 +12,8 @@ import com.rsi.rvia.rest.conector.RestRviaConnector;
 import com.rsi.rvia.rest.conector.RestWSConnector;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 import com.rsi.rvia.rest.operation.MiqQuests;
-import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.session.RequestConfig;
+import com.rsi.rvia.rest.session.RequestConfigRvia;
 
 /**
  * Clase para manejar la respuesta del RestConnector. Mira si es un error o si no lo es y compone una respuesta JSON
@@ -26,7 +27,7 @@ public class ResponseManager
 	/**
 	 * Procesa una respuesta recibida desde el conector para evaluar si es un error y formatear su contenido
 	 * 
-	 * @param pSessionRviaData
+	 * @param pRequestConfig
 	 *           Datos de sesión del usuario ruralvia
 	 * @param pRestConnector
 	 *           Conector al origen de datos
@@ -35,7 +36,7 @@ public class ResponseManager
 	 * @return
 	 * @throws Exception
 	 */
-	public static String processResponseConnector(SessionRviaData pSessionRviaData, RestConnector pRestConnector,
+	public static String processResponseConnector(RequestConfig pRequestConfig, RestConnector pRestConnector,
 			Response pResponseConnector, MiqQuests pMiqQuests) throws Exception
 	{
 		String strJsonData;
@@ -67,7 +68,7 @@ public class ResponseManager
 		/* se crea el objeto JSON para ser manejado */
 		pJsonData = new JSONObject(strJsonData);
 		/* se compreuba si el json contiene un error, si es así se genera una excepción lógica */
-		checkLogicalError(pSessionRviaData, pMiqQuests, pResponseConnector, pJsonData);
+		checkLogicalError(pRequestConfig, pMiqQuests, pResponseConnector, pJsonData);
 		/* se formatea la respuesta para estandarizarla y eliminar información que el usuario final no necesita */
 		pJsonData = formatResponse(pJsonData, pMiqQuests.getIdMiq(), pRestConnector);
 		return pJsonData.toString();
@@ -76,7 +77,7 @@ public class ResponseManager
 	/**
 	 * Comprueba si los adtos obtenidos contienen un error lógico y genera a excepción en dicho caso *
 	 * 
-	 * @param pSessionRviaData
+	 * @param pRequestConfig
 	 *           Datos de sesión del usuario ruralvia
 	 * @param pRestConnector
 	 *           Conector al origen de datos
@@ -86,7 +87,7 @@ public class ResponseManager
 	 *           Objeto que contiene la información JSON
 	 * @throws ApplicationException
 	 */
-	private static void checkLogicalError(SessionRviaData pSessionRviaData, MiqQuests pMiqQuests, Response pResponse,
+	private static void checkLogicalError(RequestConfig pRequestConfig, MiqQuests pMiqQuests, Response pResponse,
 			JSONObject pJsonData) throws ApplicationException
 	{
 		Integer nHttpErrorCode = null;
@@ -105,7 +106,7 @@ public class ResponseManager
 		else if (RestRviaConnector.isRVIAError(pJsonData))
 		{
 			/* se lanza la excepción de tipo lócigo, en caso de no lanzarse se genera una exceción de tipo general */
-			if (!RestRviaConnector.throwRVIAError(pSessionRviaData, pMiqQuests, pJsonData))
+			if (!RestRviaConnector.throwRVIAError((RequestConfigRvia) pRequestConfig, pMiqQuests, pJsonData))
 				throw new ApplicationException(500, 999999, "Error al procesar la información", "Error al acceder al contenido de un error de tipo ws", null);
 		}
 		/* si la ejecución ha llegado aqui es que todo parece correcto, se continua */

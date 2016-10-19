@@ -9,7 +9,7 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 import com.rsi.rvia.rest.operation.MiqQuests;
-import com.rsi.rvia.rest.session.SessionRviaData;
+import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.tool.Utils;
 
 public class ErrorManager
@@ -42,14 +42,14 @@ public class ErrorManager
 	 * 
 	 * @param strErrorCode
 	 *           Codigo de error
-	 * @param SessionRviaData
+	 * @param RequestConfigRvia
 	 *           Objeto que contiene los datos de ususario de ruralvia
 	 * @param pRestConnector
 	 *           Objeto que contiene la información de la petición realizada, se utilzia para obtener el clave página
 	 * @return Texto de error ya traducido
 	 * @throws Exception
 	 */
-	public static String getFriendlyErrorFromRuralvia(String strErrorCode, SessionRviaData pSessionRviaData,
+	public static String getFriendlyErrorFromRuralvia(String strErrorCode, RequestConfigRvia pSessionRviaData,
 			MiqQuests pMiqQuests) throws Exception
 	{
 		Connection pConnection = null;

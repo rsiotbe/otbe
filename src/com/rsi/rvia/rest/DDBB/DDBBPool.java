@@ -56,7 +56,7 @@ public class DDBBPool
 	public static DataSource getDatasourceFromCIPOracleServerPool() throws Exception
 	{
 		Context initCtx = new InitialContext();
-		return (DataSource) initCtx.lookup("java:comp/env/jdbc/RVIA_REST_CIP");
+		return (DataSource) initCtx.lookup("java:comp/env/jdbc/RVIA_REST_CI");
 	}
 
 	/** Recupera las propiedades de configuración de MySql para configurar un pool de conexiones local
