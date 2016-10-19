@@ -29,7 +29,7 @@ public class SimulatorsManager
 	 * @return Datos de la configuración
 	 * @throws Exception
 	 */
-	public static SimulatorObjectArray getSimulatorsData(String strNRBE, String strEntityName, String strSimulatorName)
+	public static SimulatorObjectArray getSimulatorsData(String strNRBE, String strSimulatorName, String strLanguage)
 			throws Exception
 	{
 		SimulatorObjectArray alReturn = new SimulatorObjectArray();
@@ -37,9 +37,31 @@ public class SimulatorsManager
 		PreparedStatement pPreparedStatement = null;
 		ResultSet pResultSet = null;
 		String strQuery;
+		int nSimulatorIdRef = -1;
+		int nSimulatorId;
+		String strCategory;
+		String strComercialName;
+		String strCalcType;
+		boolean fIsActive;
+		boolean fAllowBooking;
+		boolean fAllowUserEmail;
+		boolean fAllowUserTelephone;
+		String strCustomerSupportEmail;
+		String strCustomerSupportTelephone;
+		String strReceivingOfficeEmail;
+		String strDisclaimer;
+		String strContractConditions;
+		String strLOPD;
 		try
 		{
-			strQuery = "select * from BDPTB235_SIMULADORES s, BDPTB236_PARAM_SIMULADORES p where s.entidad = ? and s.activo = '1' and s.id_simulador=p.id_simulador ";
+			strQuery = "select s.id_simulador, s.entidad, s.categoria, s.Nombre_Comercial, s.tipo_calculo, s.activo, "
+					+ "s.contratar, s. contacto_email, s.contacto_telef, s.atencion_cliente_email, s.atencion_cliente_telef, "
+					+ "s.entidad_email_contacto, "
+					+ "(select i.traduccion from BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_lopd) as texto_lopd, "
+					+ "(select i.traduccion from BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_condiciones) as texto_condiciones, "
+					+ "(select i.traduccion from BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_aviso_legal) as texto_aviso_legal, "
+					+ "p.clave, p.valor " + "from BDPTB235_SIMULADORES s,  " + "BDPTB236_PARAM_SIMULADORES p  "
+					+ "where  s.id_simulador=p.id_simulador " + "and s.entidad = ?  " + "and s.activo = '1'";
 			if (strSimulatorName != null && !strSimulatorName.trim().isEmpty() && !"null".equals(strSimulatorName.trim()))
 			{
 				strQuery += "and NOMBRE_COMERCIAL = ? ";
@@ -47,15 +69,16 @@ public class SimulatorsManager
 			strQuery += "order by s.ID_SIMULADOR";
 			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
-			pPreparedStatement.setString(1, strNRBE);
+			pPreparedStatement.setString(1, strLanguage);
+			pPreparedStatement.setString(2, strLanguage);
+			pPreparedStatement.setString(3, strLanguage);
+			pPreparedStatement.setString(4, strNRBE);
 			if (strSimulatorName != null && !strSimulatorName.trim().isEmpty() && !"null".equals(strSimulatorName.trim()))
 			{
-				pPreparedStatement.setString(2, strSimulatorName);
+				pPreparedStatement.setString(5, strSimulatorName);
 			}
 			pResultSet = pPreparedStatement.executeQuery();
 			/* Recupera los parametros de configuración */
-			int nSimulatorIdRef = -1;
-			int nSimulatorId;
 			SimulatorObject pSimulatorObject = null;
 			while (pResultSet.next())
 			{
@@ -73,7 +96,20 @@ public class SimulatorsManager
 						alReturn.addSimulator(pSimulatorObject);
 					}
 					/* se crea el nuevo sinulador y posteriormente se añaden sus campos */
-					pSimulatorObject = new SimulatorObject(nSimulatorId, pResultSet.getString("ENTIDAD"), strEntityName, pResultSet.getString("CATEGORIA"), pResultSet.getString("NOMBRE_COMERCIAL"), pResultSet.getString("TIPO_CALCULO"), pResultSet.getBoolean("ACTIVO"), pResultSet.getBoolean("CONTRATAR"), pResultSet.getBoolean("CONTACTO_EMAIL"), pResultSet.getBoolean("CONTACTO_TELEF"), pResultSet.getString("ENTIDAD_EMAIL"), pResultSet.getString("ENTIDAD_TELEF"));
+					strCategory = pResultSet.getString("CATEGORIA");
+					strComercialName = pResultSet.getString("NOMBRE_COMERCIAL");
+					strCalcType = pResultSet.getString("TIPO_CALCULO");
+					fIsActive = pResultSet.getBoolean("ACTIVO");
+					fAllowBooking = pResultSet.getBoolean("CONTRATAR");
+					strCustomerSupportEmail = pResultSet.getString("ATENCION_CLIENTE_EMAIL");
+					strCustomerSupportTelephone = pResultSet.getString("ATENCION_CLIENTE_EMAIL");
+					strReceivingOfficeEmail = pResultSet.getString("ENTIDAD_EMAIL_CONTACTO");
+					fAllowUserEmail = pResultSet.getBoolean("CONTACTO_EMAIL");
+					fAllowUserTelephone = pResultSet.getBoolean("CONTACTO_TELEF");
+					strDisclaimer = pResultSet.getString("TEXTO_AVISO_LEGAL");
+					strContractConditions = pResultSet.getString("TEXTO_CONDICIONES");
+					strLOPD = pResultSet.getString("TEXTO_LOPD");
+					pSimulatorObject = new SimulatorObject(nSimulatorId, strNRBE, strCategory, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail, fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone, strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions);
 				}
 				pSimulatorObject.addConfigParam(pResultSet.getString("CLAVE"), pResultSet.getString("VALOR"));
 			}
@@ -92,9 +128,6 @@ public class SimulatorsManager
 		{
 			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 		}
-		// if (alReturn.isEmpty())
-		// throw new LogicalErrorException(400, 99988, "Error al procesar la petición",
-		// "No se ha encontrado configuración de simuladores para esta entidad", null);
 		return alReturn;
 	}
 

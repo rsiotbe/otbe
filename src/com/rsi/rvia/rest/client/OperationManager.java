@@ -202,7 +202,7 @@ public class OperationManager
 				return Response.ok(strJsonHelp).build();
 			}
 			pMiqQuests = MiqQuests.getMiqQuests(strPrimaryPath);
-         MultivaluedMap<String, String> pListParams = Utils.getParamByPath(pUriInfo);
+			MultivaluedMap<String, String> pListParams = Utils.getParamByPath(pUriInfo);
 			// Se instancia el conector y se solicitan los datos.
 			pRestConnector = new RestConnector();
 			// BEGIN: Gestión de login y token.
@@ -231,107 +231,105 @@ public class OperationManager
 			{
 				throw new LogicalErrorException(401, 9999, "Unauthorized", "Sesión no válida", new Exception());
 			}
-       
-         pResponseConnector = pRestConnector.getData(pRequest, strData, null, pMiqQuests, pListParams, pParamsToInject);
-         pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
-         /* se procesa el resultado del conector paa evaluar y adaptar su contenido */
-         strJsonData = ResponseManager.processResponseConnector(null, pRestConnector, pResponseConnector, pMiqQuests);
-         pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
-         /* se obtiene la plantilla destino si es que existe */
-         strTemplate = pMiqQuests.getTemplate();
-      }
-      catch (Exception ex)
-      {
-         pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
-         pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-      }
-      try
-      {
-         /* Se comprueba si ha habido algun error para generar la respuesta adecuada */
-         if (pErrorCaptured != null)
-         {
-            pLog.info("Se procede a gestionar el error");
-            /* si la apliación debe responder un XHTML */
-            if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
-               strTemplate = ErrorManager.ERROR_TEMPLATE;
-            strJsonData = pErrorCaptured.getJsonError();
-            nReturnHttpCode = pErrorCaptured.getHttpCode();
-            pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
-         }
-         if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
-         {
-            pLog.info("La petición utiliza plantilla XHTML");
-            strJsonData = TemplateManager.processTemplate(strTemplate, null, strJsonData);
-         }
-         pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).header("Authorization", JWT).build();
-      }
-      catch (Exception ex)
-      {
-         pLog.error("Se ha generado un error al procesar la respuesta final", ex);
-         pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-         pResponseConnector = Response.serverError().header("Authorization", JWT).build();
-      }
-      // Insertar siempre JWT en el response
-      return pResponseConnector;
-   }
+			pResponseConnector = pRestConnector.getData(pRequest, strData, null, pMiqQuests, pListParams, pParamsToInject);
+			pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
+			/* se procesa el resultado del conector paa evaluar y adaptar su contenido */
+			strJsonData = ResponseManager.processResponseConnector(null, pRestConnector, pResponseConnector, pMiqQuests);
+			pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
+			/* se obtiene la plantilla destino si es que existe */
+			strTemplate = pMiqQuests.getTemplate();
+		}
+		catch (Exception ex)
+		{
+			pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
+		}
+		try
+		{
+			/* Se comprueba si ha habido algun error para generar la respuesta adecuada */
+			if (pErrorCaptured != null)
+			{
+				pLog.info("Se procede a gestionar el error");
+				/* si la apliación debe responder un XHTML */
+				if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
+					strTemplate = ErrorManager.ERROR_TEMPLATE;
+				strJsonData = pErrorCaptured.getJsonError();
+				nReturnHttpCode = pErrorCaptured.getHttpCode();
+				pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
+			}
+			if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
+			{
+				pLog.info("La petición utiliza plantilla XHTML");
+				strJsonData = TemplateManager.processTemplate(strTemplate, null, strJsonData);
+			}
+			pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).header("Authorization", JWT).build();
+		}
+		catch (Exception ex)
+		{
+			pLog.error("Se ha generado un error al procesar la respuesta final", ex);
+			pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
+			pResponseConnector = Response.serverError().header("Authorization", JWT).build();
+		}
+		// Insertar siempre JWT en el response
+		return pResponseConnector;
+	}
 
-   private static HashMap<String, String> doLogin() throws JoseException, IOException
-   {
-      String strBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-            + "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" "
-            + "xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">" + "<soap:Header>"
-            + "<ee:RSISecCampo1>03054906</ee:RSISecCampo1>" + "<ee:RSISecCampo2>50456061H</ee:RSISecCampo2>"
-            + "<ee:RSISecCampo3>20141217155327</ee:RSISecCampo3>" + "<ee:RSISecCampo4></ee:RSISecCampo4>"
-            + "<ee:RSISecCampo5>0f0262740a3f50d9</ee:RSISecCampo5>" + "</soap:Header><soap:Body>"
-            + "<ee:EE_I_AutenticarUsuario>" + "<ee:usuario>" + "03052445" + "</ee:usuario>" + "<ee:password>"
-            + "03052445" + "</ee:password>" + "<ee:documento>" + "33334444S" + "</ee:documento>"
-            + "</ee:EE_I_AutenticarUsuario>" + "</soap:Body>" + "</soap:Envelope>";
-      /*
-       * strBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-       * "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
-       * "xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">" + "<soap:Header>" +
-       * "<ee:RSISecCampo1>03054906</ee:RSISecCampo1>" + "<ee:RSISecCampo2>50456061H</ee:RSISecCampo2>" +
-       * "<ee:RSISecCampo3>20141217155327</ee:RSISecCampo3>" + "<ee:RSISecCampo4></ee:RSISecCampo4>" +
-       * "<ee:RSISecCampo5>0f0262740a3f50d9</ee:RSISecCampo5>" + "</soap:Header><soap:Body>" +
-       * "<ee:EE_I_AutenticarUsuario>" + "<ee:usuario>03052885</ee:usuario>" + "<ee:password>03052445</ee:password>" +
-       * "<ee:documento>33334444S</ee:documento>" + "</ee:EE_I_AutenticarUsuario>" + "</soap:Body>" + "</soap:Envelope>"
-       * ;
-       */
-      // Create a StringEntity for the SOAP XML.
-      StringEntity stringEntity = new StringEntity(strBody, "UTF-8");
-      stringEntity.setChunked(true);
-      // Request parameters and other properties.
-      HttpPost httpPost = new HttpPost("http://soa02.risa/SOA_Wallet/Empresa/PS/SE_WAL_AutenticarUsuario");
-      httpPost.setEntity(stringEntity);
-      httpPost.addHeader("Accept", "text/xml");
-      httpPost.addHeader("SOAPAction", "");
-      // Execute and get the response.
-      HttpClient httpClient = new DefaultHttpClient();
-      // HttpClient httpClient = new HttpClient();
-      HttpResponse response = httpClient.execute(httpPost);
-      HttpEntity entity = response.getEntity();
-      String strResponse = null;
-      if (entity != null)
-      {
-         strResponse = EntityUtils.toString(entity);
-      }
-      strResponse = strResponse.replace("\n", "");
-      String codRetorno = strResponse.replaceAll("^.*<ee:codigoRetorno>([^<]*)</ee:codigoRetorno>.*$", "$1");
-      if (Integer.parseInt(codRetorno) == 0)
-      {
-         // pLog.warning("->>>>>>>>>>>>>>>>>>>> Error en el servicio de login");
-         return null;
-      }
-      else
-      {
-         HashMap<String, String> fields = new HashMap<String, String>();
-         String codEntidad = strResponse.replaceAll("^.*<ee:entidad>([^<]*)</ee:entidad>.*$", "$1");
-         String idInternoPe = strResponse.replaceAll("^.*<ee:idInternoPe>([^<]*)</ee:idInternoPe>.*$", "$1");
-         String nTarjeta = strResponse.replaceAll("^.*<ee:numeroTarjeta>([^<]*)</ee:numeroTarjeta>.*$", "$1");
-         
-        fields.put("codEntidad", "3076");
-        fields.put("idInternoPe", "1834908");
-        fields.put("codTarjeta", "307671667");			
+	private static HashMap<String, String> doLogin() throws JoseException, IOException
+	{
+		String strBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+				+ "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+				+ "xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">" + "<soap:Header>"
+				+ "<ee:RSISecCampo1>03054906</ee:RSISecCampo1>" + "<ee:RSISecCampo2>50456061H</ee:RSISecCampo2>"
+				+ "<ee:RSISecCampo3>20141217155327</ee:RSISecCampo3>" + "<ee:RSISecCampo4></ee:RSISecCampo4>"
+				+ "<ee:RSISecCampo5>0f0262740a3f50d9</ee:RSISecCampo5>" + "</soap:Header><soap:Body>"
+				+ "<ee:EE_I_AutenticarUsuario>" + "<ee:usuario>" + "03052445" + "</ee:usuario>" + "<ee:password>"
+				+ "03052445" + "</ee:password>" + "<ee:documento>" + "33334444S" + "</ee:documento>"
+				+ "</ee:EE_I_AutenticarUsuario>" + "</soap:Body>" + "</soap:Envelope>";
+		/*
+		 * strBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+		 * "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+		 * "xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">" + "<soap:Header>" +
+		 * "<ee:RSISecCampo1>03054906</ee:RSISecCampo1>" + "<ee:RSISecCampo2>50456061H</ee:RSISecCampo2>" +
+		 * "<ee:RSISecCampo3>20141217155327</ee:RSISecCampo3>" + "<ee:RSISecCampo4></ee:RSISecCampo4>" +
+		 * "<ee:RSISecCampo5>0f0262740a3f50d9</ee:RSISecCampo5>" + "</soap:Header><soap:Body>" +
+		 * "<ee:EE_I_AutenticarUsuario>" + "<ee:usuario>03052885</ee:usuario>" + "<ee:password>03052445</ee:password>" +
+		 * "<ee:documento>33334444S</ee:documento>" + "</ee:EE_I_AutenticarUsuario>" + "</soap:Body>" + "</soap:Envelope>"
+		 * ;
+		 */
+		// Create a StringEntity for the SOAP XML.
+		StringEntity stringEntity = new StringEntity(strBody, "UTF-8");
+		stringEntity.setChunked(true);
+		// Request parameters and other properties.
+		HttpPost httpPost = new HttpPost("http://soa02.risa/SOA_Wallet/Empresa/PS/SE_WAL_AutenticarUsuario");
+		httpPost.setEntity(stringEntity);
+		httpPost.addHeader("Accept", "text/xml");
+		httpPost.addHeader("SOAPAction", "");
+		// Execute and get the response.
+		HttpClient httpClient = new DefaultHttpClient();
+		// HttpClient httpClient = new HttpClient();
+		HttpResponse response = httpClient.execute(httpPost);
+		HttpEntity entity = response.getEntity();
+		String strResponse = null;
+		if (entity != null)
+		{
+			strResponse = EntityUtils.toString(entity);
+		}
+		strResponse = strResponse.replace("\n", "");
+		String codRetorno = strResponse.replaceAll("^.*<ee:codigoRetorno>([^<]*)</ee:codigoRetorno>.*$", "$1");
+		if (Integer.parseInt(codRetorno) == 0)
+		{
+			// pLog.warning("->>>>>>>>>>>>>>>>>>>> Error en el servicio de login");
+			return null;
+		}
+		else
+		{
+			HashMap<String, String> fields = new HashMap<String, String>();
+			String codEntidad = strResponse.replaceAll("^.*<ee:entidad>([^<]*)</ee:entidad>.*$", "$1");
+			String idInternoPe = strResponse.replaceAll("^.*<ee:idInternoPe>([^<]*)</ee:idInternoPe>.*$", "$1");
+			String nTarjeta = strResponse.replaceAll("^.*<ee:numeroTarjeta>([^<]*)</ee:numeroTarjeta>.*$", "$1");
+			fields.put("codEntidad", "3076");
+			fields.put("idInternoPe", "1834908");
+			fields.put("codTarjeta", "307671667");
 			// FIXME: Pendiente de cambiar en producci´on.
 			// fields.put("codEntidad", codEntidad.replace(" ", ""));
 			// fields.put("idInternoPe", idInternoPe.replace(" ", ""));
@@ -477,17 +475,17 @@ public class OperationManager
 		{
 			/* se obtiene el objeto petición */
 			strNRBE = SimulatorsManager.getNRBEFromBankName(strBankName);
-			/*
-			 * pRequest.setAttribute("NRBE", strNRBE); pRequest.setAttribute("lang", strLanguage);
-			 * pRequest.setAttribute("lang", strLanguage); // pRequest.setAttribute("simulatorName", strSimulatorName);
-			 */
 			pRequestConfig = new RequestConfig(pRequest);
+			/* si no viene idioma o definido se coge por defecto el de el objeto RequestConfig */
+			if (strLanguage == null || strLanguage.trim().isEmpty())
+				strLanguage = pRequestConfig.getLanguage();
 			/* se obtienen los datos necesario para realizar la petición al proveedor */
 			pMiqQuests = createMiqQuests(pUriInfo);
 			if (pMiqQuests == null)
 				throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
 			/* se obtiene el codigo de entidad de donde procede la llamada */
-			strDataJson = "{\"codEntidad\":\"" + strNRBE + "\", \"nombreComercialSimulador\":\"" + strLoanName + "\"}";
+			strDataJson = "{\"codEntidad\":\"" + strNRBE + "\", \"nombreComercialSimulador\":\"" + strLoanName
+					+ "\", \"idioma\":\"" + strLanguage + "\"}";
 			/* se instancia el conector y se solicitan los datos */
 			strJsonResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, strDataJson);
 			pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonResponse);
@@ -612,7 +610,7 @@ public class OperationManager
 	{
 		RestConnector pRestConnector = null;
 		Response pResponseConnector = null;
-      MultivaluedMap<String, String> pListParams = Utils.getParamByPath(pUriInfo);
+		MultivaluedMap<String, String> pListParams = Utils.getParamByPath(pUriInfo);
 		// Se instancia el conector y se solicitan los datos.
 		pRestConnector = new RestConnector();
 		pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pListParams, null);

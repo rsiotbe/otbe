@@ -20,9 +20,10 @@
 	/* Se recuperan los parametros de entrada*/
 	String strNRBE = (String) request.getParameter("codEntidad");
 	String strEntityName = (String) request.getParameter("entidad");
-	String strComercialName = (String) request.getParameter("nombreComercialSimulador");
+	String strSimulatorName = (String) request.getParameter("nombreComercialSimulador");
+	String strLanguage = (String) request.getParameter("idioma");
 	JSONObject pJsonResponse = new JSONObject();
-	SimulatorObjectArray paSimulators = SimulatorsManager.getSimulatorsData(strNRBE, strEntityName, strComercialName);
+	SimulatorObjectArray paSimulators = SimulatorsManager.getSimulatorsData(strNRBE, strSimulatorName, strLanguage);
 	pJsonData.put("data",paSimulators.toJson());
 	pJson.put("response",pJsonData);
 	strResponse = pJson.toString();
