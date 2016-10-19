@@ -12,15 +12,18 @@ public class SimulatorObject
 {
 	private int									nId;
 	private String								strNRBE;
-	private String								strEntityName;
 	private String								strCategory;
 	private String								strComercialName;
-	private String								strEntityEmail;
-	private String								strEntityTelephone;
+	private String								strCustomerSupportEmail;
+	private String								strCustomerSupportTelephone;
+	private String								strReceivingOfficeEmail;
 	private boolean							fIsActive;
 	private boolean							fAllowBooking;
 	private boolean							fAllowUserEmail;
 	private boolean							fAllowUserTelephone;
+	private String								strDisclaimer;
+	private String								strContractConditions;
+	private String								strLOPD;
 	private Hashtable<String, Object>	pConfigParams;
 	private LoanType							pLoanType;
 
@@ -64,15 +67,16 @@ public class SimulatorObject
 	 * @param fAllowUserTelephone
 	 *           Permite la ingresión de telefono de contacto con el cliente
 	 */
-	public SimulatorObject(int nId, String strNRBE, String strEntityName, String strCategory, String strComercialName,
-			String strLoanType, boolean fIsActive, boolean fAllowBooking, boolean fAllowUserEmail,
-			boolean fAllowUserTelephone, String strEntityEmail, String strEntityTelephone)
+	public SimulatorObject(int nId, String strNRBE, String strCategory, String strComercialName, String strLoanType,
+			boolean fIsActive, boolean fAllowBooking, boolean fAllowUserEmail, boolean fAllowUserTelephone,
+			String strCustomerSupportEmail, String strCustomerSupportTelephone, String strReceivingOfficeEmail,
+			String strLOPD, String strDisclaimer, String strContractConditions)
 	{
 		this.nId = nId;
 		this.strNRBE = strNRBE;
-		this.strEntityName = strEntityName;
-		this.strEntityEmail = strEntityEmail;
-		this.strEntityTelephone = strEntityTelephone;
+		this.strCustomerSupportEmail = strCustomerSupportEmail;
+		this.strCustomerSupportTelephone = strCustomerSupportTelephone;
+		this.strReceivingOfficeEmail = strReceivingOfficeEmail;
 		this.strCategory = strCategory;
 		this.strComercialName = strComercialName;
 		this.pLoanType = LoanType.valueOf(strLoanType.toUpperCase());
@@ -80,6 +84,9 @@ public class SimulatorObject
 		this.fAllowBooking = fAllowBooking;
 		this.fAllowUserEmail = fAllowUserEmail;
 		this.fAllowUserTelephone = fAllowUserTelephone;
+		this.strLOPD = strLOPD;
+		this.strDisclaimer = strDisclaimer;
+		this.strContractConditions = strContractConditions;
 		this.pConfigParams = new Hashtable<String, Object>();
 	}
 
@@ -100,15 +107,20 @@ public class SimulatorObject
 		JSONObject pConfig = new JSONObject();
 		JSONObject pTerms;
 		pReturn.put("nrbe", strNRBE);
-		pReturn.put("nrbeName", strEntityName);
 		pReturn.put("comercialName", strComercialName);
-		pReturn.put("email", strEntityEmail);
-		pReturn.put("telephone", strEntityTelephone);
+		pReturn.put("sacEmail", strCustomerSupportEmail);
+		pReturn.put("sacTelephone", strCustomerSupportTelephone);
+		pReturn.put("oficinaEmail", strReceivingOfficeEmail);
 		pReturn.put("category", strCategory);
 		pReturn.put("calcType", pLoanType.name());
 		pReturn.put("active", fIsActive);
 		pReturn.put("allowBooking", fAllowBooking);
 		pReturn.put("allowUserEmail", fAllowUserEmail);
+		pReturn.put("allowUserTelephone", fAllowUserTelephone);
+		pReturn.put("lopd", strLOPD);
+		pReturn.put("disclaimer", strDisclaimer);
+		pReturn.put("contractConditions", strContractConditions);
+		pReturn.put("allowUserTelephone", fAllowUserTelephone);
 		pReturn.put("allowUserTelephone", fAllowUserTelephone);
 		/* se realiza la comprobación si tiene comisión de apertuyra para rellenar los datos */
 		switch (pLoanType)
@@ -117,7 +129,7 @@ public class SimulatorObject
 				pConfig.put("amount", getAmountJson());
 				pConfig.put("interest", getInterestOneRange());
 				pConfig.put("term", getTerms());
-				pConfig.put("commision", getCommisions());
+				pConfig.put("fee", getFees());
 				break;
 			case MORTGAGE:
 				pConfig.put("amount", getAmountJson());
@@ -126,7 +138,7 @@ public class SimulatorObject
 				pTerms = getTerms();
 				pTerms.put("deadlinePerYear", Integer.parseInt((String) pConfigParams.get("deadlinePerYear")));
 				pConfig.put("term", pTerms);
-				pConfig.put("commision", getCommisions());
+				pConfig.put("fee", getFees());
 				/* porcentage maximo hipotecable de la vivienda */
 				pConfig.put("loanPercentMax", Double.parseDouble((String) pConfigParams.get("loanAmountPercentMax")));
 				break;
@@ -136,7 +148,7 @@ public class SimulatorObject
 				/* se añade el parámetro especial de plazos por año */
 				pTerms = getTerms();
 				pTerms.put("deadlinePerYear", Integer.parseInt((String) pConfigParams.get("deadlinePerYear")));
-				pConfig.put("commision", getCommisions());
+				pConfig.put("fee", getFees());
 				/* porcentage maximo hipotecable de la vivienda */
 				pConfig.put("loanPercentMax", Double.parseDouble((String) pConfigParams.get("loanAmountPercentMax")));
 				break;
@@ -154,7 +166,6 @@ public class SimulatorObject
 		StringBuilder pSb = new StringBuilder();
 		pSb.append("Id              :" + nId + "\n");
 		pSb.append("NRBE            :" + strNRBE + "\n");
-		pSb.append("NRBEName        :" + strEntityName + "\n");
 		pSb.append("ComercialName   :" + strComercialName + "\n");
 		pSb.append("Type            :" + pLoanType.name() + "\n");
 		pSb.append("IsActive        :" + fIsActive + "\n");
@@ -200,7 +211,7 @@ public class SimulatorObject
 			dbInterestBase = Double.parseDouble((String) pConfigParams.get("interestBase"));
 			dbInterestDelta = Double.parseDouble((String) pConfigParams.get("interestDelta"));
 			dbInterest = dbInterestBase + dbInterestDelta;
-			pReturn.put("interest", dbInterest);
+			pReturn.put("value", dbInterest);
 			pReturn.put("base", dbInterestBase);
 			pReturn.put("baseName", pConfigParams.get("interestBaseName"));
 			pReturn.put("delta", dbInterestDelta);
@@ -271,11 +282,11 @@ public class SimulatorObject
 		return pReturn;
 	}
 
-	private JSONObject getCommisions() throws JSONException
+	private JSONObject getFees() throws JSONException
 	{
 		JSONObject pReturn = new JSONObject();
-		JSONObject pCommisionsOpening = new JSONObject();
-		JSONObject pCommisionsOperating = new JSONObject();
+		JSONObject pOpeningFee = new JSONObject();
+		JSONObject pOperatingFee = new JSONObject();
 		double dbOpeningFix;
 		double dbOpeningPercent;
 		double dbOpeningMax;
@@ -284,24 +295,24 @@ public class SimulatorObject
 		double dbOperatingPercent;
 		double dbOperatingMax;
 		double dbOperatingMin;
-		dbOpeningFix = Double.parseDouble((String) pConfigParams.get("commisionOpeningFix"));
-		dbOpeningPercent = Double.parseDouble((String) pConfigParams.get("commisionOpeningPercent"));
-		dbOpeningMax = Double.parseDouble((String) pConfigParams.get("commisionOpeningMax"));
-		dbOpeningMin = Double.parseDouble((String) pConfigParams.get("commisionOpeningMin"));
-		dbOperatingFix = Double.parseDouble((String) pConfigParams.get("commisionOperatingFix"));
-		dbOperatingPercent = Double.parseDouble((String) pConfigParams.get("commisionOperatingPercent"));
-		dbOperatingMax = Double.parseDouble((String) pConfigParams.get("commisionOperatingMax"));
-		dbOperatingMin = Double.parseDouble((String) pConfigParams.get("commisionOperatingMin"));
-		pCommisionsOpening.put("fix", dbOpeningFix);
-		pCommisionsOpening.put("percent", dbOpeningPercent);
-		pCommisionsOpening.put("max", dbOpeningMax);
-		pCommisionsOpening.put("min", dbOpeningMin);
-		pReturn.put("opening", pCommisionsOpening);
-		pCommisionsOperating.put("fix", dbOperatingFix);
-		pCommisionsOperating.put("percent", dbOperatingPercent);
-		pCommisionsOperating.put("max", dbOperatingMax);
-		pCommisionsOperating.put("min", dbOperatingMin);
-		pReturn.put("operation", pCommisionsOperating);
+		dbOpeningFix = Double.parseDouble((String) pConfigParams.get("openingFeeFix"));
+		dbOpeningPercent = Double.parseDouble((String) pConfigParams.get("openingFeePercent"));
+		dbOpeningMax = Double.parseDouble((String) pConfigParams.get("openingFeeMax"));
+		dbOpeningMin = Double.parseDouble((String) pConfigParams.get("openingFeeMin"));
+		dbOperatingFix = Double.parseDouble((String) pConfigParams.get("operatingFeeFix"));
+		dbOperatingPercent = Double.parseDouble((String) pConfigParams.get("operatingFeePercent"));
+		dbOperatingMax = Double.parseDouble((String) pConfigParams.get("operatingFeeMax"));
+		dbOperatingMin = Double.parseDouble((String) pConfigParams.get("operatingFeeMin"));
+		pOpeningFee.put("fix", dbOpeningFix);
+		pOpeningFee.put("percent", dbOpeningPercent);
+		pOpeningFee.put("max", dbOpeningMax);
+		pOpeningFee.put("min", dbOpeningMin);
+		pReturn.put("opening", pOpeningFee);
+		pOperatingFee.put("fix", dbOperatingFix);
+		pOperatingFee.put("percent", dbOperatingPercent);
+		pOperatingFee.put("max", dbOperatingMax);
+		pOperatingFee.put("min", dbOperatingMin);
+		pReturn.put("operation", pOperatingFee);
 		return pReturn;
 	}
 }
