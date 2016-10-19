@@ -52,6 +52,7 @@ public class SimulatorsManager
       String strDisclaimer;
       String strContractConditions;
       String strLOPD;
+      String strDescription;
       try
       {
          strQuery = "select s.id_simulador, s.entidad, s.categoria, s.Nombre_Comercial, s.tipo_calculo, s.activo, "
@@ -60,6 +61,7 @@ public class SimulatorsManager
                + "(select i.traduccion from BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_lopd) as texto_lopd, "
                + "(select i.traduccion from BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_condiciones) as texto_condiciones, "
                + "(select i.traduccion from BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_aviso_legal) as texto_aviso_legal, "
+               + "(select i.traduccion from BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_desc) as texto_desc, "
                + "p.clave, p.valor " + "from BDPTB235_SIMULADORES s,  " + "BDPTB236_PARAM_SIMULADORES p  "
                + "where  s.id_simulador=p.id_simulador " + "and s.entidad = ?  " + "and s.activo = '1'";
          if (strSimulatorName != null && !strSimulatorName.trim().isEmpty() && !"null".equals(strSimulatorName.trim()))
@@ -72,10 +74,11 @@ public class SimulatorsManager
          pPreparedStatement.setString(1, strLanguage);
          pPreparedStatement.setString(2, strLanguage);
          pPreparedStatement.setString(3, strLanguage);
-         pPreparedStatement.setString(4, strNRBE);
+         pPreparedStatement.setString(4, strLanguage);
+         pPreparedStatement.setString(5, strNRBE);
          if (strSimulatorName != null && !strSimulatorName.trim().isEmpty() && !"null".equals(strSimulatorName.trim()))
          {
-            pPreparedStatement.setString(5, strSimulatorName);
+            pPreparedStatement.setString(6, strSimulatorName);
          }
          pResultSet = pPreparedStatement.executeQuery();
          /* Recupera los parametros de configuración */
@@ -109,7 +112,8 @@ public class SimulatorsManager
                strDisclaimer = pResultSet.getString("TEXTO_AVISO_LEGAL");
                strContractConditions = pResultSet.getString("TEXTO_CONDICIONES");
                strLOPD = pResultSet.getString("TEXTO_LOPD");
-               pSimulatorObject = new SimulatorObject(nSimulatorId, strNRBE, strCategory, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail, fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone, strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions);
+               strDescription = pResultSet.getString("TEXTO_DESC");
+               pSimulatorObject = new SimulatorObject(nSimulatorId, strNRBE, strCategory, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail, fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone, strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions, strDescription);
             }
             pSimulatorObject.addConfigParam(pResultSet.getString("CLAVE"), pResultSet.getString("VALOR"));
          }

@@ -4,6 +4,7 @@ import java.util.Hashtable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import com.rsi.Constantes;
 
 /**
  * Objeto que representa toda la información y configuración que contiene un simulador
@@ -23,6 +24,7 @@ public class SimulatorObject
    private boolean                   fAllowUserTelephone;
    private String                    strDisclaimer;
    private String                    strContractConditions;
+   private String                    strDescription;
    private String                    strLOPD;
    private Hashtable<String, Object> pConfigParams;
    private LoanType                  pLoanType;
@@ -70,7 +72,7 @@ public class SimulatorObject
    public SimulatorObject(int nId, String strNRBE, String strCategory, String strComercialName, String strLoanType,
          boolean fIsActive, boolean fAllowBooking, boolean fAllowUserEmail, boolean fAllowUserTelephone,
          String strCustomerSupportEmail, String strCustomerSupportTelephone, String strReceivingOfficeEmail,
-         String strLOPD, String strDisclaimer, String strContractConditions)
+         String strLOPD, String strDisclaimer, String strContractConditions, String strDescription)
    {
       this.nId = nId;
       this.strNRBE = strNRBE;
@@ -87,6 +89,7 @@ public class SimulatorObject
       this.strLOPD = strLOPD;
       this.strDisclaimer = strDisclaimer;
       this.strContractConditions = strContractConditions;
+      this.strDescription = strDescription;
       this.pConfigParams = new Hashtable<String, Object>();
    }
 
@@ -106,22 +109,21 @@ public class SimulatorObject
       JSONObject pReturn = new JSONObject();
       JSONObject pConfig = new JSONObject();
       JSONObject pTerms;
-      pReturn.put("nrbe", strNRBE);
-      pReturn.put("comercialName", strComercialName);
-      pReturn.put("sacEmail", strCustomerSupportEmail);
-      pReturn.put("sacTelephone", strCustomerSupportTelephone);
-      pReturn.put("oficinaEmail", strReceivingOfficeEmail);
-      pReturn.put("category", strCategory);
-      pReturn.put("calcType", pLoanType.name());
-      pReturn.put("active", fIsActive);
-      pReturn.put("allowBooking", fAllowBooking);
-      pReturn.put("allowUserEmail", fAllowUserEmail);
-      pReturn.put("allowUserTelephone", fAllowUserTelephone);
-      pReturn.put("lopd", strLOPD);
-      pReturn.put("disclaimer", strDisclaimer);
-      pReturn.put("contractConditions", strContractConditions);
-      pReturn.put("allowUserTelephone", fAllowUserTelephone);
-      pReturn.put("allowUserTelephone", fAllowUserTelephone);
+      pReturn.put(Constantes.SIMULADOR_NRBE, strNRBE);
+      pReturn.put(Constantes.SIMULADOR_COMERCIAL_NAME, strComercialName);
+      pReturn.put(Constantes.SIMULADOR_SAC_EMAIL, strCustomerSupportEmail);
+      pReturn.put(Constantes.SIMULADOR_SAC_TELEPHONE, strCustomerSupportTelephone);
+      pReturn.put(Constantes.SIMULADOR_OFICINA_EMAIL, strReceivingOfficeEmail);
+      pReturn.put(Constantes.SIMULADOR_CATEGORY, strCategory);
+      pReturn.put(Constantes.SIMULADOR_CALC_TYPE, pLoanType.name());
+      pReturn.put(Constantes.SIMULADOR_ACTIVE, fIsActive);
+      pReturn.put(Constantes.SIMULADOR_ALLOW_BOOKING, fAllowBooking);
+      pReturn.put(Constantes.SIMULADOR_ALLOW_USER_EMAIL, fAllowUserEmail);
+      pReturn.put(Constantes.SIMULADOR_ALLOW_USER_TELEPHONE, fAllowUserTelephone);
+      pReturn.put(Constantes.SIMULADOR_LOPD, strLOPD);
+      pReturn.put(Constantes.SIMULADOR_DISCLAIMER, strDisclaimer);
+      pReturn.put(Constantes.SIMULADOR_CONTRACT_CONDITIONS, strContractConditions);
+      pReturn.put(Constantes.SIMULADOR_DESCRIPTION, strDescription);
       /* se realiza la comprobación si tiene comisión de apertuyra para rellenar los datos */
       switch (pLoanType)
       {
@@ -164,15 +166,21 @@ public class SimulatorObject
    public String toString()
    {
       StringBuilder pSb = new StringBuilder();
-      pSb.append("Id              :" + nId + "\n");
-      pSb.append("NRBE            :" + strNRBE + "\n");
-      pSb.append("ComercialName   :" + strComercialName + "\n");
-      pSb.append("Type            :" + pLoanType.name() + "\n");
-      pSb.append("IsActive        :" + fIsActive + "\n");
-      pSb.append("AllowBooking    :" + fAllowBooking + "\n");
-      pSb.append("AllowUserEmail    :" + fAllowUserEmail + "\n");
-      pSb.append("AllowUserTelephone:" + fAllowUserTelephone + "\n");
-      pSb.append("ConfigParams    :" + pConfigParams);
+      pSb.append("Id                  : " + nId + "\n");
+      pSb.append("NRBE                : " + strNRBE + "\n");
+      pSb.append("ComercialName       : " + strComercialName + "\n");
+      pSb.append("Type                : " + pLoanType.name() + "\n");
+      pSb.append("IsActive            : " + fIsActive + "\n");
+      pSb.append("CustomerSupportEmail: " + strCustomerSupportEmail + "\n");
+      pSb.append("CustomerSupportTfn  : " + strCustomerSupportTelephone + "\n");
+      pSb.append("AllowBooking        : " + fAllowBooking + "\n");
+      pSb.append("AllowUserEmail      : " + fAllowUserEmail + "\n");
+      pSb.append("AllowUserTelephone  : " + fAllowUserTelephone + "\n");
+      pSb.append("Description         : " + strDescription + "\n");
+      pSb.append("Disclaimer          : " + strDisclaimer + "\n");
+      pSb.append("LOPD                : " + strLOPD + "\n");
+      pSb.append("ContractConditions  : " + strContractConditions + "\n");
+      pSb.append("ConfigParams        : " + pConfigParams);
       return pSb.toString();
    }
 
