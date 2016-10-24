@@ -23,7 +23,7 @@
    				 "  sgn \"tipoApunte\"," +
    				 "  case" +
    				 "   when trim(CONCPT_APNTE) like 'TRF.%' then 'TRANSFERENCIAS'" +
-   				 "   when trim(COD_ORGN_APNTE) = 'TF' then 'TRANSFERENCIAS'" +
+   				 "   when trim(COD_ORGN_APNTE) in ('TF','TR') then 'TRANSFERENCIAS'" +
    				 "   when trim(CONCPT_APNTE) like 'TJ-%' then 'TARJETAS'" +
    				 "   when trim(CONCPT_APNTE) like 'TARJETA%' then 'TARJETAS'" +
    				 "   when trim(CONCPT_APNTE) like 'RCBO%' then 'RECIBOS'" +
@@ -37,7 +37,6 @@
              strEntidad + "')";
     }
     else{
-       if(strDateIni.equals(strDateFin)){
            strDateFin = strDateFin + "-01";
            String partes[] = strDateFin.split("-");
            Calendar dateDateFin = Calendar.getInstance();    
@@ -45,12 +44,12 @@
            dateDateFin.add(Calendar.MONTH, 1);
            strDateFin=dateDateFin.toString();
            strDateFin = dateDateFin.get(Calendar.YEAR) + "-" + dateDateFin.get(Calendar.MONTH) + "-" +dateDateFin.get(Calendar.DATE);
-           strQuery = strQuery + " and fecha_oprcn_dif < round(to_date('" + strDateFin + "','yyyy-mm-dd'),'mm')";
-       }
-       else{
-         strDateFin = strDateFin + "-21";
-         strQuery = strQuery + " and fecha_oprcn_dif <= round(to_date('" + strDateFin + "','yyyy-mm-dd'),'mm')";
-       }    
+           //strQuery = strQuery + " and fecha_oprcn_dif < to_date('" + strDateFin + "','yyyy-mm-dd')";  
+           strQuery = strQuery + " and fecha_oprcn_dif < " +             
+                 " ( select max(tm.fecha_oprcn_dif) " +
+                 " from rdwc01.mi_do_apte_cta tm where cod_nrbe_en='" + strEntidad + "' " +
+                 " and tm.fecha_oprcn_dif < to_date('" + strDateFin + "','yyyy-mm-dd') " + 
+                 " )";
     }   
     strDateIni = strDateIni + "-01";         
     strQuery = strQuery + " and fecha_oprcn_dif >= round(to_date('" + strDateIni + "','yyyy-mm-dd'),'mm')";
@@ -59,7 +58,7 @@
    				 filtroTipoApunte +
    				 " group by to_char(fecha_oprcn_dif,'YYYY-MM'), case" +
    				 "   when trim(CONCPT_APNTE) like 'TRF.%' then 'TRANSFERENCIAS'" +
-   				 "   when trim(COD_ORGN_APNTE) = 'TF' then 'TRANSFERENCIAS'" +
+   				 "   when trim(COD_ORGN_APNTE) in ('TF','TR') then 'TRANSFERENCIAS'" +
    				 "   when trim(CONCPT_APNTE) like 'TJ-%' then 'TARJETAS'" +
    				 "   when trim(CONCPT_APNTE) like 'TARJETA%' then 'TARJETAS'" +
    				 "   when trim(CONCPT_APNTE) like 'RCBO%' then 'RECIBOS'" +

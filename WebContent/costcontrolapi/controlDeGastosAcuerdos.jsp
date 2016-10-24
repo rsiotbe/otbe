@@ -11,11 +11,34 @@
 "
 %>
 <%
+
 	String strLinea = request.getParameter("codLinea");
+
+    String strCodClasificacion = request.getParameter("codClasificacion");
+
 	String whereLineaEq="";
 	if(strLinea != null){
 	    whereLineaEq=" AND T1.COD_LINEA = '" + strLinea + "'";
 	}
+	else if(strCodClasificacion != null){
+	  switch(Integer.parseInt(strCodClasificacion)){
+		  case 1:			  
+			  whereLineaEq=" AND trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0311','0321')";			  
+			  break;
+		  case 2:
+			  whereLineaEq=" AND trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0351','0352')";
+			  break;			  
+		  case 3:
+			  whereLineaEq=" AND trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) = '0171'";
+			  break;
+		  case 4:
+			  whereLineaEq=" AND trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) = '0151'";
+			  break;
+		  case 5:
+			  whereLineaEq=" AND trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0551','0151')";
+			  break;
+	  }
+  }
 /* BEGIN: Extracción de los acuerdos y sus alias de Banca */
     String strQuery = 
    		 " select  substr(b.cta_aso,11,20) acuerdo, trim (b.descr_txt) txtproducto " +
@@ -42,6 +65,9 @@
        strAliases = coma + strAliases + "'" + strAcuerdo + "' , '" + strAlias + "'" ;
        strFiltroAcuerdos = strFiltroAcuerdos + coma + strAcuerdo;
       coma=",";
+   }
+   if(coma.equals("")){
+   	strFiltroAcuerdos="-1";
    }
    strFiltroAcuerdos = strFiltroAcuerdos + ") ";
    pResultSet.close();
@@ -86,6 +112,7 @@
 	    strFiltroAcuerdos = " and t1.num_sec_ac in (";
 	    coma="";
    
+
 	   while (pResultSet.next())
 	   {      
 	       String strAcuerdo = (String) pResultSet.getString("acuerdo");
@@ -94,6 +121,11 @@
 	       strFiltroAcuerdos = strFiltroAcuerdos + coma + strAcuerdo;
 	      coma=",";
 	   }
+	   if(coma.equals("")){
+	   	strFiltroAcuerdos = strFiltroAcuerdos + "-1";
+	   	strAliases = " -1,'nulo' ";
+	   } 
+	   
 	   strFiltroAcuerdos = strFiltroAcuerdos + ") ";
 	   pResultSet.close();
 	   pPreparedStatement.close();
@@ -105,8 +137,23 @@
 	strQuery =
 		" SELECT" +   
 		" 	t1.NUM_SEC_AC \"acuerdo\", trim(t2.NOMB_GRP_PD) \"nombreGrupo\"," +
-		" 	trim(nvl(t3.NOMB_PDV, t2.NOMB_GRP_PD)) \"nombreProducto\"," +				
-		"   decode (t1.num_sec_ac," + strAliases + ") \"aliasBanca\", t1.COD_LINEA \"codLinea\"" +
+		" 	trim(nvl(t3.NOMB_PDV, t2.NOMB_GRP_PD)) \"nombreProducto\"," +			
+		" case " + 
+		"  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0311','0321')  then 'PASIVO A LA VISTA'" + 
+		"  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0351','0352')  then 'DEPÓSITOS'" + 
+		"  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) =  '0171'  then 'PRÉSTAMOS'" + 
+		"  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) =  '0151'  then 'TARJETAS CRÉDITO'" + 
+		"  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0151','0551')  then 'TARJETAS CRÉDITO Y DÉBITO'" + 
+		" end \"nombreClasificacion\", " + 
+        " case " + 
+        "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0311','0321')  then '1'" + 
+        "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0351','0352')  then '2'" + 
+        "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) =  '0171'  then '3'" + 
+        "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) =  '0151'  then '4'" + 
+        "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0151','0551')  then '5'" + 
+        " end \"codClasificacion\", " + 
+		"   decode (t1.num_sec_ac," + strAliases + ") \"aliasBanca\", t1.COD_LINEA \"codLinea\"," +
+		"     trim(t1.ID_GRP_PD) \"codGrupo\"" +
 		" FROM" +
 		" 	rdwc01.mi_clte_rl_ac t1" +
 		" 	left join rdwc01.MI_LINEA_GRUPO t2" +
