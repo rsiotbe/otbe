@@ -26,7 +26,23 @@ public class SaldosContratos
 	@GET
 	@Path("/contracts/balances/{idContract: [0-9]+}/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}/to/{fechaFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response saldosDeFamiliaProductosDesdeHasta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+	public Response saldosDeUnContratoDesdeHasta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+			String strData) throws Exception
+	{
+		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+		pLog.info("Movimientos de un contrato");
+		return pReturn;
+	}
+
+	/** Obtiene posiciones de saldos a fin de mes para un acuerdo desde fecha inicio hasta última fecha disponible En el
+	 * documento Webservice2
+	 * 
+	 * @return Objeto que contiene la respuesta y en caso positivo los saldos por fin de mes
+	 * @throws Exception */
+	@GET
+	@Path("/contracts/balances/{idContract: [0-9]+}/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}/uptodate")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response saldosDeUnContratoDesdeHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
 	{
 		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
@@ -57,7 +73,7 @@ public class SaldosContratos
 	@GET
 	@Path("/contracts/balances/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}/uptodate")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response saldosDeUnContratoDesdeHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+	public Response saldosDeFamiliasProductosHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
 	{
 		pLog.info(strData);

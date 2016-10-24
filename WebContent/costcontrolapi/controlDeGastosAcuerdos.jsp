@@ -57,6 +57,7 @@
 	String strAliases = "";
 	String strFiltroAcuerdos = " and t1.num_sec_ac in (";
 	String coma="";
+	String strIdInterno=request.getParameter("idInternoPe");
 	
    while (pResultSet.next())
    {      
@@ -99,7 +100,7 @@
 	                "   AND t1.COD_RL_PERS_AC = '01'" +
 	                "   AND t1.NUM_RL_ORDEN = 1" + 
 	                "   AND t1.COD_ECV_PERS_AC = '2'" + whereLineaEq +
-	                "   AND t1.ID_INTERNO_PE = " + request.getParameter("idInternoPe") +
+	                "   AND t1.ID_INTERNO_PE = " + strIdInterno +
 	                "   and t2.mi_fecha_fin = (select MI_FECHA_PROCESO from rdwc01.ce_carga_tabla" +
 	                "       where nomtabla='MI_LINEA_GRUPO')";
 	    pConnection = null;
@@ -172,7 +173,14 @@
 		" 	AND t1.COD_RL_PERS_AC = '01'" +
 		" 	AND t1.NUM_RL_ORDEN = 1" + strFiltroAcuerdos +
 		" 	AND t1.COD_ECV_PERS_AC = '2'" + whereLineaEq +
-		" 	AND t1.ID_INTERNO_PE = " + request.getParameter("idInternoPe") +
+		" 	AND t1.ID_INTERNO_PE = " + strIdInterno +
+      " and case " + 
+      "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0311','0321')  then '1'" + 
+      "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0351','0352')  then '2'" + 
+      "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) =  '0171'  then '3'" + 
+      "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) =  '0151'  then '4'" + 
+      "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0151','0551')  then '5'" + 
+      " end	is not null" +	
 		" 	and t2.mi_fecha_fin = (select MI_FECHA_PROCESO from rdwc01.ce_carga_tabla" +
 		" 		where nomtabla='MI_LINEA_GRUPO')";
 	String strResponse = QueryCustomizer.process(request,strQuery);       

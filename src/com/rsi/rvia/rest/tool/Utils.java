@@ -32,13 +32,11 @@ public class Utils
 {
 	private static Logger	pLog	= LoggerFactory.getLogger(Utils.class);
 
-	/**
-	 * Dado el uriInfo, compone el path original (con el nombre del parametro, no el valor) Ejemplo de salida:
+	/** Dado el uriInfo, compone el path original (con el nombre del parametro, no el valor) Ejemplo de salida:
 	 * /cards/{id}
 	 * 
 	 * @param pUriInfo
-	 * @return
-	 */
+	 * @return */
 	public static String getPrimaryPath(UriInfo pUriInfo)
 	{
 		String strKeys = "";
@@ -56,14 +54,12 @@ public class Utils
 		return ("/" + strPath);
 	}
 
-	/**
-	 * Convierte un ResultSet a un Json bien formado
+	/** Convierte un ResultSet a un Json bien formado
 	 * 
 	 * @param pResultSet
 	 * @return
 	 * @throws SQLException
-	 * @throws JSONException
-	 */
+	 * @throws JSONException */
 	public static JSONArray convertResultSetToJSON(ResultSet pResultSet) throws SQLException, JSONException
 	{
 		JSONArray pJson = new JSONArray();
@@ -75,6 +71,10 @@ public class Utils
 			for (int i = 1; i < numColumns + 1; i++)
 			{
 				String column_name = rsmd.getColumnName(i);
+				if (column_name.indexOf("_NOPRINT") != -1)
+				{
+					continue;
+				}
 				if (rsmd.getColumnType(i) == java.sql.Types.ARRAY)
 				{
 					pJsonObj.put(column_name, pResultSet.getArray(column_name));
@@ -137,26 +137,22 @@ public class Utils
 		return pJson;
 	}
 
-	/**
-	 * Devuelve un Map con los parametros del path (key -> value)
+	/** Devuelve un Map con los parametros del path (key -> value)
 	 * 
 	 * @param pUriInfo
 	 *           UriInfo con la información de path
-	 * @return MultivaluedMap con el key y el valor de cada elemento del path dinámico
-	 */
+	 * @return MultivaluedMap con el key y el valor de cada elemento del path dinámico */
 	public static MultivaluedMap<String, String> getParamByPath(UriInfo pUriInfo)
 	{
 		MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
 		return pListParameters;
 	}
 
-	/**
-	 * Convierte un MultivaluedMap a un queryString.
+	/** Convierte un MultivaluedMap a un queryString.
 	 * 
 	 * @param pMap
 	 *           MultivaluedMap a convertir
-	 * @return String en formato queryString del tipo "&key=value"
-	 */
+	 * @return String en formato queryString del tipo "&key=value" */
 	public static String multiValuedMapToQueryString(MultivaluedMap<String, String> pMap)
 	{
 		String strReturn = "";
@@ -212,15 +208,13 @@ public class Utils
 		return strReturn;
 	}
 
-	/**
-	 * Obtiene un String a traves de un InputStream de un recuerso compilado. Ejemplo de uso: lectura de los templates
+	/** Obtiene un String a traves de un InputStream de un recuerso compilado. Ejemplo de uso: lectura de los templates
 	 * xhtml.
 	 * 
 	 * @param is
 	 *           InputStream del recurso
 	 * @return String con del recurso
-	 * @throws Exception
-	 */
+	 * @throws Exception */
 	public static String getStringFromInputStream(InputStream is) throws Exception
 	{
 		BufferedReader pBufferedReader = null;
@@ -256,14 +250,12 @@ public class Utils
 		return pStringBuilder.toString();
 	}
 
-	/**
-	 * Convierte un Hashtable a un JSON (Hace uso de la librería Jackson)
+	/** Convierte un Hashtable a un JSON (Hace uso de la librería Jackson)
 	 * 
 	 * @param htData
 	 *           Hashtable a convertir.
 	 * @return String json que contiene los valores del hashtable.
-	 * @throws JSONException
-	 */
+	 * @throws JSONException */
 	public static String hashTableToJson(Hashtable<String, String> htData) throws JSONException
 	{
 		String strReturn = "{}";
@@ -278,13 +270,11 @@ public class Utils
 		return strReturn;
 	}
 
-	/**
-	 * Obtiene la cadena que contiene el stacktrace de una excepción
+	/** Obtiene la cadena que contiene el stacktrace de una excepción
 	 * 
 	 * @param ex
 	 *           Excepcion a escribir
-	 * @return Cadena que contiene la pila
-	 */
+	 * @return Cadena que contiene la pila */
 	public static String getExceptionStackTrace(Exception ex)
 	{
 		StringWriter errors = new StringWriter();
@@ -314,13 +304,11 @@ public class Utils
 		return strReturn;
 	}
 
-	/**
-	 * Devuelve un string con los datos de un hastable en formato cadena
+	/** Devuelve un string con los datos de un hastable en formato cadena
 	 * 
 	 * @param pHashtable
 	 *           Hashtable con los datos
-	 * @return
-	 */
+	 * @return */
 	public static String hastablePrettyPrintHtml(Hashtable<?, ?> pHashtable)
 	{
 		String strHtml = "";

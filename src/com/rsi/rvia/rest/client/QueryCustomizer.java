@@ -25,6 +25,15 @@ public class QueryCustomizer
 			strFieldslist = "*";
 		}
 		strQuery = getParsedQuery(strQuery, strFieldslist, request.getParameter("sorterslist"));
+		if (request.getParameter("pagesize") != null)
+		{
+			String pageNumber = "1";
+			if (request.getParameter("pagenumber") != null)
+			{
+				pageNumber = request.getParameter("pagenumber");
+			}
+			strQuery = paginator(strQuery, request.getParameter("pagesize"), pageNumber);
+		}
 		pLog.info("Query resuelta: " + strQuery);
 		// TODO: Evitar el intento de validación de token cuando se realiza login, y por tanto, la salida es un callback
 		// FIXME: Activar seguridad en producción: OJO: En el caso de login no debe validarse el token.
@@ -91,19 +100,28 @@ public class QueryCustomizer
 		qParsed = qParsed + " ) __ZZ__ ";
 		if (sortersList == null && fieldsList != null)
 		{
-			String rr = qParsed.replace("__XX__", fieldsList).replace("__ZZ__", "");
 			return qParsed.replace("__XX__", fieldsList).replace("__ZZ__", "");
 		}
 		if (sortersList != null && fieldsList == null)
 		{
-			String rr = qParsed.replace("__XX__", "").replace("__ZZ__", " order by " + sortersList);
 			return qParsed.replace("__XX__", "").replace("__ZZ__", " order by " + sortersList);
 		}
 		if (sortersList != null && fieldsList != null)
 		{
-			String rr = qParsed.replace("__XX__", fieldsList).replace("__ZZ__", " order by " + sortersList);
 			return qParsed.replace("__XX__", fieldsList).replace("__ZZ__", " order by " + sortersList);
 		}
 		return query;
+	}
+
+	private static String paginator(String query, String strPageSize, String strPageNumber) throws Exception
+	{
+		String strPaginator = " select * from (";
+		strPaginator = strPaginator + " select paginator.*, rownum rownum_NOPRINT from (";
+		strPaginator = strPaginator + query;
+		strPaginator = strPaginator + " ) paginator";
+		strPaginator = strPaginator + " where rownum < ((" + strPageNumber + " * " + strPageSize + ") + 1) )";
+		strPaginator = strPaginator + " where rownum_NOPRINT >= (((" + strPageNumber + " - 1) * " + strPageSize
+				+ ") + 1)";
+		return strPaginator;
 	}
 }

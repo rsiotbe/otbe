@@ -45,8 +45,7 @@ public class OperationManager
 	private static HttpSession		pSession;
 	private static Logger			pLog						= LoggerFactory.getLogger(OperationManager.class);
 
-	/**
-	 * Se procesa una petición que llega desde la antigua apliación de ruralvia
+	/** Se procesa una petición que llega desde la antigua apliación de ruralvia
 	 * 
 	 * @param pRequest
 	 *           Objeto petición original
@@ -56,8 +55,7 @@ public class OperationManager
 	 *           Datos asociados a la petición
 	 * @param pMediaType
 	 *           Tipo de mediatype que debe cumplir la petición
-	 * @return Objeto respuesta de Jersey
-	 */
+	 * @return Objeto respuesta de Jersey */
 	public static Response processDataFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String strData,
 			MediaType pMediaType)
 	{
@@ -97,8 +95,7 @@ public class OperationManager
 		return pResponseConnector;
 	}
 
-	/**
-	 * Se procesa una petición que solo pinta una página sin datos de una petición que llega desde la antigua apliación
+	/** Se procesa una petición que solo pinta una página sin datos de una petición que llega desde la antigua apliación
 	 * de ruralvia
 	 * 
 	 * @param pRequest
@@ -109,8 +106,7 @@ public class OperationManager
 	 *           Datos asociados a la petición
 	 * @param pMediaType
 	 *           Tipo de mediatype que debe cumplir la petición
-	 * @return Objeto respuesta de Jersey
-	 */
+	 * @return Objeto respuesta de Jersey */
 	public static Response processTemplateFromRvia(HttpServletRequest pRequest, UriInfo pUriInfo, String strJsonData)
 	{
 		MiqQuests pMiqQuests = null;
@@ -148,8 +144,7 @@ public class OperationManager
 		return pResponseConnector;
 	}
 
-	/**
-	 * Se procesa una petición para consumo http, la cual puede ser ajena a Ruralvía
+	/** Se procesa una petición para consumo http, la cual puede ser ajena a Ruralvía
 	 * 
 	 * @param pRequest
 	 *           Objeto petición original
@@ -163,8 +158,7 @@ public class OperationManager
 	 * @throws JoseException
 	 * @throws IOException
 	 * @throws InvalidKeySpecException
-	 * @throws NoSuchAlgorithmException
-	 */
+	 * @throws NoSuchAlgorithmException */
 	public static Response processForAPI(HttpServletRequest pRequest, UriInfo pUriInfo, String strData,
 			MediaType pMediaType) throws JoseException, IOException, NoSuchAlgorithmException, InvalidKeySpecException
 	{
@@ -213,6 +207,11 @@ public class OperationManager
 				// Si es login generamos JWT
 				HashMap<String, String> claims;
 				claims = doLogin();
+				if (pRequest.getParameter("idInternoPe") != null)
+				{
+					claims.remove("idInternoPe");
+					claims.put("idInternoPe", pRequest.getParameter("idInternoPe"));
+				}
 				if (claims != null)
 					JWT = ManageJWToken.generateJWT(claims);
 				else
@@ -338,8 +337,7 @@ public class OperationManager
 		}
 	}
 
-	/**
-	 * Se procesa la petición sin validar sesion en ISUM para devolver un template.
+	/** Se procesa la petición sin validar sesion en ISUM para devolver un template.
 	 * 
 	 * @param pRequest
 	 *           Objeto petición original
@@ -349,8 +347,7 @@ public class OperationManager
 	 *           Datos asociados a la petición
 	 * @param pMediaType
 	 *           Tipo de mediatype que debe cumplir la petición
-	 * @return Objeto respuesta de Jersey
-	 */
+	 * @return Objeto respuesta de Jersey */
 	public static Response processTemplate(HttpServletRequest pRequest, UriInfo pUriInfo, String strJsonData)
 	{
 		MiqQuests pMiqQuests = null;
@@ -390,8 +387,7 @@ public class OperationManager
 		return pResponseConnector;
 	}
 
-	/**
-	 * Se procesa la petición sin validar sesion en ISUM para devolver un template.
+	/** Se procesa la petición sin validar sesion en ISUM para devolver un template.
 	 * 
 	 * @param pRequest
 	 *           Objeto petición original
@@ -401,8 +397,7 @@ public class OperationManager
 	 *           Datos asociados a la petición
 	 * @param pMediaType
 	 *           Tipo de mediatype que debe cumplir la petición
-	 * @return Objeto respuesta de Jersey
-	 */
+	 * @return Objeto respuesta de Jersey */
 	public static Response processGenericAPP(HttpServletRequest pRequest, UriInfo pUriInfo, String strJsonData,
 			MediaType pMediaType)
 	{
@@ -443,8 +438,7 @@ public class OperationManager
 		return pResponseConnector;
 	}
 
-	/**
-	 * Se procesa una petición que llega desde la antigua apliación de ruralvia
+	/** Se procesa una petición que llega desde la antigua apliación de ruralvia
 	 * 
 	 * @param pRequest
 	 *           Objeto petición original
@@ -458,8 +452,7 @@ public class OperationManager
 	 *           Idioma en el que se debe pintar la página si es necesario
 	 * @param pMediaType
 	 *           Tipo de mediatype que debe cumplir la petición
-	 * @return Objeto respuesta de Jersey
-	 */
+	 * @return Objeto respuesta de Jersey */
 	public static Response processDataFromSimulators(HttpServletRequest pRequest, UriInfo pUriInfo, String strBankName,
 			String strLoanName, String strLanguage, MediaType pMediaType)
 	{
@@ -510,8 +503,7 @@ public class OperationManager
 		return pResponseConnector;
 	}
 
-	/**
-	 * Último paso en el procesado de la respuesta, el resultado sera en forma de XHTML o JSON en funcion de el MediaType
+	/** Último paso en el procesado de la respuesta, el resultado sera en forma de XHTML o JSON en funcion de el MediaType
 	 * que se le pase. Encapsula la respuesta en un objeto Response.
 	 * 
 	 * @param pErrorCaptured
@@ -525,8 +517,7 @@ public class OperationManager
 	 * @param pRequestConfig
 	 *           Contiene información básica tanto del logueo como de la navegación (lang, id, etc)
 	 * @return Objeto Response con el resultado ya procesado
-	 * @throws Exception
-	 */
+	 * @throws Exception */
 	private static Response buildResponse(ErrorResponse pErrorCaptured, MediaType pMediaType, MiqQuests pMiqQuests,
 			String strJsonData, RequestConfig pRequestConfig) throws Exception
 	{
@@ -553,13 +544,11 @@ public class OperationManager
 		return (Response.status(nReturnHttpCode).entity(strJsonData).encoding(ENCODING_UTF8).build());
 	}
 
-	/**
-	 * Crea el objeto RequestConfigRvia validando la sesión contra ISUM (Recibe el token)
+	/** Crea el objeto RequestConfigRvia validando la sesión contra ISUM (Recibe el token)
 	 * 
 	 * @param pRequest
 	 * @return RequestConfigRvia con todos los datos cargados del token
-	 * @throws Exception
-	 */
+	 * @throws Exception */
 	private static RequestConfigRvia getValidateSession(HttpServletRequest pRequest) throws Exception
 	{
 		RequestConfigRvia pRequestConfigRvia = null;
@@ -575,13 +564,11 @@ public class OperationManager
 		return pRequestConfigRvia;
 	}
 
-	/**
-	 * Crea el objeto miqQuests a raiz de un UriInfo, Si pUriInfo viene a null devuelve MiqQuests a null
+	/** Crea el objeto miqQuests a raiz de un UriInfo, Si pUriInfo viene a null devuelve MiqQuests a null
 	 * 
 	 * @param pUriInfo
 	 * @return MiqQuests construido
-	 * @throws Exception
-	 */
+	 * @throws Exception */
 	private static MiqQuests createMiqQuests(UriInfo pUriInfo) throws Exception
 	{
 		MiqQuests pMiqQuests = null;
@@ -593,8 +580,7 @@ public class OperationManager
 		return pMiqQuests;
 	}
 
-	/**
-	 * Realiza una peteción al rest conector que devolvera los datos de un end point en formato JSON
+	/** Realiza una peteción al rest conector que devolvera los datos de un end point en formato JSON
 	 * 
 	 * @param pUriInfo
 	 *           Necesario para sacar los parametros del path
@@ -603,8 +589,7 @@ public class OperationManager
 	 * @param pMiqQuests
 	 * @param strJsonData
 	 * @return String en formato JSON con la información recuperada del endpoint
-	 * @throws Exception
-	 */
+	 * @throws Exception */
 	private static String doRestConector(UriInfo pUriInfo, HttpServletRequest pRequest, RequestConfig pRequestConfig,
 			MiqQuests pMiqQuests, String strJsonData) throws Exception
 	{
