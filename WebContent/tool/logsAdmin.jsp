@@ -10,6 +10,7 @@
 <%@page import="java.util.Enumeration"%>
 <%@page import="java.util.Set"%>
 <%@page import="java.util.Arrays"%>
+<%@page import ="ch.qos.logback.classic.spi.ILoggingEvent" %>
 <%
 	long beginPageLoadTime = System.currentTimeMillis();
 %>
@@ -191,8 +192,8 @@ td.center {
 
 			<%
 				LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-				List loggers = loggerContext.getLoggerList();
-				HashMap loggersMap = new HashMap(128);
+				List<Logger> loggers = loggerContext.getLoggerList();
+				HashMap<String, Logger> loggersMap = new HashMap<String, Logger>(128);
 				Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 				if (!loggersMap.containsKey(rootLogger.getName()))
 				{
@@ -221,7 +222,7 @@ td.center {
 						}
 					}
 				}
-				Set loggerKeys = loggersMap.keySet();
+				Set<String> loggerKeys = loggersMap.keySet();
 				String[] keys = new String[loggerKeys.size()];
 				keys = (String[]) loggerKeys.toArray(keys);
 				Arrays.sort(keys, String.CASE_INSENSITIVE_ORDER);
@@ -243,11 +244,11 @@ td.center {
 						loggerName = logger.getName();
 						loggerEffectiveLevel = String.valueOf(logger.getEffectiveLevel());
 						// appenders
-						Iterator iterator = logger.iteratorForAppenders();
+						Iterator<Appender<ILoggingEvent>> iterator = logger.iteratorForAppenders();
 						while (iterator.hasNext())
 						{
 							loggerAppenders += (loggerAppenders.length() != 0 ? ":" : "")
-									+ ((Appender) iterator.next()).getName();
+									+ ((Appender<ILoggingEvent>) iterator.next()).getName();
 						}
 					}
 			%>
@@ -271,7 +272,7 @@ td.center {
 								else
 								{
 					%> <a class='smallButton' href='<%=url%>'><%=logLevels[cnt]%></a>
-				</a>&nbsp; <%
+				&nbsp; <%
  	}
  		}
  %>
