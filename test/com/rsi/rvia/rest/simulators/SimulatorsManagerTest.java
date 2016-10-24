@@ -15,9 +15,10 @@ public class SimulatorsManagerTest extends TestBase
    public void testGetSimulatorsDataByName() throws Exception
    {
       final String NRBE = Constantes.CODIGO_BANCO_COOPERATIVO_ESPANOL;
+      final String NRBE_NAME = "Entidad";
       final String SIMULATOR_NAME = "Coche";
       final String LANGUAGE = Constantes.DEFAULT_LANGUAGE;
-      SimulatorObjectArray list = SimulatorsManager.getSimulatorsData(NRBE, SIMULATOR_NAME, LANGUAGE);
+      SimulatorObjectArray list = SimulatorsManager.getSimulatorsData(NRBE, NRBE_NAME, SIMULATOR_NAME, LANGUAGE);
       assertNotNull("La lista de simuladores es null", list);
       assertTrue("La lista de simuladores está vacía", !list.isEmpty());
       JSONObject json = list.toJson();
@@ -29,7 +30,7 @@ public class SimulatorsManagerTest extends TestBase
    public void testGetNRBEFromBankName() throws Exception
    {
       final String NAME = "bancocooperativo";
-      final String NRBE = SimulatorsManager.getNRBEFromBankName(NAME);
+      final String NRBE = SimulatorsManager.getNRBEFromName(NAME);
       assertEquals("El NRBE del banco no es correcto", Constantes.CODIGO_BANCO_COOPERATIVO_ESPANOL, NRBE);
    }
 }
