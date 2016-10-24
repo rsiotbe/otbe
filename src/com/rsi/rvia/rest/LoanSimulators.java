@@ -26,9 +26,9 @@ public class LoanSimulators
 	@Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
 			"application/x-ms-application" })
 	public Response getAllSimulatorsDefaultLanguageGet(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			@PathParam("entidad") String strBankName) throws Exception
+			@PathParam("entidad") String strNRBEName) throws Exception
 	{
-		return process(pRequest, pUriInfo, strBankName, null, null, MediaType.TEXT_HTML_TYPE);
+		return process(pRequest, pUriInfo, strNRBEName, null, null, MediaType.TEXT_HTML_TYPE);
 	}
 
 	@GET
@@ -106,13 +106,13 @@ public class LoanSimulators
 		return process(pRequest, pUriInfo, strBankName, strLoanName, strLanguage, MediaType.APPLICATION_JSON_TYPE);
 	}
 
-	private Response process(HttpServletRequest pRequest, UriInfo pUriInfo, String strBankName, String strLoanName,
+	private Response process(HttpServletRequest pRequest, UriInfo pUriInfo, String strNRBEName, String strLoanName,
 			String strLanguage, MediaType pMediaType)
 	{
-		pLog.info("entidad: " + strBankName);
+		pLog.info("entidad: " + strNRBEName);
 		pLog.info("nombre: " + strLoanName);
 		pLog.info("idioma: " + strLanguage);
-		Response pReturn = OperationManager.processDataFromSimulators(pRequest, pUriInfo, strBankName, strLoanName, strLanguage, pMediaType);
+		Response pReturn = OperationManager.processDataFromSimulators(pRequest, pUriInfo, strNRBEName, strLoanName, strLanguage, pMediaType);
 		pLog.info("Se devuelve la respuesta final al usuario");
 		return pReturn;
 	}

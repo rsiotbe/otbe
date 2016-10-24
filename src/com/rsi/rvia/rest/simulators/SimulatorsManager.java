@@ -29,8 +29,8 @@ public class SimulatorsManager
     * @return Datos de la configuración
     * @throws Exception
     */
-   public static SimulatorObjectArray getSimulatorsData(String strNRBE, String strSimulatorName, String strLanguage)
-         throws Exception
+   public static SimulatorObjectArray getSimulatorsData(String strNRBE, String strNRBEName, String strSimulatorName,
+         String strLanguage) throws Exception
    {
       SimulatorObjectArray alReturn = new SimulatorObjectArray();
       Connection pConnection = null;
@@ -113,7 +113,7 @@ public class SimulatorsManager
                strContractConditions = pResultSet.getString("TEXTO_CONDICIONES");
                strLOPD = pResultSet.getString("TEXTO_LOPD");
                strDescription = pResultSet.getString("TEXTO_DESC");
-               pSimulatorObject = new SimulatorObject(nSimulatorId, strNRBE, strCategory, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail, fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone, strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions, strDescription);
+               pSimulatorObject = new SimulatorObject(nSimulatorId, strNRBE, strNRBEName, strCategory, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail, fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone, strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions, strDescription);
             }
             pSimulatorObject.addConfigParam(pResultSet.getString("CLAVE"), pResultSet.getString("VALOR"));
          }
@@ -135,7 +135,7 @@ public class SimulatorsManager
       return alReturn;
    }
 
-   public static String getNRBEFromBankName(String strBankName) throws Exception
+   public static String getNRBEFromName(String strNRBEName) throws Exception
    {
       String strReturn;
       /* se carga el fichero de propiedades que contien la resolución de nombres */
@@ -154,7 +154,7 @@ public class SimulatorsManager
          }
       }
       /* se obtiene el codigo de entidad para el nombre dado */
-      JSONObject pDataObject = pPropNRBENames.getJSONObject(strBankName);
+      JSONObject pDataObject = pPropNRBENames.getJSONObject(strNRBEName);
       if (pDataObject == null)
       {
          throw new LogicalErrorException(400, 9998, "No se ha encontrado información para esta entidad", "No ha sido posible recuperar la información necesaria para esta entidad", null);

@@ -13,6 +13,7 @@ public class SimulatorObject
 {
    private int                       nId;
    private String                    strNRBE;
+   private String                    strNRBEName;
    private String                    strCategory;
    private String                    strComercialName;
    private String                    strCustomerSupportEmail;
@@ -52,6 +53,8 @@ public class SimulatorObject
     *           Id del simulador
     * @param strNRBE
     *           Entidad propietaria del simulador
+    * @param strNRBEName
+    *           Nombre de la entidad propietaria del simulador
     * @param strEntityName
     *           NOmbre de la entidad
     * @param strCategory
@@ -69,13 +72,15 @@ public class SimulatorObject
     * @param fAllowUserTelephone
     *           Permite la ingresión de telefono de contacto con el cliente
     */
-   public SimulatorObject(int nId, String strNRBE, String strCategory, String strComercialName, String strLoanType,
-         boolean fIsActive, boolean fAllowBooking, boolean fAllowUserEmail, boolean fAllowUserTelephone,
-         String strCustomerSupportEmail, String strCustomerSupportTelephone, String strReceivingOfficeEmail,
-         String strLOPD, String strDisclaimer, String strContractConditions, String strDescription)
+   public SimulatorObject(int nId, String strNRBE, String strNRBEName, String strCategory, String strComercialName,
+         String strLoanType, boolean fIsActive, boolean fAllowBooking, boolean fAllowUserEmail,
+         boolean fAllowUserTelephone, String strCustomerSupportEmail, String strCustomerSupportTelephone,
+         String strReceivingOfficeEmail, String strLOPD, String strDisclaimer, String strContractConditions,
+         String strDescription)
    {
       this.nId = nId;
       this.strNRBE = strNRBE;
+      this.strNRBEName = strNRBEName;
       this.strCustomerSupportEmail = strCustomerSupportEmail;
       this.strCustomerSupportTelephone = strCustomerSupportTelephone;
       this.strReceivingOfficeEmail = strReceivingOfficeEmail;
@@ -110,6 +115,7 @@ public class SimulatorObject
       JSONObject pConfig = new JSONObject();
       JSONObject pTerms;
       pReturn.put(Constantes.SIMULADOR_NRBE, strNRBE);
+      pReturn.put(Constantes.SIMULADOR_NRBE_NAME, strNRBEName);
       pReturn.put(Constantes.SIMULADOR_COMERCIAL_NAME, strComercialName);
       pReturn.put(Constantes.SIMULADOR_SAC_EMAIL, strCustomerSupportEmail);
       pReturn.put(Constantes.SIMULADOR_SAC_TELEPHONE, strCustomerSupportTelephone);
@@ -168,6 +174,7 @@ public class SimulatorObject
       StringBuilder pSb = new StringBuilder();
       pSb.append("Id                  : " + nId + "\n");
       pSb.append("NRBE                : " + strNRBE + "\n");
+      pSb.append("Nombre NRBE         : " + strNRBEName + "\n");
       pSb.append("ComercialName       : " + strComercialName + "\n");
       pSb.append("Type                : " + pLoanType.name() + "\n");
       pSb.append("IsActive            : " + fIsActive + "\n");
