@@ -25,15 +25,17 @@ public class QueryCustomizer
 			strFieldslist = "*";
 		}
 		strQuery = getParsedQuery(strQuery, strFieldslist, request.getParameter("sorterslist"));
+		String strPageSize = "100";
+		String pageNumber = "1";
 		if (request.getParameter("pagesize") != null)
 		{
-			String pageNumber = "1";
-			if (request.getParameter("pagenumber") != null)
-			{
-				pageNumber = request.getParameter("pagenumber");
-			}
-			strQuery = paginator(strQuery, request.getParameter("pagesize"), pageNumber);
+			strPageSize = request.getParameter("pagesize");
 		}
+		if (request.getParameter("pagenumber") != null)
+		{
+			pageNumber = request.getParameter("pagenumber");
+		}
+		strQuery = paginator(strQuery, strPageSize, pageNumber);
 		pLog.info("Query resuelta: " + strQuery);
 		// TODO: Evitar el intento de validación de token cuando se realiza login, y por tanto, la salida es un callback
 		// FIXME: Activar seguridad en producción: OJO: En el caso de login no debe validarse el token.
@@ -51,9 +53,29 @@ public class QueryCustomizer
 		JSONObject pJson = new JSONObject();
 		JSONObject pJsonExit = new JSONObject();
 		JSONArray json = Utils.convertResultSetToJSON(pResultSet);
+		int nTotalNumReg = json.length();
+		int nn;
+		int modulo = nTotalNumReg % Integer.parseInt(strPageSize);
+		if (modulo > 0)
+			nn = 1;
+		else
+			nn = 0;
+		int nTotalNumPages = (int) Math.ceil(nTotalNumReg / Integer.parseInt(strPageSize)) + nn;
+		int nextPage = (Integer.parseInt(pageNumber) < nTotalNumPages) ? Integer.parseInt(pageNumber) + 1
+				: Integer.parseInt(pageNumber);
+		int previousPage = (Integer.parseInt(pageNumber) > 1) ? Integer.parseInt(pageNumber) - 1
+				: Integer.parseInt(pageNumber);
+		JSONObject jsonMeta = new JSONObject();
+		jsonMeta.put("pagesize", Integer.parseInt(strPageSize));
+		jsonMeta.put("pagenumber", Integer.parseInt(pageNumber));
+		jsonMeta.put("nextpage", nextPage);
+		jsonMeta.put("previouspage", previousPage);
+		jsonMeta.put("totalpages", nTotalNumPages);
+		jsonMeta.put("totalrecords", nTotalNumReg);
 		pResultSet.close();
 		pPreparedStatement.close();
 		pConnection.close();
+		// pJsonExit.put("meta", jsonMeta);
 		pJsonExit.put("data", json);
 		pJson.put("response", pJsonExit);
 		return pJson.toString();

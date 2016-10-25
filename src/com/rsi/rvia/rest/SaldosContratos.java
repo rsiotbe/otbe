@@ -24,7 +24,7 @@ public class SaldosContratos
 	 * @return Objeto que contiene la respuesta y en caso positivo los saldos por fin de mes
 	 * @throws Exception */
 	@GET
-	@Path("/contracts/balances/{idContract: [0-9]+}/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}/to/{fechaFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}")
+	@Path("/contracts/balances/{idContract: [0-9]+}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response saldosDeUnContratoDesdeHasta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
@@ -40,7 +40,7 @@ public class SaldosContratos
 	 * @return Objeto que contiene la respuesta y en caso positivo los saldos por fin de mes
 	 * @throws Exception */
 	@GET
-	@Path("/contracts/balances/{idContract: [0-9]+}/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}/uptodate")
+	@Path("/contracts/balances/{idContract: [0-9]+}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response saldosDeUnContratoDesdeHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
@@ -56,7 +56,7 @@ public class SaldosContratos
 	 * @return Objeto que contiene la respuesta y en caso positivo los saldos por fin de mes
 	 * @throws Exception */
 	@GET
-	@Path("/contracts/balances/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}/to/{fechaFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}")
+	@Path("/contracts/balances/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response saldosFamiliaProductosDesdeHasta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
@@ -71,7 +71,7 @@ public class SaldosContratos
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
 	 * @throws Exception */
 	@GET
-	@Path("/contracts/balances/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}/uptodate")
+	@Path("/contracts/balances/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response saldosDeFamiliasProductosHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
@@ -88,7 +88,7 @@ public class SaldosContratos
 	 * @return Objeto que contiene la respuesta y en caso positivo los saldos por fin de mes
 	 * @throws Exception */
 	@GET
-	@Path("/contracts/balances/classification/{codClasificacion: [0-9]}/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}/to/{fechaFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}")
+	@Path("/contracts/balances/classification/{codClasificacion: [0-9]}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response saldosDeUnProdFamilyDesdeHasta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception
@@ -103,7 +103,7 @@ public class SaldosContratos
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
 	 * @throws Exception */
 	@GET
-	@Path("/contracts/balances/classification/{codClasificacion: [0-9]}/from/{fechaInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}/uptodate")
+	@Path("/contracts/balances/classification/{codClasificacion: [0-9]}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response saldosDeUnProdFamilyDesdeHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			String strData) throws Exception

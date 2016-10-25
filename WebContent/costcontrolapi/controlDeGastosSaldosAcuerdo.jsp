@@ -1,16 +1,34 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
  	import="
-		 com.rsi.rvia.rest.client.QueryCustomizer
+		 com.rsi.rvia.rest.client.QueryCustomizer,
+		 java.util.Calendar
 "
 %>
 <%
 	String strContrato = request.getParameter("idContract");
     String strIdInternoPe = request.getParameter("idInternoPe");
 	String strEntidad = request.getParameter("codEntidad");
-	String strDateIni = request.getParameter("fechaInicio");
-	String strDateFin = request.getParameter("fechaFin");
+	String strDateIni = request.getParameter("mesInicio");
+	String strDateFin = request.getParameter("mesFin");
+   Calendar dateDateAux = Calendar.getInstance(); 
+	
 
+   strDateIni = strDateIni + "-25";
+   String partes[] = strDateIni.split("-");
+   dateDateAux = Calendar.getInstance();    
+   dateDateAux.set(Integer.parseInt(partes[0]),Integer.parseInt(partes[1]),Integer.parseInt(partes[2]));
+   dateDateAux.add(Calendar.DATE, -1);
+   strDateIni = dateDateAux.toString();
+   strDateIni = dateDateAux.get(Calendar.YEAR) + "-" + dateDateAux.get(Calendar.MONTH) + "-" +dateDateAux.get(Calendar.DATE);   
+   if(strDateFin != null){
+	   strDateFin = strDateFin + "-01";  
+	   partes = strDateIni.split("-");
+	   dateDateAux.set(Integer.parseInt(partes[0]),Integer.parseInt(partes[1]),Integer.parseInt(partes[2]));
+	   dateDateAux.add(Calendar.MONTH, 1);
+	   strDateFin=dateDateAux.toString();
+	   strDateFin = dateDateAux.get(Calendar.YEAR) + "-" + dateDateAux.get(Calendar.MONTH) + "-" +dateDateAux.get(Calendar.DATE);   
+   }
    
    // TODO: Parece que el código de clasificación no aplica para cod_cta <> 1.
    String strCodClasificacion = request.getParameter("codClasificacion");
@@ -89,7 +107,7 @@
        ")";
 	}
 			
-	strQuery = strQuery + " and mi_fecha_fin_mes >= to_date('" + strDateIni + "','yyyy-mm-dd')" +
+	strQuery = strQuery + " and mi_fecha_fin_mes > to_date('" + strDateIni + "','yyyy-mm-dd')" +
 			" and mi_fecha_fin_mes <= to_date('" + strDateFin + "','yyyy-mm-dd')" + 
 			" group by mi_fecha_fin_mes, " +					
                    " case " + 
