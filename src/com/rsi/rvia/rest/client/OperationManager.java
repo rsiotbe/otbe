@@ -15,7 +15,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
@@ -305,7 +305,7 @@ public class OperationManager
       httpPost.addHeader("Accept", "text/xml");
       httpPost.addHeader("SOAPAction", "");
       // Execute and get the response.
-      HttpClient httpClient = new DefaultHttpClient();
+      HttpClient httpClient = HttpClientBuilder.create().build();
       // HttpClient httpClient = new HttpClient();
       HttpResponse response = httpClient.execute(httpPost);
       HttpEntity entity = response.getEntity();
