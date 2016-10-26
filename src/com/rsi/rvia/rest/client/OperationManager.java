@@ -485,7 +485,7 @@ public class OperationManager
             throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
          /* se obtiene el codigo de entidad de donde procede la llamada */
          strDataJson = "{\"codEntidad\":\"" + strNRBE + "\", \"nombreComercialSimulador\":\"" + strLoanName
-               + "\"nombreEntidad\":\"" + strNRBEName + "\", \"idioma\":\"" + strLanguage + "\"}";
+               + "\", \"nombreEntidad\":\"" + strNRBEName + "\", \"idioma\":\"" + strLanguage + "\"}";
          /* se instancia el conector y se solicitan los datos */
          strJsonResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, strDataJson);
          pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonResponse);
