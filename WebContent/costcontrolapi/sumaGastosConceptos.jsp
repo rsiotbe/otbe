@@ -1,8 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     import="
-         com.rsi.rvia.rest.client.QueryCustomizer,
-         java.util.Calendar
+         com.rsi.rvia.rest.client.QueryCustomizer
 "
 %>
 <%
@@ -39,15 +38,7 @@ String strIdInternoPe = request.getParameter("idInternoPe");
                    strEntidad + "')";
           }
           else{
-             strDateFin = strDateFin + "-01";
-             String partes[] = strDateFin.split("-");
-             Calendar dateDateFin = Calendar.getInstance();    
-             dateDateFin.set(Integer.parseInt(partes[0]),Integer.parseInt(partes[1]),Integer.parseInt(partes[2]));
-             dateDateFin.add(Calendar.MONTH, 1);
-             strDateFin=dateDateFin.toString();
-             strDateFin = dateDateFin.get(Calendar.YEAR) + "-" + dateDateFin.get(Calendar.MONTH) + "-" +dateDateFin.get(Calendar.DATE);
-             //strQuery = strQuery + " and t1.fecha_oprcn_dif < to_date('" + strDateFin + "','yyyy-mm-dd')";
-             
+             strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
              strQuery = strQuery + " and t1.fecha_oprcn_dif < " +             
 	             " ( select max(tm.fecha_oprcn_dif) " +
 	             " from rdwc01.mi_do_apte_cta tm where cod_nrbe_en='" + strEntidad + "' " +

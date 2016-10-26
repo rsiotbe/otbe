@@ -1,39 +1,20 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     import="
-        com.rsi.rvia.rest.client.QueryCustomizer,
-        java.util.Calendar            
+        com.rsi.rvia.rest.client.QueryCustomizer
 "
 %>
 <%
 	String strContrato = request.getParameter("idContract");  
 	String strLinea = request.getParameter("codLinea");
-	//String strIdInternoPe = request.getParameter("idInternoPe");
 	String strEntidad = request.getParameter("codEntidad");
 	String strTipoApunte = request.getParameter("tipoApunte");	
     String strDateFin = request.getParameter("mesFin"); 
     String strDateIni = request.getParameter("mesFin");
     
-    
-
-    
-    strDateFin = strDateFin + "-01";
-    strDateIni = strDateIni + "-01";
-    
-    String partes[] = strDateFin.split("-");
-    Calendar dateDateAux = Calendar.getInstance();    
-    dateDateAux.set(Integer.parseInt(partes[0]),Integer.parseInt(partes[1]),Integer.parseInt(partes[2]));
-    dateDateAux.add(Calendar.MONTH, 1);
-    strDateFin=dateDateAux.toString();
-    strDateFin = dateDateAux.get(Calendar.YEAR) + "-" + dateDateAux.get(Calendar.MONTH) + "-" +dateDateAux.get(Calendar.DATE);
-    
-    partes = strDateIni.split("-");
-    dateDateAux = Calendar.getInstance();    
-    dateDateAux.set(Integer.parseInt(partes[0]),Integer.parseInt(partes[1]),Integer.parseInt(partes[2]));
-    dateDateAux.add(Calendar.DATE, -1);
-    strDateIni = dateDateAux.toString();
-    strDateIni = dateDateAux.get(Calendar.YEAR) + "-" + dateDateAux.get(Calendar.MONTH) + "-" +dateDateAux.get(Calendar.DATE);    
-    
+    strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
+    strDateIni= QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni);
+ 
     String strQuery =
    	      " select" +
            "   fecha_oprcn_dif \"fecha\"" +

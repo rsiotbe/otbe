@@ -1,8 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
  	import="
-		 com.rsi.rvia.rest.client.QueryCustomizer,
-		 java.util.Calendar
+		 com.rsi.rvia.rest.client.QueryCustomizer
 "
 %>
 <%
@@ -11,26 +10,12 @@
 	String strEntidad = request.getParameter("codEntidad");
 	String strDateIni = request.getParameter("mesInicio");
 	String strDateFin = request.getParameter("mesFin");
-   Calendar dateDateAux = Calendar.getInstance(); 
-	
 
    strDateIni = strDateIni + "-25";
-   String partes[] = strDateIni.split("-");
-   dateDateAux = Calendar.getInstance();    
-   dateDateAux.set(Integer.parseInt(partes[0]),Integer.parseInt(partes[1]),Integer.parseInt(partes[2]));
-   dateDateAux.add(Calendar.DATE, -1);
-   strDateIni = dateDateAux.toString();
-   strDateIni = dateDateAux.get(Calendar.YEAR) + "-" + dateDateAux.get(Calendar.MONTH) + "-" +dateDateAux.get(Calendar.DATE);   
    if(strDateFin != null){
-	   strDateFin = strDateFin + "-01";  
-	   partes = strDateIni.split("-");
-	   dateDateAux.set(Integer.parseInt(partes[0]),Integer.parseInt(partes[1]),Integer.parseInt(partes[2]));
-	   dateDateAux.add(Calendar.MONTH, 1);
-	   strDateFin=dateDateAux.toString();
-	   strDateFin = dateDateAux.get(Calendar.YEAR) + "-" + dateDateAux.get(Calendar.MONTH) + "-" +dateDateAux.get(Calendar.DATE);   
+   	   strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
    }
    
-   // TODO: Parece que el código de clasificación no aplica para cod_cta <> 1.
    String strCodClasificacion = request.getParameter("codClasificacion");
    String whereLineaEq="";
    String strGroupClassif="";

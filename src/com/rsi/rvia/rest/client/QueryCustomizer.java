@@ -3,6 +3,8 @@ package com.rsi.rvia.rest.client;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,12 +32,12 @@ public class QueryCustomizer
 		if (request.getParameter("pagesize") != null)
 		{
 			strPageSize = request.getParameter("pagesize");
+			if (request.getParameter("pagenumber") != null)
+			{
+				pageNumber = request.getParameter("pagenumber");
+			}
+			strQuery = paginator(strQuery, strPageSize, pageNumber);
 		}
-		if (request.getParameter("pagenumber") != null)
-		{
-			pageNumber = request.getParameter("pagenumber");
-		}
-		strQuery = paginator(strQuery, strPageSize, pageNumber);
 		pLog.info("Query resuelta: " + strQuery);
 		// TODO: Evitar el intento de validación de token cuando se realiza login, y por tanto, la salida es un callback
 		// FIXME: Activar seguridad en producción: OJO: En el caso de login no debe validarse el token.
@@ -52,30 +54,17 @@ public class QueryCustomizer
 		pResultSet = pPreparedStatement.executeQuery();
 		JSONObject pJson = new JSONObject();
 		JSONObject pJsonExit = new JSONObject();
-		JSONArray json = Utils.convertResultSetToJSON(pResultSet);
-		int nTotalNumReg = json.length();
-		int nn;
-		int modulo = nTotalNumReg % Integer.parseInt(strPageSize);
-		if (modulo > 0)
-			nn = 1;
-		else
-			nn = 0;
-		int nTotalNumPages = (int) Math.ceil(nTotalNumReg / Integer.parseInt(strPageSize)) + nn;
-		int nextPage = (Integer.parseInt(pageNumber) < nTotalNumPages) ? Integer.parseInt(pageNumber) + 1
-				: Integer.parseInt(pageNumber);
-		int previousPage = (Integer.parseInt(pageNumber) > 1) ? Integer.parseInt(pageNumber) - 1
-				: Integer.parseInt(pageNumber);
+		JSONObject converted = Utils.convertResultSetToJSONWithTotalRegCount(pResultSet);
+		JSONArray json = (JSONArray) converted.get("records");
+		int nTotalNumReg = converted.getInt("totalrecordcount");
 		JSONObject jsonMeta = new JSONObject();
 		jsonMeta.put("pagesize", Integer.parseInt(strPageSize));
 		jsonMeta.put("pagenumber", Integer.parseInt(pageNumber));
-		jsonMeta.put("nextpage", nextPage);
-		jsonMeta.put("previouspage", previousPage);
-		jsonMeta.put("totalpages", nTotalNumPages);
-		jsonMeta.put("totalrecords", nTotalNumReg);
+		jsonMeta.put("totalrecordcount", nTotalNumReg);
 		pResultSet.close();
 		pPreparedStatement.close();
 		pConnection.close();
-		// pJsonExit.put("meta", jsonMeta);
+		pJsonExit.put("paginationinfo", jsonMeta);
 		pJsonExit.put("data", json);
 		pJson.put("response", pJsonExit);
 		return pJson.toString();
@@ -137,13 +126,41 @@ public class QueryCustomizer
 
 	private static String paginator(String query, String strPageSize, String strPageNumber) throws Exception
 	{
-		String strPaginator = " select * from (";
-		strPaginator = strPaginator + " select paginator.*, rownum rownum_NOPRINT from (";
-		strPaginator = strPaginator + query;
-		strPaginator = strPaginator + " ) paginator";
-		strPaginator = strPaginator + " where rownum < ((" + strPageNumber + " * " + strPageSize + ") + 1) )";
-		strPaginator = strPaginator + " where rownum_NOPRINT >= (((" + strPageNumber + " - 1) * " + strPageSize
-				+ ") + 1)";
+		String strPaginator = " ";
+		strPaginator = strPaginator + " SELECT paginator.*, regis_count.* FROM ( ";
+		strPaginator = strPaginator + "   SELECT cachis.*, rownum rownum_NOPRINT FROM ( ";
+		strPaginator = strPaginator + "     select * from ( " + query + " ) ";
+		strPaginator = strPaginator + "   ) cachis ";
+		strPaginator = strPaginator + "   WHERE rownum < ((" + strPageNumber + " * " + strPageSize + ") + 1 ) ";
+		strPaginator = strPaginator + " ) paginator, ( ";
+		strPaginator = strPaginator + "     select  count(*) c_reg_NOPRINT from ( " + query + " ) ";
+		strPaginator = strPaginator + " ) regis_count ";
+		strPaginator = strPaginator + " WHERE paginator.rownum_NOPRINT >= (((" + strPageNumber + " - 1) * " + strPageSize
+				+ ") + 1) ";
 		return strPaginator;
+	}
+
+	public static String yearMonthToFirstDayOfNextMonth(String pYearMonth) throws Exception
+	{
+		pYearMonth = pYearMonth + "-01";
+		String partes[] = pYearMonth.split("-");
+		Calendar dateDateAux = Calendar.getInstance();
+		dateDateAux.set(Integer.parseInt(partes[0]), Integer.parseInt(partes[1]) - 1, Integer.parseInt(partes[2]));
+		dateDateAux.add(Calendar.MONTH, 1);
+		SimpleDateFormat pSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		pYearMonth = pSimpleDateFormat.format(dateDateAux.getTime());
+		return pYearMonth;
+	}
+
+	public static String yearMonthToLastDayOfPreviousMonth(String pYearMonth) throws Exception
+	{
+		pYearMonth = pYearMonth + "-01";
+		String partes[] = pYearMonth.split("-");
+		Calendar dateDateAux = Calendar.getInstance();
+		dateDateAux.set(Integer.parseInt(partes[0]), Integer.parseInt(partes[1]) - 1, Integer.parseInt(partes[2]));
+		dateDateAux.add(Calendar.DATE, -1);
+		SimpleDateFormat pSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		pYearMonth = pSimpleDateFormat.format(dateDateAux.getTime());
+		return pYearMonth;
 	}
 }
