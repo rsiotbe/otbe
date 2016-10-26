@@ -65,6 +65,7 @@
 	<target name="compile" depends="init" >
 		<echo message="Se procede a compilar las clases"/>
 	   	<javac destdir="${classes-directory}" debug="true" srcdir="${source-directory}" includeantruntime="false">
+	   		<compilerarg value="-Xlint:deprecation"/>
 			<classpath refid="project.classpath" />
    	 	</javac>
 	</target>
