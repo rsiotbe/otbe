@@ -80,7 +80,7 @@
         </javac>
     </target>
     <target name="test" depends="compile-tests">
-		<junit printsummary="yes" haltonfailure="true">
+		<junit printsummary="yes" haltonfailure="false">
 		    <classpath>
 	    	    <pathelement location="${lib-directory}/junit-4.12.jar"/>
 	        	<pathelement location="${lib-directory}/hamcrest-core-1.3.jar"/>
