@@ -28,4 +28,5 @@ public class Constantes
    public static final String SIMULADOR_DISCLAIMER             = "disclaimer";
    public static final String SIMULADOR_CONTRACT_CONDITIONS    = "contractConditions";
    public static final String SIMULADOR_DESCRIPTION            = "description";
+   public static final String SIMULADOR_LANGUAGE               = "language";
 }

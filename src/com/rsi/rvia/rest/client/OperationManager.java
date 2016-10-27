@@ -18,8 +18,10 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.jose4j.lang.JoseException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constantes;
 import com.rsi.isum.IsumValidation;
 import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.error.ErrorManager;
@@ -484,10 +486,13 @@ public class OperationManager
          if (pMiqQuests == null)
             throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
          /* se obtiene el codigo de entidad de donde procede la llamada */
-         strDataJson = "{\"codEntidad\":\"" + strNRBE + "\", \"nombreComercialSimulador\":\"" + strLoanName
-               + "\"nombreEntidad\":\"" + strNRBEName + "\", \"idioma\":\"" + strLanguage + "\"}";
+         JSONObject pDataInput = new JSONObject();
+         pDataInput.put(Constantes.SIMULADOR_NRBE, strNRBE);
+         pDataInput.put(Constantes.SIMULADOR_NRBE_NAME, strNRBEName);
+         pDataInput.put(Constantes.SIMULADOR_COMERCIAL_NAME, strLoanName);
+         pDataInput.put(Constantes.SIMULADOR_LANGUAGE, strLanguage);
          /* se instancia el conector y se solicitan los datos */
-         strJsonResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, strDataJson);
+         strJsonResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, pDataInput.toString());
          pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonResponse);
       }
       catch (Exception ex)
