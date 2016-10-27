@@ -64,7 +64,10 @@ public class QueryCustomizer
 		pResultSet.close();
 		pPreparedStatement.close();
 		pConnection.close();
-		pJsonExit.put("paginationinfo", jsonMeta);
+		if (request.getParameter("pagesize") != null)
+		{
+			pJsonExit.put("paginationinfo", jsonMeta);
+		}
 		pJsonExit.put("data", json);
 		pJson.put("response", pJsonExit);
 		return pJson.toString();
