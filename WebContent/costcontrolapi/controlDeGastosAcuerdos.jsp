@@ -11,11 +11,8 @@
 "
 %>
 <%
-
 	String strLinea = request.getParameter("codLinea");
-
     String strCodClasificacion = request.getParameter("codClasificacion");
-
 	String whereLineaEq="";
 	if(strLinea != null){
 	    whereLineaEq=" AND T1.COD_LINEA = '" + strLinea + "'";
