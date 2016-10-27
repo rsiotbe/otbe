@@ -57,6 +57,9 @@ public class SaveExitHierarchy
       while (iterator.hasNext())
       {
          key = iterator.next();
+			/*
+			 * if ("paginationinfo".equals(key)) { return; }
+			 */
          if (secResponse.optJSONArray(key) != null)
          { // Es un objeto array de objetos
             toPath = toPath + "." + key;

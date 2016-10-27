@@ -110,6 +110,7 @@
 		<copy file="${configurations-directory}/logback{TEST}.xml"                   tofile="${configurations-directory-aux}/logback.xml"/>
 		<copy file="${configurations-directory}/MySqlConfig.properties"              tofile="${configurations-directory-aux}/MySqlConfig.properties"/>
 		<copy file="${configurations-directory}/RuralviaAddress.properties"          tofile="${configurations-directory-aux}/RuralviaAddress.properties"/>
+		<copy file="${configurations-directory}/NRBE.properties"                     tofile="${configurations-directory-aux}/NRBE.properties"/>
 		<echo message="Se procede a empaquetar todo en el war"/>
 		<echo message="Se elimina el posible war anterior"/>
 		<delete file="${dist-directory}/${war-file-name}" />

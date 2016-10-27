@@ -215,6 +215,11 @@ public class OperationManager
             // Si es login generamos JWT
             HashMap<String, String> claims;
             claims = doLogin();
+				if (pRequest.getParameter("idInternoPe") != null)
+				{
+					claims.remove("idInternoPe");
+					claims.put("idInternoPe", pRequest.getParameter("idInternoPe"));
+				}
             if (claims != null)
                JWT = ManageJWToken.generateJWT(claims);
             else
