@@ -7,7 +7,6 @@
 "
 %>
 <%
-
     String strContrato = request.getParameter("idContract");  
     String strEntidad = request.getParameter("codEntidad");
     String strIdInternoPe = request.getParameter("idInternoPe");
@@ -28,10 +27,6 @@
     else if(strParamComercio != null){
         strFiltro = "and nvl(trim(e.nomcomred),'OTROS') = '" + strParamComercio + "'";
     }    
-    
-//    String rr = request.getCharacterEncoding();
-// String kk = strParamCategoria2;    
-// String hh = rr;
     
     strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
     strDateIni= QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni);
