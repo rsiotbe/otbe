@@ -35,8 +35,12 @@ public class QueryCustomizer
 			if (request.getParameter("pagenumber") != null)
 			{
 				pageNumber = request.getParameter("pagenumber");
+				strQuery = paginator(strQuery, strPageSize, pageNumber);
 			}
-			strQuery = paginator(strQuery, strPageSize, pageNumber);
+			else
+			{
+				strQuery = recordLimit(strQuery, strPageSize, pageNumber);
+			}
 		}
 		pLog.info("Query resuelta: " + strQuery);
 		// TODO: Evitar el intento de validación de token cuando se realiza login, y por tanto, la salida es un callback
@@ -140,6 +144,18 @@ public class QueryCustomizer
 		strPaginator = strPaginator + " ) regis_count ";
 		strPaginator = strPaginator + " WHERE paginator.rownum_NOPRINT >= (((" + strPageNumber + " - 1) * " + strPageSize
 				+ ") + 1) ";
+		return strPaginator;
+	}
+
+	private static String recordLimit(String query, String strPageSize, String strPageNumber) throws Exception
+	{
+		String strPaginator = " select * from (";
+		strPaginator = strPaginator + " select paginator.*, rownum rownum_NOPRINT from (";
+		strPaginator = strPaginator + query;
+		strPaginator = strPaginator + " ) paginator";
+		strPaginator = strPaginator + " where rownum < ((" + strPageNumber + " * " + strPageSize + ") + 1) )";
+		strPaginator = strPaginator + " where rownum_NOPRINT >= (((" + strPageNumber + " - 1) * " + strPageSize
+				+ ") + 1)";
 		return strPaginator;
 	}
 
