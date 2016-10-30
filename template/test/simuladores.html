@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="/api/static/css/styles.css">
+</head>
+<body>
+<!-- build:include test.html -->
+<!-- /build -->
+<div class="wr-simulador">
+    <!--header-->
+    <header class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-sm-6 col-xs-6">
+                    <div class="logo-caja">
+                        <img src="" alt="" class="logo img-responsive js-img-caja">
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6">
+                    <div class="logo-caja">
+                        <img src="/api/static/img/logos/ruralvia.png" alt="ruralvía" class="logo img-responsive pull-right js-img-ruralvia">
+                    </div>
+                </div>
+            </div>
+            <div class="header-content-title">
+                <h1 class="header-title">Simulador de Préstamos</h1>
+                <p class="header-title-sub pull-right">Personales</p>
+            </div>
+        </div>
+    </header>
+    <!--end header-->
+    <div class="container">
+        <!--panel finalidad préstamo-->
+        <div class="panel panel-default js-module-nav-bar module-nav-bar ">
+            <div class="panel-body module-icon-tipos nav-multi-item">
+                <div class="col-md-12 col-sm-12">
+                    <h3 class="rotulo-pregunta">¿Cuál es la finalidad del préstamo?</h3></div>
+                <div class="col-md-12 col-sm-12">
+                    <div class="nav-icons js-nav"></div>
+                </div>
+            </div>
+            <div class="panel-body module-icon-tipos nav-one-item hidden">
+                <h3>Tu simulador personal</h3>
+                <div class="row">
+                    <div class="col-md-6 col-sm-6">
+                        <div class="nav-icons js-nav-one-item">
+
+                        </div>
+                        <div class="js-icon-description icon-description">
+                            <p>
+
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        <div class="module-slider">
+                            <div class="form-group">
+                                <label class="col-md-8 col-sm-8 js-label-importe" for="importe" data-translate="">¿Qué importe
+                                    necesitas?</label>
+                                <div class="input-group col-md-4 col-sm-4">
+                                    <input type="number" class="js-slider-importe-text form-control" id="importe"
+                                           step="100">
+                                    <div class="input-group-addon">€</div>
+                                </div>
+                            </div>
+                            <div class="js-slider-importe"><span class="number-left"><span
+                                    class="js-legend-import-min"></span> €</span><span class="number-right"><span
+                                    class="js-legend-import-max"></span> €</span>
+                            </div>
+                            <div><span class="error js-error-importe"></span></div>
+                        </div>
+                        <div class="module-slider">
+                            <div class="form-group">
+                                <label class="col-md-8 col-sm-8 js-label-time" for="plazo" data-translate="">¿En qué plazo deseas
+                                    pagarlo?</label>
+                                <div class="input-group col-md-4 col-sm-4">
+                                    <input type="number" class="js-slider-plazo-text form-control" id="plazo">
+                                    <div class="input-group-addon">meses</div>
+                                </div>
+                            </div>
+                            <div class="js-slider-plazo"><span class="number-left"><span
+                                    class="js-legend-time-min"></span> meses</span><span class="number-right"><span
+                                    class="js-legend-time-max"></span> meses</span>
+                            </div>
+                            <div><span class="error js-error-time"></span></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="module-footer-button">
+                        <button class="btn btn-default js-btn-calcular-simulacion" id="cargarResultado" href="">Calcular
+                            Simulación
+                        </button>
+                        <a class="aviso-legal text-underline link-green" href="#" data-toggle="modal"
+                           data-target="#modal-aviso-legal">Aviso legal</a>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body module-icon-tipos nav-mobile-item">
+                <div class="nav-mobile-item-multi hidden">
+                    <div class="col-md-12 col-sm-12">
+                        <h3 class="rotulo-pregunta">¿Cuál es la finalidad del préstamo movil?</h3></div>
+                    <div class="col-md-12 col-sm-12">
+                        <div class="rsi-dropdown">
+                            <button class="btn btn-default dropdown-toggle dropdown-select-item js-name-loans" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                <i></i><span></span>
+                            </button>
+                            <ul class="dropdown-menu js-nav-mobile" aria-labelledby="dropdownMenu1">
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end panel body-->
+        </div>
+        <!--end panel-->
+        <!--end panel finalidad préstamo-->
+        <!--panel slider importe y plazo-->
+        <div class="panel panel-default js-module-content-slider module-content-slider">
+            <div class="panel-body">
+                <div class="col-md-6 col-sm-6 module-slider">
+                    <div class="form-group">
+                        <label class="col-md-8 col-sm-6 js-label-importe rotulo-pregunta" for="importe" data-translate="">¿Qué importe
+                            necesitas?</label>
+                        <div class="input-group col-md-4 col-sm-6">
+                            <input type="number" class="js-slider-importe-text form-control" id="importe" step="100">
+                            <div class="input-group-addon">€</div>
+                        </div>
+                    </div>
+                    <div class="js-slider-importe"><span class="number-left"><span class="js-legend-import-min"></span> €</span><span
+                            class="number-right"><span class="js-legend-import-max"></span> €</span>
+                    </div>
+                    <div><span class="error js-error-importe"></span></div>
+                </div>
+                <div class="col-md-6 col-sm-6 module-slider">
+                    <div class="form-group">
+                        <label class="col-md-8 col-sm-7 js-label-time rotulo-pregunta" for="plazo" data-translate="">¿En qué plazo deseas
+                            pagarlo?</label>
+                        <div class="input-group col-md-4 col-sm-5">
+                            <input type="number" class="js-slider-plazo-text form-control" id="plazo">
+                            <div class="input-group-addon">meses</div>
+                        </div>
+                    </div>
+                    <div class="js-slider-plazo"><span class="number-left"><span class="js-legend-time-min"></span> meses</span><span
+                            class="number-right"><span class="js-legend-time-max"></span> meses</span>
+                    </div>
+                    <div><span class="error js-error-time"></span></div>
+                </div>
+            </div>
+            <!--end panel body-->
+            <div class="panel-footer">
+                <div class="module-footer-button">
+                    <div class="row">
+                        <div class="col-md-2 col-md-offset-5">
+                            <button class="btn btn-default rsi-button js-btn-calcular-simulacion" id="cargarResultado">Calcular
+                                Simulación
+                            </button>
+                        </div>
+                        <div class="col-md-2 col-md-offset-3">
+                            <a class="pull-right text-underline link-green" href="#" data-toggle="modal"
+                               data-target="#modal-aviso-legal">Aviso legal
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end panel footer-->
+        </div>
+        <!--end panel-->
+        <!--end panel slider importe y plazo-->
+        <!--panel resultado-->
+        <div class="panel panel-default module-resultado js-module-resultado">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h3>Contrata tu préstamo <span class="js-name-credit name-credit">Para ti</span> por solo:</h3>
+                    </div>
+                    <div class="col-md-8 col-sm-10 col-md-offset-2 col-sm-offset-1">
+                        <div class="row">
+                            <div class="col-md-3 col-sm-4 col-xs-12 col-md-offset-2">
+                                <span class="js-resumen-img img-resultado"></span>
+                            </div>
+                            <div class="col-md-7 col-sm-8 col-xs-12">
+                                <div class="resultado-info-cuota">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <span class="js-resultado-final"></span>
+                                            <span class="moneda">€</span>
+                                            <span class="year">mes</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="inline">
+                                                <span class="titulo" data-translate="">Plazo:</span>
+                                                <span class="js-resultado-plazo resultado">30</span>
+                                                <span class="addon" data-translate="">meses</span>
+                                            </div>
+                                            <div class="inline">
+                                                <span class="titulo" data-translate="">Importe:</span>
+                                                <span class="js-resultado-importe resultado">18.000</span>
+                                                <span class="addon" data-translate="">€</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--row-->
+                    </div>
+                    <div class="col-md-8 col-sm-10 col-md-offset-2 col-sm-offset-1">
+                        <div class="row">
+                            <div class="col-md-11 col-md-offset-1">
+                                <div class="tabla-resultado">
+                                    <div class="form-inline">
+                                        <div class="form-group">
+                                            <span class="text">Tipo de interés:</span>
+                                            <div>
+                                                <span class="result">(<span class="js-resultado-tae"></span>% TAE)</span><span class="result"><span class="js-resultado-tin"></span>% TIN&nbsp;</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-inline">
+                                        <div class="form-group"><span class="text">Comisiones:</span>
+                                            <div><span
+                                                    class="result"><span class="js-resultado-comisiones"></span> €</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-inline">
+                                        <div class="form-group"><span class="text">Gastos:</span> <div><span class="result"><span
+                                                class="js-resultado-gastos"></span> €</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-inline">
+                                        <div class="form-group"><span class="text">Coste total a devolver:</span> <div><span class="result"><span
+                                                class="js-resultado-total"></span> €</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-1 cols-xs-12">
+                                <div class="resultado-opciones">
+                                    <a class="btn-ico descargar text-underline link-green" href="">Descargar simulación</a>
+                                </div>
+                            </div>
+                            <div class="col-md-5 cols-xs-12">
+                                <div class="resultado-opciones">
+                                    <a href="#" data-toggle="modal" data-target="#modal-condiciones"class="text-underline link-green pull-right">Ver Condiciones</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end row-->
+            </div>
+            <!--end panel body-->
+            <div class="panel-footer">
+                <div class="module-footer-button">
+                    <a class="btn btn-default js-btn-solicitar-prestamo " href="">Solicitar Préstamo online</a>
+                </div>
+                <div class="opcion-new-simulation">
+                    <a class="js-btn-nuevo-calculo btn-calcular-arrow text-underline link-green" href="#">Calcular Nueva
+                        simulación</a>
+                </div>
+                </div>
+            <!--end panel footer-->
+        </div>
+        <!--end panel-->
+        <!--end panel resultado-->
+        <!--panel formulario-->
+        <div class="panel panel-default module-contratacion js-module-contratacion">
+            <div class="panel-heading">
+                <h3 class="panel-title" date-translate="">Solicitud Préstamo <span class="js-name-credit name-credit">AUTOMÓVIL</span>
+                </h3></div>
+            <form method="post" id="formid" class="module-formulario">
+                <div class="panel-body">
+                    <div id="ok"></div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="name" class="control-label"><span class="required">*</span>Nombre
+                                    completo</label>
+                                <input type="text" name="name" class="form-control js-contact-name"> <span
+                                    class="error js-error-name">Esta campo es obligatorio.</span></div>
+                        </div>
+                        <div class="col-md-12">
+                            <h4 class="rotulo-contacto js-rotulo-contacto"><span class="required">*</span>¿Cómo
+                                prefieres que contactemos contigo?</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="js-email">
+                                        <div class="form-group">
+                                            <label for="name" class="control-label"><span
+                                                    class="required hidden js-required">*</span>Correo
+                                                electrónico</label>
+                                            <input type="text" class="form-control js-contact-email" name="email"
+                                                   id="email"> <span class="error js-error-email"></span></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="js-or or"><span>y/o</span></div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="js-phone">
+                                        <div class="form-group">
+                                            <label for="phone" class="control-label"><span
+                                                    class="required hidden js-required">*</span>Teléfono de
+                                                contacto</label>
+                                            <input type="number" class="form-control js-contact-phone" name="phone"
+                                                   id="phone" required="required"> <span
+                                                class="error js-error-phone"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="textArea" class="control-label">Dejanos tus comentarios</label>
+                            <textarea id="textArea" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div class="checkbox">
+                                <label for="terms">
+                                    <input type="checkbox" id="terms" name="terms" class="js-form-check"> <a href=""
+                                                                                                             data-toggle="modal"
+                                                                                                             data-target="#modal-condiciones"
+                                                                                                             class="link-green">He
+                                    leído y <span class="text-underline">acepto las condiciones del servicio</span></a>
+                                </label>
+                                <div><span class="error error-check js-error-check"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end row-->
+                </div>
+                <!--end panel body-->
+                <div class="panel-footer">
+                    <div class="module-footer-button">
+                        <button type="button" class="btn btn-default js-btn-enviar" href="">Enviar</button>
+                    </div>
+                </div>
+                <!--end panel footer-->
+            </form>
+        </div>
+        <!--end panel-->
+        <!--endpanel formulario-->
+        <!--panel confirmacion-->
+        <div class="panel panel-default module-solucion js-module-solucion">
+            <div class="panel-header solucion-header">
+                <div class="solucion-cabecera">
+                    <p><span class="solucion-cabecera-rotulo">¡Gracias!</span></p>
+                    <p>Su solicitud se ha enviado correctamente.</p>
+                    <p>En breve nos pondremos en contacto con ustedes.</p>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12 resumen-resultado">
+                        <h3>Datos del préstamo <span class="js-name-credit name-credit"></span> solicitado:</h3>
+                        <div class="row">
+                            <div class="col-md-4 col-xs-12"><span class="js-resumen-img img-resultado"></span></div>
+                            <div class="col-md-8 col-xs-12">
+                                <div class="col-md-12"><span class="js-resultado-final"></span><span
+                                        class="moneda">€</span><span class="year">mes</span></div>
+                                <div class="col-md-12">
+                                    <div class="inline"><span class="titulo" data-translate="">Plazo:</span> <span
+                                            class="js-resultado-plazo resultado">30</span> <span class="addon"
+                                                                                                 data-translate="">meses</span>
+                                    </div>
+                                    <div class="inline"><span class="titulo" data-translate="">Importe:</span> <span
+                                            class="js-resultado-importe resultado">18.000</span> <span class="addon"
+                                                                                                       data-translate="">€</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--row-->
+                    </div>
+                    <div class="col-md-12">
+                        <div class="tabla-resultado">
+                            <div class="form-inline">
+                                <div class="form-group"><span class="text">Tipo de interés:</span><span class="result">(<span
+                                        class="js-resultado-tae"></span>% TAE)</span> <span class="result"><span
+                                        class="js-resultado-tin"></span>% TIN &nbsp;</span>
+                                </div>
+                            </div>
+                            <div class="form-inline">
+                                <div class="form-group"><span class="text js-">Comisiones:</span> <span
+                                        class="result"><span class="js-resultado-comisiones"></span> €</span>
+                                </div>
+                            </div>
+                            <div class="form-inline">
+                                <div class="form-group"><span class="text js-">Gastos:</span> <span class="result"><span
+                                        class="js-resultado-gastos"></span> €</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-offset-6 col-md-6 text-right"><a
+                                    class="btn-ico descargar text-underline link-green" href="">Descargar info
+                                préstamo</a></div>
+                        </div>
+                        <!--end row-->
+                    </div>
+                </div>
+                <!--end row-->
+            </div>
+            <!--end panel body-->
+            <div class="panel-footer">
+                <div class="module-footer-condiciones">
+                    <p class="solucion-cabecera-rotulo">Condiciones</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio soluta delectus praesentium vel a
+                        ratione fugiat iure, similique, accusamus assumenda recusandae explicabo, nam, quasi
+                        doloribus!</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio soluta delectus praesentium vel a
+                        ratione fugiat iure, similique, accusamus assumenda recusandae explicabo, nam, quasi
+                        doloribus!</p>
+                </div>
+                <a class="js-btn-nuevo-calculo btn-calcular-arrow text-underline link-green" href="#">Calcular Nueva
+                    simulación</a></div>
+            <!--end panel footer-->
+        </div>
+        <!--end panel-->
+        <!--end panel confirmacion-->
+    </div>
+    <!--end container-->
+</div>
+<footer class="sticky-footer">
+    <p><span data-translate=""><a class="" href="#" data-toggle="modal" data-target="#modal-aviso-legal">Aviso legal</a></span>|
+        <span data-translate="" class="js-footer-entidad"></span>
+        <span data-translate="">Teléfono&nbsp;</span>
+        <span data-translate="" class="js-footer-telefono"></span>
+        <span  data-translate="">|E-mail&nbsp;</span><span data-translate="" class="js-footer-email"></span></p>
+</footer>
+<!--modal aviso legal-->
+<div class="modal fade" id="modal-aviso-legal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Aviso Legal</h4></div>
+            <div class="modal-body">
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit accusantium nesciunt quam
+                    explicabo, id deleniti nam distinctio hic, quae blanditiis odit tempore reiciendis enim autem.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit accusantium nesciunt quam
+                    explicabo, id deleniti nam distinctio hic, quae blanditiis odit tempore reiciendis enim autem.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit accusantium nesciunt quam
+                    explicabo, id deleniti nam distinctio hic, quae blanditiis odit tempore reiciendis enim autem.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dignissimos voluptas odit, dolor
+                    consequatur modi vero vel, nemo repellat neque odio a, explicabo porro, tenetur architecto quasi
+                    doloremque ea sunt maxime expedita! Sint id nesciunt ex consectetur cupiditate, ipsa laudantium
+                    consequatur ipsam in aspernatur nostrum, praesentium iste aliquam laborum facere, error.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!--end modal aviso legal-->
+<!--modal condiciones-->
+<div class="modal fade" id="modal-condiciones" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Condiciones producto</h4></div>
+            <div class="modal-body">
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit accusantium nesciunt quam
+                    explicabo, id deleniti nam distinctio hic, quae blanditiis odit tempore reiciendis enim autem.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit accusantium nesciunt quam
+                    explicabo, id deleniti nam distinctio hic, quae blanditiis odit tempore reiciendis enim autem.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit accusantium nesciunt quam
+                    explicabo, id deleniti nam distinctio hic, quae blanditiis odit tempore reiciendis enim autem.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dignissimos voluptas odit, dolor
+                    consequatur modi vero vel, nemo repellat neque odio a, explicabo porro, tenetur architecto quasi
+                    doloremque ea sunt maxime expedita! Sint id nesciunt ex consectetur cupiditate, ipsa laudantium
+                    consequatur ipsam in aspernatur nostrum, praesentium iste aliquam laborum facere, error.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!--end modal condiciones-->
+<script src="/api/static/js/SimuladorPrestamo.1.0.1.min.js"></script>
+<script src="/api/static/js/scripts.min.js"></script>
+</body>
+
+</html>
