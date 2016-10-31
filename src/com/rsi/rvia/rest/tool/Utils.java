@@ -66,7 +66,6 @@ public class Utils
     {
         JSONArray pJson = new JSONArray();
         ResultSetMetaData rsmd = pResultSet.getMetaData();
-        int nTotalRecordCount;
         while (pResultSet.next())
         {
             int numColumns = rsmd.getColumnCount();

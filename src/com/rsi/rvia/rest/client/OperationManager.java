@@ -554,9 +554,9 @@ public class OperationManager
             nReturnHttpCode = pErrorCaptured.getHttpCode();
             pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
         }
-        if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
+        if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE || pMediaType == MediaType.TEXT_HTML_TYPE)
         {
-            pLog.info("La petición utiliza plantilla XHTML");
+            pLog.info("La petición utiliza plantilla XHTML o HTML");
             strJsonData = TemplateManager.processTemplate(strTemplate, pRequestConfig, strJsonData);
         }
         return (Response.status(nReturnHttpCode).entity(strJsonData).encoding(ENCODING_UTF8).build());
@@ -603,7 +603,7 @@ public class OperationManager
     }
 
     /**
-     * Realiza una peteción al rest conector que devolvera los datos de un end point en formato JSON
+     * Realiza una petición al rest conector que devolvera los datos de un end point en formato JSON
      * 
      * @param pUriInfo
      *            Necesario para sacar los parametros del path
