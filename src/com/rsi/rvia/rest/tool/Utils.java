@@ -292,7 +292,7 @@ public class Utils
                     if (!strReturn.isEmpty())
                         strReturn += "&";
                     // strReturn += strKey + "=" + pMap.get(strKey);
-                    strReturn += strKey + "=" + URLEncoder.encode(pMap.get(strKey), "UTF-8");
+                    strReturn += strKey + "=" + URLEncoder.encode(pMap.get(strKey), "ISO-8859-1");
                 }
             }
         }
@@ -312,7 +312,7 @@ public class Utils
                 if (!strReturn.isEmpty())
                     strReturn += "&";
                 // strReturn += strKey + "=" + pJSONObject.get(strKey).toString();
-                strReturn += strKey + "=" + URLEncoder.encode(pJSONObject.get(strKey).toString(), "UTF-8");
+                strReturn += strKey + "=" + URLEncoder.encode(pJSONObject.get(strKey).toString(), "ISO-8859-1");
             }
         }
         return strReturn;

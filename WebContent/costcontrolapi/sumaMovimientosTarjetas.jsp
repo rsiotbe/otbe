@@ -22,7 +22,7 @@
 
    String strQuery =          
            " select /" + "*" + "+ FULL(e) *" + "/  to_char(e.fecha_oprcn,'YYYY-MM')  \"mes\", " +
-                   " e.num_sec_ac \"acuerdo\", sum(e.imptrn) \"importe\" " +
+                   " e.num_sec_ac \"acuerdo\", sum(e.imptrn) \"importe\", count(*) \"numero\" " +
                    " from" +
                    "     rdwc01.MI_MPA2_OPERAC_TARJETAS e," +
                    "     rdwc01.mi_ac_cont_gen f" +
@@ -31,6 +31,7 @@
                    " and e.num_sec_ac = f.num_sec_ac" +
                    " and e.FECHA_OPRCN < to_date('" + strDateFin + "', 'yyyy-mm-dd')" +
                    " and e.FECHA_OPRCN > to_date('" + strDateIni + "', 'yyyy-mm-dd')" +
+                   " and e.codrespu = '000' " +
                    " and f.mi_fecha_fin = to_date('9999-12-31', 'yyyy-mm-dd') " ;
                    if(strContrato == null){
                        strQuery = strQuery +  " and f.id_interno_pe = " + strIdInternoPe;

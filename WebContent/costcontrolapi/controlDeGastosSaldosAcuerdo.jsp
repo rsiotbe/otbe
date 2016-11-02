@@ -5,6 +5,10 @@
 "
 %>
 <%
+
+	
+    String strLastChargeDate = QueryCustomizer.getLastChargeDate("MI_AC_ECO_GEN","D");
+
 	String strContrato = request.getParameter("idContract");
     String strIdInternoPe = request.getParameter("idInternoPe");
 	String strEntidad = request.getParameter("codEntidad");
@@ -57,8 +61,10 @@
 	String strResponse = "{}";
 	String strQuery =
 			" select" +
-			" 	mi_fecha_fin_mes \"finMes\"," +
-			"   mi_fec_ult_mov \"fechaUltimaModificacion\"," +
+//			" 	mi_fecha_fin_mes \"finMes\"," +
+			" decode(to_char(mi_fecha_fin_mes,'yyyy-mm-dd'),'9999-12-31', '" + strLastChargeDate + "', to_char(mi_fecha_fin_mes,'yyyy-mm-dd')) \"finMes\"," +
+			
+			//"   mi_fec_ult_mov \"fechaUltimaModificacion\"," +
 			        " case " + 
 			        "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0311','0321')  then '1'" + 
 			        "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0351','0352')  then '2'" + 
@@ -94,7 +100,7 @@
 			
 	strQuery = strQuery + " and mi_fecha_fin_mes > to_date('" + strDateIni + "','yyyy-mm-dd')" +
 			" and mi_fecha_fin_mes <= to_date('" + strDateFin + "','yyyy-mm-dd')" + 
-			" group by mi_fecha_fin_mes, mi_fec_ult_mov, " +					
+			" group by decode(to_char(mi_fecha_fin_mes,'yyyy-mm-dd'),'9999-12-31', '" + strLastChargeDate + "', to_char(mi_fecha_fin_mes,'yyyy-mm-dd'))," +
                    " case " + 
                    "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0311','0321')  then '1'" + 
                    "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0351','0352')  then '2'" + 

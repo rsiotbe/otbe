@@ -5,7 +5,7 @@
 "
 %>
 <%
-String strIdInternoPe = request.getParameter("idInternoPe");
+    String strIdInternoPe = request.getParameter("idInternoPe");
 	String strContrato = request.getParameter("idContract");  
 	String strEntidad = request.getParameter("codEntidad");
 	String strDateFin = request.getParameter("mesFin");    

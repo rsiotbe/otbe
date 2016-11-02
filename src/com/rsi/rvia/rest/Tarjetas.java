@@ -27,10 +27,9 @@ public class Tarjetas
      */
     @GET
     @Path("/cards/movementsbymonth/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
-    // @Path("/cards/movementsbymonth/{idContract}/from/{mesInicio}/to/{mesFin}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response sumaMovimientosMesVistaDesdeHasta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-            String strData) throws Exception
+    public Response sumaMovimientosMesTarjetasDesdeHasta(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
     {
         Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
         pLog.info("Movimientos de un contrato");
@@ -46,9 +45,8 @@ public class Tarjetas
      */
     @GET
     @Path("/cards/movementsbymonth/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
-    // @Path("/cards/movementsbymonth/{idContract}/from/{mesInicio}/to/{mesFin}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response sumaMovimientosMesVistaHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+    public Response sumaMovimientosMesTarjetasHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
     {
         Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
@@ -65,7 +63,6 @@ public class Tarjetas
      */
     @GET
     @Path("/cards/movementsbymonth/{idContract: [0-9]+}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
-    // @Path("/cards/movementsbymonth/{idContract}/from/{mesInicio}/to/{mesFin}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response sumaMovimientosMesAcuerdoDesdeHasta(@Context HttpServletRequest pRequest,
             @Context UriInfo pUriInfo, String strData) throws Exception
@@ -86,78 +83,6 @@ public class Tarjetas
     @Path("/cards/movementsbymonth/{idContract: [0-9]+}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
     @Produces(MediaType.APPLICATION_JSON)
     public Response sumaMovimientosMesAcuerdoDesdeHastaHoy(@Context HttpServletRequest pRequest,
-            @Context UriInfo pUriInfo, String strData) throws Exception
-    {
-        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-        pLog.info("Movimientos de un contrato");
-        return pReturn;
-    }
-
-    /**
-     * Obtiene sumarizado de movimientos por concepto y tipo de movimiento para un rango de fecha En el documento
-     * WebService4
-     * 
-     * @return Objeto que contiene la respuesta de resultado
-     * @throws Exception
-     */
-    @GET
-    @Path("/cards/movementsbyconcept/{idContract}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response sumaMovimientosContratoConceptoYTipoDesdeHasta(@Context HttpServletRequest pRequest,
-            @Context UriInfo pUriInfo, String strData) throws Exception
-    {
-        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-        pLog.info("Movimientos de un contrato");
-        return pReturn;
-    }
-
-    /**
-     * Obtiene sumarizado de movimientos por concepto y tipo de movimiento para un rango de fecha En el documento
-     * WebService4
-     * 
-     * @return Objeto que contiene la respuesta de resultado
-     * @throws Exception
-     */
-    @GET
-    @Path("/cards/movementsbyconcept/{idContract}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response sumaMovimientosContratoConceptoYTipoHastaHoy(@Context HttpServletRequest pRequest,
-            @Context UriInfo pUriInfo, String strData) throws Exception
-    {
-        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-        pLog.info("Movimientos de un contrato");
-        return pReturn;
-    }
-
-    /**
-     * Obtiene sumarizado de movimientos por concepto y tipo de movimiento para un rango de fecha En el documento
-     * WebService4
-     * 
-     * @return Objeto que contiene la respuesta de resultado
-     * @throws Exception
-     */
-    @GET
-    @Path("/cards/movementsbyconcept/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response sumaMovimientosVistaConceptoYTipoDesdeHasta(@Context HttpServletRequest pRequest,
-            @Context UriInfo pUriInfo, String strData) throws Exception
-    {
-        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-        pLog.info("Movimientos de un contrato");
-        return pReturn;
-    }
-
-    /**
-     * Obtiene sumarizado de movimientos por concepto y tipo de movimiento para un rango de fecha En el documento
-     * WebService4
-     * 
-     * @return Objeto que contiene la respuesta de resultado
-     * @throws Exception
-     */
-    @GET
-    @Path("/cards/movementsbyconcept/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response sumaMovimientosVistaConceptoYTipoHastaHoy(@Context HttpServletRequest pRequest,
             @Context UriInfo pUriInfo, String strData) throws Exception
     {
         Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
@@ -298,6 +223,80 @@ public class Tarjetas
     @Path("/cards/detailmovements/{idContract}/commerce/{comercio}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response detalleMovimientosMesContratoYComercio(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene un agregado de movimientos en tarjetas por el concepto especificado (categoria,localidad,comercio), y a
+     * partir de una fecha, hasta una fecha fin. Movimientos históricos en tarjetas En el documento WebService7
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/sumbyconcept/{concepto}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response sumaMovimientosMesTarjetasGroupByConceptoDesdeHasta(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene un agregado de movimientos en tarjetas por el concepto especificado (categoria,localidad,comercio), y a
+     * partir de una fecha, hasta última fecha desponible. Movimientos históricos en tarjetas En el documento
+     * WebService7
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/sumbyconcept/{concepto}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response sumaMovimientosMesTarjetasGroupByConceptoHastaHoy(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene un agregado de movimientos de una tarjeta por el concepto especificado (categoria,localidad,comercio),
+     * entre fechas. Movimientos históricos en tarjetas En el documento WebService7
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/{idContract: [0-9]+}/sumbyconcept/{concepto}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response sumaMovimientosMesTarjetasGroupByConceptoEntreFechasUnAcuerdo(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene un agregado de movimientos de una tarjeta por el concepto especificado (categoria,localidad,comercio), y
+     * a partir de una fecha, hasta última fecha desponible. Movimientos históricos en tarjetas En el documento
+     * WebService7
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/{idContract: [0-9]+}/sumbyconcept/{concepto}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response sumaMovimientosMesTarjetasGroupByConceptoHastaHoyUnAcuerdo(@Context HttpServletRequest pRequest,
             @Context UriInfo pUriInfo, String strData) throws Exception
     {
         Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);

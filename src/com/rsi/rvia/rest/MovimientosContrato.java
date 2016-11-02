@@ -27,7 +27,7 @@ public class MovimientosContrato
      */
     @GET
     @Path("/contracts/movementsbymonth/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
-    // @Path("/contracts/movementsbymonth/{idContract}/from/{mesInicio}/to/{mesFin}")
+    // @Path("/contracts/movementsbymonth/{idContract: [0-9]+}/from/{mesInicio}/to/{mesFin}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response sumaMovimientosMesVistaDesdeHasta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
@@ -46,7 +46,7 @@ public class MovimientosContrato
      */
     @GET
     @Path("/contracts/movementsbymonth/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
-    // @Path("/contracts/movementsbymonth/{idContract}/from/{mesInicio}/to/{mesFin}")
+    // @Path("/contracts/movementsbymonth/{idContract: [0-9]+}/from/{mesInicio}/to/{mesFin}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response sumaMovimientosMesVistaHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
@@ -65,7 +65,7 @@ public class MovimientosContrato
      */
     @GET
     @Path("/contracts/movementsbymonth/{idContract: [0-9]+}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
-    // @Path("/contracts/movementsbymonth/{idContract}/from/{mesInicio}/to/{mesFin}")
+    // @Path("/contracts/movementsbymonth/{idContract: [0-9]+}/from/{mesInicio}/to/{mesFin}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response sumaMovimientosMesAcuerdoDesdeHasta(@Context HttpServletRequest pRequest,
             @Context UriInfo pUriInfo, String strData) throws Exception
@@ -134,7 +134,7 @@ public class MovimientosContrato
      * @throws Exception
      */
     @GET
-    @Path("/contracts/movementsbyconcept/{idContract}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Path("/contracts/movementsbyconcept/{idContract: [0-9]+}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response sumaMovimientosContratoConceptoYTipoDesdeHasta(@Context HttpServletRequest pRequest,
             @Context UriInfo pUriInfo, String strData) throws Exception
@@ -152,7 +152,7 @@ public class MovimientosContrato
      * @throws Exception
      */
     @GET
-    @Path("/contracts/movementsbyconcept/{idContract}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Path("/contracts/movementsbyconcept/{idContract: [0-9]+}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
     @Produces(MediaType.APPLICATION_JSON)
     public Response sumaMovimientosContratoConceptoYTipoHastaHoy(@Context HttpServletRequest pRequest,
             @Context UriInfo pUriInfo, String strData) throws Exception
@@ -205,7 +205,7 @@ public class MovimientosContrato
      * @throws Exception
      */
     @GET
-    @Path("/contracts/detailmovements/{idContract}/type/{tipoApunte}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Path("/contracts/detailmovements/{idContract: [0-9]+}/type/{tipoApunte}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response detalleMovimientosMesParaTipoApunte(@Context HttpServletRequest pRequest,
             @Context UriInfo pUriInfo, String strData) throws Exception
@@ -222,10 +222,81 @@ public class MovimientosContrato
      * @throws Exception
      */
     @GET
-    @Path("/contracts/detailmovements/{idContract}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Path("/contracts/detailmovements/{idContract: [0-9]+}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response detalleMovimientosMes(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene un agregado de movimientos por mes, categoria y tipo de movimiento entre dos fechas En el documento
+     * WebService5
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/contracts/movementsbycategory/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response sumaMovimientosEntreMesesCategoriaTodosAc(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene un agregado de movimientos por mes, categoria y tipo de movimiento, a partir de una fecha, hasta hoy
+     * Adeudos y abonos históricos para una linea En el documento WebService5
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/contracts/movementsbycategory/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response sumaMovimientosMesCategoriaDesdeHastaHoyTodosAc(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene sumarizado de movimientos por categoría, y tipo UN de movimiento entre fechas En el documento WebService5
+     * 
+     * @return Objeto que contiene la respuesta de resultado
+     * @throws Exception
+     */
+    @GET
+    @Path("/contracts/movementsbycategory/type/{tipoApunte}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response sumaMovimientosEntreMesesCategoriaYTipoTodosAc(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene sumarizado de movimientos por categoría, y tipo UN de movimiento, desde una fecha hasta hoy En el
+     * documento WebService5
+     * 
+     * @return Objeto que contiene la respuesta de resultado
+     * @throws Exception
+     */
+    @GET
+    @Path("/contracts/movementsbycategory/type/{tipoApunte}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response sumaMovimientosHastaHoyCategoriaYTipoTodosAc(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
     {
         Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
         pLog.info("Movimientos de un contrato");
@@ -275,7 +346,7 @@ public class MovimientosContrato
      * @throws Exception
      */
     @GET
-    @Path("/contracts/movementsbycategory/{idContract}/type/{tipoApunte}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Path("/contracts/movementsbycategory/{idContract: [0-9]+}/type/{tipoApunte}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response sumaMovimientosEntreMesesCategoriaYTipo(@Context HttpServletRequest pRequest,
             @Context UriInfo pUriInfo, String strData) throws Exception
@@ -293,7 +364,7 @@ public class MovimientosContrato
      * @throws Exception
      */
     @GET
-    @Path("/contracts/movementsbycategory/{idContract}/type/{tipoApunte}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Path("/contracts/movementsbycategory/{idContract: [0-9]+}/type/{tipoApunte}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
     @Produces(MediaType.APPLICATION_JSON)
     public Response sumaMovimientosHastaHoyCategoriaYTipo(@Context HttpServletRequest pRequest,
             @Context UriInfo pUriInfo, String strData) throws Exception
