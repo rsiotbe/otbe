@@ -4,11 +4,11 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8"/>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="/api/static/css/styles.min.css">
+    <base href="/api/static/templates/"/>
+    <link rel="stylesheet" href="../css/styles.min.css"/>
 </head>
 <body>
-<!-- build:include test.html -->
+<!-- build:include:test test.html -->
 <!-- /build -->
 <div class="wr-simulador">
     <!--header-->
@@ -22,7 +22,7 @@
                 </div>
                 <div class="col-md-6 col-sm-6 col-xs-6">
                     <div class="logo-caja">
-                        <img src="/api/static/img/logos/ruralvia.png" alt="ruralvía" class="logo img-responsive pull-right js-img-ruralvia">
+                        <img src="../img/logos/ruralvia.png" alt="ruralvía" class="logo img-responsive pull-right js-img-ruralvia">
                     </div>
                 </div>
             </div>
@@ -62,8 +62,7 @@
                                 <label class="col-md-8 col-sm-8 js-label-importe" for="importe" data-translate="">¿Qué importe
                                     necesitas?</label>
                                 <div class="input-group col-md-4 col-sm-4">
-                                    <input type="number" class="js-slider-importe-text form-control" id="importe"
-                                           step="100">
+                                    <input type="number" class="js-slider-importe-text form-control" step="100">
                                     <div class="input-group-addon">€</div>
                                 </div>
                             </div>
@@ -78,7 +77,7 @@
                                 <label class="col-md-8 col-sm-8 js-label-time" for="plazo" data-translate="">¿En qué plazo deseas
                                     pagarlo?</label>
                                 <div class="input-group col-md-4 col-sm-4">
-                                    <input type="number" class="js-slider-plazo-text form-control" id="plazo">
+                                    <input type="number" class="js-slider-plazo-text form-control">
                                     <div class="input-group-addon">meses</div>
                                 </div>
                             </div>
@@ -92,7 +91,7 @@
                 </div>
                 <div>
                     <div class="module-footer-button">
-                        <button class="btn btn-default js-btn-calcular-simulacion" id="cargarResultado" href="">Calcular
+                        <button class="btn btn-default js-btn-calcular-simulacion" href="">Calcular
                             Simulación
                         </button>
                         <a class="aviso-legal text-underline link-green" href="#" data-toggle="modal"
@@ -285,9 +284,9 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="name" class="control-label"><span class="required">*</span>Nombre
+                                <label for="contact-name" class="control-label"><span class="required">*</span>Nombre
                                     completo</label>
-                                <input type="text" name="name" class="form-control js-contact-name"> <span
+                                <input type="text" name="contact-name" id="contact-name" class="form-control js-contact-name"> <span
                                     class="error js-error-name">Esta campo es obligatorio.</span></div>
                         </div>
                         <div class="col-md-12">
@@ -297,11 +296,11 @@
                                 <div class="col-md-6">
                                     <div class="js-email">
                                         <div class="form-group">
-                                            <label for="name" class="control-label"><span
+                                            <label for="contact-email" class="control-label"><span
                                                     class="required hidden js-required">*</span>Correo
                                                 electrónico</label>
-                                            <input type="text" class="form-control js-contact-email" name="email"
-                                                   id="email"> <span class="error js-error-email"></span></div>
+                                            <input type="text" id="contact-email" class="form-control js-contact-email"
+                                                   name="contact-email" id="email"> <span class="error js-error-email"></span></div>
                                     </div>
                                 </div>
                                 <div class="col-md-1">
@@ -499,10 +498,9 @@
 </div>
 <!--end modal condiciones-->
 <script type="text/javascript">
-  var dataLoans = '__JSONDATA__';
+    var dataLoans = '__JSONDATA__';
 </script>
-<script src="/api/static/js/SimuladorPrestamo.1.0.1.min.js"></script>
-<script src="/api/static/js/scripts.min.js"></script>
+<script src="../js/scripts.min.js"></script>
 </body>
 
 </html>
