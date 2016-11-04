@@ -6,8 +6,7 @@
 		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider,
         java.sql.Connection,
         java.sql.PreparedStatement,
-        java.sql.ResultSet		 
-		 
+        java.sql.ResultSet		 		 
 "
 %>
 <%
