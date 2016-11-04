@@ -36,6 +36,9 @@
 			  break;
 	  }
   }
+	else{
+	    whereLineaEq=" AND trim(t1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0311','0321','0351','0352','0171','0551','0151')";
+	}
 /* BEGIN: Extracción de los acuerdos y sus alias de Banca */
     String strQuery = 
    		 " select  substr(b.cta_aso,11,20) acuerdo, trim (b.descr_txt) txtproducto " +
@@ -98,8 +101,8 @@
 	                "   AND t1.NUM_RL_ORDEN = 1" + 
 	                "   AND t1.COD_ECV_PERS_AC = '2'" + whereLineaEq +
 	                "   AND t1.ID_INTERNO_PE = " + strIdInterno +
-	                "   and t2.mi_fecha_fin = (select MI_FECHA_PROCESO from rdwc01.ce_carga_tabla" +
-	                "       where nomtabla='MI_LINEA_GRUPO')";
+	                "   and t2.mi_fecha_fin = (select k.MI_FECHA_PROCESO from rdwc01.ce_carga_tabla k" +
+	                "       where k.nomtabla='MI_LINEA_GRUPO')";
 	    pConnection = null;
 	    pPreparedStatement = null;
 	    pResultSet = null;
@@ -109,7 +112,6 @@
 	    strAliases = "";
 	    strFiltroAcuerdos = " and t1.num_sec_ac in (";
 	    coma="";
-   
 
 	   while (pResultSet.next())
 	   {      
