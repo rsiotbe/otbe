@@ -43,10 +43,8 @@ public class Utils
      */
     public static String getPrimaryPath(UriInfo pUriInfo)
     {
-        String strKeys = "";
         String strPath = pUriInfo.getPath();
         MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
-        // LinkedHashMap<String, String> pListParameters = (LinkedHashMap) pUriInfo.getPathParameters();
         Iterator<String> pIterator = pListParameters.keySet().iterator();
         while (pIterator.hasNext())
         {
@@ -70,7 +68,6 @@ public class Utils
     {
         JSONArray pJson = new JSONArray();
         ResultSetMetaData rsmd = pResultSet.getMetaData();
-        int nTotalRecordCount;
         while (pResultSet.next())
         {
             int numColumns = rsmd.getColumnCount();
@@ -152,8 +149,8 @@ public class Utils
      * @throws SQLException
      * @throws JSONException
      */
-    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet) throws SQLException,
-            JSONException
+    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet)
+            throws SQLException, JSONException
     {
         JSONObject pJsonRetorno = new JSONObject();
         JSONArray pJson = new JSONArray();
