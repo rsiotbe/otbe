@@ -36,6 +36,9 @@
 			  break;
 	  }
   }
+	else{
+	    whereLineaEq=" AND trim(t1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0311','0321','0351','0352','0171','0551','0151')";
+	}
 /* BEGIN: Extracción de los acuerdos y sus alias de Banca */
     String strQuery = 
    		 " select  substr(b.cta_aso,11,20) acuerdo, trim (b.descr_txt) txtproducto " +
