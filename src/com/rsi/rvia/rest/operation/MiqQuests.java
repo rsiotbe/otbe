@@ -199,7 +199,7 @@ public class MiqQuests
         }
         catch (Exception ex)
         {
-            pLog.error("Error al realizar la consulta a la BBDD.");
+            pLog.error("Error al realizar la consulta a la BBDD. Trace: \n\n\t" + ex.getMessage());
         }
         finally
         {
