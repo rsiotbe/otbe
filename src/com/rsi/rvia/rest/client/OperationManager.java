@@ -292,17 +292,6 @@ public class OperationManager
                 + "</soap:Header><soap:Body>" + "<ee:EE_I_AutenticarUsuario>" + "<ee:usuario>" + "03052445"
                 + "</ee:usuario>" + "<ee:password>" + "03052445" + "</ee:password>" + "<ee:documento>" + "33334444S"
                 + "</ee:documento>" + "</ee:EE_I_AutenticarUsuario>" + "</soap:Body>" + "</soap:Envelope>";
-        /*
-         * strBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-         * "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
-         * "xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">" + "<soap:Header>" +
-         * "<ee:RSISecCampo1>03054906</ee:RSISecCampo1>" + "<ee:RSISecCampo2>50456061H</ee:RSISecCampo2>" +
-         * "<ee:RSISecCampo3>20141217155327</ee:RSISecCampo3>" + "<ee:RSISecCampo4></ee:RSISecCampo4>" +
-         * "<ee:RSISecCampo5>0f0262740a3f50d9</ee:RSISecCampo5>" + "</soap:Header><soap:Body>" +
-         * "<ee:EE_I_AutenticarUsuario>" + "<ee:usuario>03052885</ee:usuario>" + "<ee:password>03052445</ee:password>" +
-         * "<ee:documento>33334444S</ee:documento>" + "</ee:EE_I_AutenticarUsuario>" + "</soap:Body>" +
-         * "</soap:Envelope>" ;
-         */
         // Create a StringEntity for the SOAP XML.
         StringEntity stringEntity = new StringEntity(strBody, "UTF-8");
         stringEntity.setChunked(true);

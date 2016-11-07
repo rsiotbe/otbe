@@ -117,8 +117,8 @@
 	
 	
 	
+/* NO BORRAR EL BLOQUE DE COMENTARIO TODAVÍA: PENDIENTE DE PRUEBAS DE RENDIMIENTO	
 	
-/*	
 	
 	strQuery = strQuery + " union " +
          " select" +

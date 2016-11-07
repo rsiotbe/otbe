@@ -149,8 +149,8 @@ public class Utils
      * @throws SQLException
      * @throws JSONException
      */
-    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet)
-            throws SQLException, JSONException
+    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet) throws SQLException,
+            JSONException
     {
         JSONObject pJsonRetorno = new JSONObject();
         JSONArray pJson = new JSONArray();
@@ -268,7 +268,6 @@ public class Utils
             {
                 if (!strReturn.isEmpty())
                     strReturn += "&";
-                // strReturn += strKey + "=" + pMap.getFirst(strKey);
                 strReturn += strKey + "=" + URLEncoder.encode(pMap.getFirst(strKey), "ISO-8859-1");
             }
         }
@@ -288,7 +287,6 @@ public class Utils
                 {
                     if (!strReturn.isEmpty())
                         strReturn += "&";
-                    // strReturn += strKey + "=" + pMap.get(strKey);
                     strReturn += strKey + "=" + URLEncoder.encode(pMap.get(strKey), "ISO-8859-1");
                 }
             }
@@ -308,7 +306,6 @@ public class Utils
                 String strKey = (String) pKeys.next();
                 if (!strReturn.isEmpty())
                     strReturn += "&";
-                // strReturn += strKey + "=" + pJSONObject.get(strKey).toString();
                 strReturn += strKey + "=" + URLEncoder.encode(pJSONObject.get(strKey).toString(), "ISO-8859-1");
             }
         }
