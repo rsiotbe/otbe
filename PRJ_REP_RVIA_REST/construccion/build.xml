@@ -9,7 +9,8 @@
 	</tstamp>
 	
 	<property name="war-file-name" value="${deploy-name}##${timestamp}.war" />
-	<property name="base-directory" value=".." />
+	<property name="base-directory" value="../.." />
+	<property name="prj-directory" value=".." />
 	<property name="source-directory" value="${base-directory}/src" />
 	<property name="tests-directory" value="${base-directory}/test" />
 	<property name="template-directory" value="${base-directory}/template" />
@@ -17,11 +18,11 @@
 	<property name="web-xml-file" value="${web-directory}/WEB-INF/web.xml" />
 	<property name="lib-directory" value="${web-directory}/WEB-INF/lib" />
 	<property name="oracle_jdb_lib" value="${lib-directory}/ojdbc6.jar" />
-	<property name="build-directory" value="${base-directory}/build" />
+	<property name="build-directory" value="${prj-directory}/build" />
 	<property name="classes-directory" value="${build-directory}/classes" />
 	<property name="configurations-directory" value="${base-directory}/configurations" />
-	<property name="dist-directory" value="${base-directory}/dist" />
-	<property name="reports-directory" value="${base-directory}/reports" />
+	<property name="dist-directory" value="${prj-directory}/dist" />
+	<property name="reports-directory" value="${build-directory}/reports" />
 	<property name="tomcat-directory" value="${tomcat.lib}" />
 	
 	<target name="clean">
@@ -63,8 +64,8 @@
 		<path refid="classpath.lib" />
 	</path>
 	<target name="compile" depends="init" >
-		<echo message="Se procede a compilar las clases"/>
-	   	<javac destdir="${classes-directory}" debug="true" srcdir="${source-directory}" includeantruntime="false">
+		<echo message="Se procede a compilar las clases utilizando jdk: ${javac7}"/>
+	   	<javac destdir="${classes-directory}" debug="true" srcdir="${source-directory}" fork="yes" includeantruntime="false" executable="${javac7}">
 	   		<compilerarg value="-Xlint:deprecation"/>
 	   		<compilerarg value= "-Xlint:unchecked" />
 			<classpath refid="project.classpath" />
@@ -72,7 +73,7 @@
 	</target>
     <target name="compile-tests" depends="compile">
 		<echo message="Se procede a compilar los tests"/>
-        <javac fork="true" srcdir="${tests-directory}" destdir="${classes-directory}-tests" includeantruntime="false">
+        <javac fork="yes" srcdir="${tests-directory}" destdir="${classes-directory}-tests" includeantruntime="false" executable="${javac7}">
 		    <classpath>
 		        <pathelement location="${lib-directory}/junit-4.12.jar"/>
 		        <path refid="project.classpath"/>
@@ -93,7 +94,7 @@
 		        <path refid="project.classpath"/>
 		    </classpath>
 			<formatter type="xml"/>
-			<batchtest fork="yes" todir="${base-directory}/reports">
+			<batchtest fork="yes" todir="${reports-directory}">
 				<fileset dir="${tests-directory}">
 					<include name="**/*Test.java"/>
 				</fileset>

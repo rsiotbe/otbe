@@ -5,6 +5,7 @@
 "
 %>
 <%
+    String strIdInternoPe = request.getParameter("idInternoPe");
     String strContrato = request.getParameter("idContract");  
     String strEntidad = request.getParameter("codEntidad");
     String strDateIni = request.getParameter("mesInicio");      
@@ -45,8 +46,22 @@
     }   
     strDateIni = strDateIni + "-01";         
     strQuery = strQuery + " and fecha_oprcn_dif >= round(to_date('" + strDateIni + "','yyyy-mm-dd'),'mm')";
-   strQuery = strQuery + " AND NUM_SEC_AC = " + strContrato +
-   				 " AND COD_CTA='01'" + 
+    
+    
+    if(strContrato == null){
+        //strQuery = strQuery + whereLineaEq; 
+        strQuery = strQuery + " and num_sec_ac in (" +
+                " select t2.num_sec_ac from rdwc01.mi_ac_cont_gen t2" +
+                " where t2.cod_nrbe_en='" + strEntidad + "' " +
+                "    and t2.id_interno_pe=" + strIdInternoPe +
+                "    and t2.mi_fecha_fin=to_date('31.12.9999','dd.mm.yyyy') " + 
+          ")";
+     }
+     else{
+        strQuery = strQuery + " and num_sec_ac =" + strContrato; 
+     } 
+    
+   strQuery = strQuery + " AND COD_CTA='01'" + 
    				 filtroTipoApunte +
    				 " group by to_char(fecha_oprcn_dif,'YYYY-MM'), case" +
    				 "   when trim(CONCPT_APNTE) like 'TRF.%' then 'TRANSFERENCIAS'" +
