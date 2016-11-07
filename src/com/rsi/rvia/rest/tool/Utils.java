@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
@@ -147,8 +149,8 @@ public class Utils
      * @throws SQLException
      * @throws JSONException
      */
-    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet)
-            throws SQLException, JSONException
+    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet) throws SQLException,
+            JSONException
     {
         JSONObject pJsonRetorno = new JSONObject();
         JSONArray pJson = new JSONArray();
@@ -252,8 +254,10 @@ public class Utils
      * @param pMap
      *            MultivaluedMap a convertir
      * @return String en formato queryString del tipo "&key=value"
+     * @throws UnsupportedEncodingException
      */
     public static String multiValuedMapToQueryString(MultivaluedMap<String, String> pMap)
+            throws UnsupportedEncodingException
     {
         String strReturn = "";
         Iterator<String> pIterator = pMap.keySet().iterator();
@@ -264,13 +268,13 @@ public class Utils
             {
                 if (!strReturn.isEmpty())
                     strReturn += "&";
-                strReturn += strKey + "=" + pMap.getFirst(strKey);
+                strReturn += strKey + "=" + URLEncoder.encode(pMap.getFirst(strKey), "ISO-8859-1");
             }
         }
         return strReturn;
     }
 
-    public static String hashMapToQueryString(HashMap<String, String> pMap)
+    public static String hashMapToQueryString(HashMap<String, String> pMap) throws UnsupportedEncodingException
     {
         String strReturn = "";
         if (pMap != null)
@@ -283,7 +287,7 @@ public class Utils
                 {
                     if (!strReturn.isEmpty())
                         strReturn += "&";
-                    strReturn += strKey + "=" + pMap.get(strKey);
+                    strReturn += strKey + "=" + URLEncoder.encode(pMap.get(strKey), "ISO-8859-1");
                 }
             }
         }
@@ -302,7 +306,7 @@ public class Utils
                 String strKey = (String) pKeys.next();
                 if (!strReturn.isEmpty())
                     strReturn += "&";
-                strReturn += strKey + "=" + pJSONObject.get(strKey).toString();
+                strReturn += strKey + "=" + URLEncoder.encode(pJSONObject.get(strKey).toString(), "ISO-8859-1");
             }
         }
         return strReturn;
