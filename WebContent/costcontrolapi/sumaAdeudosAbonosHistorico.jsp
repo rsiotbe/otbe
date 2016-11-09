@@ -1,10 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     import="
-         com.rsi.rvia.rest.client.QueryCustomizer
+         com.rsi.rvia.rest.client.QueryCustomizer,
+         org.slf4j.Logger,
+        org.slf4j.LoggerFactory 
 "
 %>
 <%
+String uri = request.getRequestURI();
+String pageName = uri.substring(uri.lastIndexOf("/")+1);
+Logger pLog  = LoggerFactory.getLogger(pageName);
     String strContrato = request.getParameter("idContract");  
     String strIdInternoPe = request.getParameter("idInternoPe");
     String strEntidad = request.getParameter("codEntidad").toString();
@@ -108,6 +113,7 @@
          " end,  " + 
     */     
    		 "sgn  " ;
+   pLog.info("Query al customizador: " + strQuery);
    strResponse= QueryCustomizer.process(request,strQuery);          
    response.setHeader("content-type", "application/json");
 %><%=strResponse%>
