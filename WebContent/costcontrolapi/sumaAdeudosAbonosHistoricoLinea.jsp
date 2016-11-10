@@ -2,10 +2,15 @@
     pageEncoding="UTF-8"
     import="
          com.rsi.rvia.rest.client.QueryCustomizer,
-         java.util.Calendar
+         java.util.Calendar,
+         org.slf4j.Logger,
+         org.slf4j.LoggerFactory 
 "
 %>
 <%
+String uri = request.getRequestURI();
+String pageName = uri.substring(uri.lastIndexOf("/")+1);
+Logger pLog  = LoggerFactory.getLogger(pageName);
     String strContrato = request.getParameter("idContract");  
     String strIdInternoPe = request.getParameter("idInternoPe");
     String strEntidad = request.getParameter("codEntidad").toString();
@@ -65,6 +70,7 @@
    strQuery = strQuery + " group by to_char(fecha_oprcn_dif,'YYYY-MM'), "+
          " cod_linea, " + 
          "sgn  " ;
+   pLog.info("Query al customizador: " + strQuery);
    strResponse= QueryCustomizer.process(request,strQuery);          
    response.setHeader("content-type", "application/json");
 %><%=strResponse%>

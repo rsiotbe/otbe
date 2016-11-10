@@ -1,12 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
  	import="
-		 com.rsi.rvia.rest.client.QueryCustomizer
+		 com.rsi.rvia.rest.client.QueryCustomizer,
+		 org.slf4j.Logger,
+         org.slf4j.LoggerFactory 
 "
 %>
 <%
 
-	
+String uri = request.getRequestURI();
+String pageName = uri.substring(uri.lastIndexOf("/")+1);
+Logger pLog  = LoggerFactory.getLogger(pageName);
+
     String strLastChargeDate = QueryCustomizer.getLastChargeDate("MI_AC_ECO_GEN","D");
 
 	String strContrato = request.getParameter("idContract");
@@ -183,7 +188,7 @@
                 "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0151','0551')  then '5'" + 
                 " end " ;	
 */	
-	
+    pLog.info("Query al customizador: " + strQuery);
 	strResponse = QueryCustomizer.process(request,strQuery);	
 	response.setHeader("content-type", "application/json");
 	

@@ -6,10 +6,16 @@
 		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider,
         java.sql.Connection,
         java.sql.PreparedStatement,
-        java.sql.ResultSet		 		 
+        java.sql.ResultSet,
+        org.slf4j.Logger,
+        org.slf4j.LoggerFactory   	 		 
 "
 %>
 <%
+
+String uri = request.getRequestURI();
+String pageName = uri.substring(uri.lastIndexOf("/")+1);
+Logger pLog  = LoggerFactory.getLogger(pageName);
 	String strLinea = request.getParameter("codLinea");
     String strCodClasificacion = request.getParameter("codClasificacion");
 	String whereLineaEq="";
@@ -181,6 +187,7 @@
       " end	is not null" +	
 		" 	and t2.mi_fecha_fin = (select MI_FECHA_PROCESO from rdwc01.ce_carga_tabla" +
 		" 		where nomtabla='MI_LINEA_GRUPO')";
+	pLog.info("Query al customizador: " + strQuery);
 	String strResponse = QueryCustomizer.process(request,strQuery);       
 	response.setHeader("content-type", "application/json");
 %>
