@@ -7,23 +7,29 @@ import java.sql.ResultSet;
 import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.tool.Utils;
 
-/** Objeto que representa una operativa o operación definida en la aplicación */
+/**
+ * Objeto que representa una operativa o operación definida en la aplicación
+ */
 public class MiqQuests
 {
-    private static Logger                       pLog            = LoggerFactory.getLogger(MiqQuests.class);
+    private static Logger                       pLog                          = LoggerFactory.getLogger(MiqQuests.class);
     private int                                 nIdMiq;
     private String                              strPathRest;
     private String                              strComponentType;
     private String                              strEndPoint;
     private String                              strTemplate;
-    public static Hashtable<Integer, MiqQuests> htCacheDataId   = new Hashtable<Integer, MiqQuests>();
-    public static Hashtable<String, MiqQuests>  htCacheDataPath = new Hashtable<String, MiqQuests>();
+    private JSONObject                          jsonOpciones;
+    public static Hashtable<Integer, MiqQuests> htCacheDataId                 = new Hashtable<Integer, MiqQuests>();
+    public static Hashtable<String, MiqQuests>  htCacheDataPath               = new Hashtable<String, MiqQuests>();
+    public static final String                  OPTION_PARAM_PROPAGATE_ID_MIQ = "propagateIdMiq";
 
     /**
      * Devuelve el tamaño de la cache
@@ -118,6 +124,16 @@ public class MiqQuests
         this.strTemplate = strTemplate;
     }
 
+    public JSONObject getJsonOpciones()
+    {
+        return jsonOpciones;
+    }
+
+    public void setJsonOpciones(JSONObject jsonOpciones)
+    {
+        this.jsonOpciones = jsonOpciones;
+    }
+
     /**
      * Obtiene un objeto URI a del valor de EndPoint
      * 
@@ -158,14 +174,29 @@ public class MiqQuests
      *            Dirección endPoint
      * @param strTemplate
      *            Plantilla asociada
+     * @param opciones
      */
-    public MiqQuests(int nIdMiq, String strPathRest, String strComponentType, String strEndPoint, String strTemplate)
+    public MiqQuests(int nIdMiq, String strPathRest, String strComponentType, String strEndPoint, String strTemplate,
+            String strOpciones)
     {
         this.nIdMiq = nIdMiq;
         this.strPathRest = strPathRest;
         this.strComponentType = strComponentType;
         this.strEndPoint = strEndPoint;
         this.strTemplate = strTemplate;
+        JSONObject opciones = null;
+        if (strOpciones != null && strOpciones.trim().length() > 0)
+        {
+            try
+            {
+                opciones = new JSONObject(strOpciones);
+            }
+            catch (JSONException ex)
+            {
+                pLog.error("Error al realizar la conversión del string opciones a JSON de " + nIdMiq, ex);
+            }
+        }
+        this.jsonOpciones = opciones;
     }
 
     /**
@@ -186,7 +217,7 @@ public class MiqQuests
             pResultSet = pPreparedStatement.executeQuery();
             while (pResultSet.next())
             {
-                MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"));
+                MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"), pResultSet.getString("opciones"));
                 if (!htCacheDataId.containsKey(pResultSet.getInt("id_miq")))
                     htCacheDataId.put(pResultSet.getInt("id_miq"), pMiqQuests);
                 if (!htCacheDataPath.containsKey(pResultSet.getString("path_rest")))
@@ -216,7 +247,11 @@ public class MiqQuests
         pSb.append("PathRest :" + strPathRest + "\n");
         pSb.append("ComponentType :" + strComponentType + "\n");
         pSb.append("EndPoint      :" + strEndPoint + "\n");
-        pSb.append("Template      :" + strTemplate);
+        pSb.append("Template      :" + strTemplate + "\n");
+        if (jsonOpciones != null)
+        {
+            pSb.append("Opciones      :" + jsonOpciones.toString());
+        }
         return pSb.toString();
     }
 

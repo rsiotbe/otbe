@@ -21,6 +21,7 @@ import org.jose4j.lang.JoseException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.rsi.Constantes;
 import com.rsi.isum.IsumValidation;
 import com.rsi.rvia.rest.conector.RestConnector;
@@ -477,7 +478,9 @@ public class OperationManager
             /* se obtienen los datos necesario para realizar la petición al proveedor */
             pMiqQuests = createMiqQuests(pUriInfo);
             if (pMiqQuests == null)
+            {
                 throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
+            }
             /* se obtiene el codigo de entidad de donde procede la llamada */
             JSONObject pDataInput = new JSONObject();
             pDataInput.put(Constantes.SIMULADOR_NRBE, strNRBE);
@@ -506,6 +509,29 @@ public class OperationManager
         }
         pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
         return pResponseConnector;
+    }
+
+    /**
+     * @param json
+     * @return
+     */
+    public static Response processDataFromPdf(UriInfo pUriInfo, JsonNode json)
+    {
+        MiqQuests pMiqQuests = null;
+        try
+        {
+            pMiqQuests = createMiqQuests(pUriInfo);
+            if (pMiqQuests == null)
+            {
+                throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
+            }
+        }
+        catch (Exception e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
