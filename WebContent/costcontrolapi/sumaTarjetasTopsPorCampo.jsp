@@ -23,15 +23,15 @@
     if(strConceptoAgregacion != null){
         if("1".equals(strConceptoAgregacion)){
             strGroupBy = " group by nvl(trim(h.descripcion),'Otros')";
-            strFieldDsiplay = " nvl(trim(h.descripcion),'Otros') \"concepto\"";
+            strFieldDsiplay = " nvl(trim(h.descripcion),'Otros') \"concepto\", ";
         }
         else if("2".equals(strConceptoAgregacion)){
             strGroupBy = " group by nvl(trim(e.localidad2),'OTROS')";
-            strFieldDsiplay = " nvl(trim(e.localidad2),'OTROS') \"concepto\"";
+            strFieldDsiplay = " nvl(trim(e.localidad2),'OTROS') \"concepto\", ";
         }
         else if("3".equals(strConceptoAgregacion)){
             strGroupBy = " group by nvl(trim(e.nomcomred),'OTROS')";
-            strFieldDsiplay = " nvl(trim(e.nomcomred),'OTROS') \"concepto\"";
+            strFieldDsiplay = " nvl(trim(e.nomcomred),'OTROS') \"concepto\", ";
         }          
     }
    
@@ -46,7 +46,7 @@
 
    String strQuery =          
            " select /" + "*" + "+ FULL(e) *" + "/  " +
-                   strFieldDsiplay + ", " +
+                   strFieldDsiplay + 
                    " sum(e.imptrn) \"importe\", " +
                    " avg(e.imptrn) \"media\", " +
                    " count(*) \"numero\" " +
