@@ -49,7 +49,9 @@ public class MiqQuests
      */
     public static void resetCache()
     {
+        htCacheDataId.clear();
         htCacheDataId = new Hashtable<Integer, MiqQuests>();
+        htCacheDataPath.clear();
         htCacheDataPath = new Hashtable<String, MiqQuests>();
     }
 
@@ -137,6 +139,7 @@ public class MiqQuests
         else
         {
             pUriReturn = UriBuilder.fromUri(this.strEndPoint).build();
+            strRealEndPoint = this.strEndPoint;
         }
         pLog.debug("Uri final: " + strRealEndPoint);
         return pUriReturn;
