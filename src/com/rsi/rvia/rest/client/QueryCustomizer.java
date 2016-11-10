@@ -93,6 +93,9 @@ public class QueryCustomizer
         {
             strRetorno = pResultSet.getString("ultimaCarga");
         }
+        pResultSet.close();
+        pPreparedStatement.close();
+        pConnection.close();
         return strRetorno;
     }
 

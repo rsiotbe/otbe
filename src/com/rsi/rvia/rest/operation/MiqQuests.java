@@ -139,6 +139,7 @@ public class MiqQuests
         else
         {
             pUriReturn = UriBuilder.fromUri(this.strEndPoint).build();
+            strRealEndPoint = this.strEndPoint;
         }
         pLog.debug("Uri final: " + strRealEndPoint);
         return pUriReturn;
