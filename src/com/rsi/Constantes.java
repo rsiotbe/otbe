@@ -14,6 +14,7 @@ public class Constantes
     ///////////////////////////
     public static final String SIMULADOR_NRBE                   = "nrbe";
     public static final String SIMULADOR_NRBE_NAME              = "nrbeName";
+    public static final String SIMULADOR_SIMPLE_NAME            = "simpleName";
     public static final String SIMULADOR_COMERCIAL_NAME         = "comercialName";
     public static final String SIMULADOR_SAC_EMAIL              = "sacEmail";
     public static final String SIMULADOR_SAC_TELEPHONE          = "sacTelephone";

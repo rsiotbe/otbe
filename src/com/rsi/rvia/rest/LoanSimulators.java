@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -24,8 +26,9 @@ import com.rsi.rvia.rest.client.OperationManager;
 @Path("/simuladores")
 public class LoanSimulators
 {
-    private static final String MEDIATYPE_PDF = "application/pdf";
-    private static Logger       pLog          = LoggerFactory.getLogger(LoanSimulators.class);
+    private static final String MEDIATYPE_PDF    = "application/pdf";
+    private static final String PDF_RENDERER_URL = "http://docrender.risa/docrender/rest/render/download/pdf/";
+    private static Logger       pLog             = LoggerFactory.getLogger(LoanSimulators.class);
 
     @GET
     @Path("{entidad}")
@@ -130,9 +133,13 @@ public class LoanSimulators
     public Response getSimulatorPdfDownload(@Context HttpServletRequest pRequest,
             @Context HttpServletResponse pResponse, @PathParam("id") String strId) throws Exception
     {
-        ByteArrayOutputStream pdf = loadPdf("http://docrender.risa/docrender/rest/render/download/pdf/" + strId);
-        pdf.writeTo(pResponse.getOutputStream());
-        pdf.reset();
+        ByteArrayOutputStream pdf = loadPdf(PDF_RENDERER_URL + strId);
+        pResponse.setHeader("Content-Type", MEDIATYPE_PDF);
+        pResponse.setHeader("Content-disposition", "attachment; filename="
+                + new SimpleDateFormat("'simulacion_'yyyyMMddhhmm'.pdf'").format(new Date()));
+        pResponse.setHeader("Content-Length", Integer.toString(pdf.size()));
+        pResponse.getOutputStream().write(pdf.toByteArray());
+        pResponse.getOutputStream().close();
         return Response.ok().build();
     }
 
@@ -175,13 +182,15 @@ public class LoanSimulators
         {
             for (int readNum; (readNum = is.read(buf)) != -1;)
             {
-                bos.write(buf, 0, readNum); // no doubt here is 0
+                bos.write(buf, 0, readNum);
             }
         }
         catch (IOException ex)
         {
             ex.printStackTrace();
         }
+        is.close();
+        bos.close();
         return bos;
     }
 }

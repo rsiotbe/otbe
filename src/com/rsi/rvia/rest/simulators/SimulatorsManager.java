@@ -40,6 +40,7 @@ public class SimulatorsManager
         int nSimulatorIdRef = -1;
         int nSimulatorId;
         String strCategory;
+        String strSimpleName;
         String strComercialName;
         String strCalcType;
         boolean fIsActive;
@@ -55,7 +56,7 @@ public class SimulatorsManager
         String strDescription;
         try
         {
-            strQuery = "select s.id_simulador, s.entidad, s.categoria, s.Nombre_Comercial, s.tipo_calculo, s.activo, "
+            strQuery = "select s.id_simulador, s.entidad, s.categoria, s.Nombre_Simple, s.Nombre_Comercial, s.tipo_calculo, s.activo, "
                     + "s.contratar, s. contacto_email, s.contacto_telef, s.atencion_cliente_email, s.atencion_cliente_telef, "
                     + "s.entidad_email_contacto, "
                     + "(select i.traduccion from BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_lopd) as texto_lopd, "
@@ -108,6 +109,7 @@ public class SimulatorsManager
                     }
                     /* se crea el nuevo sinulador y posteriormente se añaden sus campos */
                     strCategory = pResultSet.getString("CATEGORIA");
+                    strSimpleName = pResultSet.getString("NOMBRE_SIMPLE");
                     strComercialName = pResultSet.getString("NOMBRE_COMERCIAL");
                     strCalcType = pResultSet.getString("TIPO_CALCULO");
                     fIsActive = pResultSet.getBoolean("ACTIVO");
@@ -121,7 +123,7 @@ public class SimulatorsManager
                     strContractConditions = pResultSet.getString("TEXTO_CONDICIONES");
                     strLOPD = pResultSet.getString("TEXTO_LOPD");
                     strDescription = pResultSet.getString("TEXTO_DESC");
-                    pSimulatorObject = new SimulatorObject(nSimulatorId, strNRBE, strNRBEName, strCategory, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail, fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone, strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions, strDescription);
+                    pSimulatorObject = new SimulatorObject(nSimulatorId, strNRBE, strNRBEName, strCategory, strSimpleName, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail, fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone, strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions, strDescription);
                 }
                 pSimulatorObject.addConfigParam(pResultSet.getString("CLAVE"), pResultSet.getString("VALOR"));
             }

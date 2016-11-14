@@ -36,7 +36,6 @@ public class SaveExitHierarchy
         _strMethod = strMethod;
         _nIdMiq = nIdMiq;
         secResponse = pJsonData.optJSONObject("response");
-        secResponse = (secResponse == null) ? new JSONObject() : secResponse;
         analisisRecursivo(secResponse, "");
     }
 
