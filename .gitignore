@@ -5,4 +5,5 @@ dist/
 /.classpath
 .DS_Store
 /bin/
+/WebContent/static/
 local.properties

@@ -21,7 +21,7 @@
 	/* Se recuperan los parametros de entrada*/
 	String strNRBE = (String) request.getParameter(Constantes.SIMULADOR_NRBE);
 	String strNRBEName = (String) request.getParameter(Constantes.SIMULADOR_NRBE_NAME);
-	String strSimulatorName = (String) request.getParameter(Constantes.SIMULADOR_COMERCIAL_NAME);
+	String strSimulatorName = (String) request.getParameter(Constantes.SIMULADOR_SIMPLE_NAME);
 	String strLanguage = (String) request.getParameter(Constantes.SIMULADOR_LANGUAGE);
 	JSONObject pJsonResponse = new JSONObject();
 	SimulatorObjectArray paSimulators = SimulatorsManager.getSimulatorsData(strNRBE, strNRBEName, strSimulatorName, strLanguage);
