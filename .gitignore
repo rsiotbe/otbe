@@ -1,8 +1,9 @@
-/build/
-/dist/
+build/
+dist/
 /reports/
 /.settings/
 /.classpath
 .DS_Store
 /bin/
+/WebContent/static/
 local.properties
