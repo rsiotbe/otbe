@@ -3,7 +3,7 @@
 	<property file="build.scm.properties" />
 	<property file="local.properties" />
 	<property name="project-name" value="REP_RUALVIA_REST" />
-	<property name="deploy-name" value="simuladores" />
+	<property name="deploy-name" value="api" />
 	<tstamp>
 		<format property="timestamp" pattern="yyyyMMdd_HHmm" />
 	</tstamp>
