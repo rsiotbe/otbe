@@ -21,6 +21,7 @@ import org.jose4j.lang.JoseException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.rsi.Constantes;
 import com.rsi.isum.IsumValidation;
 import com.rsi.rvia.rest.conector.RestConnector;
@@ -469,20 +470,22 @@ public class OperationManager
         try
         {
             /* se obtiene el objeto petición */
-            strNRBE = SimulatorsManager.getNRBEFromName(strNRBEName);
             pRequestConfig = new RequestConfig(pRequest);
+            strNRBE = SimulatorsManager.getNRBEFromName(strNRBEName);
             /* si no viene idioma o definido se coge por defecto el de el objeto RequestConfig */
             if (strLanguage == null || strLanguage.trim().isEmpty())
                 strLanguage = pRequestConfig.getLanguage();
             /* se obtienen los datos necesario para realizar la petición al proveedor */
             pMiqQuests = createMiqQuests(pUriInfo);
             if (pMiqQuests == null)
+            {
                 throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
+            }
             /* se obtiene el codigo de entidad de donde procede la llamada */
             JSONObject pDataInput = new JSONObject();
             pDataInput.put(Constantes.SIMULADOR_NRBE, strNRBE);
             pDataInput.put(Constantes.SIMULADOR_NRBE_NAME, strNRBEName);
-            pDataInput.put(Constantes.SIMULADOR_COMERCIAL_NAME, strLoanName);
+            pDataInput.put(Constantes.SIMULADOR_SIMPLE_NAME, strLoanName);
             pDataInput.put(Constantes.SIMULADOR_LANGUAGE, strLanguage);
             /* se instancia el conector y se solicitan los datos */
             strJsonResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, pDataInput.toString());
@@ -509,6 +512,29 @@ public class OperationManager
     }
 
     /**
+     * @param json
+     * @return
+     */
+    public static Response processDataFromPdf(UriInfo pUriInfo, JsonNode json)
+    {
+        MiqQuests pMiqQuests = null;
+        try
+        {
+            pMiqQuests = createMiqQuests(pUriInfo);
+            if (pMiqQuests == null)
+            {
+                throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
+            }
+        }
+        catch (Exception e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * Último paso en el procesado de la respuesta, el resultado sera en forma de XHTML o JSON en funcion de el
      * MediaType que se le pase. Encapsula la respuesta en un objeto Response.
      * 
@@ -530,18 +556,21 @@ public class OperationManager
     {
         int nReturnHttpCode = HTTP_CODE_OK;
         String strTemplate = "";
-        /* se obtiene la plantilla destino si es que existe */
-        strTemplate = pMiqQuests.getTemplate();
         /* Se comprueba si ha habido algun error para generar la respuesta adecuada */
         if (pErrorCaptured != null)
         {
             pLog.info("Se procede a gestionar el error");
-            /* si la apliación debe responder un XHTML */
-            if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
+            /* si la aplicación debe responder un XHTML */
+            if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE || pMediaType == MediaType.TEXT_HTML_TYPE)
                 strTemplate = ErrorManager.ERROR_TEMPLATE;
             strJsonData = pErrorCaptured.getJsonError();
             nReturnHttpCode = pErrorCaptured.getHttpCode();
             pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
+        }
+        else
+        {
+            /* se obtiene la plantilla destino si es que existe */
+            strTemplate = pMiqQuests.getTemplate();
         }
         if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE || pMediaType == MediaType.TEXT_HTML_TYPE)
         {

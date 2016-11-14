@@ -109,30 +109,6 @@ public class RestWSConnector
             RequestConfig pRequestConfig, String strJsonData, MultivaluedMap<String, String> pPathParams,
             HashMap<String, String> pParamsToInject) throws Exception
     {
-        /**
-         * Realiza una petición de tipo post restFull al proveedor de datos (Ruralvia o WS dependiendo de la
-         * configuración)
-         * 
-         * @param pRequest
-         *            petición del cliente
-         * @param strPathRest
-         *            path de la petición
-         * @param pSessionRvia
-         *            Datos de la petición recibida desde ruralvia
-         * @param strJsonData
-         *            Datos a enviar
-         * @param pMiqQuests
-         *            Objeto MiqQuests con la información de la operativa
-         * @param pPathParams
-         *            Parámetros asociados al path
-         * @return Respuesta del proveedor de datos
-         * @throws Exception
-         */
-        /*
-         * public static Response post(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests, SessionRviaData
-         * pSessionRvia, String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String>
-         * pParamsToInject) throws Exception {
-         */
         Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
         Client pClient = RviaRestHttpClient.getClient();
         // Headers
@@ -165,13 +141,20 @@ public class RestWSConnector
             String strKey = (String) pIterator.next();
             pJson.put(strKey, (String) pPathParams.get(strKey).toString());
         }
-        pIterator = pParamsToInject.keySet().iterator();
-        while (pIterator.hasNext())
+        if (pParamsToInject != null)
         {
-            String strKey = (String) pIterator.next();
-            pJson.put(strKey, (String) pPathParams.get(strKey).toString());
+            pIterator = pParamsToInject.keySet().iterator();
+            while (pIterator.hasNext())
+            {
+                String strKey = (String) pIterator.next();
+                pJson.put(strKey, (String) pPathParams.get(strKey).toString());
+            }
         }
-        pJson.put("idMiq", pMiqQuests.getIdMiq());
+        JSONObject opciones = pMiqQuests.getJsonOpciones();
+        if (opciones == null || opciones.optBoolean(MiqQuests.OPTION_PARAM_PROPAGATE_ID_MIQ, true))
+        {
+            pJson.put("idMiq", pMiqQuests.getIdMiq());
+        }
         strJsonData = pJson.toString();
         WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint(pRequest));
         Response pReturn = pTarget.request().header("Authorization", JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).post(Entity.json(strJsonData));
@@ -197,9 +180,9 @@ public class RestWSConnector
      * @return Respuesta del proveedor de datos
      * @throws Exception
      */
-    public static Response put(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests,
-            RequestConfig pRequestConfig, String strJsonData, MultivaluedMap<String, String> pPathParams,
-            HashMap<String, String> pParamsToInject) throws Exception
+    public static Response put(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests, RequestConfig pRequestConfig,
+            String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject)
+            throws Exception
     {
         /*
          * se reutiliza la petición post puesto que es similar, en caso de una implementación diferente, es necesario

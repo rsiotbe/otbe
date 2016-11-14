@@ -9,7 +9,8 @@
 	</tstamp>
 	
 	<property name="war-file-name" value="${deploy-name}##${timestamp}.war" />
-	<property name="base-directory" value=".." />
+	<property name="base-directory" value="../.." />
+	<property name="prj-directory" value=".." />
 	<property name="source-directory" value="${base-directory}/src" />
 	<property name="tests-directory" value="${base-directory}/test" />
 	<property name="template-directory" value="${base-directory}/template" />
@@ -68,9 +69,11 @@
 		<path refid="classpath.lib" />
 	</path>
 	<target name="compile" depends="init" >
-		<echo message="Se procede a compilar las clases"/>
+		<echo message="Se procede a compilar las clases utilizando jdk: ${javac7}"/>
 	   	<javac destdir="${classes-directory}" debug="true" srcdir="${source-directory}" includeantruntime="false">
-			<classpath refid="project.classpath" />
+	   		<compilerarg value="-Xlint:deprecation"/>
+	   		<compilerarg value= "-Xlint:unchecked" />
+	   		<classpath refid="project.classpath" />
    	 	</javac>
 	</target>
     <target name="compile-tests" depends="compile">
@@ -83,7 +86,7 @@
         </javac>
     </target>
     <target name="test" depends="compile-tests">
-		<junit printsummary="yes" haltonfailure="true">
+		<junit printsummary="yes" haltonfailure="false">
 		    <classpath>
 	    	    <pathelement location="${lib-directory}/junit-4.12.jar"/>
 	        	<pathelement location="${lib-directory}/hamcrest-core-1.3.jar"/>
