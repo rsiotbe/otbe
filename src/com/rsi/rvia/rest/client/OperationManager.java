@@ -470,8 +470,8 @@ public class OperationManager
         try
         {
             /* se obtiene el objeto petición */
-            strNRBE = SimulatorsManager.getNRBEFromName(strNRBEName);
             pRequestConfig = new RequestConfig(pRequest);
+            strNRBE = SimulatorsManager.getNRBEFromName(strNRBEName);
             /* si no viene idioma o definido se coge por defecto el de el objeto RequestConfig */
             if (strLanguage == null || strLanguage.trim().isEmpty())
                 strLanguage = pRequestConfig.getLanguage();
@@ -485,7 +485,7 @@ public class OperationManager
             JSONObject pDataInput = new JSONObject();
             pDataInput.put(Constantes.SIMULADOR_NRBE, strNRBE);
             pDataInput.put(Constantes.SIMULADOR_NRBE_NAME, strNRBEName);
-            pDataInput.put(Constantes.SIMULADOR_COMERCIAL_NAME, strLoanName);
+            pDataInput.put(Constantes.SIMULADOR_SIMPLE_NAME, strLoanName);
             pDataInput.put(Constantes.SIMULADOR_LANGUAGE, strLanguage);
             /* se instancia el conector y se solicitan los datos */
             strJsonResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, pDataInput.toString());
@@ -556,18 +556,21 @@ public class OperationManager
     {
         int nReturnHttpCode = HTTP_CODE_OK;
         String strTemplate = "";
-        /* se obtiene la plantilla destino si es que existe */
-        strTemplate = pMiqQuests.getTemplate();
         /* Se comprueba si ha habido algun error para generar la respuesta adecuada */
         if (pErrorCaptured != null)
         {
             pLog.info("Se procede a gestionar el error");
-            /* si la apliación debe responder un XHTML */
-            if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
+            /* si la aplicación debe responder un XHTML */
+            if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE || pMediaType == MediaType.TEXT_HTML_TYPE)
                 strTemplate = ErrorManager.ERROR_TEMPLATE;
             strJsonData = pErrorCaptured.getJsonError();
             nReturnHttpCode = pErrorCaptured.getHttpCode();
             pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
+        }
+        else
+        {
+            /* se obtiene la plantilla destino si es que existe */
+            strTemplate = pMiqQuests.getTemplate();
         }
         if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE || pMediaType == MediaType.TEXT_HTML_TYPE)
         {

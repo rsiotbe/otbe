@@ -7,10 +7,13 @@ package com.rsi;
  */
 public class Constantes
 {
+    ///////////////////////////
+    // Default Values
+    ///////////////////////////
     public static final String CODIGO_BANCO_COOPERATIVO_ESPANOL = "0198";
     public static final String DEFAULT_LANGUAGE                 = "es_ES";
     ///////////////////////////
-    // Campos JSON Simulador //
+    // Campos JSON Simulador
     ///////////////////////////
     public static final String SIMULADOR_NRBE                   = "nrbe";
     public static final String SIMULADOR_NRBE_NAME              = "nrbeName";
@@ -30,6 +33,11 @@ public class Constantes
     public static final String SIMULADOR_CONTRACT_CONDITIONS    = "contractConditions";
     public static final String SIMULADOR_DESCRIPTION            = "description";
     public static final String SIMULADOR_LANGUAGE               = "language";
+    ///////////////////////////
+    // Request params
+    ///////////////////////////
+    public static final String PARAM_LANG                       = "lang";
+    public static final String PARAM_NRBE                       = "NRBE";
 
     public enum SimuladorCategorias
     {

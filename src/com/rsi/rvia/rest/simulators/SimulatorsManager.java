@@ -68,7 +68,7 @@ public class SimulatorsManager
             if (strSimulatorName != null && !strSimulatorName.trim().isEmpty()
                     && !"null".equals(strSimulatorName.trim()))
             {
-                strQuery += "and NOMBRE_COMERCIAL = ? ";
+                strQuery += "and NOMBRE_SIMPLE = ? ";
             }
             strQuery += "order by s.ID_SIMULADOR";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
