@@ -73,7 +73,7 @@ public class MiqAdminValidator
         String html = "<div class=\"container\">";
         String strBocata = "";
         strBocata = "                <div class=\"c12-12-prev msg1\">                                                                                 "
-                + "                     Who are you?"
+                + "                     Hello!<br>Who are you?"
                 + "                </div>                                                                                                           ";
         if (!"".equals(message))
         {
