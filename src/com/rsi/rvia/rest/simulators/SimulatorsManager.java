@@ -56,7 +56,7 @@ public class SimulatorsManager
         String strDescription;
         try
         {
-            strQuery = "select s.id_simulador, s.entidad, s.categoria, s.Nombre_Simple, s.Nombre_Comercial, s.tipo_calculo, s.activo, "
+            strQuery = "select s.id_simulador, s.entidad, s.categoria, s.nombre_simple, s.nombre_comercial, s.tipo_calculo, s.activo, "
                     + "s.contratar, s. contacto_email, s.contacto_telef, s.atencion_cliente_email, s.atencion_cliente_telef, "
                     + "s.entidad_email_contacto, "
                     + "(select i.traduccion from BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_lopd) as texto_lopd, "
@@ -68,7 +68,7 @@ public class SimulatorsManager
             if (strSimulatorName != null && !strSimulatorName.trim().isEmpty()
                     && !"null".equals(strSimulatorName.trim()))
             {
-                strQuery += "and NOMBRE_SIMPLE = ? ";
+                strQuery += "and s.NOMBRE_SIMPLE = ? ";
             }
             strQuery += "order by s.ID_SIMULADOR";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -115,7 +115,7 @@ public class SimulatorsManager
                     fIsActive = pResultSet.getBoolean("ACTIVO");
                     fAllowBooking = pResultSet.getBoolean("CONTRATAR");
                     strCustomerSupportEmail = pResultSet.getString("ATENCION_CLIENTE_EMAIL");
-                    strCustomerSupportTelephone = pResultSet.getString("ATENCION_CLIENTE_EMAIL");
+                    strCustomerSupportTelephone = pResultSet.getString("ATENCION_CLIENTE_TELEF");
                     strReceivingOfficeEmail = pResultSet.getString("ENTIDAD_EMAIL_CONTACTO");
                     fAllowUserEmail = pResultSet.getBoolean("CONTACTO_EMAIL");
                     fAllowUserTelephone = pResultSet.getBoolean("CONTACTO_TELEF");
