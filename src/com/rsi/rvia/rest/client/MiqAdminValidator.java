@@ -24,7 +24,7 @@ public class MiqAdminValidator
         HashMap<String, String> pParamsToInject = new HashMap<String, String>();
         String JWT = pRequest.getParameter("admTk");
         String uri = pRequest.getRequestURI();
-        String validos = "u020885-";
+        String validos = "u020885u020976u028879";
         if (JWT == null)
         {
             doURL(pResponse, "/api/access/adminLogin.jsp?requesturi=" + uri);
@@ -47,27 +47,57 @@ public class MiqAdminValidator
     public static String makeHTML(String user, String pass, String action, String ruri, String admTk, String message,
             boolean submit)
     {
-        String html;
-        String error = "";
+        String clsname = "angryok";
+        String html = "<div class=\"container\">";
+        String strBocata = "";
+        strBocata = "                <div class=\"c12-12-prev msg1\">                                                                                 "
+                + "                     Who are you?"
+                + "                </div>                                                                                                           ";
         if (!"".equals(message))
         {
-            error = "<div> " + message + " </div>";
+            clsname = "angryko";
+            strBocata = "                <div class=\"c12-12-prev msg2\">                                                                                 "
+                    + message
+                    + "                </div>                                                                                                           ";
         }
         if (!submit)
         {
-            html = error + "<form action=\"" + action + "\" method=\"post\">  " + "<input type=\"hidden\" value=\""
-                    + ruri + "\" name=\"requesturi\">  " + "<input type=\"hidden\" value=\"" + admTk
-                    + "\" name=\"admTk\">       "
-                    + "<p>User: <input type=\"text\" name=\"user\" value\"\"></p>        "
-                    + "<p>Pass: <input type=\"password\" name=\"pass\" value\"\"></p>    "
-                    + "<p><input type=\"submit\" value=\"enviar\"></p>         " + "</form> ";
+            html = html
+                    + "    <div class=\"dash-body\">                                                                                                    "
+                    + "        <div class=\"c1-n c12-12-prev\">                                                                                         "
+                    + "            <div class=\"c1-n c6-12-prev "
+                    + clsname
+                    + "\"></div>                                                                          "
+                    + "            <div class=\"c1-n c6-12-post bocata\">                                                                               "
+                    + strBocata
+                    + "            </div>                                                                                                               "
+                    + "            <div class=\"c1-n c4-12-prev\">&nbsp;</div>                                                                          "
+                    + "            <div class=\"c1-n c4-12-prev\">                                                                                      "
+                    + "                <form action=\""
+                    + action
+                    + "\"  method=\"post\">                                                                              "
+                    + "                    <input type=\"hidden\" value=\""
+                    + ruri
+                    + "\"  name=\"requesturi\">                                                      "
+                    + "                    <input type=\"hidden\" value=\""
+                    + admTk
+                    + "\"  name=\"admTk\">                                                           "
+                    + "                    <p><label>User:</label> <input type=\"text\" placeholder=\"Usuario\" name=\"user\" value=\"\"></p>           "
+                    + "                    <p><label>Pass:</label> <input type=\"password\" placeholder=\"Password\" name=\"pass\" value=\"\"></p>      "
+                    + "                    <p><input type=\"submit\" value=\"Take me inside\"></p>                                                      "
+                    + "                </form>                                                                                                          "
+                    + "            </div>                                                                                                               "
+                    + "            <div class=\"c1-n c4-12-post\">&nbsp;</div>                                                                          "
+                    + "        </div>                                                                                                                   "
+                    + "    </div>                                                                                                                       ";
         }
         else
         {
-            html = "<form action=\"" + action + "\" method=\"post\"> " + "<input type=\"hidden\" value=\"" + admTk
-                    + "\" name=\"admTk\"> " + "</form>                                                 "
+            html = html + "<form action=\"" + action + "\" method=\"post\"> " + "<input type=\"hidden\" value=\""
+                    + admTk + "\" name=\"admTk\"> " + "</form>                                                 "
                     + "<script>document.getElementsByTagName('form')[0].submit()</script>";
         }
+        html = html + "</div>";
         return html;
     }
 
@@ -105,7 +135,7 @@ public class MiqAdminValidator
             JWT = ManageJWToken.generateJWT(claims, "admTk");
             return makeHTML("", "", strRequestUri, strRequestUri, JWT, "", true);
         }
-        return makeHTML("", "", "", strRequestUri, JWT, "<p>Donde vas pájaro ?</p><p>Que va a ser que aquí no puedes entrar sin el santo y seña !!</p>", false);
+        return makeHTML("", "", "", strRequestUri, JWT, "Donde crees que vas pájaro?<br><br>Que va a ser que aquí no puedes entrar sin el santo y seña !!", false);
     }
 
     private static void doURL(HttpServletResponse pResponse, String url) throws IOException

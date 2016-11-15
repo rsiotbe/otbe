@@ -8,11 +8,8 @@
 %>
 <%
 String target=request.getQueryString();
-
-
 String partes[]=target.split("=");
 target=partes[1];
-
 String strHtml = null;
 String strUser=request.getParameter("user");
 if(strUser != null){    
@@ -26,7 +23,9 @@ if(strHtml == null){
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<link href="http://localhost/restadmin/api/static/css/style.css" rel="stylesheet" type="text/css">
+<style>
+</style>
 </head>
 <body>
 <%=strHtml%>
