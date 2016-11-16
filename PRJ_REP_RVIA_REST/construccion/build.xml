@@ -63,9 +63,18 @@
 		<path refid="classpath.runtime" />
 		<path refid="classpath.lib" />
 	</path>
+	
+<!--	
+	  <javac srcdir="${src}"
+         destdir="${build}"
+         fork="yes"
+         executable="/opt/java/jdk1.1/bin/javac"
+         compiler="javac1.1"
+  /-->
+	
 	<target name="compile" depends="init" >
 		<echo message="Se procede a compilar las clases utilizando jdk: ${javac7}"/>
-	   	<javac destdir="${classes-directory}" debug="true" srcdir="${source-directory}" fork="yes" includeantruntime="false" executable="${javac7}">
+	   	<javac destdir="${classes-directory}" debug="true" srcdir="${source-directory}" fork="yes" includeantruntime="false" executable="${javac7}" compiler="javac1.7">
 	   		<compilerarg value="-Xlint:deprecation"/>
 	   		<compilerarg value= "-Xlint:unchecked" />
 			<classpath refid="project.classpath" />
@@ -73,7 +82,7 @@
 	</target>
     <target name="compile-tests" depends="compile">
 		<echo message="Se procede a compilar los tests"/>
-        <javac fork="yes" srcdir="${tests-directory}" destdir="${classes-directory}-tests" includeantruntime="false" executable="${javac7}">
+        <javac fork="yes" srcdir="${tests-directory}" destdir="${classes-directory}-tests" includeantruntime="false" executable="${javac7}" compiler="javac1.7">
 		    <classpath>
 		        <pathelement location="${lib-directory}/junit-4.12.jar"/>
 		        <path refid="project.classpath"/>
