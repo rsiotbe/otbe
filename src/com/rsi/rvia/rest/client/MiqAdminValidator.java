@@ -30,7 +30,7 @@ public class MiqAdminValidator
         String JWT = pRequest.getParameter("admTk");
         Cookie cookies[];
         String uri = pRequest.getRequestURI();
-        String validos = "u020885u020976u028879";
+        String validos = "u020885u020976u028879u020964";
         cookies = pRequest.getCookies();
         if (cookies != null)
         {
@@ -55,9 +55,12 @@ public class MiqAdminValidator
         else
         {
             pParamsToInject = ManageJWToken.validateJWT(JWT, "admTk");
-            if (validos.indexOf(pParamsToInject.get("user")) == -1)
+            if (pParamsToInject != null)
             {
-                pParamsToInject = null;
+                if (validos.indexOf(pParamsToInject.get("user")) == -1)
+                {
+                    pParamsToInject = null;
+                }
             }
         }
         if (pParamsToInject == null)
@@ -150,8 +153,6 @@ public class MiqAdminValidator
         int loginok = strResponse.indexOf("/intranet.nsf/index.htm");
         if (loginok >= 0)
         {
-            // Todo en orden. Redireccionando a pagina valida
-            // pLog.warning("->>>>>>>>>>>>>>>>>>>> Error en el servicio de login");
             HashMap<String, String> claims = new HashMap<String, String>();
             claims.put("user", strUser);
             JWT = ManageJWToken.generateJWT(claims, "admTk");
