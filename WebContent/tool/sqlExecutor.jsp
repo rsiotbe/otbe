@@ -3,11 +3,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
-    //MiqAdminValidator.adminIn(request, (HttpServletResponse)response);
-	String salida = SqlExecutor.exec(request, (HttpServletResponse)response);
-	String ejecutando;
-
+    MiqAdminValidator.adminIn(request, (HttpServletResponse)response);
+    String ejecutando = request.getParameter("SQLcode");
+    SqlExecutor sqlExecutor = new SqlExecutor();
+	String salida = sqlExecutor.exec(request, (HttpServletResponse)response);	
 %>    
+
+<%if(ejecutando == null){ %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -42,16 +44,29 @@
                     countries: {name: null, population: null, size: null}
                 }}
             });
-            Z$.eventCataloger.addEventHandler (document.getElementById('execquery'),'click',function(){
+            
+            Z$.eventCataloger.addEventHandler (document.getElementById('execquery'),'click',function(){            	
+            	var datos = window.editor.getValue();
+            	datos=datos.replace(/--.*\n/g,"");
+            	datos=datos.replace(/\n/g,"");
+            	//datos=datos.replace(/;/g,"\n");
+            	datos=datos.replace(/\s+/g," ");
+            	datos=escape(datos);
+            	datos = "SQLcode="+datos;
+            	datos = datos + "&esquema=" + document.getElementById("esquema").value;
+                console.log(datos);
                 Z$.AJAX({
-                    url: 'sqlExecutor.jsp',
+                    url: '/api/tool/sqlExecutor.jsp',
                     method: 'post',
-                    data: document.getElementById('code').value,
-                    success: function(){
-                        alert("ha ido y ha vuelto")
+                    data: datos,
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    success: function(response){
+                    	document.getElementById("resultado_ejecucion").innerHTML=response.responseText;
                     },
                     failure: function(){
-                        alert("booo booo booo !!!")
+                    	document.getElementById("resultado_ejecucion").innerHTML="Ha cascado el servidor.<br>Comprueba la traza.";
                     }                    
                 });
             });
@@ -68,25 +83,36 @@
     <form>
         <div class="dash-body">       
             <div class="c1-n c12-12-prev">        
-                <textarea id="code" name="code">
+                <textarea id="code" name="code">-- Your SQL here
                 </textarea>
+                <!-- <input type="hidden" value="" name="_code" id="_code">  -->
             </div>
             <div class="c1-n c12-12-prev">
                 <div class="c1-n c3-12-prev">
                     <label>Selecciona esquema</label>
-                    <select name="esquema">
-                    <option>BEL</option>
-                    <option>CIP</option>
+                    <select name="esquema" id="esquema">
+                    <option value="OracleBanca">BEL</option>
+                    <option value="OracleCIP">CIP</option>
                     </select>
                 </div> 
                 <div class="c1-n c9-12-post">
                     <input type="button" value="Ejecutar" id="execquery">
                 </div>
             </div>
-            <div class="c1-n c12-12-prev exit">
+            <div class="c1-n c12-12-prev exit" id="resultado_ejecucion">
                 
             </div>            
         </div>
     </form>
 </body>
 </html>
+
+<% } else 
+{ 
+    response.setHeader("Content-Type", "text/html; charset=UTF-8");
+%>
+
+<%=salida %>
+
+<% } %>
+

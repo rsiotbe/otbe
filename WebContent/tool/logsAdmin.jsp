@@ -13,7 +13,7 @@
 <%@page import="java.util.Arrays"%>
 <%@page import ="ch.qos.logback.classic.spi.ILoggingEvent" %>
 <%
-MiqAdminValidator.adminIn(request, (HttpServletResponse)response);
+    MiqAdminValidator.adminIn(request, (HttpServletResponse)response);
 	long beginPageLoadTime = System.currentTimeMillis();
 %>
 <html>
