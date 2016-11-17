@@ -15,15 +15,15 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link href="http://localhost/sass/sqlexecutor/api/static/css/style.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" href="http://localhost/jslib/codemirror/lib/codemirror.css">
-<link rel="stylesheet" href="http://localhost/jslib/codemirror/addon/hint/show-hint.css" />
-<link rel=stylesheet href=".http://localhost/jslib/codemirror/doc/docs.css">
-<script src="http://localhost/jslib/codemirror/lib/codemirror.js"></script>
-<script src="http://localhost/jslib/codemirror/mode/sql/sql.js"></script>
-<script src="http://localhost/jslib/codemirror/addon/hint/show-hint.js"></script>
-<script src="http://localhost/jslib/codemirror/addon/hint/sql-hint.js"></script>
-<script src="http://localhost/jslib/Z$/Z$.js"></script>
+<link href="/api/static/css/apirestadmin/sqlexecutor.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="/api/static/css/apirestadmin/codemirror/codemirror.css">
+<link rel="stylesheet" href="/api/static/css/apirestadmin/codemirror/show-hint.css" />
+<link rel="stylesheet" href="/api/static/css/apirestadmin/codemirror/docs.css">
+<script src="/api/static/js/apirestadmin/codemirror/codemirror.js"></script>
+<script src="/api/static/js/apirestadmin/codemirror/sql.js"></script>
+<script src="/api/static/js/apirestadmin/codemirror/show-hint.js"></script>
+<script src="/api/static/js/apirestadmin/codemirror/sql-hint.js"></script>
+<script src="/api/static/js/apirestadmin/Z$.js"></script>
 <script>
         Z$.ready(function() {        
             var mime = 'text/x-mariadb';
@@ -47,9 +47,8 @@
             
             Z$.eventCataloger.addEventHandler (document.getElementById('execquery'),'click',function(){            	
             	var datos = window.editor.getValue();
-            	datos=datos.replace(/--.*\n/g,"");
-            	datos=datos.replace(/\n/g,"");
-            	//datos=datos.replace(/;/g,"\n");
+            	datos=datos.replace(/--.*\n/g," ");
+            	datos=datos.replace(/\n/g," ");
             	datos=datos.replace(/\s+/g," ");
             	datos=escape(datos);
             	datos = "SQLcode="+datos;
@@ -107,10 +106,7 @@
 </body>
 </html>
 
-<% } else 
-{ 
-    response.setHeader("Content-Type", "text/html; charset=UTF-8");
-%>
+<% } else { %>
 
 <%=salida %>
 

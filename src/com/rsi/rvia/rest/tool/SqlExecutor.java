@@ -5,8 +5,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.BatchUpdateException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +26,15 @@ public class SqlExecutor
     private int           cntErrores     = 0;
     private int           cntDesconocido = 0;
 
+    /**
+     * Hace login contra lo que corresponda. De momento la intranet.
+     * 
+     * @param pRequest
+     *            Objeto request del jsp
+     * @param pResponse
+     *            Objeto response del jsp
+     * @return Resultado de las ejecuciones
+     */
     public String exec(HttpServletRequest pRequest, HttpServletResponse pResponse) throws MalformedClaimException,
             NoSuchAlgorithmException, InvalidKeySpecException, JoseException, IOException, LogicalErrorException,
             SQLException
@@ -69,12 +76,13 @@ public class SqlExecutor
             line = " " + line + " ";
             pPreparedStatement.addBatch(line);
             cntOperaciones++;
-            // strReturn = processQuerys(line, pConnection, strReturn) + "<br>";
         }
         try
         {
+            strReturn = strReturn + "Sentencias recibidas: " + cntOperaciones + "<br>";
             pPreparedStatement.executeBatch();
-            strReturn = strReturn + "Sentencias recibidas: " + cntOperaciones;
+            pConnection.commit();
+            cntExtito = cntOperaciones;
         }
         catch (BatchUpdateException buex)
         {
@@ -95,46 +103,18 @@ public class SqlExecutor
                     cntErrores++;
                 }
             }
-        }
-        finally
-        {
-            strReturn = strReturn + "Procesadas con éxtito: " + cntExtito + "<br>";
-            strReturn = strReturn + "Procesadoas con error: " + cntErrores + "<br>";
-            strReturn = strReturn + "Información no disponible: " + cntDesconocido + "<br>";
             pConnection.rollback();
-            pConnection.close();
-        }
-        /*
-         * catch (SQLException ex) { strReturn = strReturn + "ERROR: " + ex.getMessage() + "<br>"; strReturn = strReturn
-         * + "---------- StackTrace: " + ex.getStackTrace(); }
-         */
-        return strReturn;
-    }
-
-    private String processQuerys(String line, Connection pConnection, String salida) throws SQLException
-    {
-        String retorno = "No se ha procesado la solicitud";
-        PreparedStatement pPreparedStatement = null;
-        ResultSet pResultSet = null;
-        pPreparedStatement = pConnection.prepareStatement(line);
-        try
-        {
-            pResultSet = pPreparedStatement.executeQuery();
-            salida = salida + "Procesado: " + line;
-            pResultSet.close();
-            cntOperaciones++;
-        }
-        catch (SQLException ex)
-        {
-            salida = salida + "ERROR: " + ex.getMessage() + "<br>" + ex.getStackTrace() + "<br>";
-            salida = salida + "---------- Sentencia: " + line + "<br>" + "---------- StackTrace: " + ex.getStackTrace();
-            cntErrores++;
         }
         finally
         {
             pPreparedStatement.close();
+            pConnection.close();
         }
-        // querys = querys.replaceAll("\"", "\\\"");
-        return salida;
+        strReturn = strReturn + "Procesadas con éxtito: " + cntExtito + "<br>";
+        if (cntOperaciones > cntExtito)
+        {
+            strReturn = strReturn + "<br>Lanzado ROLLBACK. ";
+        }
+        return strReturn;
     }
 }

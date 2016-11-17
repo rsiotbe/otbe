@@ -15,13 +15,17 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.lang.JoseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MiqAdminValidator
 {
-    private static Logger pLog = LoggerFactory.getLogger(MiqAdminValidator.class);
-
+    /**
+     * Comprueba las credenciales de acceso a una página restringida
+     * 
+     * @param pRequest
+     *            Objeto request del jsp
+     * @param pResponse
+     *            Objeto response del jsp
+     */
     public static void adminIn(HttpServletRequest pRequest, HttpServletResponse pResponse)
             throws MalformedClaimException, NoSuchAlgorithmException, InvalidKeySpecException, JoseException,
             IOException
@@ -69,6 +73,23 @@ public class MiqAdminValidator
         }
     }
 
+    /**
+     * Prepara el formulario de login
+     * 
+     * @param user
+     *            usuario intranet
+     * @param pass
+     *            password intranet
+     * @param action
+     *            action del formulario
+     * @param ruri
+     *            Url original
+     * @param admTk
+     *            JWT
+     * @param message
+     *            Mensaje, caso de ser necesario
+     * @return Html con el formulario de login, o la redirección
+     */
     public static String makeHTML(String user, String pass, String action, String ruri, String admTk, String message,
             boolean submit)
     {
@@ -126,15 +147,21 @@ public class MiqAdminValidator
         return html;
     }
 
+    /**
+     * Hace login contra lo que corresponda. De momento la intranet.
+     * 
+     * @param pRequest
+     *            Objeto request del jsp
+     * @param pResponse
+     *            Objeto response del jsp
+     * @return Html con el formulario de login, o la redirección
+     */
     public static String doLogin(HttpServletRequest pRequest, HttpServletResponse pResponse) throws JoseException,
             IOException, NoSuchAlgorithmException, InvalidKeySpecException
     {
         String strRequestUri = pRequest.getParameter("requesturi");
         String strUser = pRequest.getParameter("user");
         String strPass = pRequest.getParameter("pass");
-        if (strRequestUri == null)
-        {
-        }
         String inLogin = "http://intranetrsi.caja.rural/names.nsf?Login&Username=" + strUser + "&Password=" + strPass;
         HttpGet httpGet = new HttpGet(inLogin);
         // httpGet.setEntity(stringEntity);
@@ -157,7 +184,7 @@ public class MiqAdminValidator
             claims.put("user", strUser);
             JWT = ManageJWToken.generateJWT(claims, "admTk");
             Cookie cookie = new Cookie("admTk", JWT);
-            cookie.setMaxAge(60 * 60 * 24); // 1 hour
+            cookie.setMaxAge(60 * 60); // 1 hour
             cookie.setPath("/api");
             pResponse.addCookie(cookie);
             return makeHTML("", "", strRequestUri, strRequestUri, JWT, "", true);
@@ -165,6 +192,14 @@ public class MiqAdminValidator
         return makeHTML("", "", "", strRequestUri, JWT, "Donde crees que vas pájaro?<br><br>Que va a ser que aquí no puedes entrar sin el santo y seña !!", false);
     }
 
+    /**
+     * Fija cabecera de redirección
+     * 
+     * @param pRequest
+     *            Objeto request del jsp
+     * @param url
+     *            Dirección a la que ir
+     */
     private static void doURL(HttpServletResponse pResponse, String url) throws IOException
     {
         pResponse.sendRedirect(url);
