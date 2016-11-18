@@ -222,7 +222,7 @@ public class OperationManager
                     claims.put("idInternoPe", pRequest.getParameter("idInternoPe"));
                 }
                 if (claims != null)
-                    JWT = ManageJWToken.generateJWT(claims);
+                    JWT = ManageJWToken.generateJWT(claims, "tk1");
                 else
                 {
                     // Login fallido
@@ -234,7 +234,7 @@ public class OperationManager
                 // Else verificamos JWT
                 JWT = pRequest.getHeader("Authorization");
             }
-            HashMap<String, String> pParamsToInject = ManageJWToken.validateJWT(JWT);
+            HashMap<String, String> pParamsToInject = ManageJWToken.validateJWT(JWT, "tk1");
             if (pParamsToInject == null)
             {
                 throw new LogicalErrorException(401, 9999, "Unauthorized", "Sesión no válida", new Exception());

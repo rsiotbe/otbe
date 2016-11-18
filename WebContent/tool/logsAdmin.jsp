@@ -1,4 +1,5 @@
 <%@page language="java" contentType="text/html;charset=UTF-8"%>
+<%@page import="com.rsi.rvia.rest.client.MiqAdminValidator"%>
 <%@page import="ch.qos.logback.core.Appender"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="ch.qos.logback.classic.Level"%>
@@ -12,6 +13,7 @@
 <%@page import="java.util.Arrays"%>
 <%@page import ="ch.qos.logback.classic.spi.ILoggingEvent" %>
 <%
+    MiqAdminValidator.adminIn(request, (HttpServletResponse)response);
 	long beginPageLoadTime = System.currentTimeMillis();
 %>
 <html>

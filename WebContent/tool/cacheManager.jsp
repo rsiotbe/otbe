@@ -1,3 +1,4 @@
+<%@page import="com.rsi.rvia.rest.client.MiqAdminValidator"%>
 <%@page import="com.rsi.rvia.rest.operation.MiqQuests"%>
 <%@page import="com.rsi.rvia.rest.template.TemplateManager"%>
 <%@page import="com.rsi.rvia.translates.TranslateProcessor"%>
@@ -12,6 +13,8 @@
 	pageEncoding="UTF-8"%>
 
 <%
+    MiqAdminValidator.adminIn(request, (HttpServletResponse)response);
+
 	Logger pLog = LoggerFactory.getLogger("cacheManager.jsp");
 	Hashtable<String,Object> htCaches = new Hashtable<String,Object>();
 	/* Se añaden las caches */
