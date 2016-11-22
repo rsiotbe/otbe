@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
+import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,10 +26,11 @@ public class MiqAdminValidator
      *            Objeto request del jsp
      * @param pResponse
      *            Objeto response del jsp
+     * @throws ServletException
      */
-    public static void adminIn(HttpServletRequest pRequest, HttpServletResponse pResponse)
+    public static boolean adminIn(HttpServletRequest pRequest, HttpServletResponse pResponse)
             throws MalformedClaimException, NoSuchAlgorithmException, InvalidKeySpecException, JoseException,
-            IOException
+            IOException, ServletException
     {
         HashMap<String, String> pParamsToInject = new HashMap<String, String>();
         String JWT = pRequest.getParameter("admTk");
@@ -53,8 +55,8 @@ public class MiqAdminValidator
         }
         if (JWT == null)
         {
-            doURL(pResponse, "/api/access/adminLogin.jsp?requesturi=" + uri);
-            return;
+            doURL("/api/access/adminLogin.jsp?requesturi=" + uri, pRequest, pResponse);
+            return false;
         }
         else
         {
@@ -69,8 +71,11 @@ public class MiqAdminValidator
         }
         if (pParamsToInject == null)
         {
-            doURL(pResponse, "/api/access/adminLogin.jsp?requesturi=" + uri);
+            // pRequest.getServletContext().getRequestDispatcher(arg0);
+            doURL("/api/access/adminLogin.jsp?requesturi=" + uri, pRequest, pResponse);
+            return false;
         }
+        return true;
     }
 
     /**
@@ -199,9 +204,15 @@ public class MiqAdminValidator
      *            Objeto request del jsp
      * @param url
      *            Dirección a la que ir
+     * @throws ServletException
      */
-    private static void doURL(HttpServletResponse pResponse, String url) throws IOException
+    private static void doURL(String url, HttpServletRequest pRequest, HttpServletResponse pResponse)
+            throws IOException, ServletException
     {
-        pResponse.sendRedirect(url);
+        pResponse.sendRedirect(url); /*
+                                      * RequestDispatcher requestDispatcher =
+                                      * pRequest.getRequestDispatcher("/api/access/adminLogin.jsp?requesturi=" + url);
+                                      * requestDispatcher.forward(pRequest, pResponse);
+                                      */
     }
 }

@@ -3,7 +3,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
-    MiqAdminValidator.adminIn(request, (HttpServletResponse)response);
+    if(!MiqAdminValidator.adminIn(request, (HttpServletResponse)response)) return;
     String ejecutando = request.getParameter("SQLcode");
     SqlExecutor sqlExecutor = new SqlExecutor();
 	String salida = sqlExecutor.exec(request, (HttpServletResponse)response);	
