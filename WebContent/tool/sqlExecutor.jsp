@@ -15,15 +15,15 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link href="/api/static/css/apirestadmin/sqlexecutor.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" href="/api/static/css/apirestadmin/codemirror/codemirror.css">
-<link rel="stylesheet" href="/api/static/css/apirestadmin/codemirror/show-hint.css" />
-<link rel="stylesheet" href="/api/static/css/apirestadmin/codemirror/docs.css">
-<script src="/api/static/js/apirestadmin/codemirror/codemirror.js"></script>
-<script src="/api/static/js/apirestadmin/codemirror/sql.js"></script>
-<script src="/api/static/js/apirestadmin/codemirror/show-hint.js"></script>
-<script src="/api/static/js/apirestadmin/codemirror/sql-hint.js"></script>
-<script src="/api/static/js/apirestadmin/Z$.js"></script>
+<link href="/api/static/apirestadmin/css/sqlexecutor.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="/api/static/apirestadmin/css/codemirror/codemirror.css">
+<link rel="stylesheet" href="/api/static/apirestadmin/css/codemirror/show-hint.css" />
+<link rel="stylesheet" href="/api/static/apirestadmin/css/codemirror/docs.css">
+<script src="/api/static/apirestadmin/js/codemirror/codemirror.js"></script>
+<script src="/api/static/apirestadmin/js/codemirror/sql.js"></script>
+<script src="/api/static/apirestadmin/js/codemirror/show-hint.js"></script>
+<script src="/api/static/apirestadmin/js/codemirror/sql-hint.js"></script>
+<script src="/api/static/apirestadmin/js/Z$.js"></script>
 <script>
         Z$.ready(function() {        
             var mime = 'text/x-mariadb';

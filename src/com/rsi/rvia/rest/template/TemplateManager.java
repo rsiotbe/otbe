@@ -24,10 +24,9 @@ public class TemplateManager
 {
     static Logger                             pLog                  = LoggerFactory.getLogger(TemplateManager.class);
     public final static String                JSON_DATA_TAG         = "'__JSONDATA__'";
-    private final static String               IFRAME_SCRIPT_ADAPTER = "/api/js/iframe/iframeResizer.contentWindow.min.js";
-    private final static String               UPDATE_RVIA_SESSION   = "/api/js/session/manageSessionIsumRvia.js";
-    private final static String               JQUERY                = "/api/js/jquery/jquery-1.11.3.min.js";
-    // private final static String JQUERY = "/api/js/jquery/jquery-2.2.4.min.js";
+    private final static String               IFRAME_SCRIPT_ADAPTER = "/api/static/rviarest/js/iframe/iframeResizer.contentWindow.min.js";
+    private final static String               UPDATE_RVIA_SESSION   = "/api/static/rviarest/js/session/manageSessionIsumRvia.js";
+    private final static String               JQUERY                = "/api/static/rviarest/js/jquery/jquery-1.11.3.min.js";
     public static Hashtable<String, Document> htCacheTemplate       = new Hashtable<String, Document>();
 
     /**
