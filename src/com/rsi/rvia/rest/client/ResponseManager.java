@@ -15,6 +15,7 @@ import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 
+
 /**
  * Clase para manejar la respuesta del RestConnector. Mira si es un error o si no lo es y compone una respuesta JSON
  * Siguiendo la siguiente estructura: { "error": 0, ó 1 (si tiene o si no tiene) "response" : {...} (respuesta en JSON,
@@ -48,7 +49,31 @@ public class ResponseManager
             /* no es un JSON, se evalua por si es un error web de ruralvia */
             if (RestRviaConnector.isRuralviaWebError(strJsonData))
             {
-                /* se procede a obtener la infomración del error del interior del html devuelto por ruralvia */
+                /* se procede a obtener la infomración del errorMap<String, String[]> parameters = request.getParameterMap();
+for(String parameter : parameters.keySet()) {
+    if(parameter.toLowerCase().startsWith("question")) {
+        String[] values = parameters.get(parameter);
+        //your code here
+    }
+}Map<String, String[]> parameters = request.getParameterMap();
+for(String parameter : parameters.keySet()) {
+    if(parameter.toLowerCase().startsWith("question")) {
+        String[] values = parameters.get(parameter);
+        //your code here
+    }
+}Map<String, String[]> parameters = request.getParameterMap();
+for(String parameter : parameters.keySet()) {
+    if(parameter.toLowerCase().startsWith("question")) {
+        String[] values = parameters.get(parameter);
+        //your code here
+    }
+}Map<String, String[]> parameters = request.getParameterMap();
+for(String parameter : parameters.keySet()) {
+    if(parameter.toLowerCase().startsWith("question")) {
+        String[] values = parameters.get(parameter);
+        //your code here
+    }
+} del interior del html devuelto por ruralvia */
                 throw RestRviaConnector.generateLogicalErrorException(strJsonData);
             }
             else if (RestRviaConnector.isRuralviaSessionTimeoutError(strJsonData))

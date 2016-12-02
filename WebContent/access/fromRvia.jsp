@@ -3,6 +3,7 @@
 	import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
     		com.rsi.rvia.rest.operation.MiqQuests,
 		 	java.sql.Connection, java.net.URL,
+		 	java.util.Enumeration,
 		 	org.slf4j.Logger,org.slf4j.LoggerFactory"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -28,6 +29,7 @@
 		nMiqQuestId = 0; 
 	}
 
+	
 	String strToken = request.getParameter("token");
 	String strMethod = request.getParameter("method");
 	if (strMethod == null)
@@ -35,6 +37,26 @@
 	pLog.trace("Method: " + strMethod);
 	pLog.trace("IdMiq: " + strIdMiq);
 	pLog.trace("Token: " + strToken);
+	
+	  String inputs="";
+	  Enumeration parameterList = request.getParameterNames();
+	  while( parameterList.hasMoreElements() )
+	  {
+	    String sName = parameterList.nextElement().toString();
+	      String[] sMultiple = request.getParameterValues( sName );
+	      if( 1 >= sMultiple.length ){
+	        out.println( sName + " = " + request.getParameter( sName ) + "<br>" );
+	        inputs=inputs+"<input type='hidden' value='" + request.getParameter( sName ) + "' name='" + sName + "'>";
+	      }
+	      else{
+	        for( int i=0; i<sMultiple.length; i++ ){
+	          inputs=inputs+"<input type='hidden' value='" +sMultiple[i] + "' name='" + sName + "'>";
+	          out.println( sName + "[" + i + "] = " + sMultiple[i] + "<br>" );
+	        }
+	      }
+	  }
+	
+	
 	if (nMiqQuestId > 0) {
 		pMiqQuests = MiqQuests.getMiqQuests(nMiqQuestId);
 		if(pMiqQuests != null)
@@ -56,7 +78,8 @@
 %>
 <body>
 	<form id="formRedirect" action="/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
-		<input type="hidden" name="token" value="<%=strToken%>"> 
+		<input type="hidden" name="token" value="<%=strToken%>">
+		<%=inputs%> 
 <%
 	if(!strError.trim().isEmpty())
 	{
