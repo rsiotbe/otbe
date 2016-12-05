@@ -68,6 +68,9 @@ public class RestRviaConnector
             pLog.trace("Se obtiene el xml de configuración desde ruralvia y se procede a evaluar su contenido");
             proccessInformationFromRviaXML(pXmlDoc, pMiqQuests, pSessionFields);
             pLog.trace("Se añade la información reciida en la propia peticón");
+            /* OJOOOO: SOLO PARA SIMULACIONES */
+            pSessionFields.remove("canal");
+            pSessionFields.add("canal", "000011");
             addDatatoSessionFields(strClavePagina, strData, pSessionFields);
             pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
             pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
@@ -163,7 +166,7 @@ public class RestRviaConnector
                         insertNewParam(nIdMiqParam, strParamName);
                     }
                     /* se añade la realación entre el parámetro y la operación */
-                    createRelationParamAndOperation(nIdMiqParam, strParamName);
+                    createRelationParamAndOperation(nIdMiq, nIdMiqParam);
                 }
             }
         }
@@ -322,23 +325,23 @@ public class RestRviaConnector
      * @param strParamName
      *            Nombre del parámetro
      */
-    private static void createRelationParamAndOperation(int nIdMiqParam, String strParamName)
+    private static void createRelationParamAndOperation(int nIdMiq, int nIdMiqParam)
     {
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
-        String strQuery = "insert into BEL.BDPTB226_MIQ_QUEST_RL_SESSION values(?, ?, '')";
+        String strQuery = "insert into BEL.BDPTB226_MIQ_QUEST_RL_SESSION values(?, ?, ' ','propagate=false')";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
-            pPreparedStatement.setInt(1, nIdMiqParam);
-            pPreparedStatement.setString(2, strParamName);
+            pPreparedStatement.setInt(1, nIdMiq);
+            pPreparedStatement.setInt(2, nIdMiqParam);
             pPreparedStatement.executeUpdate();
         }
         catch (Exception ex)
         {
-            pLog.error("No se ha podido insertar la relación del parámetro " + strParamName + " con la operativa "
-                    + nIdMiqParam, ex);
+            pLog.error("No se ha podido insertar la relación del parámetro " + nIdMiqParam + " con la operativa "
+                    + nIdMiq, ex);
         }
         finally
         {
