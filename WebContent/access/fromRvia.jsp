@@ -45,17 +45,16 @@
 	    String sName = parameterList.nextElement().toString();
 	      String[] sMultiple = request.getParameterValues( sName );
 	      if( 1 >= sMultiple.length ){
-	        out.println( sName + " = " + request.getParameter( sName ) + "<br>" );
+	        out.println("<!-- " + sName + " = " + request.getParameter( sName ) + "-->\n" );
 	        inputs=inputs+"<input type='hidden' value='" + request.getParameter( sName ) + "' name='" + sName + "'>";
 	      }
 	      else{
 	        for( int i=0; i<sMultiple.length; i++ ){
 	          inputs=inputs+"<input type='hidden' value='" +sMultiple[i] + "' name='" + sName + "'>";
-	          out.println( sName + "[" + i + "] = " + sMultiple[i] + "<br>" );
+	          out.println("<!-- " + sName + "[" + i + "] = " + sMultiple[i] + "-->\n" );
 	        }
 	      }
 	  }
-	
 	
 	if (nMiqQuestId > 0) {
 		pMiqQuests = MiqQuests.getMiqQuests(nMiqQuestId);
