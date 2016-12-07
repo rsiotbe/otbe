@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+     <meta charset="utf-8"/>
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+<script>
+var json = '__JSONDATA__';
+
+$(document).ready(function() {
+	loadData();
+}
+
+function loadData()
+{
+	var cuentas = json.response.data.LISCUEN;
+	for (var i = 0; i < cuentas.length; i++)
+	{
+		var cuenta = cuentas[i];
+		var ccc = cuenta.CUENTA;
+		var alias = cuenta.DESCR;
+		var html = '<div> ' + alias + " - " + ccc + '<button onclick="enviar(' + i + ');"/></div>'
+		$('#cuentas').append(html);
+	}
+}
+
+function enviar(pos)
+{
+	
+}
+</script>
+
+PASO 1
+
+<div id="cuentas">
+</div>
+
+<form action="/api/rest/" method="get">
+</form>
+
+</body>
+</html>
