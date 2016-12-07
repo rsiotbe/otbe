@@ -130,7 +130,8 @@
 			<lib dir="${lib-directory}"/>
 		</war>
 		<delete dir="${configurations-directory-aux}" />
-		<echo message="para que funcione el comando scp es necesario añadir el jar jsch.jar de la url http://www.jcraft.com/jsch/index.html y añadirlo como una entrada de classpath -> jar externo en la configuracion de la ejecución ant"/>
+		<echo message="para que funcione el comando scp es necesario añadir el jar jsch.jar de carpeta /REP_RURALVIA_REST/PRJ_REP_RVIA_REST/construccion/dependenciasAnt/ y añadirlo como una entrada de classpath -> jar externo en la configuracion de la ejecución ant"/>
+		<echo message="en caso de que dicho fichero no se encuentre en la carpeta se puede descargar de la url http://www.jcraft.com/jsch/index.html"/>
 		<scp file="${dist-directory}/${war-file-name}" todir="cnlcloud:cloud$16@lnxntf05.risa:/cloud-disk/tomcat/omnicanal/apache-tomcat-7.0.70/webapps" trust="true" />  
 	</target>
 </project>
