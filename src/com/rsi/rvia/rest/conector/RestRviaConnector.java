@@ -67,7 +67,7 @@ public class RestRviaConnector
 			org.w3c.dom.Document pXmlDoc = InterrogateRvia.getXmlDatAndUserInfo(pRequest, strClavePagina);
 			pLog.trace("Se obtiene el xml de configuración desde ruralvia y se procede a evaluar su contenido");
 			proccessInformationFromRviaXML(pXmlDoc, pMiqQuests, pSessionFields);
-			pLog.trace("Se añade la información reciida en la propia peticón");
+			pLog.trace("Se añade la información recibida en la propia petición");
 			addDataToSessionFields(strClavePagina, strData, pSessionFields);
 			pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
 			pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());

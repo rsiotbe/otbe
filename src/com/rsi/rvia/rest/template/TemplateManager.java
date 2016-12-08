@@ -233,6 +233,8 @@ public class TemplateManager
 		Document pDocument;
 		String strHtml = "";
 		InputStream pInputStream = (TemplateManager.class.getResourceAsStream(strPathToTemplate));
+		if (pInputStream == null)
+			pLog.error("No se encuentra el fichero template " + strPathToTemplate);
 		strHtml = Utils.getStringFromInputStream(pInputStream);
 		pDocument = Jsoup.parse(strHtml, "", Parser.htmlParser());
 		return pDocument;
@@ -273,16 +275,16 @@ public class TemplateManager
 			case MOVIL:
 				nLastDot = strPathToTemplate.lastIndexOf('.');
 				if (nLastDot != -1)
-					strReturn = strPathToTemplate.substring(0, nLastDot) + "_tablet" + strPathToTemplate.substring(nLastDot);
+					strReturn = strPathToTemplate.substring(0, nLastDot) + "_movil" + strPathToTemplate.substring(nLastDot);
 				else
-					strReturn = strPathToTemplate + "_tablet";
+					strReturn = strPathToTemplate + "_movil";
 				break;
 			case TABLET:
 				nLastDot = strPathToTemplate.lastIndexOf('.');
 				if (nLastDot != -1)
-					strReturn = strPathToTemplate.substring(0, nLastDot) + "_movil" + strPathToTemplate.substring(nLastDot);
+					strReturn = strPathToTemplate.substring(0, nLastDot) + "_tablet" + strPathToTemplate.substring(nLastDot);
 				else
-					strReturn = strPathToTemplate + "_movil";
+					strReturn = strPathToTemplate + "_tablet";
 				break;
 			default:
 				break;
