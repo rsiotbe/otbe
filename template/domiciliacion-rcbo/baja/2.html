@@ -14,30 +14,30 @@ $(document).ready(function() {
 
 function loadData()
 {
-	var cuentas = json.response.data.LISCUEN;
-	for (var i = 0; i < cuentas.length; i++)
+/* 	var emisores = json.response.data.LISCUEN;
+	for (var i = 0; i < emisores.length; i++)
 	{
-		var cuenta = cuentas[i];
+		var emisor = emisores[i];
 		var ccc = cuenta.CUENTA;
 		var alias = cuenta.DESCR;
 		var html = '<div> ' + alias + " - " + ccc + '<button onclick="enviar(' + ccc + ');"/></div>'
-		$('#cuentas').append(html);
-	}
+		$('#emisores').append(html);
+	} */
 }
 
 function enviar(ccc)
 {
-	$('#form1').attr('action','/api/rest/domiciliations/transmitter/' + ccc)
-	$('#form1').submit();
+	$('#form2').attr('action','/api/rest/domiciliations/transmitter/' + ccc)
+	$('#form2').submit();
 }
 </script>
 
-PASO 1 - Escoger cuenta
+PASO 2 - Escoger emisor
 
-<div id="cuentas">
+<div id="emisores">
 </div>
 
-<form id="form1" action="" method="get">
+<form id="form2" action="" method="get">
 </form>
 
 </body>
