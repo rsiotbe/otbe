@@ -20,7 +20,7 @@ function loadData()
 		var cuenta = cuentas[i];
 		var ccc = cuenta.CUENTA;
 		var alias = cuenta.DESCR;
-		var html = '<div> ' + alias + " - " + ccc + '<button onclick="enviar(' + ccc + ');"/></div>'
+		var html = '<div> ' + alias + " - " + ccc + '<button onclick="enviar(' + ccc + ');"/> Seleccionar </div>'
 		$('#cuentas').append(html);
 	}
 }
