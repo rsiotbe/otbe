@@ -77,7 +77,6 @@
 %>
 <body>
 	<form id="formRedirect" action="/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
-		<input type="hidden" name="token" value="<%=strToken%>">
 		<%=inputs%> 
 <%
 	if(!strError.trim().isEmpty())

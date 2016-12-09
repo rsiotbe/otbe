@@ -234,7 +234,9 @@ public class TemplateManager
 		String strHtml = "";
 		InputStream pInputStream = (TemplateManager.class.getResourceAsStream(strPathToTemplate));
 		if (pInputStream == null)
+		{
 			pLog.error("No se encuentra el fichero template " + strPathToTemplate);
+		}
 		strHtml = Utils.getStringFromInputStream(pInputStream);
 		pDocument = Jsoup.parse(strHtml, "", Parser.htmlParser());
 		return pDocument;
