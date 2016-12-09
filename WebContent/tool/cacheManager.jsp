@@ -13,7 +13,7 @@
 	pageEncoding="UTF-8"%>
 
 <%
-    MiqAdminValidator.adminIn(request, (HttpServletResponse)response);
+    if(!MiqAdminValidator.adminIn(request, (HttpServletResponse)response)) return;
 
 	Logger pLog = LoggerFactory.getLogger("cacheManager.jsp");
 	Hashtable<String,Object> htCaches = new Hashtable<String,Object>();

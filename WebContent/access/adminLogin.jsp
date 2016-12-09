@@ -23,7 +23,7 @@ if(strHtml == null){
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link href="/api/static/css/apirestadmin/adminlogin.css" rel="stylesheet" type="text/css">
+<link href="/api/static/apirestadmin/css/adminlogin.css" rel="stylesheet" type="text/css">
 <style>
 </style>
 </head>
