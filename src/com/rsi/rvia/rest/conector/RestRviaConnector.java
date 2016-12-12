@@ -64,7 +64,7 @@ public class RestRviaConnector
 					+ strClavePagina;
 			pLog.trace("Se compone la url a invocar a ruralvia: " + strUrl);
 			Client pClient = RviaRestHttpClient.getClient();
-			org.w3c.dom.Document pXmlDoc = InterrogateRvia.getXmlDatAndUserInfo(pRequest, strClavePagina);
+			org.w3c.dom.Document pXmlDoc = InterrogateRvia.getXmlDatAndUserInfo(pRequestConfigRvia, strClavePagina);
 			pLog.trace("Se obtiene el xml de configuración desde ruralvia y se procede a evaluar su contenido");
 			proccessInformationFromRviaXML(pXmlDoc, pMiqQuests, pSessionFields);
 			pLog.trace("Se añade la información recibida en la propia petición");
