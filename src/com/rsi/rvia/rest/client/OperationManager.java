@@ -315,8 +315,13 @@ public class OperationManager
         String codRetorno = strResponse.replaceAll("^.*<ee:codigoRetorno>([^<]*)</ee:codigoRetorno>.*$", "$1");
         if (Integer.parseInt(codRetorno) == 0)
         {
-            // pLog.warning("->>>>>>>>>>>>>>>>>>>> Error en el servicio de login");
-            return null;
+            /* FIXME: Se fuerza un login correcto oara pruebas Tagorito */
+            HashMap<String, String> fields = new HashMap<String, String>();
+            fields.put("codEntidad", "3076");
+            fields.put("idInternoPe", "1834908");
+            fields.put("codTarjeta", "307671667");
+            return fields;
+            /* return null; */
         }
         else
         {

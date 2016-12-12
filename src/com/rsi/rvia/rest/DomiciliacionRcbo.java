@@ -41,7 +41,7 @@ public class DomiciliacionRcbo
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      * @throws Exception
      */
-    @GET
+    // @GET
     @Path("/transmitter/{idContract}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response listaDeEmisores(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
@@ -49,7 +49,7 @@ public class DomiciliacionRcbo
     {
         // return Response.ok("Lista de contratos").build();
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
-        pLog.info("Lista de contratos");
+        pLog.info("Lista de emisores");
         return pReturn;
     }
 }
