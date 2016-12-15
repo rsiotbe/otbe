@@ -15,15 +15,38 @@ $(document).ready(function() {
 
 function loadData()
 {
-/* 	var emisores = json.response.data.LISCUEN;
-	for (var i = 0; i < emisores.length; i++)
-	{
-		var emisor = emisores[i];
-		var ccc = cuenta.CUENTA;
-		var alias = cuenta.DESCR;
-		var html = '<div> ' + alias + " - " + ccc + '<button onclick="enviar(' + ccc + ');"/></div>'
-		$('#emisores').append(html);
-	} */
+	   var cuentas = json.response.data.LISCUEN;
+	    for (var i = 0; i < cuentas.length; i++) {
+	        var cuenta = cuentas[i];
+	        var ccc = cuenta.CUENTA;
+	        var alias = cuenta.DESCR;
+	        var tipo = 'B';
+	        var html = '<div class="cuenta" id="' + ccc + '"><div>' + alias + "</div><div>" + ccc + '</div></div>';     
+	        var form=getElement('form',{
+	            action: 'http://localhost:8080/api/rest/domiciliations/' + ccc + '/transmitter'
+	        })      
+	        form.appendChild(getElement('input',{
+	            name: 'tipo',
+	            type: 'hidden',
+	            value: 'B'
+	        }));        
+	        form.appendChild(getElement('input',{
+	            name: 'cuenta',
+	            type: 'hidden',
+	            value: 'B'
+	        }));        
+	        form.appendChild(getElement('input',{
+	            name: 'tipo',
+	            type: 'button',
+	            value: 'Enviar',
+	            form: form,
+	            onclick: function(){
+	                this.form.submit();
+	            }
+	        }));              
+	        form.appendChild(html);
+	        $('#cuentas').append(form);
+	    }
 }
 
 function enviar(ccc)
@@ -38,8 +61,7 @@ PASO 2 - Escoger emisor
 <div id="emisores">
 </div>
 
-<form id="form2" action="" method="get">
-</form>
+
 
 </body>
 </html>

@@ -76,7 +76,7 @@
 	}
 %>
 <body>
-	<form id="formRedirect" action="/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
+	<form id="formRedirect" action="http://localhost:8080/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
 		<%=inputs%> 
 <%
 	if(!strError.trim().isEmpty())
