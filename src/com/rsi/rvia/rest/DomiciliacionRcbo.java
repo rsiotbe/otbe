@@ -57,7 +57,7 @@ public class DomiciliacionRcbo
      * @throws Exception
      */
     @GET
-    @Path("/transmitter/{idContract}")
+    @Path("/{idContract}/transmitter")
     @Produces({ MediaType.TEXT_HTML })
     @Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
             "application/x-ms-application" })
@@ -76,7 +76,7 @@ public class DomiciliacionRcbo
      * @throws Exception
      */
     @GET
-    @Path("/contracts/{idContract}/transmitter")
+    @Path("/{idContract}/transmitter")
     @Produces(MediaType.APPLICATION_JSON)
     public Response listaDeEmisoresJSON(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception
@@ -94,7 +94,7 @@ public class DomiciliacionRcbo
      * @throws Exception
      */
     @GET
-    @Path("/contracts/{idContract}/transmitter/{idTransmitter}")
+    @Path("/{idContract}/transmitter/{idTransmitter}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response datosTransmitterJSON(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception

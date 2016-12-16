@@ -10,7 +10,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
 <title></title>
-<script src="/api/static/rviarest/js/iframe/iframeResizer.contentWindow.min.js"></script>
+<!-- <script src="/api/static/rviarest/js/iframe/iframeResizer.contentWindow.min.js"></script> -->
 </head>
 <%
 	Logger pLog = LoggerFactory.getLogger("access.jsp");
@@ -39,7 +39,7 @@
 	pLog.trace("Token: " + strToken);
 	
 	  String inputs="";
-	  Enumeration parameterList = request.getParameterNames();
+	  Enumeration <String> parameterList = request.getParameterNames();
 	  while( parameterList.hasMoreElements() )
 	  {
 	    String sName = parameterList.nextElement().toString();

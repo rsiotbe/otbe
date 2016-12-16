@@ -3,6 +3,7 @@ package com.rsi.rvia.rest.conector;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.HashMap;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Client;
@@ -50,7 +51,8 @@ public class RestRviaConnector
      * @throws Exception
      */
     public static Response doConnection(HttpServletRequest pRequest, MiqQuests pMiqQuests,
-            RequestConfigRvia pRequestConfigRvia, String strData) throws RestConnectorException
+            RequestConfigRvia pRequestConfigRvia, String strData, MultivaluedMap<String, String> pPathParams,
+            HashMap<String, String> pParamsToInject) throws RestConnectorException
     {
         WebTarget pTarget;
         Response pReturn;
@@ -69,6 +71,8 @@ public class RestRviaConnector
             proccessInformationFromRviaXML(pXmlDoc, pMiqQuests, pSessionFields);
             pLog.trace("Se añade la información recibida en la propia petición");
             addDataToSessionFields(strClavePagina, strData, pSessionFields);
+            pSessionFields.putAll(pPathParams);
+            // pSessionFields.putAll(pParamsToInject);
             pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
             pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
             pReturn = pTarget.request().post(Entity.form(pSessionFields));
