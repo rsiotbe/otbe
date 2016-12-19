@@ -1,80 +1,161 @@
+
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-     <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-	<!--  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script> -->
-	<style type="text/css">
-	body {
-		font-family: sans-serif;
-	}
-	.cuenta {
-    	padding: 5px 10px;
-	}
-	.cuenta:nth-child(odd) {
-    	background-color: #ddd;
-	}
-	.cuenta div:first-child {
-	    margin-bottom: 5px;
-	}
-	.cajatexto{
-	   width: 200px;
-	}
-	</style>
-	<script>
-var json = '__JSONDATA__';
+    <script>
+    var json = '__JSONDATA__';
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>OPC - Baja domiciliación</title>
 
-function getElement(t,c){
-    var e=document.createElement(t);
-    for(var i in c){
-        e[i]=c[i];
-    }
-    return e;
-}
-function loadData() {
-    var cuentas = json.response.data.LISCUEN;
-    
-    for (var i = 0; i < cuentas.length; i++) {
-        var cuenta = cuentas[i];
-        var ccc = cuenta.CUENTA;
-        var alias = cuenta.DESCR;
-        var tipo = 'B';
-        var form=getElement('form',{
-            action: 'http://localhost:8080/api/rest/domiciliations/' + ccc + '/transmitter'
-        });              
-        form.appendChild(getElement('input',{
-            name: 'tipo',
-            type: 'hidden',
-            value: 'B'
-        }));                
-        form.appendChild(getElement('input',{
-            name: 'decri',
-            type: 'text',
-            value: alias,
-            className: 'cajatexto',
-            disabled: true
-        }));        
-        form.appendChild(getElement('input',{
-            type: 'button',
-            value: 'Enviar',
-            form: form,
-            onclick: function(){
-                this.form.submit();
-            }
-        }));              
-        document.body.appendChild(form);
-    }
-}
-</script>
+    <link rel="stylesheet" href="/api/static/rviarest/common/css/styles.min.css">
 </head>
-<body onload='loadData()'>
 
+<body>
+    <div class="wr-opc-operativa" id="opc-baja-domiciliacion">
+        <!-- INICIO: Componente DROPDOWN-PRODUCTOS-->
+        <div class="container wr-dropdown-productos js-cuentas-baja-domiciliacion-container">
+            <div class="dropdown productos">
+                <button class="btn dropdown-toggle" type="button" id="dropdown-productos" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <!-- INICIO: Componente PRODUCT-BOX -->
+                    <div class="product-box">
+                        <div class="descripcion">
+                            Seleccione una cuenta
+                        </div>
+                    </div><!-- FIN: Componente PRODUCT-BOX -->
+                </button>
+                 
+                <ul class="dropdown-menu js-cuentas-baja-domiciliacion" aria-labelledby="dropdown-productos">
+                    
+                </ul>
+            </div>
+        </div><!-- FIN: Componente DROPDOWN-PRODUCTOS-->
 
-<h3>PASO 1 - Escoger cuenta</h3>
+        <!-- INICIO: Componente ODD-EVEN-LIST -->       
+        <div class="container wr-odd-even-list js-listado-emisoras-baja-domiciliacion-container">
+            <h3 class="title-h3">Lista de Emisoras</h3>         
+            <ul class="odd-even-list js-wr-contenido-cuenta js-listado-emisoras-baja-domiciliacion">
+                
+            </ul>
+        </div><!-- FIN: Componente ODD-EVEN-LIST -->
 
+        <!-- INICIO: WRAPPER confirmacion-baja -->
+        <div class="container confirmacion-baja hidden">
+            <!-- INICIO: Componente PRODUCT-BOX -->
+            <div class="product-box single-product">
+                <div class="datos">
+                    <div class="descripcion">
+                        Cuenta corriente
+                    </div>
+                    <div class="num-producto">
+                        ES12 0198 0900 2920 1394 1923 | EUR
+                    </div>                          
+                </div>
+            </div><!-- FIN: Componente PRODUCT-BOX -->
 
+            <h3 class="title-h3">Datos de la domiciliación</h3> 
+            <!-- INICIO: Componente PRODUCT-BOX -->
+            <div class="product-box single-product no-border">
+                <div class="datos">
+                    <div class="descripcion">
+                        Otras domiciliaciones
+                    </div>
+                    <div class="num-producto">
+                        ES12 0198 0900 2920 1394 1923 | EUR
+                    </div>                          
+                </div>
+            </div><!-- FIN: Componente PRODUCT-BOX -->
 
+            <h3 class="title-h3">Tipo de baja</h3>
+            <!-- INICIO: Componente RADIOBUTTONS -->
+            <div class="wr-radiobuttons column">
+                <form action="">
+                    <label><input type="radio" name="tipo-baja" value="permanente" checked="checked">Baja permanente</label>
+                    <label><input type="radio" name="tipo-baja" value="temporal">Baja temporal</label>
+                </form>
+            </div><!-- FIN: Componente RADIOBUTTONS -->
 
+            <p class="text-italic">
+                Para reactivar la domiciliación de una baja temporal debe ponerse en contacto con su oficina.
+            </p>
+
+            <!-- INICIO: Componente COORDENADAS -->
+            <div id="wr-coordenadas">
+                <div class="warning-box">
+                    <p>Introduzca la coordenada requerida y pulse <strong>Aceptar</strong></p>
+                </div>
+
+                <div class="activacion-coordenadas">
+                    <div class="coordenadas-pad">
+                        <button class="btn btn-pad"></button>
+                        <button class="btn btn-pad"></button>
+                        <button class="btn btn-pad"></button>
+                        <button class="btn btn-pad"></button>
+                        <button class="btn btn-pad"></button>
+                        <button class="btn btn-pad"></button>
+                        <button class="btn btn-pad"></button>
+                        <button class="btn btn-pad"></button>
+                        <button class="btn btn-pad"></button>
+                        <button class="btn btn-pad"></button>
+                    </div>
+                    <div class="coordenadas-inputs">
+                        <p>Coordenada <span id="id-coordenada">F4</span></p>
+                        <div class="wr-input-borrar">
+                            <input type="password" readonly="readonly" class="active" id="coordenada-posicion">
+                            <span class="input-borrar hidden"></span>                       
+                        </div>
+                        <div class="img-operacion-correcta hidden"></div>
+                    </div>
+                    <div class="coordenadas-inputs hidden">
+                        <p>Código SMS</p>
+                        <div class="wr-input-borrar">
+                            <input type="password" readonly="readonly" id="sms-code">
+                            <span class="input-borrar hidden"></span>                   
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <button class="btn btn-default back" id="back-coordenadas">Volver</button>  
+                    </div>
+                    <div class="col-xs-6">
+                        <button class="btn btn-default" id="next-coordenadas" disabled>Aceptar</button>                 
+                    </div>
+                </div>      
+            </div><!-- FIN: Componente COORDENADAS -->
+        </div> <!-- FIN: WRAPPER confirmacion-baja -->
+
+        <!-- INICIO: Componente MESSAGE -->
+        <div class="container">
+            <div class="message confirm-message hidden">
+                <div class="title">Procesado</div>
+                <div class="item-data text-left"><strong>Canal: </strong>Banca móvil</div>
+                <div class="item-data text-left"><strong>Firmado por: </strong>C****455 USUARIO PRUEBAS BANC - 26-07-2016 12:48:16</div>            
+            </div>
+        </div><!-- FIN: Componente MESSAGE -->
+
+        <!-- INICIO: Componente MESSAGE -->
+        <div class="container">
+            <div class="message error-message coordenada-error hidden">
+                <div class="title">
+                    Coordenada incorrecta
+                </div>
+                <p class="description">
+                    Introdúzcala correctamente
+                </p>
+                <button class="btn btn-default back">Volver</button>    
+            </div>
+        </div><!-- FIN: Componente MESSAGE -->
+
+    </div>  
+    <script src="/api/static/rviarest/domiciliacion-rcbo/baja/js/scripts.min.js"></script>
+    <script src="/api/static/rviarest/domiciliacion-rcbo/baja/js/bootstrap.min.js"></script>
+    <script src="/api/static/rviarest/domiciliacion-rcbo/baja/js/underscore-min.js"></script>
+    <script src="/api/static/rviarest/domiciliacion-rcbo/baja/js/main-baja-domiciliacion.js"></script>
+    <script src="/api/static/rviarest/domiciliacion-rcbo/baja/js/main.js"></script>
 </body>
 </html>

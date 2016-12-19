@@ -3,6 +3,7 @@ package com.rsi.rvia.rest;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -78,8 +79,26 @@ public class DomiciliacionRcbo
     @GET
     @Path("/{idContract}/transmitter")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listaDeEmisoresJSON(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
-            throws Exception
+    public Response listaDeEmisoresJSONbyGET(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            String strData) throws Exception
+    {
+        // return Response.ok("Lista de contratos").build();
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Lista de emisores");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el listado de emisores de decibos para una cuenta.
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @POST
+    @Path("/{idContract}/transmitter")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response listaDeEmisoresJSONbyPOST(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            String strData) throws Exception
     {
         // return Response.ok("Lista de contratos").build();
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
