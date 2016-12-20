@@ -11,13 +11,13 @@ import com.rsi.rvia.rest.session.RequestConfigRvia;
 public class IsumValidationTest extends TestBase
 {
 	@Mock
-	RequestConfigRvia		session;
+	RequestConfigRvia	session;
 
 	@Test
 	public void testIsValidServiceOk() throws Exception
 	{
 		final String ISSUM_PROFILE = "0198TS00";
-		final String ISSUM_SERVICE_ID = "PROXY_RVIA_REST_1022";
+		final String ISSUM_SERVICE_ID = "PROXY_RVIAREST_1022";
 		when(session.getIsumUserProfile()).thenReturn(ISSUM_PROFILE);
 		when(session.getIsumServiceId()).thenReturn(ISSUM_SERVICE_ID);
 		boolean isValid = IsumValidation.IsValidService(session);

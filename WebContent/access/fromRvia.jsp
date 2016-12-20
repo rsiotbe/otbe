@@ -10,7 +10,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
 <title></title>
-<script src="/api/static/rviarest/js/iframe/iframeResizer.contentWindow.min.js"></script>
+<!-- <script src="/api/static/rviarest/js/iframe/iframeResizer.contentWindow.min.js"></script> -->
 </head>
 <%
 	Logger pLog = LoggerFactory.getLogger("access.jsp");
@@ -39,23 +39,22 @@
 	pLog.trace("Token: " + strToken);
 	
 	  String inputs="";
-	  Enumeration parameterList = request.getParameterNames();
+	  Enumeration <String> parameterList = request.getParameterNames();
 	  while( parameterList.hasMoreElements() )
 	  {
 	    String sName = parameterList.nextElement().toString();
 	      String[] sMultiple = request.getParameterValues( sName );
 	      if( 1 >= sMultiple.length ){
-	        out.println( sName + " = " + request.getParameter( sName ) + "<br>" );
+	        out.println("<!-- " + sName + " = " + request.getParameter( sName ) + "-->\n" );
 	        inputs=inputs+"<input type='hidden' value='" + request.getParameter( sName ) + "' name='" + sName + "'>";
 	      }
 	      else{
 	        for( int i=0; i<sMultiple.length; i++ ){
 	          inputs=inputs+"<input type='hidden' value='" +sMultiple[i] + "' name='" + sName + "'>";
-	          out.println( sName + "[" + i + "] = " + sMultiple[i] + "<br>" );
+	          out.println("<!-- " + sName + "[" + i + "] = " + sMultiple[i] + "-->\n" );
 	        }
 	      }
 	  }
-	
 	
 	if (nMiqQuestId > 0) {
 		pMiqQuests = MiqQuests.getMiqQuests(nMiqQuestId);
@@ -77,8 +76,7 @@
 	}
 %>
 <body>
-	<form id="formRedirect" action="/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
-		<input type="hidden" name="token" value="<%=strToken%>">
+	<form id="formRedirect" action="http://localhost:8080/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
 		<%=inputs%> 
 <%
 	if(!strError.trim().isEmpty())

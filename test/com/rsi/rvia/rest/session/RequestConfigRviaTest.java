@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import com.rsi.Constantes;
 import com.rsi.TestBase;
-import com.rsi.rvia.rest.session.RequestConfigRvia.CanalAix;
+import com.rsi.rvia.rest.session.RequestConfigRvia.CanalFront;
 
 public class RequestConfigRviaTest extends TestBase
 {
@@ -129,9 +129,9 @@ public class RequestConfigRviaTest extends TestBase
 	@Test
 	public void testGetCanalAix()
 	{
-		CanalAix canalAix = sessionRvia.getCanalAix();
+		CanalFront canalAix = sessionRvia.getCanalFront();
 		assertNotNull("testGetCanalAix: canalAix es null", canalAix);
-		assertTrue("testGetCanalAix: canalAix no es instancia de CanalAix", canalAix instanceof CanalAix);
+		assertTrue("testGetCanalAix: canalAix no es instancia de CanalAix", canalAix instanceof CanalFront);
 	}
 
 	@Test

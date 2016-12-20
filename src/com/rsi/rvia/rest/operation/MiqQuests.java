@@ -5,7 +5,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,16 +23,17 @@ import com.rsi.rvia.rest.tool.Utils;
  */
 public class MiqQuests
 {
-    private static Logger                       pLog                          = LoggerFactory.getLogger(MiqQuests.class);
-    private int                                 nIdMiq;
-    private String                              strPathRest;
-    private String                              strComponentType;
-    private String                              strEndPoint;
-    private String                              strTemplate;
-    private JSONObject                          jsonOpciones;
-    public static Hashtable<Integer, MiqQuests> htCacheDataId                 = new Hashtable<Integer, MiqQuests>();
-    public static Hashtable<String, MiqQuests>  htCacheDataPath               = new Hashtable<String, MiqQuests>();
-    public static final String                  OPTION_PARAM_PROPAGATE_ID_MIQ = "propagateIdMiq";
+    private static Logger                          pLog                          = LoggerFactory.getLogger(MiqQuests.class);
+    private int                                    nIdMiq;
+    private String                                 strPathRest;
+    private String                                 strComponentType;
+    private String                                 strEndPoint;
+    private String                                 strTemplate;
+    private JSONObject                             jsonOpciones;
+    public static Hashtable<String, MiqQuestParam> htParamsInput                 = new Hashtable<String, MiqQuestParam>();
+    public static Hashtable<Integer, MiqQuests>    htCacheDataId                 = new Hashtable<Integer, MiqQuests>();
+    public static Hashtable<String, MiqQuests>     htCacheDataPath               = new Hashtable<String, MiqQuests>();
+    public static final String                     OPTION_PARAM_PROPAGATE_ID_MIQ = "propagateIdMiq";
 
     /**
      * Devuelve el tamaño de la cache
@@ -225,6 +229,7 @@ public class MiqQuests
                     htCacheDataId.put(pResultSet.getInt("id_miq"), pMiqQuests);
                 if (!htCacheDataPath.containsKey(pResultSet.getString("path_rest")))
                     htCacheDataPath.put(pResultSet.getString("path_rest"), pMiqQuests);
+                loadInputParams(pResultSet.getString("path_rest"));
             }
             pLog.debug("Se carga la cache de MiqQuest con " + getCacheSize()
                     + " elementos. (La mitad es por id y la otra mitad por Path");
@@ -239,6 +244,38 @@ public class MiqQuests
         }
     }
 
+    /**
+     * Funcion que carga las entradas del servicio en cache desde base de datos
+     * 
+     * @throws Exception
+     */
+    private static void loadInputParams(String strPathRest) throws Exception
+    {
+        Connection pConnection = null;
+        PreparedStatement pPreparedStatement = null;
+        ResultSet pResultSet = null;
+        String strQuery = "select a.id_miq, c.* from " + " BEL.BDPTB222_MIQ_QUESTS a, "
+                + " BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, " + " BEL.BDPTB225_MIQ_SESSION_PARAMS c "
+                + " where a.id_miq=b.id_miq " + " and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " + " and a.path_rest='"
+                + strPathRest + "' order by c.ID_MIQ_PARAM";
+        pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
+        pPreparedStatement = pConnection.prepareStatement(strQuery);
+        pResultSet = pPreparedStatement.executeQuery();
+        while (pResultSet.next())
+        {
+            MiqQuestParam pMiqQuestParam = new MiqQuestParam(pResultSet.getInt("id_miq_param"), pResultSet.getString("paramname"), pResultSet.getString("paramvalue"), pResultSet.getString("paramdesc"), pResultSet.getString("paramtype"), pResultSet.getString("headername"), pResultSet.getString("aliasname"));
+            if (!htParamsInput.containsKey(pResultSet.getString("aliasname")))
+            {
+                String idMiq = pResultSet.getString("id_miq");
+                htParamsInput.put(idMiq + pResultSet.getString("aliasname"), pMiqQuestParam);
+            }
+        }
+        pLog.trace("Cargadas en cache las entradas del servicio");
+        pResultSet.close();
+        pPreparedStatement.close();
+        pConnection.close();
+    }
+
     /*
      * (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -247,7 +284,7 @@ public class MiqQuests
     {
         StringBuilder pSb = new StringBuilder();
         pSb.append("IdMiq         :" + nIdMiq + "\n");
-        pSb.append("PathRest :" + strPathRest + "\n");
+        pSb.append("PathRest      :" + strPathRest + "\n");
         pSb.append("ComponentType :" + strComponentType + "\n");
         pSb.append("EndPoint      :" + strEndPoint + "\n");
         pSb.append("Template      :" + strTemplate + "\n");
@@ -271,8 +308,8 @@ public class MiqQuests
     {
         MiqQuests pMiqQuests = null;
         /* si la caché no está cargada se carga */
-        if (getCacheSize() == 0)
-            loadDDBBCache();
+        // if (getCacheSize() == 0)
+        loadDDBBCache();
         pMiqQuests = htCacheDataPath.get(strPath);
         return pMiqQuests;
     }
@@ -290,9 +327,48 @@ public class MiqQuests
     {
         MiqQuests pMiqQuests = null;
         /* si la caché no está cargada se carga */
-        if (getCacheSize() == 0)
-            loadDDBBCache();
+        // if (getCacheSize() == 0)
+        loadDDBBCache();
         pMiqQuests = htCacheDataId.get(nMiqQuestId);
         return pMiqQuests;
+    }
+
+    /**
+     * Realiza una conexión a la BBDD para obtener los datos necesarios para crear un objeto MiqQuests y darlo como
+     * respuesta.
+     * 
+     * @param nMiqQuestId
+     *            identificador de la operación
+     * @return MiqQuests con el id:miq, el component_type, el end_point y el template.
+     * @throws Exception
+     */
+    public MultivaluedMap<String, String> testInputParams(MultivaluedMap<String, String> pAllInputs) throws Exception
+    {
+        if (pAllInputs == null)
+            return pAllInputs;
+        if (htParamsInput == null)
+            return pAllInputs;
+        MultivaluedMap<String, String> paramsToRvia = new MultivaluedHashMap<String, String>();
+        Iterator<String> pIterator = pAllInputs.keySet().iterator();
+        int nIdMiq = getIdMiq();
+        while (pIterator.hasNext())
+        {
+            String strAlias = (String) pIterator.next();
+            MiqQuestParam paramDetail = htParamsInput.get(nIdMiq + strAlias);
+            if (paramDetail == null)
+            {
+                paramsToRvia.put(strAlias, pAllInputs.get(strAlias));
+            }
+            else if (!paramDetail.getStrAlias().equals(paramDetail.getStrName()))
+            {
+                paramsToRvia.put(paramDetail.getStrName(), pAllInputs.get(strAlias));
+            }
+            else
+            {
+                paramsToRvia.put(strAlias, pAllInputs.get(strAlias));
+            }
+        }
+        // pMiqQuests = htCacheDataId.get(nMiqQuestId);
+        return paramsToRvia;
     }
 }

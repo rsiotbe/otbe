@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,8 +23,9 @@ import com.rsi.rvia.rest.session.RequestConfigRvia;
  */
 public class InterrogateRvia
 {
-	public static final String	URI_INTERROGATE_SERVICE	= "/portal_rvia/rviaRestInfo?clave_pagina=";
-	private static Logger		pLog							= LoggerFactory.getLogger(InterrogateRvia.class);
+	public static final String	URI_INTERROGATE_SERVICE			= "/portal_rvia/rviaRestInfo";
+	public static final String	INTERROGATE_PARAM_CLAVEPAGINA	= "clave_pagina";
+	private static Logger		pLog									= LoggerFactory.getLogger(InterrogateRvia.class);
 
 	/**
 	 * Obtiene un documento de tipo XML con la información, es simmilar al fichero xml.dat de la operativa
@@ -58,7 +58,6 @@ public class InterrogateRvia
 		String strURL;
 		Client pClient;
 		WebTarget pWebTarget;
-		Cookie pCookieRvia;
 		Response pResponseService = null;
 		String strXmlResponse;
 		Document pXmlDoc = null;
@@ -67,15 +66,16 @@ public class InterrogateRvia
 		try
 		{
 			/* se compone la url a invocar, para ello se accede a la inforamción de la sesión */
-			strURL = pRequestConfigRvia.getUriRvia() + URI_INTERROGATE_SERVICE + strClavepagina;
+			strURL = pRequestConfigRvia.getUriRvia() + URI_INTERROGATE_SERVICE;
+			/* si existe sesión de ruralvia asociada al usuario */
+			if (pRequestConfigRvia.getRviaSessionId() != null && !pRequestConfigRvia.getRviaSessionId().isEmpty())
+				strURL += ";RVIASESION=" + pRequestConfigRvia.getRviaSessionId();
+			strURL += "?" + INTERROGATE_PARAM_CLAVEPAGINA + "=" + strClavepagina;
 			pLog.info("se compone la URL para interrogar a RVIA. URL: " + strURL);
 			/* se utiliza el objeto cliente de peticiones http de Jersey */
 			pClient = ClientBuilder.newClient(new ClientConfig());
 			pWebTarget = pClient.target(strURL);
-			/* se añade la cookie recuperada de la sesión para poder obtener los datos del usuario */
-			pCookieRvia = new Cookie("RVIASESION", pRequestConfigRvia.getRviaSessionId());
-			pLog.debug("se procede a invocar a la url con los datos de sesión");
-			pResponseService = pWebTarget.request().cookie(pCookieRvia).get();
+			pResponseService = pWebTarget.request().get();
 			pLog.debug("El servidor ha respondido");
 		}
 		catch (Exception ex)
