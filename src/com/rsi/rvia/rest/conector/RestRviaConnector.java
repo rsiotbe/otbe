@@ -75,7 +75,9 @@ public class RestRviaConnector
             // pSessionFields.putAll(pParamsToInject);
             pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
             pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
+            /* TODO: Revisar la necesidad de enviar los parámetros de sesión. Diríase que no es necesario. */
             pReturn = pTarget.request().post(Entity.form(pSessionFields));
+            // pReturn = pTarget.request().post(Entity.form(pPathParams));
             pLog.trace("Respuesra obtenida desde ruralvia: " + pReturn);
         }
         catch (Exception ex)
@@ -279,7 +281,7 @@ public class RestRviaConnector
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         Integer nReturn = null;
-        String strQuery = "select (select * from (select ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS order by ID_MIQ_PARAM desc)	where rownum = 1) + 1 ID_MIQ_PARAM from dual;";
+        String strQuery = "select (select * from (select ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS order by ID_MIQ_PARAM desc)	where rownum = 1) + 1 ID_MIQ_PARAM from dual";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);

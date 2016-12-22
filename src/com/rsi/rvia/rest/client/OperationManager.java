@@ -36,6 +36,7 @@ import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.simulators.SimulatorsManager;
 import com.rsi.rvia.rest.template.TemplateManager;
+import com.rsi.rvia.rest.tool.AppConfigurationFactory;
 import com.rsi.rvia.rest.tool.ServiceHelper;
 import com.rsi.rvia.rest.tool.Utils;
 
@@ -48,6 +49,7 @@ public class OperationManager
     private static final int    HTTP_CODE_OK       = 200;
     private static HttpSession  pSession;
     private static Logger       pLog               = LoggerFactory.getLogger(OperationManager.class);
+    private static String       Entorno;
 
     /**
      * Se procesa una petición que llega desde la antigua apliación de ruralvia
@@ -195,17 +197,6 @@ public class OperationManager
         pSession = pRequest.getSession(true);
         try
         {
-            // Se obtiene los datos asociados a la petición de ruralvia.
-            // pSessionRviaData = new SessionRviaData(pRequest);
-            // if (pSessionRviaData != null)
-            // {
-            // Se establece el token de datos recibido desde ruralvia como dato de sesión.
-            // pSession.setAttribute("token", pSessionRviaData.getToken());
-            // Se comprueba si el servicio de isum está permitido.
-            // if (!IsumValidation.IsValidService(pSessionRviaData))
-            // throw new ISUMException(401, null, "Servicio no permitido",
-            // "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
-            // Se obtienen los datos necesario para realizar la petición al proveedor.
             strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
             // Si existe el parámetro help, invocamos a la ayuda y escapamos
             if (pRequest.getParameter("help") != null)
@@ -226,7 +217,7 @@ public class OperationManager
             {
                 // Si es login generamos JWT
                 HashMap<String, String> claims;
-                claims = doLogin();
+                claims = doLogin(pRequest);
                 if (pRequest.getParameter("idInternoPe") != null)
                 {
                     claims.remove("idInternoPe");
@@ -293,22 +284,33 @@ public class OperationManager
         return pResponseConnector;
     }
 
-    private static HashMap<String, String> doLogin() throws JoseException, IOException
+    private static HashMap<String, String> doLogin(HttpServletRequest pRequest) throws Exception
     {
+        String usuario = pRequest.getParameter("usuario");
+        String documento = pRequest.getParameter("documento");
+        String password = pRequest.getParameter("password");
+        String SOAPEndPoint = "http://soa.risa";
+        String entorno = AppConfigurationFactory.getEnv().getProperty("env");
+        if (entorno.equals("TEST"))
+        {
+            usuario = "03052445";
+            documento = "33334444S";
+            password = "03052445";
+            SOAPEndPoint = "http://soa02.risa";
+        }
         String strBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" "
                 + "xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">"
                 + "<soap:Header>" + "<ee:RSISecCampo1>03054906</ee:RSISecCampo1>"
                 + "<ee:RSISecCampo2>50456061H</ee:RSISecCampo2>" + "<ee:RSISecCampo3>20141217155327</ee:RSISecCampo3>"
                 + "<ee:RSISecCampo4></ee:RSISecCampo4>" + "<ee:RSISecCampo5>0f0262740a3f50d9</ee:RSISecCampo5>"
-                + "</soap:Header><soap:Body>" + "<ee:EE_I_AutenticarUsuario>" + "<ee:usuario>" + "03052445"
-                + "</ee:usuario>" + "<ee:password>" + "03052445" + "</ee:password>" + "<ee:documento>" + "33334444S"
+                + "</soap:Header><soap:Body>" + "<ee:EE_I_AutenticarUsuario>" + "<ee:usuario>" + usuario
+                + "</ee:usuario>" + "<ee:password>" + password + "</ee:password>" + "<ee:documento>" + documento
                 + "</ee:documento>" + "</ee:EE_I_AutenticarUsuario>" + "</soap:Body>" + "</soap:Envelope>";
-        // Create a StringEntity for the SOAP XML.
         StringEntity stringEntity = new StringEntity(strBody, "UTF-8");
         stringEntity.setChunked(true);
         // Request parameters and other properties.
-        HttpPost httpPost = new HttpPost("http://soa02.risa/SOA_Wallet/Empresa/PS/SE_WAL_AutenticarUsuario");
+        HttpPost httpPost = new HttpPost(SOAPEndPoint + "/SOA_Wallet/Empresa/PS/SE_WAL_AutenticarUsuario");
         httpPost.setEntity(stringEntity);
         httpPost.addHeader("Accept", "text/xml");
         httpPost.addHeader("SOAPAction", "");
@@ -326,13 +328,18 @@ public class OperationManager
         String codRetorno = strResponse.replaceAll("^.*<ee:codigoRetorno>([^<]*)</ee:codigoRetorno>.*$", "$1");
         if (Integer.parseInt(codRetorno) == 0)
         {
-            /* FIXME: Se fuerza un login correcto oara pruebas Tagorito */
-            HashMap<String, String> fields = new HashMap<String, String>();
-            fields.put("codEntidad", "3076");
-            fields.put("idInternoPe", "1834908");
-            fields.put("codTarjeta", "307671667");
-            return fields;
-            /* return null; */
+            if (entorno.equals("TEST"))
+            {
+                HashMap<String, String> fields = new HashMap<String, String>();
+                fields.put("codEntidad", "3076");
+                fields.put("idInternoPe", "1834908");
+                fields.put("codTarjeta", "307671667");
+                return fields;
+            }
+            else
+            {
+                return null;
+            }
         }
         else
         {
@@ -340,13 +347,18 @@ public class OperationManager
             String codEntidad = strResponse.replaceAll("^.*<ee:entidad>([^<]*)</ee:entidad>.*$", "$1");
             String idInternoPe = strResponse.replaceAll("^.*<ee:idInternoPe>([^<]*)</ee:idInternoPe>.*$", "$1");
             String nTarjeta = strResponse.replaceAll("^.*<ee:numeroTarjeta>([^<]*)</ee:numeroTarjeta>.*$", "$1");
-            fields.put("codEntidad", "3076");
-            fields.put("idInternoPe", "1834908");
-            fields.put("codTarjeta", "307671667");
-            // FIXME: Pendiente de cambiar en producción.
-            // fields.put("codEntidad", codEntidad.replace(" ", ""));
-            // fields.put("idInternoPe", idInternoPe.replace(" ", ""));
-            // fields.put("nTarjeta", nTarjeta.replace(" ", ""));
+            if (entorno.equals("TEST"))
+            {
+                fields.put("codEntidad", "3076");
+                fields.put("idInternoPe", "1834908");
+                fields.put("codTarjeta", "307671667");
+            }
+            else
+            {
+                fields.put("codEntidad", codEntidad.replace(" ", ""));
+                fields.put("idInternoPe", idInternoPe.replace(" ", ""));
+                fields.put("nTarjeta", nTarjeta.replace(" ", ""));
+            }
             return fields;
         }
     }

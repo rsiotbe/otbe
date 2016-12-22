@@ -115,8 +115,26 @@ public class DomiciliacionRcbo
     @GET
     @Path("/{idContract}/transmitter/{idTransmitter}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response datosTransmitterJSON(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
-            throws Exception
+    public Response datosTransmitterJSONGet(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            String strData) throws Exception
+    {
+        // return Response.ok("Lista de contratos").build();
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Datos de un emisor previa baja");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el listado de emisores de decibos para una cuenta.
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @POST
+    @Path("/{idContract}/transmitter/{idTransmitter}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response datosTransmitterJSONPost(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            String strData) throws Exception
     {
         // return Response.ok("Lista de contratos").build();
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
