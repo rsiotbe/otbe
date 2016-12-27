@@ -7,6 +7,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -75,6 +76,11 @@ public class OperationManager
         {
             // Se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM.
             pRequestConfigRvia = getValidateSession(pRequest);
+            // Se comprueba si el servicio de isum está permitido.
+            if (!IsumValidation.IsValidService(pRequestConfigRvia))
+            {
+                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+            }
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             pMiqQuests = createMiqQuests(pUriInfo);
             // Se instancia el conector y se solicitan los datos.
@@ -127,6 +133,11 @@ public class OperationManager
         {
             // Se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM.
             pRequestConfigRvia = getValidateSession(pRequest);
+            // Se comprueba si el servicio de isum está permitido.
+            if (!IsumValidation.IsValidService(pRequestConfigRvia))
+            {
+                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+            }
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
             pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);
@@ -325,8 +336,13 @@ public class OperationManager
         String codRetorno = strResponse.replaceAll("^.*<ee:codigoRetorno>([^<]*)</ee:codigoRetorno>.*$", "$1");
         if (Integer.parseInt(codRetorno) == 0)
         {
-            // pLog.warning("->>>>>>>>>>>>>>>>>>>> Error en el servicio de login");
-            return null;
+            /* FIXME: Se fuerza un login correcto oara pruebas Tagorito */
+            HashMap<String, String> fields = new HashMap<String, String>();
+            fields.put("codEntidad", "3076");
+            fields.put("idInternoPe", "1834908");
+            fields.put("codTarjeta", "307671667");
+            return fields;
+            /* return null; */
         }
         else
         {
@@ -673,10 +689,14 @@ public class OperationManager
         RestConnector pRestConnector = null;
         Response pResponseConnector = null;
         MultivaluedMap<String, String> pListParams = Utils.getParamByPath(pUriInfo);
+        MultivaluedMap<String, String> pQueryParams = Utils.queryStringToMultivaluedMap(pUriInfo);
+        MultivaluedMap<String, String> pAllParams = new MultivaluedHashMap<String, String>();
+        pAllParams.putAll(pListParams);
+        pAllParams.putAll(pQueryParams);
+        MultivaluedMap<String, String> paramsToRvia = pMiqQuests.testInputParams(pAllParams);
         // Se instancia el conector y se solicitan los datos.
         pRestConnector = new RestConnector();
-        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pListParams,
-                null);
+        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, paramsToRvia, null);
         pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
         // Se procesa el resultado del conector paa evaluar y adaptar su contenido.
         return (ResponseManager.processResponseConnector(pRequestConfig, pRestConnector, pResponseConnector,

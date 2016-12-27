@@ -1,0 +1,41 @@
+function getElement(t,c){
+    var e=document.createElement(t);
+    for(var i in c){
+        e[i]=c[i];
+    }
+    return e;
+}
+function loadData() {
+    var cuentas = json.response.data.LISCUEN;
+    
+    for (var i = 0; i < cuentas.length; i++) {
+        var cuenta = cuentas[i];
+        var ccc = cuenta.CUENTA;
+        var alias = cuenta.DESCR;
+        var tipo = 'B';
+        var form=getElement('form',{
+            action: 'http://localhost:8080/api/rest/domiciliations/' + ccc + '/transmitter'
+        });              
+        form.appendChild(getElement('input',{
+            name: 'tipo',
+            type: 'hidden',
+            value: 'B'
+        }));                
+        form.appendChild(getElement('input',{
+            name: 'decri',
+            type: 'text',
+            value: alias,
+            className: 'cajatexto',
+            disabled: true
+        }));        
+        form.appendChild(getElement('input',{
+            type: 'button',
+            value: 'Enviar',
+            form: form,
+            onclick: function(){
+                this.form.submit();
+            }
+        }));              
+        document.body.appendChild(form);
+    }
+}

@@ -249,6 +249,19 @@ public class Utils
     }
 
     /**
+     * Devuelve un Map con los parametros del QueryString (key -> value)
+     * 
+     * @param pUriInfo
+     *            UriInfo con la información de path
+     * @return MultivaluedMap con el key y el valor de cada elemento del path dinámico
+     */
+    public static MultivaluedMap<String, String> queryStringToMultivaluedMap(UriInfo pUriInfo)
+    {
+        MultivaluedMap<String, String> pListParameters = pUriInfo.getQueryParameters();
+        return pListParameters;
+    }
+
+    /**
      * Convierte un MultivaluedMap a un queryString.
      * 
      * @param pMap
