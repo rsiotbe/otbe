@@ -21,12 +21,13 @@
 	/* Se recuperan los parametros de entrada*/
 	String strNRBE = (String) request.getParameter(Constantes.SIMULADOR_NRBE);
 	String strNRBEName = (String) request.getParameter(Constantes.SIMULADOR_NRBE_NAME);
+	String strSimulatorType = (String) request.getParameter(Constantes.SIMULADOR_TYPE);
 	String strSimulatorName = (String) request.getParameter(Constantes.SIMULADOR_SIMPLE_NAME);
 	String strLanguage = (String) request.getParameter(Constantes.SIMULADOR_LANGUAGE);
 	JSONObject pJsonResponse = new JSONObject();
-	SimulatorObjectArray paSimulators = SimulatorsManager.getSimulatorsData(strNRBE, strNRBEName, strSimulatorName, strLanguage);
+	SimulatorObjectArray paSimulators = SimulatorsManager.getSimulatorsData(strNRBE, strNRBEName, strSimulatorType, strSimulatorName, strLanguage);
 	pJsonData.put("data",paSimulators.toJson());
-	pJson.put("response",pJsonData);
+	pJson.put("response",pJsonData); 
 	strResponse = pJson.toString();
 	response.setContentType("application/json");
 %><%=strResponse%>
