@@ -154,6 +154,8 @@ public class SimulatorObject
                 pConfig.put("fee", getFees());
                 /* porcentage maximo hipotecable de la vivienda */
                 pConfig.put("loanPercentMax", Double.parseDouble((String) pConfigParams.get("loanAmountPercentMax")));
+                pConfig.put("newLoanPercentMax", Double.parseDouble((String) pConfigParams.get("newLoanPercentMax")));
+                pConfig.put("oldLoanPercentMax", Double.parseDouble((String) pConfigParams.get("oldLoanPercentMax")));
                 break;
             case MORTGAGECHANGE:
                 pConfig.put("amount", getAmountJson());
@@ -164,6 +166,8 @@ public class SimulatorObject
                 pConfig.put("fee", getFees());
                 /* porcentage maximo hipotecable de la vivienda */
                 pConfig.put("loanPercentMax", Double.parseDouble((String) pConfigParams.get("loanAmountPercentMax")));
+                pConfig.put("newLoanPercentMax", Double.parseDouble((String) pConfigParams.get("newLoanPercentMax")));
+                pConfig.put("oldLoanPercentMax", Double.parseDouble((String) pConfigParams.get("oldLoanPercentMax")));
                 break;
         }
         pReturn.put("config", pConfig);
@@ -253,8 +257,8 @@ public class SimulatorObject
                 JSONObject pResult = new JSONObject();
                 JSONObject pInterest = new JSONObject();
                 /* se calcula el objeto interes */
-                InterestType pInterestType = InterestType.valueOf(((String) pConfigParams.get(strPattern
-                        + "interestType")).toUpperCase());
+                InterestType pInterestType = InterestType.valueOf(
+                        ((String) pConfigParams.get(strPattern + "interestType")).toUpperCase());
                 pInterest.put("interestType", pInterestType.name());
                 if (pInterestType == InterestType.FIX)
                 {
@@ -264,8 +268,8 @@ public class SimulatorObject
                 else if (pInterestType == InterestType.REFERENCE)
                 {
                     double dbInterestBase = Double.parseDouble((String) pConfigParams.get(strPattern + "interestBase"));
-                    double dbInterestDelta = Double.parseDouble((String) pConfigParams.get(strPattern
-                            + "interestDelta"));
+                    double dbInterestDelta = Double.parseDouble(
+                            (String) pConfigParams.get(strPattern + "interestDelta"));
                     double dbInterest = dbInterestBase + dbInterestDelta;
                     pInterest.put("interest", dbInterest);
                     pInterest.put("base", dbInterestBase);

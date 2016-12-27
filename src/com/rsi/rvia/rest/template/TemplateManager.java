@@ -271,7 +271,7 @@ public class TemplateManager
         {
             case BANCA_MOVIL:
             case BANCA_TABLET:
-            case BANCA_TABLET_CAU:
+            case BANCA_TABLET_TELEFONICA:
                 int nLastDot = strPathToTemplate.lastIndexOf('.');
                 if (nLastDot != -1)
                     strReturn = strPathToTemplate.substring(0, nLastDot) + "_movil"
