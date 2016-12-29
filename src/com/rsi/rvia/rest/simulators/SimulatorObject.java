@@ -209,7 +209,7 @@ public class SimulatorObject
         double dbAmountDefault;
         dbAmountMax = Double.parseDouble((String) pConfigParams.get("amountMax"));
         dbAmountMin = Double.parseDouble((String) pConfigParams.get("amountMin"));
-        dbAmountDefault = Double.parseDouble((String) pConfigParams.get("amountMin"));
+        dbAmountDefault = Double.parseDouble((String) pConfigParams.get("amountDefault"));
         pReturn = new JSONObject();
         pReturn.put("max", dbAmountMax);
         pReturn.put("min", dbAmountMin);
