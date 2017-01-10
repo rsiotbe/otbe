@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.UriInfo;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.rvia.mail.Email;
 import com.rsi.rvia.rest.client.OperationManager;
 
 @Path("/simuladores")
@@ -80,5 +82,21 @@ public class Common
 		bos.close();
 		is.close();
 		return bos;
+	}
+
+	@GET
+	@Path("mail")
+	@Produces(MEDIATYPE_PDF)
+	@Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
+			"application/x-ms-application" })
+	public Response getSimulatorMail(@Context HttpServletRequest pRequest, @Context HttpServletResponse pResponse,
+			@Context UriInfo pUriInfo, @FormParam("data") String data) throws Exception
+	{
+		Email pEmail = new Email();
+		pEmail.setFrom("manuel_munoz@cajarural.es");
+		pEmail.addTo("v_munoz_servext_rsi@cajarural.com");
+		pEmail.setBodyContent("<h2>Te subo el sueldo a 3000€</h2>");
+		pEmail.send();
+		return Response.ok().build();
 	}
 }
