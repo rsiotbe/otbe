@@ -1,4 +1,4 @@
-package com.rsi.rvia.rest;
+package com.rsi.rvia.rest.endpoint.ruralvia.mobileAlerts;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
