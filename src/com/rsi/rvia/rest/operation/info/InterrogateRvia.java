@@ -83,7 +83,8 @@ public class InterrogateRvia
             pLog.error("Error al realizar la petición al servicio de intearrogar ruralvia", ex);
         }
         /* en caso que el servidor no haya respondido una contenido correcto se lanza una excepción */
-        if (pResponseService == null || pResponseService.getStatus() != 200)
+        // if (pResponseService == null || pResponseService.getStatus() != 200)
+        if (pResponseService == null)
         {
             if (pResponseService == null)
             {

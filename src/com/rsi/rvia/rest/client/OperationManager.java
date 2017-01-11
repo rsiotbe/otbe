@@ -615,7 +615,7 @@ public class OperationManager
      * @return RequestConfigRvia con todos los datos cargados del token
      * @throws Exception
      */
-    private static RequestConfigRvia getValidateSession(HttpServletRequest pRequest) throws Exception
+    public static RequestConfigRvia getValidateSession(HttpServletRequest pRequest) throws Exception
     {
         RequestConfigRvia pRequestConfigRvia = null;
         // Se obtiene los datos asociados a la petición de ruralvia.
@@ -665,10 +665,10 @@ public class OperationManager
         MultivaluedMap<String, String> pAllParams = new MultivaluedHashMap<String, String>();
         pAllParams.putAll(pListParams);
         pAllParams.putAll(pQueryParams);
-        MultivaluedMap<String, String> paramsToRvia = pMiqQuests.testInputParams(pAllParams);
+        // MultivaluedMap<String, String> paramsToRvia = pMiqQuests.testInputParams(pAllParams);
         // Se instancia el conector y se solicitan los datos.
         pRestConnector = new RestConnector();
-        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, paramsToRvia, null);
+        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pAllParams, null);
         pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
         // Se procesa el resultado del conector paa evaluar y adaptar su contenido.
         return (ResponseManager.processResponseConnector(pRequestConfig, pRestConnector, pResponseConnector, pMiqQuests));

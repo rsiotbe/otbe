@@ -76,16 +76,16 @@
 		strPathRest = "/rviaerror";
 	}
 	
-	String host="";
-    String entorno = AppConfigurationFactory.getEnv().getProperty("env");
-    if (entorno.equals("TEST"))
-    {
-        host="http://localhost:8080";
-    }
+ 	String strHost="";
+     String entorno = AppConfigurationFactory.getEnv().getProperty("env");
+     if (entorno.equals("TEST"))
+     {
+        strHost="http://localhost:8080";
+     }
 	
 %>
 <body>
-	<form id="formRedirect" action="<%=host%>/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
+	<form id="formRedirect" action="<%=strHost%>/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
 		<%=inputs%> 
 <%
 	if(!strError.trim().isEmpty())

@@ -13,8 +13,9 @@ import com.rsi.rvia.rest.session.RequestConfigRvia;
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
 public class RestConnector
 {
-    private static Logger pLog           = LoggerFactory.getLogger(RestConnector.class);
-    private String        _requestMethod = "";
+    private static Logger      pLog                   = LoggerFactory.getLogger(RestConnector.class);
+    private String             _requestMethod         = "";
+    private HttpServletRequest _privateContextRequest = null;
 
     /**
      * Devuelve el método asociado a la petición
@@ -24,6 +25,16 @@ public class RestConnector
     public String getMethod()
     {
         return this._requestMethod;
+    }
+
+    /**
+     * Devuelve el objeto Request
+     * 
+     * @return HttpServletRequest
+     */
+    public HttpServletRequest getRequest() throws Exception
+    {
+        return _privateContextRequest;
     }
 
     /**
@@ -50,6 +61,7 @@ public class RestConnector
         String strMethod = pRequest.getMethod();
         String strComponentType;
         this._requestMethod = strMethod;
+        this._privateContextRequest = pRequest;
         /* se obtiene la configuración de la operativa desde base de datos */
         strComponentType = pMiqQuests.getComponentType();
         pLog.info("Se obtiene la configuración de la base de datos. MiqQuest: " + pMiqQuests);
@@ -58,6 +70,9 @@ public class RestConnector
         {
             case "RVIA":
                 pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, (RequestConfigRvia) pRequestConfig, strData, pPathParams, pParamsToInject);
+                break;
+            case "COORD":
+                pReturn = RestRviaConnector.doDirectConnectionToJsp(pRequest, pMiqQuests, (RequestConfigRvia) pRequestConfig, strData, pPathParams, pParamsToInject);
                 break;
             case "WS":
             case "API":
