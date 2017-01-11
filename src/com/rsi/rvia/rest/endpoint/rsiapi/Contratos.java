@@ -1,4 +1,4 @@
-package com.rsi.rvia.rest;
+package com.rsi.rvia.rest.endpoint.rsiapi;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -18,10 +18,12 @@ public class Contratos
 {
 	private static Logger	pLog	= LoggerFactory.getLogger(Contratos.class);
 
-	/** Obtiene el listado completo de acuerdos de un usuario En el documento Webservice1
+	/**
+	 * Obtiene el listado completo de acuerdos de un usuario En el documento Webservice1
 	 * 
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	@GET
 	@Path("/contracts")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -34,10 +36,12 @@ public class Contratos
 		return pReturn;
 	}
 
-	/** Obtiene el listado de acuerdos de un usuario para una línea concreta En el documento Webservice1
+	/**
+	 * Obtiene el listado de acuerdos de un usuario para una línea concreta En el documento Webservice1
 	 * 
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	@GET
 	@Path("/contracts/line/{codLinea}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -49,12 +53,14 @@ public class Contratos
 		return pReturn;
 	}
 
-	/** Obtiene el listado de acuerdos de un usuario para una agrupación de productos por linea/grupo donde - 1) Pasivo a
+	/**
+	 * Obtiene el listado de acuerdos de un usuario para una agrupación de productos por linea/grupo donde - 1) Pasivo a
 	 * la vista: 03/11 y 03/21 - 2) Depósitos: 03/51 y 03/52 - 3) Préstamos: 01/51 - 4) Tarjetas de crédito: 01/51 - 5)
 	 * Tarjetas crédito y débito: 01/51 y 05/51 En el documento Webservice1
 	 * 
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	@GET
 	@Path("/contracts/classification/{codClasificacion}")
 	@Produces(MediaType.APPLICATION_JSON)

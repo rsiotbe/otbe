@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.rsi.Constantes;
+import com.rsi.Constantes.SimulatorType;
 import com.rsi.isum.IsumValidation;
 import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.error.ErrorManager;
@@ -90,7 +91,8 @@ public class OperationManager
         }
         catch (Exception ex)
         {
-            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error(
+                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
@@ -146,13 +148,15 @@ public class OperationManager
         }
         catch (Exception ex)
         {
-            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error(
+                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
         {
             /* Se construye la respuesta ya sea error, o correcta, json o template */
-            pResponseConnector = buildResponse(pErrorCaptured, MediaType.APPLICATION_XHTML_XML_TYPE, pMiqQuests, strJsonData, pRequestConfigRvia);
+            pResponseConnector = buildResponse(pErrorCaptured, MediaType.APPLICATION_XHTML_XML_TYPE, pMiqQuests,
+                    strJsonData, pRequestConfigRvia);
         }
         catch (Exception ex)
         {
@@ -228,7 +232,8 @@ public class OperationManager
                 else
                 {
                     // Login fallido
-                    throw new LogicalErrorException(403, 9999, "Login failed", "Suministre credenciales válidas para iniciar sesión", new Exception());
+                    throw new LogicalErrorException(403, 9999, "Login failed",
+                            "Suministre credenciales válidas para iniciar sesión", new Exception());
                 }
             }
             else
@@ -241,17 +246,20 @@ public class OperationManager
             {
                 throw new LogicalErrorException(401, 9999, "Unauthorized", "Sesión no válida", new Exception());
             }
-            pResponseConnector = pRestConnector.getData(pRequest, strData, null, pMiqQuests, pListParams, pParamsToInject);
+            pResponseConnector = pRestConnector.getData(pRequest, strData, null, pMiqQuests, pListParams,
+                    pParamsToInject);
             pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
             /* se procesa el resultado del conector paa evaluar y adaptar su contenido */
-            strJsonData = ResponseManager.processResponseConnector(null, pRestConnector, pResponseConnector, pMiqQuests);
+            strJsonData = ResponseManager.processResponseConnector(null, pRestConnector, pResponseConnector,
+                    pMiqQuests);
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
             /* se obtiene la plantilla destino si es que existe */
             strTemplate = pMiqQuests.getTemplate();
         }
         catch (Exception ex)
         {
-            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error(
+                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
@@ -265,14 +273,16 @@ public class OperationManager
                     strTemplate = ErrorManager.ERROR_TEMPLATE;
                 strJsonData = pErrorCaptured.getJsonError();
                 nReturnHttpCode = pErrorCaptured.getHttpCode();
-                pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
+                pLog.info(
+                        "Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
             }
             if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
             {
                 pLog.info("La petición utiliza plantilla XHTML");
                 strJsonData = TemplateManager.processTemplate(strTemplate, null, strJsonData);
             }
-            pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).header("Authorization", JWT).build();
+            pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).header("Authorization",
+                    JWT).build();
         }
         catch (Exception ex)
         {
@@ -397,13 +407,15 @@ public class OperationManager
         }
         catch (Exception ex)
         {
-            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error(
+                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
         {
             /* Se construye la respuesta ya sea error, o correcta, json o template */
-            pResponseConnector = buildResponse(pErrorCaptured, MediaType.APPLICATION_XHTML_XML_TYPE, pMiqQuests, strJsonData, pRequestConfig);
+            pResponseConnector = buildResponse(pErrorCaptured, MediaType.APPLICATION_XHTML_XML_TYPE, pMiqQuests,
+                    strJsonData, pRequestConfig);
         }
         catch (Exception ex)
         {
@@ -450,7 +462,8 @@ public class OperationManager
         }
         catch (Exception ex)
         {
-            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error(
+                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
@@ -486,7 +499,7 @@ public class OperationManager
      * @return Objeto respuesta de Jersey
      */
     public static Response processDataFromSimulators(HttpServletRequest pRequest, UriInfo pUriInfo, String strNRBEName,
-            String strLoanName, String strLanguage, MediaType pMediaType)
+            SimulatorType pSimulatorType, String strLoanName, String strLanguage, MediaType pMediaType)
     {
         MiqQuests pMiqQuests = null;
         ErrorResponse pErrorCaptured = null;
@@ -507,13 +520,15 @@ public class OperationManager
             pMiqQuests = createMiqQuests(pUriInfo);
             if (pMiqQuests == null)
             {
-                throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
+                throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación",
+                        "El path no corresponde con ninguna entrada de MiqQuest", null);
             }
             /* se obtiene el codigo de entidad de donde procede la llamada */
             JSONObject pDataInput = new JSONObject();
             pDataInput.put(Constantes.SIMULADOR_NRBE, strNRBE);
             pDataInput.put(Constantes.SIMULADOR_NRBE_NAME, strNRBEName);
             pDataInput.put(Constantes.SIMULADOR_SIMPLE_NAME, strLoanName);
+            pDataInput.put(Constantes.SIMULADOR_TYPE, pSimulatorType.name());
             pDataInput.put(Constantes.SIMULADOR_LANGUAGE, strLanguage);
             /* se instancia el conector y se solicitan los datos */
             strJsonResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, pDataInput.toString());
@@ -521,7 +536,8 @@ public class OperationManager
         }
         catch (Exception ex)
         {
-            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error(
+                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
@@ -551,7 +567,8 @@ public class OperationManager
             pMiqQuests = createMiqQuests(pUriInfo);
             if (pMiqQuests == null)
             {
-                throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
+                throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación",
+                        "El path no corresponde con ninguna entrada de MiqQuest", null);
             }
         }
         catch (Exception e)
@@ -560,6 +577,23 @@ public class OperationManager
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Devuelve el MediaType de la request o establece por defecto MediaType.TEXT_HTML_TYPE.
+     * 
+     * @param pRequest
+     * @return MediaType
+     */
+    public static MediaType getMediaType(HttpServletRequest pRequest)
+    {
+        MediaType mediaType = MediaType.TEXT_HTML_TYPE;
+        String headerType = pRequest.getHeader("content-type");
+        if (headerType != null)
+        {
+            mediaType = MediaType.valueOf(headerType);
+        }
+        return mediaType;
     }
 
     /**
@@ -622,6 +656,12 @@ public class OperationManager
         pRequestConfigRvia = new RequestConfigRvia(pRequest);
         // Se establece el token de datos recibido desde ruralvia como dato de sesión.
         pSession.setAttribute("token", pRequestConfigRvia.getToken());
+        // Se comprueba si el servicio de isum está permitido.
+        if (!IsumValidation.IsValidService(pRequestConfigRvia))
+        {
+            throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido",
+                    "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+        }
         return pRequestConfigRvia;
     }
 
@@ -671,6 +711,7 @@ public class OperationManager
         pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pAllParams, null);
         pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
         // Se procesa el resultado del conector paa evaluar y adaptar su contenido.
-        return (ResponseManager.processResponseConnector(pRequestConfig, pRestConnector, pResponseConnector, pMiqQuests));
+        return (ResponseManager.processResponseConnector(pRequestConfig, pRestConnector, pResponseConnector,
+                pMiqQuests));
     }
 }
