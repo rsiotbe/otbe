@@ -79,7 +79,8 @@ public class OperationManager
             // Se comprueba si el servicio de isum está permitido.
             if (!IsumValidation.IsValidService(pRequestConfigRvia))
             {
-                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido",
+                        "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
             }
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             pMiqQuests = createMiqQuests(pUriInfo);
@@ -136,7 +137,8 @@ public class OperationManager
             // Se comprueba si el servicio de isum está permitido.
             if (!IsumValidation.IsValidService(pRequestConfigRvia))
             {
-                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido",
+                        "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
             }
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
@@ -696,7 +698,8 @@ public class OperationManager
         MultivaluedMap<String, String> paramsToRvia = pMiqQuests.testInputParams(pAllParams);
         // Se instancia el conector y se solicitan los datos.
         pRestConnector = new RestConnector();
-        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, paramsToRvia, null);
+        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, paramsToRvia,
+                null);
         pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
         // Se procesa el resultado del conector paa evaluar y adaptar su contenido.
         return (ResponseManager.processResponseConnector(pRequestConfig, pRestConnector, pResponseConnector,
