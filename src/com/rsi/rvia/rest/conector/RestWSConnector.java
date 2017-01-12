@@ -84,7 +84,10 @@ public class RestWSConnector
         String strUrlTotal = pMiqQuests.getBaseWSEndPoint(pRequest) + "?" + urlQueryString;
         WebTarget pTarget = pClient.target(strUrlTotal);
         pLog.info("END_POINT:" + pMiqQuests.getEndPoint());
-        Response pReturn = pTarget.request().header("Authorization", JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
+        Response pReturn = pTarget.request().header("Authorization", JWT).header("CODSecEnt", strCODSecEnt).header(
+                "CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal",
+                        strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp",
+                                strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
         pLog.info("GET: " + pReturn.toString());
         return pReturn;
     }
@@ -124,7 +127,8 @@ public class RestWSConnector
         pLog.info("Query Params: " + strParameters);
         if (!strParameters.isEmpty())
         {
-            htDatesParameters = InterrogateRvia.getParameterFromSession(strParameters, (RequestConfigRvia) pRequestConfig);
+            htDatesParameters = InterrogateRvia.getParameterFromSession(strParameters,
+                    (RequestConfigRvia) pRequestConfig);
             htDatesParameters = checkSessionValues(pRequest, htDatesParameters);
         }
         ObjectMapper pMapper = new ObjectMapper();
@@ -157,7 +161,10 @@ public class RestWSConnector
         }
         strJsonData = pJson.toString();
         WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint(pRequest));
-        Response pReturn = pTarget.request().header("Authorization", JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).post(Entity.json(strJsonData));
+        Response pReturn = pTarget.request().header("Authorization", JWT).header("CODSecEnt", strCODSecEnt).header(
+                "CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal",
+                        strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp",
+                                strCODSecIp).accept(MediaType.APPLICATION_JSON).post(Entity.json(strJsonData));
         pLog.info("Respose POST: " + pReturn.toString());
         return pReturn;
     }
@@ -205,7 +212,8 @@ public class RestWSConnector
     {
         // /??? falta por implementar el método delete
         pLog.error("El método delete no está implementado");
-        throw new Exception("Se ha recibido una petición de tipo DELETE y no existe ningún método que implemente este tipo de peticiones");
+        throw new Exception(
+                "Se ha recibido una petición de tipo DELETE y no existe ningún método que implemente este tipo de peticiones");
     }
 
     /**
@@ -314,7 +322,8 @@ public class RestWSConnector
             {
                 if (pJsonData.getJSONObject(strPrimaryKey).has("codigoRetorno"))
                 {
-                    String strStatusResponse = (String) pJsonData.getJSONObject(strPrimaryKey).getString("codigoRetorno");
+                    String strStatusResponse = (String) pJsonData.getJSONObject(strPrimaryKey).getString(
+                            "codigoRetorno");
                     if ("0".equals(strStatusResponse))
                     {
                         fReturn = true;
@@ -357,7 +366,8 @@ public class RestWSConnector
             {
                 JSONObject pJsonContent = pJsonData.getJSONObject(strPrimaryKey).getJSONObject("Errores");
                 if (pJsonContent == null)
-                    pLog.error("No se ha encontrado el nodo 'Errores' dentro del contenido del JSON devuelto por el WS");
+                    pLog.error(
+                            "No se ha encontrado el nodo 'Errores' dentro del contenido del JSON devuelto por el WS");
                 else
                 {
                     nCode = Integer.parseInt(pJsonContent.getString("codigoMostrar"));
