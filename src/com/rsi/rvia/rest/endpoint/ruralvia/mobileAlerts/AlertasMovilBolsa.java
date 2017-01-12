@@ -14,10 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
 
-@Path("/alerts")
-public class AlertasMovil
+@Path("/alerts/mobile/stockmarket")
+public class AlertasMovilBolsa
 {
-    private static Logger pLog = LoggerFactory.getLogger(AlertasMovil.class);
+    private static Logger pLog = LoggerFactory.getLogger(AlertasMovilBolsa.class);
 
     /**
      * Obtiene el listado de cuentas del cliente.
