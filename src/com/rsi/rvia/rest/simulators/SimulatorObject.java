@@ -136,34 +136,30 @@ public class SimulatorObject
         pReturn.put(Constantes.SIMULADOR_CONTRACT_CONDITIONS, strContractConditions);
         pReturn.put(Constantes.SIMULADOR_DESCRIPTION, strDescription);
         /* se realiza la comprobación si tiene comisión de apertuyra para rellenar los datos */
+        pConfig.put("amount", getAmountJson());
+        pConfig.put("fee", getFees());
+        pTerms = getTerms();
         switch (pLoanType)
         {
             case FRENCHLOAN:
-                pConfig.put("amount", getAmountJson());
                 pConfig.put("interest", getInterestOneRange());
-                pConfig.put("term", getTerms());
-                pConfig.put("fee", getFees());
+                pConfig.put("term", pTerms);
                 break;
             case MORTGAGE:
-                pConfig.put("amount", getAmountJson());
                 pConfig.put("interest", getInterestOneRange());
                 /* se añade el parámetro especial de plazos por año */
-                pTerms = getTerms();
                 pTerms.put("deadlinePerYear", Integer.parseInt((String) pConfigParams.get("deadlinePerYear")));
                 pConfig.put("term", pTerms);
-                pConfig.put("fee", getFees());
                 /* porcentage maximo hipotecable de la vivienda */
                 pConfig.put("loanPercentMax", Double.parseDouble((String) pConfigParams.get("loanAmountPercentMax")));
                 pConfig.put("newLoanPercentMax", Double.parseDouble((String) pConfigParams.get("newLoanPercentMax")));
                 pConfig.put("oldLoanPercentMax", Double.parseDouble((String) pConfigParams.get("oldLoanPercentMax")));
                 break;
             case MORTGAGECHANGE:
-                pConfig.put("amount", getAmountJson());
                 pConfig.put("range", getInterestAndTermsTwoRanges());
                 /* se añade el parámetro especial de plazos por año */
-                pTerms = getTerms();
                 pTerms.put("deadlinePerYear", Integer.parseInt((String) pConfigParams.get("deadlinePerYear")));
-                pConfig.put("fee", getFees());
+                pConfig.put("term", pTerms);
                 /* porcentage maximo hipotecable de la vivienda */
                 pConfig.put("loanPercentMax", Double.parseDouble((String) pConfigParams.get("loanAmountPercentMax")));
                 pConfig.put("newLoanPercentMax", Double.parseDouble((String) pConfigParams.get("newLoanPercentMax")));
