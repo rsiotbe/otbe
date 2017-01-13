@@ -74,8 +74,66 @@ public class RestRviaConnector
             pSessionFields.putAll(pPathParams);
             // pSessionFields.putAll(pParamsToInject);
             pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
+            MultivaluedMap<String, String> pRviaFields = pMiqQuests.testInputParams(pSessionFields);
             pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
-            pReturn = pTarget.request().post(Entity.form(pSessionFields));
+            /* TODO: Revisar la necesidad de enviar los parámetros de sesión. Diríase que no es necesario. */
+            pReturn = pTarget.request().post(Entity.form(pRviaFields));
+            // pReturn = pTarget.request().post(Entity.form(pPathParams));
+            pLog.trace("Respuesra obtenida desde ruralvia: " + pReturn);
+        }
+        catch (Exception ex)
+        {
+            pLog.error("Se detecta un error en la ejecucón general de obtener datos desde ruralvia. Error:" + ex);
+            pLog.info("Se genera la exceción adecuada para ser tratada en la respuesta al cliente");
+            throw new RestConnectorException(500, 999999, "Error al conectar con RVIA", "Se ha producido un error en la conexión con ruralvia", ex);
+        }
+        return pReturn;
+    }
+
+    /**
+     * Realiza la comunicación con RUralvia para lanzar directamente un jsp
+     * 
+     * @param pRequest
+     *            petición del cliente
+     * @param pMiqQuests
+     *            Objeto MiqQuests con la información de la operativa
+     * @param pRequestConfigRvia
+     *            datos de la petición recibida desde ruralvia
+     * @param strData
+     *            datos a enviar al proveedor
+     * @return Respuesta del proveedor de datos
+     * @throws Exception
+     */
+    public static Response doDirectConnectionToJsp(HttpServletRequest pRequest, MiqQuests pMiqQuests,
+            RequestConfigRvia pRequestConfigRvia, String strData, MultivaluedMap<String, String> pPathParams,
+            HashMap<String, String> pParamsToInject) throws RestConnectorException
+    {
+        WebTarget pTarget;
+        Response pReturn;
+        try
+        {
+            MultivaluedMap<String, String> pSessionFields = new MultivaluedHashMap<String, String>();
+            String strSesId = pRequestConfigRvia.getRviaSessionId();
+            String strHost = pRequestConfigRvia.getUriRvia().toString();
+            String strEndPoint = pMiqQuests.getEndPoint();
+            // String strUrl = strHost + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + strSesId + "?clavePagina="
+            // + strClavePagina;
+            String strUrl = strEndPoint.replaceAll("\\{host\\}", strHost) + ";RVIASESION=" + strSesId;
+            pLog.trace("Se compone la url a invocar a ruralvia: " + strUrl);
+            Client pClient = RviaRestHttpClient.getClient();
+            // org.w3c.dom.Document pXmlDoc = InterrogateRvia.getXmlDatAndUserInfo(pRequest, strClavePagina);
+            // pLog.trace("Se obtiene el xml de configuración desde ruralvia y se procede a evaluar su contenido");
+            // proccessInformationFromRviaXML(pXmlDoc, pMiqQuests, pSessionFields);
+            // pLog.trace("Se añade la información recibida en la propia petición");
+            // addDataToSessionFields(strClavePagina, strData, pSessionFields);
+            pSessionFields.putAll(pPathParams);
+            MultivaluedMap<String, String> pRviaFields = pMiqQuests.testInputParams(pSessionFields);
+            // pSessionFields.putAll(pParamsToInject);
+            pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
+            pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
+            /* TODO: Revisar la necesidad de enviar los parámetros de sesión. Diríase que no es necesario. */
+            pReturn = pTarget.request().post(Entity.form(pRviaFields));
+            // pReturn = pTarget.request().post(Entity.form(pPathParams));
             pLog.trace("Respuesra obtenida desde ruralvia: " + pReturn);
         }
         catch (Exception ex)
@@ -279,7 +337,7 @@ public class RestRviaConnector
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         Integer nReturn = null;
-        String strQuery = "select (select * from (select ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS order by ID_MIQ_PARAM desc)	where rownum = 1) + 1 ID_MIQ_PARAM from dual;";
+        String strQuery = "select (select * from (select ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS order by ID_MIQ_PARAM desc)	where rownum = 1) + 1 ID_MIQ_PARAM from dual";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);

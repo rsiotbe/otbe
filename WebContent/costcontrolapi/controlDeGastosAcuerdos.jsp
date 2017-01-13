@@ -68,7 +68,7 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
    {      
        String strAcuerdo = (String) pResultSet.getString("acuerdo");
        String strAlias = (String) pResultSet.getString("txtproducto");
-       strAliases = coma + strAliases + "'" + strAcuerdo + "' , '" + strAlias + "'" ;
+       strAliases = strAliases + coma  + "'" + strAcuerdo + "' , '" + strAlias + "'" ;
        strFiltroAcuerdos = strFiltroAcuerdos + coma + strAcuerdo;
       coma=",";
    }

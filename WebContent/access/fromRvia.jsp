@@ -4,7 +4,8 @@
     		com.rsi.rvia.rest.operation.MiqQuests,
 		 	java.sql.Connection, java.net.URL,
 		 	java.util.Enumeration,
-		 	org.slf4j.Logger,org.slf4j.LoggerFactory"%>
+		 	org.slf4j.Logger,org.slf4j.LoggerFactory,
+		 	com.rsi.rvia.rest.tool.AppConfigurationFactory"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -74,9 +75,17 @@
 		strError = "1111";
 		strPathRest = "/rviaerror";
 	}
+	
+ 	String strHost="";
+     String entorno = AppConfigurationFactory.getEnv().getProperty("env");
+     if (entorno.equals("TEST"))
+     {
+        strHost="http://localhost:8080";
+     }
+	
 %>
 <body>
-	<form id="formRedirect" action="http://localhost:8080/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
+	<form id="formRedirect" action="<%=strHost%>/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
 		<%=inputs%> 
 <%
 	if(!strError.trim().isEmpty())

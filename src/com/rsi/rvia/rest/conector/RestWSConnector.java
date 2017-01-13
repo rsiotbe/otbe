@@ -88,7 +88,11 @@ public class RestWSConnector
                 "CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal",
                         strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp",
                                 strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
-        pLog.info("GET: " + pReturn.toString());
+        // FIXME: Seguro?
+        if (pReturn.toString().indexOf("documento") == -1)
+        {
+            pLog.info("GET: " + pReturn.toString());
+        }
         return pReturn;
     }
 
@@ -165,7 +169,11 @@ public class RestWSConnector
                 "CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal",
                         strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp",
                                 strCODSecIp).accept(MediaType.APPLICATION_JSON).post(Entity.json(strJsonData));
-        pLog.info("Respose POST: " + pReturn.toString());
+        // FIXME: Seguro?
+        if (pReturn.toString().indexOf("documento") == -1)
+        {
+            pLog.info("GET: " + pReturn.toString());
+        }
         return pReturn;
     }
 
@@ -187,9 +195,9 @@ public class RestWSConnector
      * @return Respuesta del proveedor de datos
      * @throws Exception
      */
-    public static Response put(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests, RequestConfig pRequestConfig,
-            String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject)
-            throws Exception
+    public static Response put(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests,
+            RequestConfig pRequestConfig, String strJsonData, MultivaluedMap<String, String> pPathParams,
+            HashMap<String, String> pParamsToInject) throws Exception
     {
         /*
          * se reutiliza la petición post puesto que es similar, en caso de una implementación diferente, es necesario
