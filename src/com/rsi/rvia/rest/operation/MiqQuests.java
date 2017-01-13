@@ -254,6 +254,7 @@ public class MiqQuests
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
+        // String idMiq = pResultSet.getString("id_miq");
         String strQuery = "select a.id_miq, c.* from " + " BEL.BDPTB222_MIQ_QUESTS a, "
                 + " BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, " + " BEL.BDPTB225_MIQ_SESSION_PARAMS c "
                 + " where a.id_miq=b.id_miq " + " and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " + " and a.path_rest='"
@@ -263,12 +264,20 @@ public class MiqQuests
         pResultSet = pPreparedStatement.executeQuery();
         while (pResultSet.next())
         {
+            String idMiq = pResultSet.getString("id_miq");
             MiqQuestParam pMiqQuestParam = new MiqQuestParam(pResultSet.getInt("id_miq_param"), pResultSet.getString("paramname"), pResultSet.getString("paramvalue"), pResultSet.getString("paramdesc"), pResultSet.getString("paramtype"), pResultSet.getString("headername"), pResultSet.getString("aliasname"));
-            if (!htParamsInput.containsKey(pResultSet.getString("aliasname")))
+            // if (pResultSet.getString("aliasname") != null)
+            // {
+            // if (!"".equals(pResultSet.getString("aliasname").trim()))
+            // {
+            String keyForHtParamsInput = idMiq + pResultSet.getString("aliasname");
+            if (!htParamsInput.containsKey(keyForHtParamsInput))
             {
-                String idMiq = pResultSet.getString("id_miq");
-                htParamsInput.put(idMiq + pResultSet.getString("aliasname"), pMiqQuestParam);
+                pLog.info("Añadiendo parametro: " + pResultSet.getString("aliasname"));
+                htParamsInput.put(keyForHtParamsInput, pMiqQuestParam);
             }
+            // }
+            // }
         }
         pLog.trace("Cargadas en cache las entradas del servicio");
         pResultSet.close();
