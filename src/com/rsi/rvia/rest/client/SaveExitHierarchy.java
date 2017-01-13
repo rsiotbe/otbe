@@ -242,7 +242,7 @@ public class SaveExitHierarchy
     {
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
-        String strQuery = "insert into BEL.BDPTB232_MIQ_EXITS values (?, ?, '', ?, '')";
+        String strQuery = "insert into BEL.BDPTB232_MIQ_EXITS values (?, ?, '', ?)";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);

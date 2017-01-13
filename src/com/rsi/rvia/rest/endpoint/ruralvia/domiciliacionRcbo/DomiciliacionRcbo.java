@@ -153,6 +153,8 @@ public class DomiciliacionRcbo
     public Response datosTransmitterJSONPost(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
     {
+        // if (true)
+        // throw new LogicalErrorException(403, 9999, "Error simulation", "Simulación de error", new Exception());
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
         // RequestConfigRvia pRequestConfigRvia = OperationManager.getValidateSession(pRequest);
         // Client pClient = RviaRestHttpClient.getClient();
