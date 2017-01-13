@@ -81,7 +81,8 @@ public class OperationManager
             // Se comprueba si el servicio de isum está permitido.
             if (!IsumValidation.IsValidService(pRequestConfigRvia))
             {
-                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido",
+                        "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
             }
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             pMiqQuests = createMiqQuests(pUriInfo);
@@ -138,7 +139,8 @@ public class OperationManager
             // Se comprueba si el servicio de isum está permitido.
             if (!IsumValidation.IsValidService(pRequestConfigRvia))
             {
-                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido",
+                        "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
             }
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
@@ -300,7 +302,7 @@ public class OperationManager
         String documento = pRequest.getParameter("documento");
         String password = pRequest.getParameter("password");
         String SOAPEndPoint = "http://soa.risa";
-        String entorno = AppConfigurationFactory.getEnv().getProperty("env");
+        String entorno = AppConfigurationFactory.getConfiguration().getProperty("env");
         if (entorno.equals("TEST"))
         {
             usuario = "03052445";
@@ -708,7 +710,8 @@ public class OperationManager
         // MultivaluedMap<String, String> paramsToRvia = pMiqQuests.testInputParams(pAllParams);
         // Se instancia el conector y se solicitan los datos.
         pRestConnector = new RestConnector();
-        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pAllParams, null);
+        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pAllParams,
+                null);
         pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
         // Se procesa el resultado del conector paa evaluar y adaptar su contenido.
         return (ResponseManager.processResponseConnector(pRequestConfig, pRestConnector, pResponseConnector,

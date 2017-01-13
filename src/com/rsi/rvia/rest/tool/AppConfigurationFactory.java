@@ -8,15 +8,15 @@ import org.slf4j.LoggerFactory;
 public class AppConfigurationFactory
 {
     private static Logger           pLog        = LoggerFactory.getLogger(AppConfigurationFactory.class);
-    private static AppConfiguration eEnviroment = null;
+    private static AppConfiguration eAppConfig = null;
 
-    public static Properties getEnv() throws Exception
+    public static Properties getConfiguration() throws Exception
     {
-        if (eEnviroment == null)
+        if (eAppConfig == null)
         {
             pLog.info("Instanciando configuración de entorno...");
-            eEnviroment = new AppConfiguration();
+            eAppConfig = new AppConfiguration();
         }
-        return eEnviroment.getEnvProperties();
+        return eAppConfig.getEnvProperties();
     }
 }

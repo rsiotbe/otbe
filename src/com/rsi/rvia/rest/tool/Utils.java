@@ -149,8 +149,8 @@ public class Utils
      * @throws SQLException
      * @throws JSONException
      */
-    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet) throws SQLException,
-            JSONException
+    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet)
+            throws SQLException, JSONException
     {
         JSONObject pJsonRetorno = new JSONObject();
         JSONArray pJson = new JSONArray();
