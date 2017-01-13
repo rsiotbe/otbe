@@ -302,7 +302,7 @@ public class OperationManager
         String documento = pRequest.getParameter("documento");
         String password = pRequest.getParameter("password");
         String SOAPEndPoint = "http://soa.risa";
-        String entorno = AppConfigurationFactory.getEnv().getProperty("env");
+        String entorno = AppConfigurationFactory.getConfiguration().getProperty("env");
         if (entorno.equals("TEST"))
         {
             usuario = "03052445";
@@ -710,7 +710,7 @@ public class OperationManager
         // MultivaluedMap<String, String> paramsToRvia = pMiqQuests.testInputParams(pAllParams);
         // Se instancia el conector y se solicitan los datos.
         pRestConnector = new RestConnector();
-        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pAllParams, null);
+        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pAllParams,
                 null);
         pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
         // Se procesa el resultado del conector paa evaluar y adaptar su contenido.

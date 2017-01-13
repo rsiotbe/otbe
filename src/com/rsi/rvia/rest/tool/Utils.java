@@ -21,7 +21,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import org.apache.commons.collections4.MapUtils;
@@ -449,40 +448,5 @@ public class Utils
             strHtml += "</div>";
         }
         return strHtml;
-    }
-
-    /**
-     * Load application.properties file fron the classpath.
-     * 
-     * @return Properties object.
-     */
-    public static Properties getApplicationProperties()
-    {
-        Properties properties = new Properties();
-        InputStream input = null;
-        input = Utils.class.getClassLoader().getResourceAsStream("/application.properties");
-        try
-        {
-            properties.load(input);
-        }
-        catch (IOException e)
-        {
-            pLog.error("Error al cargar el InputStream de application.properties", e);
-        }
-        finally
-        {
-            if (input != null)
-            {
-                try
-                {
-                    input.close();
-                }
-                catch (IOException e)
-                {
-                    pLog.error("Error al cerrar el InputStream de application.properties", e);
-                }
-            }
-        }
-        return properties;
     }
 }
