@@ -6,15 +6,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.json.JSONException;
 import com.rsi.rvia.rest.tool.Utils;
 
 /** Servlet implementation class translateService */
 public class TranslateService extends HttpServlet
 {
-	private static final long		serialVersionUID	= 1L;
+	private static final long	serialVersionUID	= 1L;
 	private static final String	IDS_PARAM			= "id";
-	private static final String	IDS_PARAM_SEP		= ",";
+	private static final String	APP_PARAM			= "app";
+	private static final String	PARAM_SEP			= ",";
 	private static final String	LANGUAGE_PARAM		= "lang";
 
 	/** @see HttpServlet#HttpServlet() */
@@ -32,26 +32,44 @@ public class TranslateService extends HttpServlet
 	{
 		String strJSONReturn;
 		String strIds;
+		String strApps;
 		String strlanguage;
 		String[] astrIds = null;
-		Hashtable<String, String> htTranslates;
+		String[] astrApps = null;
+		Hashtable<String, String> htTranslates = null;
+		Hashtable<String, Hashtable<String, String>> htTranslatesGroup = null;
 		strIds = pRequest.getParameter(IDS_PARAM);
+		strApps = pRequest.getParameter(APP_PARAM);
 		strlanguage = pRequest.getParameter(LANGUAGE_PARAM);
-		if (IDS_PARAM == null || IDS_PARAM.trim().isEmpty())
+		if (strApps != null && !strApps.trim().isEmpty())
+		{
+			astrApps = strApps.split(PARAM_SEP);
+			if (strlanguage == null)
+				htTranslatesGroup = TranslateProcessor.processApps(astrApps);
+			else
+				htTranslates = TranslateProcessor.processApps(astrApps, strlanguage);
+		}
+		else if (strIds != null && !strIds.trim().isEmpty())
+		{
+			astrIds = strIds.split(PARAM_SEP);
+			if (strlanguage == null)
+				htTranslatesGroup = TranslateProcessor.processIds(astrIds);
+			else
+				htTranslates = TranslateProcessor.processIds(astrIds, strlanguage);
+		}
+		else
 		{
 			pResponse.sendError(HttpServletResponse.SC_NO_CONTENT);
 			return;
 		}
-		if (strIds != null)
-		{
-			astrIds = strIds.split(IDS_PARAM_SEP);
-		}
-		htTranslates = TranslateProcessor.processIds(astrIds, strlanguage);
 		try
 		{
-			strJSONReturn = Utils.hashTableToJson(htTranslates);
+			if (strlanguage == null)
+				strJSONReturn = Utils.objectToJson(htTranslatesGroup);
+			else
+				strJSONReturn = Utils.objectToJson(htTranslates);
 		}
-		catch (JSONException e)
+		catch (Exception e)
 		{
 			strJSONReturn = "{\"Error\":\"Fallo al obtener JSON\"}";
 		}

@@ -22,11 +22,11 @@ import com.rsi.rvia.translates.TranslateProcessor;
  */
 public class TemplateManager
 {
-	static Logger										pLog							= LoggerFactory.getLogger(TemplateManager.class);
-	public final static String						JSON_DATA_TAG				= "'__JSONDATA__'";
+	static Logger								pLog					= LoggerFactory.getLogger(TemplateManager.class);
+	public final static String					JSON_DATA_TAG			= "'__JSONDATA__'";
 	private final static String					IFRAME_SCRIPT_ADAPTER	= "/api/static/rviarest/js/iframe/iframeResizer.contentWindow.min.js";
 	private final static String					UPDATE_RVIA_SESSION		= "/api/static/rviarest/js/session/manageSessionIsumRvia.js";
-	private final static String					JQUERY						= "/api/static/rviarest/js/jquery-1.11.3.min.js";
+	private final static String					JQUERY					= "/api/static/rviarest/js/jquery-1.11.3.min.js";
 	public static Hashtable<String, Document>	htCacheTemplate			= new Hashtable<String, Document>();
 
 	/**
@@ -88,11 +88,11 @@ public class TemplateManager
 	 * para multicanalidad e inyecta los datos en json.
 	 * 
 	 * @param strPathToTemplate
-	 *           Ruta del template
+	 *            Ruta del template
 	 * @param pRequestConfig
-	 *           Objeto datos de sesion ruralvia
+	 *            Objeto datos de sesion ruralvia
 	 * @param strDataJson
-	 *           Datos en formato JSON.
+	 *            Datos en formato JSON.
 	 * @return Template procesado.
 	 * @throws Exception
 	 */
@@ -145,7 +145,7 @@ public class TemplateManager
 	 * Incluye el script para ajustar el tamaño del iframe
 	 * 
 	 * @param pDocument
-	 *           Documento html en jsoup
+	 *            Documento html en jsoup
 	 * @return Documento jsoupHTML con la etiqueta script insertada
 	 */
 	private static Document includeIframeScript(Document pDocument)
@@ -160,7 +160,7 @@ public class TemplateManager
 	 * Incluye el script para asegurar el refresco de sesión de ruralvia e ISUM
 	 * 
 	 * @param pDocument
-	 *           Documento html en jsoup
+	 *            Documento html en jsoup
 	 * @return HTML con la etiqueta script insertada
 	 */
 	private static Document includeUpdateRviaScript(Document pDocument)
@@ -196,7 +196,7 @@ public class TemplateManager
 	 * Añade el Json al template de salida
 	 * 
 	 * @param pDocument
-	 *           Documento html en jsoup
+	 *            Documento html en jsoup
 	 * @param strJsonData
 	 * @return Documento html en jsoup
 	 */
@@ -211,9 +211,9 @@ public class TemplateManager
 	 * Añade el contenido de las traducciones al HTML
 	 * 
 	 * @param pDocument
-	 *           Documento html en jsoup
+	 *            Documento html en jsoup
 	 * @param pRequestConfig
-	 *           Datos de sesión de ruralvia para el usuario
+	 *            Datos de sesión de ruralvia para el usuario
 	 * @return Documento HTML con las traducciones
 	 */
 	private static Document translateXhtml(Document pDocument, RequestConfig pRequestConfig)
@@ -246,9 +246,9 @@ public class TemplateManager
 	 * Comprueba si es necesario modificar los css para adaptarlos a multientidad
 	 * 
 	 * @param pDocument
-	 *           Documento html en jsoup
+	 *            Documento html en jsoup
 	 * @param pRequestConfig
-	 *           Datos de sesión de ruralvia para el usuario
+	 *            Datos de sesión de ruralvia para el usuario
 	 * @return
 	 * @throws Exception
 	 */
@@ -261,9 +261,9 @@ public class TemplateManager
 	 * Obtiene el nombre de la plantilla adecuado al canal que solicita la página
 	 * 
 	 * @param strPathToTemplate
-	 *           Nombre de la plantilla
+	 *            Nombre de la plantilla
 	 * @param pRequestConfigRvia
-	 *           Datos de sesión de ruralvia para el usuario
+	 *            Datos de sesión de ruralvia para el usuario
 	 * @return
 	 * @throws Exception
 	 */
@@ -277,14 +277,16 @@ public class TemplateManager
 			case MOVIL:
 				nLastDot = strPathToTemplate.lastIndexOf('.');
 				if (nLastDot != -1)
-					strReturn = strPathToTemplate.substring(0, nLastDot) + "_movil" + strPathToTemplate.substring(nLastDot);
+					strReturn = strPathToTemplate.substring(0, nLastDot) + "_movil"
+							+ strPathToTemplate.substring(nLastDot);
 				else
 					strReturn = strPathToTemplate + "_movil";
 				break;
 			case TABLET:
 				nLastDot = strPathToTemplate.lastIndexOf('.');
 				if (nLastDot != -1)
-					strReturn = strPathToTemplate.substring(0, nLastDot) + "_tablet" + strPathToTemplate.substring(nLastDot);
+					strReturn = strPathToTemplate.substring(0, nLastDot) + "_tablet"
+							+ strPathToTemplate.substring(nLastDot);
 				else
 					strReturn = strPathToTemplate + "_tablet";
 				break;

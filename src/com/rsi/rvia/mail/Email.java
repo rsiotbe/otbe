@@ -1,5 +1,6 @@
 package com.rsi.rvia.mail;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 import javax.activation.DataHandler;
@@ -256,7 +257,7 @@ public class Email
 		Message pMessage;
 		Multipart pMultipart;
 		MimeBodyPart pHtmlBodyPart;
-		pLog.trace("Se incia el proceso de envio de correo a " + alTo);
+		pLog.trace("Se inicia el proceso de envio de correo a " + alTo);
 		pLog.trace("Se cargan lee la configuración de conexión con el el servidor de correo: " + pConfigProperties);
 		try
 		{
@@ -274,7 +275,7 @@ public class Email
 			pLog.trace("Se añade el remitente:" + strEmailFrom);
 			/* se añade el asunto */
 			pMessage.setSubject(MimeUtility.encodeText(strSubject, "utf-8", "B"));
-			pLog.trace("Se añade el asunto:" + strSubject);
+			pLog.trace("Se añade el asunto: " + strSubject);
 			/* se añade el contenido html */
 			pHtmlBodyPart.setContent(strHtmlMessage, "text/html; charset=utf-8");
 			pMultipart.addBodyPart(pHtmlBodyPart); // 6
@@ -330,7 +331,7 @@ public class Email
 				}
 			}
 			pMessage.setContent(pMultipart);
-			pTransport.sendMessage(pMessage, null);
+			pTransport.sendMessage(pMessage, pMessage.getAllRecipients());
 			pLog.info("Email enviado correctamente");
 			pTransport.close();
 		}
@@ -339,5 +340,20 @@ public class Email
 			pLog.error("Error en el proceso de envio de correo. ERROR: " + ex.toString());
 			throw ex;
 		}
+	}
+
+	/**
+	 * Carga un objeto propiedades a partir de un fichero de configuración de la propia apliacaciín
+	 * 
+	 * @param strFileName
+	 *           Nombre del fichero
+	 * @return Objeto con las propiedades
+	 * @throws IOException
+	 */
+	public static Properties loadProperties(String strFileName) throws IOException
+	{
+		Properties pProperties = new Properties();
+		pProperties.load(Email.class.getResourceAsStream("/" + strFileName));
+		return pProperties;
 	}
 }

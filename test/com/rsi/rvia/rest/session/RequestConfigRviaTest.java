@@ -9,7 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
-import com.rsi.Constantes;
+import com.rsi.Constants;
 import com.rsi.TestBase;
 import com.rsi.rvia.rest.session.RequestConfigRvia.CanalFront;
 
@@ -39,7 +39,7 @@ public class RequestConfigRviaTest extends TestBase
 	@Test
 	public void testRequestConfigFromStrings() throws Exception
 	{
-		RequestConfig sessionRviaStrs = new RequestConfig(Constantes.DEFAULT_LANGUAGE, "MOCKED NRBE");
+		RequestConfig sessionRviaStrs = new RequestConfig(Constants.DEFAULT_LANGUAGE, "MOCKED NRBE");
 		assertNotNull("testRequestConfigFromStrings: session es null", sessionRviaStrs);
 		assertTrue("testRequestConfigFromStrings: RequestConfigStrs no es instancia de RequestConfig", sessionRviaStrs instanceof RequestConfig);
 	}

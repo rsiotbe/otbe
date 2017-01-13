@@ -1,10 +1,6 @@
 package com.rsi.rvia.rest.endpoint.simulators;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -23,8 +18,8 @@ import javax.ws.rs.core.UriInfo;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.rsi.rvia.mail.Email;
 import com.rsi.rvia.rest.client.OperationManager;
+import com.rsi.rvia.rest.tool.Utils;
 
 @Path("/simuladores")
 public class Common
@@ -41,62 +36,33 @@ public class Common
 	public Response getSimulatorPdfPrinter(@Context HttpServletRequest pRequest, @Context HttpServletResponse pResponse,
 			@Context UriInfo pUriInfo, @FormParam("data") String data) throws Exception
 	{
-		String strJsonData = URLDecoder.decode(data, "UTF-8");
-		Response processPdfDownload = OperationManager.processGenericAPP(pRequest, pUriInfo, strJsonData, MediaType.APPLICATION_JSON_TYPE);
-		String pdfId = (new JSONObject(processPdfDownload.getEntity().toString())).getJSONObject("response").getJSONObject("data").getString("id");
-		pLog.info("Se recibe una petición de descarga PDF con ID " + pdfId);
-		ByteArrayOutputStream pdf = loadPdf(PDF_RENDERER_URL + pdfId);
+		String strJsonData;
+		Response pResponsePdfGeneration;
+		String strPdfId;
+		ByteArrayOutputStream pPdfStream;
+		pLog.info("Entra una petición para generar PDF con los datos de simmulación");
+		strJsonData = URLDecoder.decode(data, "UTF-8");
+		pResponsePdfGeneration = OperationManager.processGenericAPP(pRequest, pUriInfo, strJsonData, MediaType.APPLICATION_JSON_TYPE);
+		strPdfId = (new JSONObject(pResponsePdfGeneration.getEntity().toString())).getJSONObject("response").getJSONObject("data").getString("id");
+		pLog.info("Se recibe una petición de descarga PDF con ID " + strPdfId);
+		pPdfStream = Utils.getFileFromUrl(PDF_RENDERER_URL + strPdfId);
 		pResponse.setHeader("Content-Type", MEDIATYPE_PDF);
 		pResponse.setHeader("Content-Disposition", "attachment; filename=\""
 				+ new SimpleDateFormat("'simulacion_'yyyyMMddHHmm'.pdf'\"").format(new Date()));
-		pResponse.setHeader("Content-Length", Integer.toString(pdf.size()));
-		pResponse.getOutputStream().write(pdf.toByteArray());
+		pResponse.setHeader("Content-Length", Integer.toString(pPdfStream.size()));
+		pResponse.getOutputStream().write(pPdfStream.toByteArray());
 		pResponse.getOutputStream().close();
 		return Response.ok().build();
 	}
 
-	/**
-	 * Downloads the file by URL.
-	 * 
-	 * @param fileUrl
-	 * @return
-	 * @throws MalformedURLException
-	 * @throws IOException
-	 */
-	private ByteArrayOutputStream loadPdf(String fileUrl) throws MalformedURLException, IOException
+	@POST
+	@Path("/email")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response sendEmailToBank(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strJsonData)
 	{
-		InputStream is = new URL(fileUrl).openStream();
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		byte[] buf = new byte[1024];
-		try
-		{
-			for (int readNum; (readNum = is.read(buf)) != -1;)
-			{
-				bos.write(buf, 0, readNum);
-			}
-		}
-		catch (IOException ex)
-		{
-			ex.printStackTrace();
-		}
-		bos.close();
-		is.close();
-		return bos;
-	}
-
-	@GET
-	@Path("mail")
-	@Produces(MEDIATYPE_PDF)
-	@Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
-			"application/x-ms-application" })
-	public Response getSimulatorMail(@Context HttpServletRequest pRequest, @Context HttpServletResponse pResponse,
-			@Context UriInfo pUriInfo, @FormParam("data") String data) throws Exception
-	{
-		Email pEmail = new Email();
-		pEmail.setFrom("manuel_munoz@cajarural.es");
-		pEmail.addTo("v_munoz_servext_rsi@cajarural.com");
-		pEmail.setBodyContent("<h2>Te subo el sueldo a 3000€</h2>");
-		pEmail.send();
-		return Response.ok().build();
+		pLog.info("Entra una petición para enviar correo con los datos de simmulación");
+		Response pResponse = OperationManager.processDataFromSimulators(pRequest, pUriInfo, strJsonData, MediaType.APPLICATION_JSON_TYPE);
+		return pResponse;
 	}
 }
