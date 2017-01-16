@@ -1,7 +1,7 @@
 <%@page import="com.rsi.rvia.rest.client.MiqAdminValidator"%>
 <%@page import="com.rsi.rvia.rest.operation.MiqQuests"%>
 <%@page import="com.rsi.rvia.rest.template.TemplateManager"%>
-<%@page import="com.rsi.rvia.translates.TranslateProcessor"%>
+<%@page import="com.rsi.rvia.translates.TranslateCache"%>
 <%@page import="java.util.Hashtable"%>
 <%@page import="java.util.Enumeration"%>
 <%@page import="org.slf4j.Logger"%>
@@ -20,7 +20,7 @@
 	/* Se añaden las caches */
 	htCaches.put("MiqQuests", MiqQuests.class);
 	htCaches.put("Plantillas_HTML", TemplateManager.class);
-	htCaches.put("Traducciones", TranslateProcessor.class);
+	htCaches.put("Traducciones", TranslateCache.class);
 	htCaches.put("CSS_Multientidad", CssMultiBankProcessor.class);
 		
 	String strParamClean 	= (String) request.getParameter("clean");

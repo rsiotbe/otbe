@@ -9,9 +9,9 @@ import java.util.Hashtable;
 /** Clase para guardar las diferentes traducciones en funcion del código de la traducción. */
 public class TranslateEntry
 {
-	private final String				strApp;
+	private final String				strAppName;
 	private final String				strCode;
-	private Hashtable<String, String>	htTranslates;
+	private Hashtable<String, String>	htTranslations;
 
 	/**
 	 * Constructor de la clase
@@ -19,11 +19,11 @@ public class TranslateEntry
 	 * @param strCode
 	 *            Codigo de la traducción.
 	 */
-	public TranslateEntry(String strCode, String App)
+	public TranslateEntry(String strCode, String strAppName)
 	{
-		this.strApp = strCode;
+		this.strAppName = strCode;
 		this.strCode = strCode;
-		this.htTranslates = new Hashtable<String, String>();
+		this.htTranslations = new Hashtable<String, String>();
 	}
 
 	/** @return Codigo de la traducción. */
@@ -33,15 +33,15 @@ public class TranslateEntry
 	}
 
 	/** @return Codigo de la traducción. */
-	public String getApp()
+	public String getAppName()
 	{
-		return strApp;
+		return strAppName;
 	}
 
 	/** @return Hashtable con las traducciones por idioma. */
-	public Hashtable<String, String> getTranslates()
+	public Hashtable<String, String> getAllTranslations()
 	{
-		return htTranslates;
+		return htTranslations;
 	}
 
 	/**
@@ -51,10 +51,10 @@ public class TranslateEntry
 	 *            Idioma del que se quiere la traducción.
 	 * @return String con la traducción en el idioma dado.
 	 */
-	public String getTranslate(String strLanguage)
+	public String getTranslation(String strLanguage)
 	{
-		if (this.htTranslates.containsKey(strLanguage))
-			return htTranslates.get(strLanguage);
+		if (this.htTranslations.containsKey(strLanguage))
+			return htTranslations.get(strLanguage);
 		else
 			return null;
 	}
@@ -67,14 +67,28 @@ public class TranslateEntry
 	 * @param strTraduccion
 	 *            Traducción nueva.
 	 */
-	public void addTranslate(String strLanguage, String strTranslate)
+	public void addTranslation(String strLanguage, String strTranslate)
 	{
-		if (!htTranslates.containsKey(strLanguage))
-			this.htTranslates.put(strLanguage, strTranslate);
+		if (!htTranslations.containsKey(strLanguage))
+			this.htTranslations.put(strLanguage, strTranslate);
 		else
 		{
-			this.htTranslates.remove(strLanguage);
-			this.htTranslates.put(strLanguage, strTranslate);
+			this.htTranslations.remove(strLanguage);
+			this.htTranslations.put(strLanguage, strTranslate);
 		}
+	}
+
+	public int getCountTanslations()
+	{
+		return htTranslations.size();
+	}
+
+	public String toString()
+	{
+		StringBuilder pSb = new StringBuilder();
+		pSb.append("AppName      :" + strAppName + "\n");
+		pSb.append("Code         :" + strCode + "\n");
+		pSb.append("Translations :" + htTranslations + "\n");
+		return pSb.toString();
 	}
 }

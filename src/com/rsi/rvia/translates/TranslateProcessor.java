@@ -4,11 +4,7 @@
  ************************************************************************/
 package com.rsi.rvia.translates;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import org.jsoup.nodes.Document;
@@ -17,309 +13,40 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.Constants;
-import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
-import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
-import com.rsi.rvia.rest.tool.Utils;
 
 /** Clase que gestiona el cambio de idioma en el contenido HTML de la web. */
 public class TranslateProcessor
 {
-	private static Logger												pLog					= LoggerFactory.getLogger(TranslateProcessor.class);
-	public static Hashtable<String, Hashtable<String, TranslateEntry>>	htTranslateCacheData	= new Hashtable<String, Hashtable<String, TranslateEntry>>();
+	private static Logger	pLog	= LoggerFactory.getLogger(TranslateProcessor.class);
 
-	/**
-	 * Devuelve el tamaño de la cache
-	 * 
-	 * @return int con el tamaño de la cache
-	 */
-	public static int getCacheSize()
+	public static Hashtable<String, String> getTranslationsById(String[] pStrIds, String strLanguage) throws Exception
 	{
-		int nReturn = 0;
-		if (htTranslateCacheData != null)
-		{
-			Enumeration<String> e = htTranslateCacheData.keys();
-			while (e.hasMoreElements())
-			{
-				String strKey = (String) e.nextElement();
-				Hashtable<String, TranslateEntry> htAppTransalates = htTranslateCacheData.get(strKey);
-				Enumeration<String> e2 = htAppTransalates.keys();
-				while (e2.hasMoreElements())
-				{
-					String strKey2 = (String) e2.nextElement();
-					TranslateEntry pTranslateEntry = htAppTransalates.get(strKey2);
-					nReturn += pTranslateEntry.getTranslates().size();
-				}
-			}
-		}
-		return nReturn;
-	}
-
-	/**
-	 * Reinicia la Cache
-	 */
-	public static void resetCache()
-	{
-		if (htTranslateCacheData != null)
-		{
-			htTranslateCacheData = new Hashtable<String, Hashtable<String, TranslateEntry>>();
-		}
-	}
-
-	/**
-	 * Devuelve los datos de la cache en formato texto
-	 * 
-	 * @return Contenido de la caché
-	 * @throws Exception
-	 */
-	public static String cacheToString() throws Exception
-	{
-		String strReturn = "";
-		strReturn += Utils.hastablePrettyPrintHtml(htTranslateCacheData);
-		return strReturn;
-	}
-
-	public static Hashtable<String, Hashtable<String, String>> processIds(String[] pStrIds)
-	{
-		ArrayList<String> alIdsTrans;
-		Hashtable<String, Hashtable<String, String>> htReturn = new Hashtable<String, Hashtable<String, String>>();
-		Hashtable<String, TranslateEntry> htTransData;
-		alIdsTrans = new ArrayList<String>(Arrays.asList(pStrIds));
-		pLog.debug("Se reciben los siguientes ids para traducir a todos los idiomas. astrIds:" + pStrIds);
-		try
-		{
-			htTransData = getTranslations(alIdsTrans);
-			pLog.debug("Traducciones de los codigos recuperadas correctamente.");
-			for (int i = 0; i < pStrIds.length; i++)
-			{
-				String strAuxId = pStrIds[i];
-				if ((strAuxId == null) || (strAuxId.trim().isEmpty()))
-				{
-					continue;
-				}
-				TranslateEntry pEntry = htTransData.get(strAuxId);
-				Hashtable<String, String> htTransaltes = pEntry.getTranslates();
-				Enumeration<String> e = htTransaltes.keys();
-				while (e.hasMoreElements())
-				{
-					String strLang = (String) e.nextElement();
-					String strTranslate = htTransaltes.get(strLang);
-					if (!htReturn.contains(strLang))
-					{
-						htReturn.put(strLang, new Hashtable<String, String>());
-					}
-					Hashtable<String, String> htlang = htReturn.get(strLang);
-					htlang.put(strAuxId, strTranslate);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("Error al procesar la petición", ex);
-		}
-		pLog.debug("datos a devolver por el metodo. htReturn: " + htReturn);
+		Hashtable<String, String> htReturn;
+		htReturn = TranslateCache.getTranslationsByCode(pStrIds, strLanguage);
 		return htReturn;
 	}
 
-	public static Hashtable<String, String> processIds(String[] pStrIds, String strLanguage)
+	public static Hashtable<String, TranslateEntry> getTranslationsById(String[] pStrIds) throws Exception
 	{
-		ArrayList<String> alIdsTrans;
-		Hashtable<String, String> htReturn = new Hashtable<String, String>();
-		Hashtable<String, TranslateEntry> htTransData;
-		alIdsTrans = new ArrayList<String>(Arrays.asList(pStrIds));
-		/* si no existe idioma se asigna español defecto */
-		if (strLanguage == null || strLanguage.trim().isEmpty())
-		{
-			strLanguage = Constants.DEFAULT_LANGUAGE;
-			pLog.warn("No se ha definido idioma de la traduccion, se asigna el español");
-		}
-		pLog.debug("Se reciben los siguientes ids para traducir a idioma " + strLanguage + ". astrIds:" + pStrIds);
-		try
-		{
-			htTransData = getTranslations(alIdsTrans);
-			pLog.debug("Traducciones de los codigos recuperadas correctamente.");
-			for (int i = 0; i < pStrIds.length; i++)
-			{
-				String strAuxId = pStrIds[i];
-				if ((strAuxId == null) || (strAuxId.trim().isEmpty()))
-				{
-					continue;
-				}
-				TranslateEntry pEntry = htTransData.get(strAuxId);
-				htReturn.put(pEntry.getCode(), pEntry.getTranslate(strLanguage));
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("Error al procesar la petición", ex);
-		}
-		pLog.debug("datos a devolver por el metodo. htReturn: " + htReturn);
+		Hashtable<String, TranslateEntry> htReturn;
+		htReturn = TranslateCache.getTranslationsByCode(pStrIds);
 		return htReturn;
 	}
 
-	public static Hashtable<String, Hashtable<String, String>> processIds(String strApp, String[] pStrIds)
+	public static Hashtable<String, String> getTranslationsByApp(String strAppName, String strLanguage)
+			throws Exception
 	{
-		ArrayList<String> alIdsTrans;
-		Hashtable<String, Hashtable<String, String>> htReturn = new Hashtable<String, Hashtable<String, String>>();
-		Hashtable<String, TranslateEntry> htTransData;
-		alIdsTrans = new ArrayList<String>(Arrays.asList(pStrIds));
-		pLog.debug("Se reciben los siguientes ids de la apliación " + strApp
-				+ " para traducir a todos los idiomas. astrIds:" + pStrIds);
-		try
-		{
-			htTransData = getTranslations(strApp, alIdsTrans);
-			pLog.debug("Traducciones de los codigos recuperadas correctamente.");
-			for (int i = 0; i < pStrIds.length; i++)
-			{
-				String strAuxId = pStrIds[i];
-				if ((strAuxId == null) || (strAuxId.trim().isEmpty()))
-				{
-					continue;
-				}
-				TranslateEntry pEntry = htTransData.get(strAuxId);
-				Hashtable<String, String> htTransaltes = pEntry.getTranslates();
-				Enumeration<String> e = htTransaltes.keys();
-				while (e.hasMoreElements())
-				{
-					String strLang = (String) e.nextElement();
-					String strTranslate = htTransaltes.get(strLang);
-					if (!htReturn.contains(strLang))
-					{
-						htReturn.put(strLang, new Hashtable<String, String>());
-					}
-					Hashtable<String, String> htlang = htReturn.get(strLang);
-					htlang.put(strAuxId, strTranslate);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("Error al procesar la petición", ex);
-		}
-		pLog.debug("datos a devolver por el metodo. htReturn: " + htReturn);
+		Hashtable<String, String> htReturn;
+		htReturn = TranslateCache.getTranslationsByApp(strAppName, strLanguage);
 		return htReturn;
 	}
 
-	/**
-	 * Función que recibe una serie de identificadores de traducción e idioma y obtiene su traducción.
-	 * 
-	 * @param processIds
-	 *            Array de String con los identificadores
-	 * @param strLanguage
-	 *            String con el idioma (es_ES)
-	 * @return hastable con parejas identificador y su traducción.
-	 */
-	public static Hashtable<String, String> processIds(String strApp, String[] pStrIds, String strLanguage)
+	public static Hashtable<String, TranslateEntry> getTranslationsByApp(String strAppName) throws Exception
 	{
-		ArrayList<String> alIdsTrans;
-		Hashtable<String, String> htReturn = new Hashtable<String, String>();
-		Hashtable<String, TranslateEntry> htTransData;
-		alIdsTrans = new ArrayList<String>(Arrays.asList(pStrIds));
-		/* si no existe idioma se asigna español defecto */
-		if (strLanguage == null || strLanguage.trim().isEmpty())
-		{
-			strLanguage = Constants.DEFAULT_LANGUAGE;
-			pLog.warn("No se ha definido idioma de la traduccion, se asigna el español");
-		}
-		pLog.debug("Se reciben los siguientes ids de la apliación " + strApp + " para traducir a idioma " + strLanguage
-				+ ". astrIds:" + pStrIds);
-		try
-		{
-			htTransData = getTranslations(strApp, alIdsTrans);
-			pLog.debug("Traducciones de los codigos recuperadas correctamente.");
-			for (int i = 0; i < pStrIds.length; i++)
-			{
-				String strAuxId = pStrIds[i];
-				if ((strAuxId == null) || (strAuxId.trim().isEmpty()))
-				{
-					continue;
-				}
-				TranslateEntry pEntry = htTransData.get(strAuxId);
-				htReturn.put(pEntry.getCode(), pEntry.getTranslate(strLanguage));
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("Error al procesar la petición", ex);
-		}
-		pLog.debug("datos a devolver por el metodo. htReturn: " + htReturn);
-		return htReturn;
-	}
-
-	public static Hashtable<String, Hashtable<String, String>> processApps(String[] aStrApps)
-	{
-		Hashtable<String, Hashtable<String, String>> htReturn = new Hashtable<String, Hashtable<String, String>>();
-		Hashtable<String, TranslateEntry> htTransData;
-		pLog.debug("Se reciben los siguientes nombres de apliación " + aStrApps
-				+ " para obtener las traducciones a todos los idiomas");
-		try
-		{
-			htTransData = getTranslationsByApp(aStrApps);
-			pLog.debug("Traducciones de los codigos recuperadas correctamente.");
-			for (int i = 0; i < aStrApps.length; i++)
-			{
-				String strAuxId = aStrApps[i];
-				if ((strAuxId == null) || (strAuxId.trim().isEmpty()))
-				{
-					continue;
-				}
-				TranslateEntry pEntry = htTransData.get(strAuxId);
-				Hashtable<String, String> htTransaltes = pEntry.getTranslates();
-				Enumeration<String> e = htTransaltes.keys();
-				while (e.hasMoreElements())
-				{
-					String strLang = (String) e.nextElement();
-					String strTranslate = htTransaltes.get(strLang);
-					if (!htReturn.contains(strLang))
-					{
-						htReturn.put(strLang, new Hashtable<String, String>());
-					}
-					Hashtable<String, String> htlang = htReturn.get(strLang);
-					htlang.put(strAuxId, strTranslate);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("Error al procesar la petición", ex);
-		}
-		pLog.debug("datos a devolver por el metodo. htReturn: " + htReturn);
-		return htReturn;
-	}
-
-	public static Hashtable<String, String> processApps(String[] pStrApps, String strLanguage)
-	{
-		Hashtable<String, String> htReturn = new Hashtable<String, String>();
-		Hashtable<String, TranslateEntry> htTransData;
-		/* si no existe idioma se asigna español defecto */
-		if (strLanguage == null || strLanguage.trim().isEmpty())
-		{
-			strLanguage = Constants.DEFAULT_LANGUAGE;
-			pLog.warn("No se ha definido idioma de la traduccion, se asigna el español");
-		}
-		pLog.debug("Se reciben los siguientes ids de las apliaciónes " + pStrApps + " para traducir a idioma "
-				+ strLanguage);
-		try
-		{
-			htTransData = getTranslationsByApp(pStrApps);
-			pLog.debug("Traducciones de los codigos recuperadas correctamente.");
-			for (int i = 0; i < pStrApps.length; i++)
-			{
-				String strAuxId = pStrApps[i];
-				if ((strAuxId == null) || (strAuxId.trim().isEmpty()))
-				{
-					continue;
-				}
-				TranslateEntry pEntry = htTransData.get(strAuxId);
-				htReturn.put(pEntry.getCode(), pEntry.getTranslate(strLanguage));
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("Error al procesar la petición", ex);
-		}
-		pLog.debug("datos a devolver por el metodo. htReturn: " + htReturn);
+		Hashtable<String, TranslateEntry> htReturn;
+		htReturn = TranslateCache.getTranslationsByApp(strAppName);
 		return htReturn;
 	}
 
@@ -367,7 +94,9 @@ public class TranslateProcessor
 		{
 			try
 			{
-				htTransData = getTranslations(alIdsTrans);
+				String[] aIdsTrans = new String[alIdsTrans.size()];
+				aIdsTrans = alIdsTrans.toArray(aIdsTrans);
+				htTransData = getTranslationsById(aIdsTrans);
 				pLog.debug("Traducciones recuperadas correctamente.");
 			}
 			catch (Exception ex)
@@ -384,203 +113,6 @@ public class TranslateProcessor
 			pLog.debug("Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
 		}
 		return pDocument;
-	}
-
-	private static Hashtable<String, TranslateEntry> getTranslations(ArrayList<String> alIdsTrans) throws Exception
-	{
-		String strNewsIds = "";
-		Hashtable<String, TranslateEntry> htResult = new Hashtable<String, TranslateEntry>();
-		Enumeration<String> e = htTranslateCacheData.keys();
-		while (e.hasMoreElements())
-		{
-			String strAppName = (String) e.nextElement();
-			for (String strId : alIdsTrans)
-			{
-				if (!htTranslateCacheData.get(strAppName).containsKey(strId))
-				{
-					if (!strNewsIds.equals(""))
-					{
-						strNewsIds += ",";
-					}
-					strNewsIds += "'" + strId + "'";
-				}
-				else
-				{
-					htResult.put(strId, (TranslateEntry) htTranslateCacheData.get(strAppName).get(strId));
-				}
-			}
-		}
-		if (!strNewsIds.isEmpty())
-		{
-			Connection pConnection = null;
-			PreparedStatement pPreparedStatement = null;
-			ResultSet pResultSet = null;
-			try
-			{
-				String strQuery = "SELECT codigo,idioma,traduccion, aplicativo FROM bdptb079_idioma where codigo in (?)";
-				pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-				pPreparedStatement = pConnection.prepareStatement(strQuery);
-				pPreparedStatement.setString(1, strNewsIds);
-				pResultSet = pPreparedStatement.executeQuery();
-				while (pResultSet.next())
-				{
-					String strApp = (String) pResultSet.getString("aplicativo");
-					String strCode = (String) pResultSet.getString("codigo");
-					String strLang = (String) pResultSet.getString("idioma");
-					String strTranslate = (String) pResultSet.getString("traduccion");
-					if (!htResult.containsKey(strCode))
-					{
-						TranslateEntry pTrans = new TranslateEntry(strCode, strApp);
-						htResult.put(strCode, pTrans);
-						if (!htTranslateCacheData.contains(strApp))
-						{
-							htTranslateCacheData.put(strApp, new Hashtable<String, TranslateEntry>());
-						}
-						if (!htTranslateCacheData.get(strApp).containsKey(strCode))
-						{
-							htTranslateCacheData.get(strApp).put(strCode, pTrans);
-						}
-					}
-					htResult.get(strCode).addTranslate(strLang, strTranslate);
-					htTranslateCacheData.get(strApp).get(strCode).addTranslate(strLang, strTranslate);
-				}
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al realizar la consulta a la BBDD.");
-			}
-			finally
-			{
-				DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
-			}
-		}
-		return htResult;
-	}
-
-	/**
-	 * Función para recuperar las traducciones dada una lista de IDs.
-	 * 
-	 * @param alIdsTrans
-	 *            ArrayList<String> con los IDs de las traducciones.
-	 * @return HashTable con las traducciones en todos los idiomas de cada ID de la lista inicial
-	 * @throws Exception
-	 */
-	private static Hashtable<String, TranslateEntry> getTranslations(String strAppName, ArrayList<String> alIdsTrans)
-			throws Exception
-	{
-		String strNewsIds = "";
-		Hashtable<String, TranslateEntry> htResult = new Hashtable<String, TranslateEntry>();
-		if (!htTranslateCacheData.contains(strAppName))
-		{
-			htTranslateCacheData.put(strAppName, new Hashtable<String, TranslateEntry>());
-		}
-		for (String strId : alIdsTrans)
-		{
-			if (!htTranslateCacheData.get(strAppName).containsKey(strId))
-			{
-				if (!strNewsIds.equals(""))
-				{
-					strNewsIds += ",";
-				}
-				strNewsIds += "'" + strId + "'";
-			}
-			else
-			{
-				htResult.put(strId, (TranslateEntry) htTranslateCacheData.get(strAppName).get(strId));
-			}
-		}
-		if (!strNewsIds.isEmpty())
-		{
-			Connection pConnection = null;
-			PreparedStatement pPreparedStatement = null;
-			ResultSet pResultSet = null;
-			try
-			{
-				String strQuery = "SELECT codigo,idioma,traduccion, aplicativo FROM bdptb079_idioma where codigo in (?) and aplicativo = ?";
-				pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-				pPreparedStatement = pConnection.prepareStatement(strQuery);
-				pPreparedStatement.setString(1, strNewsIds);
-				pPreparedStatement.setString(2, strAppName);
-				pResultSet = pPreparedStatement.executeQuery();
-				while (pResultSet.next())
-				{
-					String strApp = (String) pResultSet.getString("aplicativo");
-					String strCode = (String) pResultSet.getString("codigo");
-					String strLang = (String) pResultSet.getString("idioma");
-					String strTranslate = (String) pResultSet.getString("traduccion");
-					if (!htResult.containsKey(strCode))
-					{
-						TranslateEntry pTrans = new TranslateEntry(strCode, strApp);
-						htResult.put(strCode, pTrans);
-						if (!htTranslateCacheData.get(strAppName).containsKey(strCode))
-						{
-							htTranslateCacheData.get(strAppName).put(strCode, pTrans);
-						}
-					}
-					htResult.get(strCode).addTranslate(strLang, strTranslate);
-					htTranslateCacheData.get(strAppName).get(strCode).addTranslate(strLang, strTranslate);
-				}
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al realizar la consulta a la BBDD.");
-			}
-			finally
-			{
-				DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
-			}
-		}
-		return htResult;
-	}
-
-	private static Hashtable<String, TranslateEntry> getTranslationsByApp(String[] aStrApps) throws Exception
-	{
-		Hashtable<String, TranslateEntry> htResult = new Hashtable<String, TranslateEntry>();
-		Connection pConnection = null;
-		PreparedStatement pPreparedStatement = null;
-		ResultSet pResultSet = null;
-		try
-		{
-			for (String strAppName : aStrApps)
-			{
-				if (!htTranslateCacheData.contains(strAppName))
-				{
-					htTranslateCacheData.put(strAppName, new Hashtable<String, TranslateEntry>());
-				}
-				String strQuery = "SELECT codigo,idioma,traduccion, aplicativo FROM bdptb079_idioma whereand aplicativo = ?";
-				pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-				pPreparedStatement = pConnection.prepareStatement(strQuery);
-				pPreparedStatement.setString(1, strAppName);
-				pResultSet = pPreparedStatement.executeQuery();
-				while (pResultSet.next())
-				{
-					String strApp = (String) pResultSet.getString("aplicativo");
-					String strCode = (String) pResultSet.getString("codigo");
-					String strLang = (String) pResultSet.getString("idioma");
-					String strTranslate = (String) pResultSet.getString("traduccion");
-					if (!htResult.containsKey(strCode))
-					{
-						TranslateEntry pTrans = new TranslateEntry(strCode, strApp);
-						htResult.put(strCode, pTrans);
-						if (!htTranslateCacheData.get(strAppName).containsKey(strCode))
-						{
-							htTranslateCacheData.get(strAppName).put(strCode, pTrans);
-						}
-					}
-					htResult.get(strCode).addTranslate(strLang, strTranslate);
-					htTranslateCacheData.get(strAppName).get(strCode).addTranslate(strLang, strTranslate);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("Error al realizar la consulta a la BBDD.");
-		}
-		finally
-		{
-			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
-		}
-		return htResult;
 	}
 
 	/**
@@ -621,14 +153,14 @@ public class TranslateProcessor
 		Enumeration<String> pEnumHTData = htData.keys();
 		while (pEnumHTData.hasMoreElements())
 		{
-			String strHTKey = (String) pEnumHTData.nextElement();
-			Elements pListIDsTrans = pDoc.select("[data-translate=\"" + strHTKey + "\"]");
+			String strHtKey = (String) pEnumHTData.nextElement();
+			Elements pListIDsTrans = pDoc.select("[data-translate=\"" + strHtKey + "\"]");
 			for (Element pItem : pListIDsTrans)
 			{
 				if (pItem != null)
 				{
-					TranslateEntry pTrans = (TranslateEntry) htData.get(strHTKey);
-					String strTraduccion = pTrans.getTranslate(strLanguage);
+					TranslateEntry pTrans = (TranslateEntry) htData.get(strHtKey);
+					String strTraduccion = pTrans.getTranslation(strLanguage);
 					if (strTraduccion != null)
 					{
 						pItem.text(strTraduccion);
