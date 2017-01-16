@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
 	import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
@@ -77,7 +78,7 @@
 	}
 	
  	String strHost="";
-     String entorno = AppConfigurationFactory.getEnv().getProperty("env");
+     String entorno = AppConfigurationFactory.getConfiguration().getProperty("env");
      if (entorno.equals("TEST"))
      {
         strHost="http://localhost:8080";
