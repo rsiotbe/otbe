@@ -135,7 +135,6 @@ public class DomiciliacionRcbo
     public Response datosTransmitterJSONGet(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
     {
-        // return Response.ok("Lista de contratos").build();
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Datos de un emisor previa baja");
         return pReturn;

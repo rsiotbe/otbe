@@ -31,7 +31,6 @@
 		nMiqQuestId = 0; 
 	}
 
-	
 	String strToken = request.getParameter("token");
 	String strMethod = request.getParameter("method");
 	if (strMethod == null)
