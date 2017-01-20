@@ -36,7 +36,7 @@ public class Mortgage
 	@Path("{entidad}/hipoteca/{idioma: [a-z]{2}[-_][A-Z]{2}}")
 	@Produces({ MediaType.TEXT_HTML })
 	@Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
-			"application/x-ms-application" })
+            MediaType.APPLICATION_JSON, "application/x-ms-application" })
 	public Response getAllSimulatorsOneLanguageGet(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
 			@PathParam("entidad") String strBankName, @PathParam("idioma") String strLanguage) throws Exception
 	{
@@ -47,23 +47,23 @@ public class Mortgage
 	@Path("{entidad}/hipoteca/{nombreSimulador}")
 	@Produces({ MediaType.TEXT_HTML })
 	@Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
-			"application/x-ms-application" })
+            MediaType.APPLICATION_JSON, "application/x-ms-application" })
 	public Response getSimulatorDefaultLanguageGet(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			@PathParam("entidad") String strBankName, @PathParam("nombreSimulador") String strLoanName) throws Exception
+            @PathParam("entidad") String strNRBEName) throws Exception
 	{
-		return process(pRequest, pUriInfo, strBankName, strLoanName, null, OperationManager.getMediaType(pRequest));
+        return process(pRequest, pUriInfo, strNRBEName, null, null, OperationManager.getMediaType(pRequest));
 	}
 
 	@GET
 	@Path("{entidad}/hipoteca/{nombreSimulador}/{idioma}")
 	@Produces({ MediaType.TEXT_HTML })
 	@Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
-			"application/x-ms-application" })
+            MediaType.APPLICATION_JSON, "application/x-ms-application" })
 	public Response getSimulatorOneLanguageGet(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			@PathParam("entidad") String strBankName, @PathParam("nombreSimulador") String strLoanName,
+            @PathParam("entidad") String strNRBEName, @PathParam("nombreSimulador") String strLoanName,
 			@PathParam("idioma") String strLanguage) throws Exception
 	{
-		return process(pRequest, pUriInfo, strBankName, strLoanName, strLanguage, OperationManager.getMediaType(pRequest));
+        return process(pRequest, pUriInfo, strNRBEName, null, strLanguage, OperationManager.getMediaType(pRequest));
 	}
 
 	@POST
@@ -71,9 +71,9 @@ public class Mortgage
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response getAllSimulatorsDefaultLanguagePost(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			@PathParam("entidad") String strBankName) throws Exception
+            @PathParam("entidad") String strNRBEName) throws Exception
 	{
-		return process(pRequest, pUriInfo, strBankName, null, null, MediaType.APPLICATION_JSON_TYPE);
+        return process(pRequest, pUriInfo, strNRBEName, null, null, MediaType.APPLICATION_JSON_TYPE);
 	}
 
 	@POST
@@ -81,9 +81,9 @@ public class Mortgage
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response getAllSimulatorsOneLanguagePost(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			@PathParam("entidad") String strBankName, @PathParam("idioma") String strLanguage) throws Exception
+            @PathParam("entidad") String strNRBEName, @PathParam("idioma") String strLanguage) throws Exception
 	{
-		return process(pRequest, pUriInfo, strBankName, null, strLanguage, MediaType.APPLICATION_JSON_TYPE);
+        return process(pRequest, pUriInfo, strNRBEName, null, strLanguage, MediaType.APPLICATION_JSON_TYPE);
 	}
 
 	@POST
@@ -91,9 +91,9 @@ public class Mortgage
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response getSimulatorDefaultLanguagePost(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			@PathParam("entidad") String strBankName, @PathParam("nombreSimulador") String strLoanName) throws Exception
+            @PathParam("entidad") String strNRBEName, @PathParam("nombreSimulador") String strLoanName) throws Exception
 	{
-		return process(pRequest, pUriInfo, strBankName, strLoanName, null, MediaType.APPLICATION_JSON_TYPE);
+        return process(pRequest, pUriInfo, strNRBEName, null, null, MediaType.APPLICATION_JSON_TYPE);
 	}
 
 	@POST
@@ -101,10 +101,10 @@ public class Mortgage
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response getSimulatorOneLanguagePost(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-			@PathParam("entidad") String strBankName, @PathParam("nombreSimulador") String strLoanName,
+            @PathParam("entidad") String strNRBEName, @PathParam("nombreSimulador") String strLoanName,
 			@PathParam("idioma") String strLanguage) throws Exception
 	{
-		return process(pRequest, pUriInfo, strBankName, strLoanName, strLanguage, MediaType.APPLICATION_JSON_TYPE);
+        return process(pRequest, pUriInfo, strNRBEName, null, strLanguage, MediaType.APPLICATION_JSON_TYPE);
 	}
 
 	/**

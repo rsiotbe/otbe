@@ -2,6 +2,8 @@ package com.rsi.rvia.rest.tool;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,6 +24,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import org.apache.commons.collections4.MapUtils;
@@ -30,6 +33,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
+import com.rsi.rvia.rest.operation.MiqQuests;
 
 public class Utils
 {
@@ -430,6 +435,71 @@ public class Utils
 			}
 		}
 		return strHtml;
+    }
+
+    /**
+     * En el entorno de test, grabará ficheros json con la estructura del path que se pide
+     * 
+     * @param pUriInfo
+     *            Necesario para sacar los parametros del path
+     * @param pRequest
+     * @param pMiqQuests
+     * @param strJsonData
+     * @throws Exception
+     */
+    public static void writeMock(HttpServletRequest pRequest, UriInfo pUriInfo, MiqQuests pMiqQuests, String strJsonData)
+            throws Exception
+    {
+        int i;
+        String strTargetMockRootDir = AppConfigurationFactory.getConfiguration().getProperty("targetMockRootDir");
+        String strPartes[] = pUriInfo.getPath().split("/");
+        String strTestPath = strTargetMockRootDir;
+        for (i = 0; i < strPartes.length - 1; i++)
+        {
+            strTestPath = strTestPath + "/" + strPartes[i];
+        }
+        File directorio = new File(strTestPath);
+        if (!directorio.exists())
+        {
+            try
+            {
+                directorio.mkdirs();
+            }
+            catch (Exception e)
+            {
+                throw new LogicalErrorException(500, 9999, "Error al intentar crear directorio", "Fallo al crear directorio para mocks: "
+                        + strTestPath, null);
+            }
+        }
+        FileWriter fichero = null;
+        File fileTest = null;
+        try
+        {
+            fileTest = new File(strTestPath + "/__" + strPartes[i]);
+            if (fileTest.exists())
+            {
+                fileTest.delete();
+            }
+            fichero = new FileWriter(strTestPath + "/__" + strPartes[i]);
+            fichero.write(strJsonData);
+        }
+        catch (Exception e)
+        {
+            throw new LogicalErrorException(500, 9999, "Error manejo de ficheros", "Fallo al crear fichero para mocks: "
+                    + strTestPath + "/__" + strPartes[i], null);
+        }
+        finally
+        {
+            try
+            {
+                if (null != fichero)
+                    fichero.close();
+            }
+            catch (Exception e2)
+            {
+                e2.printStackTrace();
+            }
+        }
 	}
 
 	/**

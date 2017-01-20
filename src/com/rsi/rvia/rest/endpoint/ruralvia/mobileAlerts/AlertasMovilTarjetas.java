@@ -1,4 +1,4 @@
-package com.rsi.rvia.rest.endpoint.ruralvia.domiciliacionRcbo;
+package com.rsi.rvia.rest.endpoint.ruralvia.mobileAlerts;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -14,27 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
 
-@Path("/domiciliations")
-public class DomiciliacionRcbo
+@Path("/alerts/mobile/cards")
+public class AlertasMovilTarjetas
 {
-    private static Logger pLog = LoggerFactory.getLogger(DomiciliacionRcbo.class);
-
-    /**
-     * Obtiene el listado completo de tarjetas de un usuario
-     * 
-     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
-     * @throws Exception
-     */
-    @POST
-    @Path("/coordenada")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getCoord(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
-            throws Exception
-    {
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Coordenada");
-        return pReturn;
-    }
+    private static Logger pLog = LoggerFactory.getLogger(AlertasMovilTarjetas.class);
 
     /**
      * Obtiene el listado de cuentas del cliente.
@@ -124,18 +107,19 @@ public class DomiciliacionRcbo
     }
 
     /**
-     * Invoca al proceso de baja para la cuenta y el emisor seleccionado
+     * Obtiene el listado de emisores de decibos para una cuenta.
      * 
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      * @throws Exception
      */
     @GET
-    @Path("/{cccDomiciliacion}/transmitter/{idTransmitter}")
+    @Path("/{idContract}/transmitter/{idTransmitter}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response datosTransmitterJSONGet(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
     {
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
+        // return Response.ok("Lista de contratos").build();
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Datos de un emisor previa baja");
         return pReturn;
     }
@@ -143,21 +127,17 @@ public class DomiciliacionRcbo
     /**
      * Obtiene el listado de emisores de decibos para una cuenta.
      * 
-     * @return Invoca al proceso de baja para la cuenta y el emisor seleccionado
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      * @throws Exception
      */
     @POST
-    @Path("/{cccDomiciliacion}/transmitter/{idTransmitter}")
+    @Path("/{idContract}/transmitter/{idTransmitter}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response datosTransmitterJSONPost(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
     {
-        // if (true)
-        // throw new LogicalErrorException(403, 9999, "Error simulation", "Simulación de error", new Exception());
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
-        // RequestConfigRvia pRequestConfigRvia = OperationManager.getValidateSession(pRequest);
-        // Client pClient = RviaRestHttpClient.getClient();
-        // Response Otra = OperationManager.processForAPI(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        // return Response.ok("Lista de contratos").build();
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Datos de un emisor previa baja");
         return pReturn;
     }

@@ -254,8 +254,7 @@ public class SaveExitHierarchy
         }
         catch (Exception ex)
         {
-            pLog.error("No se ha podido insertar el campo de salida " + strExitFieldName + " con id "
-                    + nIdMiqExitField, ex);
+            pLog.error("No se ha podido insertar el campo de salida " + strExitFieldName + " con id " + nIdMiqExitField, ex);
         }
         finally
         {
