@@ -5,28 +5,28 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SimulatorObjectArray
+public class SimulatorConfigObjectArray
 {
-	private ArrayList<SimulatorObject>	alSimulators;
+	private ArrayList<SimulatorConfig>	alSimulators;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param alSimulators
 	 */
-	public SimulatorObjectArray()
+	public SimulatorConfigObjectArray()
 	{
-		this.alSimulators = new ArrayList<SimulatorObject>();
+		this.alSimulators = new ArrayList<SimulatorConfig>();
 	}
 
 	/**
 	 * añade un nuevo simulador al array
 	 * 
-	 * @param pSimulatorObject
+	 * @param pSimulatorConfig
 	 */
-	public void addSimulator(SimulatorObject pSimulatorObject)
+	public void addSimulator(SimulatorConfig pSimulatorConfig)
 	{
-		alSimulators.add(pSimulatorObject);
+		alSimulators.add(pSimulatorConfig);
 	}
 
 	/**

@@ -22,9 +22,8 @@ import org.jose4j.lang.JoseException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.rsi.Constantes;
-import com.rsi.Constantes.SimulatorType;
+import com.rsi.Constants;
+import com.rsi.Constants.SimulatorType;
 import com.rsi.isum.IsumValidation;
 import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.error.ErrorManager;
@@ -50,7 +49,6 @@ public class OperationManager
     private static final int    HTTP_CODE_OK       = 200;
     private static HttpSession  pSession;
     private static Logger       pLog               = LoggerFactory.getLogger(OperationManager.class);
-    private static String       Entorno;
 
     /**
      * Se procesa una petición que llega desde la antigua apliación de ruralvia
@@ -191,7 +189,6 @@ public class OperationManager
         int nReturnHttpCode = 200;
         String strTemplate = "";
         Response pResponseConnector;
-        RequestConfig pRequestConfig = null;
         String strPrimaryPath = "";
         String JWT = "";
         MiqQuests pMiqQuests;
@@ -498,9 +495,9 @@ public class OperationManager
         pSession = pRequest.getSession(true);
         try
         {
-            /* se obtiene el objeto petición */
-            pRequestConfig = new RequestConfig(pRequest);
             strNRBE = SimulatorsManager.getNRBEFromName(strNRBEName);
+            /* se obtiene el objeto petición */
+            pRequestConfig = new RequestConfig(strLanguage, strNRBE);
             /* si no viene idioma o definido se coge por defecto el de el objeto RequestConfig */
             if (strLanguage == null || strLanguage.trim().isEmpty())
                 strLanguage = pRequestConfig.getLanguage();
@@ -512,11 +509,11 @@ public class OperationManager
             }
             /* se obtiene el codigo de entidad de donde procede la llamada */
             JSONObject pDataInput = new JSONObject();
-            pDataInput.put(Constantes.SIMULADOR_NRBE, strNRBE);
-            pDataInput.put(Constantes.SIMULADOR_NRBE_NAME, strNRBEName);
-            pDataInput.put(Constantes.SIMULADOR_SIMPLE_NAME, strLoanName);
-            pDataInput.put(Constantes.SIMULADOR_TYPE, pSimulatorType.name());
-            pDataInput.put(Constantes.SIMULADOR_LANGUAGE, strLanguage);
+            pDataInput.put(Constants.SIMULADOR_NRBE, strNRBE);
+            pDataInput.put(Constants.SIMULADOR_NRBE_NAME, strNRBEName);
+            pDataInput.put(Constants.SIMULADOR_SIMPLE_NAME, strLoanName);
+            pDataInput.put(Constants.SIMULADOR_TYPE, pSimulatorType.name());
+            pDataInput.put(Constants.SIMULADOR_LANGUAGE, strLanguage);
             /* se instancia el conector y se solicitan los datos */
             strJsonResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, pDataInput.toString());
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonResponse);
@@ -530,7 +527,7 @@ public class OperationManager
         {
             /* Se construye la respuesta ya sea error, o correcta, json o template */
             String entorno = AppConfigurationFactory.getConfiguration().getProperty("env");
-            if (Constantes.Environment.TEST.name().equals(entorno))
+            if (Constants.Environment.TEST.name().equals(entorno))
             {
                 Utils.writeMock(pRequest, pUriInfo, pMiqQuests, strJsonResponse);
             }
@@ -546,27 +543,47 @@ public class OperationManager
         return pResponseConnector;
     }
 
-    /**
-     * @param json
-     * @return
-     */
-    public static Response processDataFromPdf(UriInfo pUriInfo, JsonNode json)
+    public static Response processDataFromSimulators(HttpServletRequest pRequest, UriInfo pUriInfo, String strJsonData,
+            MediaType pMediaType)
     {
         MiqQuests pMiqQuests = null;
+        ErrorResponse pErrorCaptured = null;
+        String strJsonResponse = "";
+        Response pResponseConnector;
+        RequestConfig pRequestConfig = null;
+        pSession = pRequest.getSession(true);
         try
         {
+            /* se obtiene el objeto petición */
+            pRequestConfig = new RequestConfig(new JSONObject(strJsonData));
+            /* se obtienen los datos necesario para realizar la petición al proveedor */
             pMiqQuests = createMiqQuests(pUriInfo);
             if (pMiqQuests == null)
             {
                 throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
             }
+            /* se instancia el conector y se solicitan los datos */
+            strJsonResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, strJsonData);
+            pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonResponse);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
-        return null;
+        try
+        {
+            /* Se construye la respuesta ya sea error, o correcta, json o template */
+            pResponseConnector = buildResponse(pErrorCaptured, pMediaType, pMiqQuests, strJsonResponse, pRequestConfig);
+        }
+        catch (Exception ex)
+        {
+            pLog.error("Se ha generado un error al procesar la respuesta final", ex);
+            pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
+            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).build();
+        }
+        pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
+        return pResponseConnector;
     }
 
     /**
@@ -701,8 +718,8 @@ public class OperationManager
         pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
         // Se procesa el resultado del conector paa evaluar y adaptar su contenido.
         String strRespuesta = ResponseManager.processResponseConnector(pRequestConfig, pRestConnector, pResponseConnector, pMiqQuests);
-        String entorno = AppConfigurationFactory.getConfiguration().getProperty(Constantes.ENVIRONMENT);
-        if (Constantes.Environment.TEST.name().equals(entorno))
+        String entorno = AppConfigurationFactory.getConfiguration().getProperty(Constants.ENVIRONMENT);
+        if (Constants.Environment.TEST.name().equals(entorno))
         {
             Utils.writeMock(pRequest, pUriInfo, pMiqQuests, strRespuesta);
         }

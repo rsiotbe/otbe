@@ -12,8 +12,8 @@
 <%@page import="org.json.JSONObject"%>
 <%@page import="org.slf4j.Logger"%>
 <%@page import="org.slf4j.LoggerFactory"%>
-<%@page import="com.rsi.rvia.rest.simulators.SimulatorObjectArray"%>
-<%@page import="com.rsi.Constantes"%>
+<%@page import="com.rsi.rvia.rest.simulators.SimulatorConfigObjectArray"%>
+<%@page import="com.rsi.Constants"%>
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%
     Logger pLog = LoggerFactory.getLogger("simulatorOutputJSON.jsp");
@@ -56,7 +56,7 @@
         strLanguage = (String) request.getParameter(Constantes.SIMULADOR_LANGUAGE);
     }
     JSONObject pJsonResponse = new JSONObject();
-    SimulatorObjectArray paSimulators = SimulatorsManager.getSimulatorsData(strNRBE, strNRBEName,
+	SimulatorConfigObjectArray paSimulators = SimulatorsManager.getSimulatorsData(strNRBE, strNRBEName, strSimulatorType, strSimulatorName, strLanguage);
             strSimulatorType, strSimulatorName, strLanguage);
     pJsonData.put("data", paSimulators.toJson());
     pJson.put("response", pJsonData);
