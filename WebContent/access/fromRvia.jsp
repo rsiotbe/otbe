@@ -3,6 +3,7 @@
 	pageEncoding="UTF-8"
 	import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
     		com.rsi.rvia.rest.operation.MiqQuests,
+    		com.rsi.rvia.rest.session.RequestConfigRvia,
 		 	java.sql.Connection, java.net.URL,
 		 	java.util.Enumeration,
 		 	org.slf4j.Logger,org.slf4j.LoggerFactory,
@@ -79,8 +80,17 @@
  	String strHost="";
      String entorno = AppConfigurationFactory.getConfiguration().getProperty("env");
      if (entorno.equals("TEST"))
-     {
-        strHost="http://localhost:8080";
+     {         
+         // Ip actual de conexión
+         RequestConfigRvia RQ = new RequestConfigRvia(request); 
+         String strAvtualIp=RQ.getIp();
+         
+         String strIpsToLocalhost="";
+         // Buscamos la ip actual en el fichero de ips que derivarán a localhost 
+         // .... generando cadena de ips
+         if(strIpsToLocalhost.indexOf(strAvtualIp) != -1){
+             strHost="http://localhost:8080";
+         }
      }
 	
 %>
