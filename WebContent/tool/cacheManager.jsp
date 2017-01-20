@@ -1,7 +1,7 @@
 <%@page import="com.rsi.rvia.rest.client.MiqAdminValidator"%>
 <%@page import="com.rsi.rvia.rest.operation.MiqQuests"%>
 <%@page import="com.rsi.rvia.rest.template.TemplateManager"%>
-<%@page import="com.rsi.rvia.translates.TranslateProcessor"%>
+<%@page import="com.rsi.rvia.translates.TranslateCache"%>
 <%@page import="java.util.Hashtable"%>
 <%@page import="java.util.Enumeration"%>
 <%@page import="org.slf4j.Logger"%>
@@ -20,8 +20,8 @@
 	/* Se añaden las caches */
 	htCaches.put("MiqQuests", MiqQuests.class);
 	htCaches.put("Plantillas_HTML", TemplateManager.class);
-	htCaches.put("Traducciones", TranslateProcessor.class);
 	htCaches.put("CSS_Multientidad", CssMultiBankProcessor.class);
+	htCaches.put("Traducciones", TranslateCache.class);
 		
 	String strParamClean 	= (String) request.getParameter("clean");
 	String strParamViewData	= (String) request.getParameter("viewData");
@@ -29,11 +29,11 @@
 	/*si se pide una limpieza de cachés */
 	if (strParamClean != null && !strParamClean.trim().isEmpty())
 	{
-		pLog.info("Liberando Caches: " + strParamClean);
+		pLog.info("Liberando Caches de las siguientes aplicaciones: " + strParamClean);
 		String[] astrPartes = strParamClean.split(",");
 		for (String strItem : astrPartes)
 		{
-			pLog.trace("Libero cache: " + strItem);
+			pLog.trace("Se libera la caché de " + strItem);
 		    try {
 			  Class<?> oCacheClass = (Class<?>)htCaches.get(strItem);
 		   	  Method method = oCacheClass.getMethod("resetCache");
