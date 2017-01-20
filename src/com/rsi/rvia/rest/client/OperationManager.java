@@ -531,8 +531,6 @@ public class OperationManager
 	public static Response processDataFromSimulators(HttpServletRequest pRequest, UriInfo pUriInfo, String strJsonData,
 			MediaType pMediaType)
 	{
-		String strLanguage;
-		String strNRBE;
 		MiqQuests pMiqQuests = null;
 		ErrorResponse pErrorCaptured = null;
 		String strJsonResponse = "";

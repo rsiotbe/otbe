@@ -11,25 +11,25 @@ import com.rsi.Constants;
  */
 public class SimulatorConfig
 {
-	private int									nId;
-	private String								strNRBE;
-	private String								strNRBEName;
-	private String								strCategory;
-	private String								strSimpleName;
-	private String								strComercialName;
-	private String								strCustomerSupportEmail;
-	private String								strCustomerSupportTelephone;
-	private String								strReceivingOfficeEmail;
-	private boolean							fIsActive;
-	private boolean							fAllowBooking;
-	private boolean							fAllowUserEmail;
-	private boolean							fAllowUserTelephone;
-	private String								strDisclaimer;
-	private String								strContractConditions;
-	private String								strDescription;
-	private String								strLOPD;
+	private int							nId;
+	private String						strNRBE;
+	private String						strNRBEName;
+	private String						strCategory;
+	private String						strSimpleName;
+	private String						strComercialName;
+	private String						strCustomerSupportEmail;
+	private String						strCustomerSupportTelephone;
+	private String						strReceivingOfficeEmail;
+	private boolean						fIsActive;
+	private boolean						fAllowBooking;
+	private boolean						fAllowUserEmail;
+	private boolean						fAllowUserTelephone;
+	private String						strDisclaimer;
+	private String						strContractConditions;
+	private String						strDescription;
+	private String						strLOPD;
 	private Hashtable<String, Object>	pConfigParams;
-	private LoanType							pLoanType;
+	private LoanType					pLoanType;
 
 	/**
 	 * Enumeración de tipos de calculo diferentes
@@ -51,29 +51,29 @@ public class SimulatorConfig
 	 * Constructor
 	 * 
 	 * @param nId
-	 *           Id del simulador
+	 *            Id del simulador
 	 * @param strNRBE
-	 *           Entidad propietaria del simulador
+	 *            Entidad propietaria del simulador
 	 * @param strNRBEName
-	 *           Nombre de la entidad propietaria del simulador
+	 *            Nombre de la entidad propietaria del simulador
 	 * @param strEntityName
-	 *           NOmbre de la entidad
+	 *            NOmbre de la entidad
 	 * @param strCategory
-	 *           Tipo de prestamo
+	 *            Tipo de prestamo
 	 * @param strSimpleName
-	 *           Nombre comerciual del prestamo
+	 *            Nombre comerciual del prestamo
 	 * @param strComercialName
-	 *           Nombre comerciual del prestamo
+	 *            Nombre comerciual del prestamo
 	 * @param strLoanType
-	 *           Tipo de calculo que contiene
+	 *            Tipo de calculo que contiene
 	 * @param fIsActive
-	 *           indicador de si está activo el prestamo
+	 *            indicador de si está activo el prestamo
 	 * @param fAllowBooking
-	 *           Indica si permite contratar online
+	 *            Indica si permite contratar online
 	 * @param fAllowUserEmail
-	 *           Permite la ingresión de email de contacto con el cliente
+	 *            Permite la ingresión de email de contacto con el cliente
 	 * @param fAllowUserTelephone
-	 *           Permite la ingresión de telefono de contacto con el cliente
+	 *            Permite la ingresión de telefono de contacto con el cliente
 	 */
 	public SimulatorConfig(int nId, String strNRBE, String strNRBEName, String strCategory, String strSimpleName,
 			String strComercialName, String strLoanType, boolean fIsActive, boolean fAllowBooking,
@@ -257,7 +257,8 @@ public class SimulatorConfig
 				JSONObject pResult = new JSONObject();
 				JSONObject pInterest = new JSONObject();
 				/* se calcula el objeto interes */
-				InterestType pInterestType = InterestType.valueOf(((String) pConfigParams.get(strPattern + "interestType")).toUpperCase());
+				InterestType pInterestType = InterestType.valueOf(((String) pConfigParams.get(strPattern
+						+ "interestType")).toUpperCase());
 				pInterest.put("interestType", pInterestType.name());
 				if (pInterestType == InterestType.FIX)
 				{

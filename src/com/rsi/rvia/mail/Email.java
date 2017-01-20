@@ -20,15 +20,15 @@ import org.slf4j.LoggerFactory;
 
 public class Email
 {
-	private static Logger						pLog				= LoggerFactory.getLogger(Email.class);
-	private Properties							pProperties		= null;
-	private String									strEmailFrom	= null;
-	private ArrayList<String>					alTo				= null;
-	private ArrayList<String>					alCC				= null;
-	private ArrayList<String>					alBCC				= null;
-	private String									strSubject		= null;
-	private String									strHtmlMessage	= null;												;
-	private ArrayList<EmailAttachObject>	alAttachFile	= null;												;
+	private static Logger					pLog			= LoggerFactory.getLogger(Email.class);
+	private Properties						pProperties		= null;
+	private String							strEmailFrom	= null;
+	private ArrayList<String>				alTo			= null;
+	private ArrayList<String>				alCC			= null;
+	private ArrayList<String>				alBCC			= null;
+	private String							strSubject		= null;
+	private String							strHtmlMessage	= null;									;
+	private ArrayList<EmailAttachObject>	alAttachFile	= null;									;
 
 	/**
 	 * Fija las porpiedades necesarias para ejecutar el envio. Al menos la configuración debe contener las claves:
@@ -36,7 +36,7 @@ public class Email
 	 * mail.smtp.writetimeout y mail.smtp.from
 	 * 
 	 * @param pProperties
-	 *           Objeto que contiene las propiedades cargadas
+	 *            Objeto que contiene las propiedades cargadas
 	 */
 	public void setConfig(Properties pProperties)
 	{
@@ -57,7 +57,7 @@ public class Email
 	 * Añade un destinatario al correo
 	 * 
 	 * @param strEmailTo
-	 *           dirección a añadir
+	 *            dirección a añadir
 	 */
 	public void addTo(String strEmailTo)
 	{
@@ -70,7 +70,7 @@ public class Email
 	 * Añade varios destinatarios al correo
 	 * 
 	 * @param alEmailTo
-	 *           array con las direcciones a añadir
+	 *            array con las direcciones a añadir
 	 */
 	public void addTo(ArrayList<String> alEmailTo)
 	{
@@ -83,7 +83,7 @@ public class Email
 	 * Añade un destinatario en copia al correo
 	 * 
 	 * @param strEmailCC
-	 *           dirección a añadir
+	 *            dirección a añadir
 	 */
 	public void addCC(String strEmailCC)
 	{
@@ -96,7 +96,7 @@ public class Email
 	 * Añade varios destinatarios en copia al correo
 	 * 
 	 * @param alEmailCC
-	 *           array con las direcciones a añadir
+	 *            array con las direcciones a añadir
 	 */
 	public void addCC(ArrayList<String> alEmailCC)
 	{
@@ -109,7 +109,7 @@ public class Email
 	 * Añade un destinatario en copia oculta al correo
 	 * 
 	 * @param strEmailBCC
-	 *           dirección a añadir
+	 *            dirección a añadir
 	 */
 	public void addBCC(String strEmailBCC)
 	{
@@ -122,7 +122,7 @@ public class Email
 	 * Añade varios destinatarios en copia oculta al correo
 	 * 
 	 * @param alEmailBCC
-	 *           array con las direcciones a añadir
+	 *            array con las direcciones a añadir
 	 */
 	public void addBCC(ArrayList<String> alEmailBCC)
 	{
@@ -135,7 +135,7 @@ public class Email
 	 * Fija el asunto del correo
 	 * 
 	 * @param strSubject
-	 *           Texto con el asunto del correo
+	 *            Texto con el asunto del correo
 	 */
 	public void setSubject(String strSubject)
 	{
@@ -146,7 +146,7 @@ public class Email
 	 * Fija el contenido del cuerpo del mensaje
 	 * 
 	 * @param strHtmlMessage
-	 *           Contenido Html con el cuerpo del mensaje
+	 *            Contenido Html con el cuerpo del mensaje
 	 */
 	public void setBodyContent(String strHtmlMessage)
 	{
@@ -157,11 +157,11 @@ public class Email
 	 * Añade un archivo adjunto al correo
 	 * 
 	 * @param strName
-	 *           Nombre del fichero adjunto
+	 *            Nombre del fichero adjunto
 	 * @param strMimeType
-	 *           MimeType del fichero adjunto
+	 *            MimeType del fichero adjunto
 	 * @param abContent
-	 *           Array de bytes con el contenido
+	 *            Array de bytes con el contenido
 	 */
 	public void AttachedFile(String strName, String strMimeType, byte[] abContent)
 	{
@@ -175,9 +175,9 @@ public class Email
 	 * Añade un archivo adjunto al correo
 	 * 
 	 * @param pEmailAttachObject
-	 *           Objeto que contiene el archivo adjunto
+	 *            Objeto que contiene el archivo adjunto
 	 */
-	public void AttachedFile(EmailAttachObject pEmailAttachObject)
+	public void addAttachedFile(EmailAttachObject pEmailAttachObject)
 	{
 		if (alAttachFile == null)
 			alAttachFile = new ArrayList<EmailAttachObject>();
@@ -188,7 +188,7 @@ public class Email
 	 * Añade archivos adjuntos en bloque
 	 * 
 	 * @param alEmailAttachObject
-	 *           Array con los archivos adjuntos
+	 *            Array con los archivos adjuntos
 	 */
 	public void addAttachedFile(ArrayList<EmailAttachObject> alEmailAttachObject)
 	{
@@ -231,21 +231,21 @@ public class Email
 	 * realiza el envio a bajo nivel del coreo electronico
 	 * 
 	 * @param pConfigProperties
-	 *           Configuración del servicio
+	 *            Configuración del servicio
 	 * @param strEmailFrom
-	 *           Remitente del correo
+	 *            Remitente del correo
 	 * @param alTo
-	 *           Array de direcciones To
+	 *            Array de direcciones To
 	 * @param alCC
-	 *           Array de direcciones en copia
+	 *            Array de direcciones en copia
 	 * @param alBCC
-	 *           Array de direcciones en copia oculta
+	 *            Array de direcciones en copia oculta
 	 * @param strSubject
-	 *           Asunto del correo
+	 *            Asunto del correo
 	 * @param strHtmlMessage
-	 *           Contenido del cuerpo del mensaje
+	 *            Contenido del cuerpo del mensaje
 	 * @param alAttachFile
-	 *           Array de archivos adjuntos
+	 *            Array de archivos adjuntos
 	 * @throws Exception
 	 */
 	private static void sendHtmlEmail(Properties pConfigProperties, String strEmailFrom, ArrayList<String> alTo,
@@ -346,7 +346,7 @@ public class Email
 	 * Carga un objeto propiedades a partir de un fichero de configuración de la propia apliacaciín
 	 * 
 	 * @param strFileName
-	 *           Nombre del fichero
+	 *            Nombre del fichero
 	 * @return Objeto con las propiedades
 	 * @throws IOException
 	 */

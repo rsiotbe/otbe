@@ -1,6 +1,5 @@
 package com.rsi.rvia.rest.endpoint.simulators;
 
-import java.io.ByteArrayOutputStream;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,40 +18,35 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
-import com.rsi.rvia.rest.tool.Utils;
 
 @Path("/simuladores")
 public class Common
 {
-	private static final String	MEDIATYPE_PDF		= "application/pdf";
-	private static final String	PDF_RENDERER_URL	= "http://docrender.risa/docrender/rest/render/download/pdf/";
-	private static Logger			pLog					= LoggerFactory.getLogger(Common.class);
+	private static final String	MEDIATYPE_PDF	= "application/pdf";
+	// private static final String MEDIATYPE_PDF = "application/vnd.ms.excel";
+	private static Logger		pLog			= LoggerFactory.getLogger(Common.class);
 
 	@POST
 	@Path("/pdf")
 	@Produces(MEDIATYPE_PDF)
 	@Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
 			"application/x-ms-application" })
-	public Response getSimulatorPdfPrinter(@Context HttpServletRequest pRequest, @Context HttpServletResponse pResponse,
-			@Context UriInfo pUriInfo, @FormParam("data") String data) throws Exception
+	public Response getSimulatorPdfPrinter(@Context HttpServletRequest pRequest,
+			@Context HttpServletResponse pResponse, @Context UriInfo pUriInfo, @FormParam("data") String data)
+			throws Exception
 	{
 		String strJsonData;
 		Response pResponsePdfGeneration;
-		String strPdfId;
-		ByteArrayOutputStream pPdfStream;
 		pLog.info("Entra una petición para generar PDF con los datos de simmulación");
 		strJsonData = URLDecoder.decode(data, "UTF-8");
 		pResponsePdfGeneration = OperationManager.processGenericAPP(pRequest, pUriInfo, strJsonData, MediaType.APPLICATION_JSON_TYPE);
-		strPdfId = (new JSONObject(pResponsePdfGeneration.getEntity().toString())).getJSONObject("response").getJSONObject("data").getString("id");
-		pLog.info("Se recibe una petición de descarga PDF con ID " + strPdfId);
-		pPdfStream = Utils.getFileFromUrl(PDF_RENDERER_URL + strPdfId);
-		pResponse.setHeader("Content-Type", MEDIATYPE_PDF);
-		pResponse.setHeader("Content-Disposition", "attachment; filename=\""
-				+ new SimpleDateFormat("'simulacion_'yyyyMMddHHmm'.pdf'\"").format(new Date()));
-		pResponse.setHeader("Content-Length", Integer.toString(pPdfStream.size()));
-		pResponse.getOutputStream().write(pPdfStream.toByteArray());
-		pResponse.getOutputStream().close();
-		return Response.ok().build();
+		String strPdfBase64 = (new JSONObject(pResponsePdfGeneration.getEntity().toString())).getJSONObject("response").getJSONObject("data").getString("file");
+		byte[] abFile = org.apache.commons.codec.binary.Base64.decodeBase64(strPdfBase64.getBytes());
+		SimpleDateFormat pSdf = new SimpleDateFormat("yyyyMMddHHmm");
+		String strDate = pSdf.format(new Date());
+		String strFileName = "simulacion_" + strDate + ".pdf";
+		String strHeaderDownload = "attachment; filename=\"" + strFileName + "\"";
+		return Response.ok(abFile, MEDIATYPE_PDF).header("Content-Disposition", strHeaderDownload).build();
 	}
 
 	@POST

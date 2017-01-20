@@ -240,7 +240,7 @@ public class Utils
 	 * Devuelve un Map con los parametros del path (key -> value)
 	 * 
 	 * @param pUriInfo
-	 *           UriInfo con la información de path
+	 *            UriInfo con la información de path
 	 * @return MultivaluedMap con el key y el valor de cada elemento del path dinámico
 	 */
 	public static MultivaluedMap<String, String> getParamByPath(UriInfo pUriInfo)
@@ -253,7 +253,7 @@ public class Utils
 	 * Devuelve un Map con los parametros del QueryString (key -> value)
 	 * 
 	 * @param pUriInfo
-	 *           UriInfo con la información de path
+	 *            UriInfo con la información de path
 	 * @return MultivaluedMap con el key y el valor de cada elemento del path dinámico
 	 */
 	public static MultivaluedMap<String, String> queryStringToMultivaluedMap(UriInfo pUriInfo)
@@ -266,7 +266,7 @@ public class Utils
 	 * Convierte un MultivaluedMap a un queryString.
 	 * 
 	 * @param pMap
-	 *           MultivaluedMap a convertir
+	 *            MultivaluedMap a convertir
 	 * @return String en formato queryString del tipo "&key=value"
 	 * @throws UnsupportedEncodingException
 	 */
@@ -331,7 +331,7 @@ public class Utils
 	 * xhtml.
 	 * 
 	 * @param is
-	 *           InputStream del recurso
+	 *            InputStream del recurso
 	 * @return String con del recurso
 	 * @throws Exception
 	 */
@@ -374,7 +374,7 @@ public class Utils
 	 * Obtiene la cadena que contiene el stacktrace de una excepción
 	 * 
 	 * @param ex
-	 *           Excepcion a escribir
+	 *            Excepcion a escribir
 	 * @return Cadena que contiene la pila
 	 */
 	public static String getExceptionStackTrace(Exception ex)
@@ -410,7 +410,7 @@ public class Utils
 	 * Devuelve un string con los datos de un hastable en formato cadena
 	 * 
 	 * @param pHashtable
-	 *           Hashtable con los datos
+	 *            Hashtable con los datos
 	 * @return
 	 */
 	public static String hastablePrettyPrintHtml(Hashtable<?, ?> pHashtable)
@@ -436,7 +436,7 @@ public class Utils
 	 * Obtiene el flujo de bytes de un fichero existente en una URL
 	 * 
 	 * @param strFileUrl
-	 *           Url al fichero
+	 *            Url al fichero
 	 * @return Objeto que contiene los bytes del fichero leido
 	 * @throws MalformedURLException
 	 * @throws IOException
@@ -493,7 +493,7 @@ public class Utils
 	 * Recibe un objeto y devuelve si es o no una coleccion iterable
 	 * 
 	 * @param obj
-	 *           Objeto del que se quiere saber si es una coleccion iterable
+	 *            Objeto del que se quiere saber si es una coleccion iterable
 	 * @return boolean con el resultado de la comparación
 	 */
 	public static boolean isArrayObject(Object obj)
@@ -515,7 +515,7 @@ public class Utils
 	 * los guarda dentro de la estructura como "key" - "Json con el interior del hashtable"
 	 * 
 	 * @param oObject
-	 *           Objeto para poder hacer llamadas recursivas.
+	 *            Objeto para poder hacer llamadas recursivas.
 	 * @return Texto json generado
 	 */
 	public static String objectToJson(Object oObject)
@@ -583,5 +583,17 @@ public class Utils
 	public static String replaceIlegalCharactersInJSON(String strInput)
 	{
 		return strInput.replaceAll("\"", "\\\"").replaceAll("\n", " ").replaceAll("\t", " ").replaceAll("\r", "");
+	}
+
+	public static String generateWSResponseJsonError(String strServiceName, int strErrorCode, String strErrorTxt)
+	{
+		return "{" + "\"" + strServiceName + "\": { \"codigoRetorno\": \"0\", \"Errores\": { \"codigoMostrar\": \""
+				+ strErrorCode + "\",\"mensajeMostrar\": \"" + strErrorTxt
+				+ "\",\"solucion\":\"REVISE LA ESPECIFICACION DEL SERVICIO\"}}}}";
+	}
+
+	public static String generateWSResponseJsonOk(String strServiceName, String strData)
+	{
+		return "{" + "\"" + strServiceName + "\": { \"codigoRetorno\": \"1\", \"Respuesta\": " + strData + "}}";
 	}
 }

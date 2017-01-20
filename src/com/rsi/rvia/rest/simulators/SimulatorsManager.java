@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +26,10 @@ public class SimulatorsManager
 	 * Obtiene la información de simuladores de la entidad
 	 * 
 	 * @param strSimulatorName
-	 *           Nombre del simulador especifico que se quiere recuperar, si se pasa null se obtienen todos los
-	 *           disponibles para la entidad
+	 *            Nombre del simulador especifico que se quiere recuperar, si se pasa null se obtienen todos los
+	 *            disponibles para la entidad
 	 * @param strNRBE
-	 *           Codigo de entidad con 4 digitos
+	 *            Codigo de entidad con 4 digitos
 	 * @return Datos de la configuración
 	 * @throws Exception
 	 */
@@ -80,7 +82,8 @@ public class SimulatorsManager
 						+ ", no coincide con un tipo de simulador");
 			}
 			strQuery += "and s.CATEGORIA" + (pSimulatorType.equals(SimulatorType.MORTGAGE) ? "=" : "!=") + "? ";
-			if (strSimulatorName != null && !strSimulatorName.trim().isEmpty() && !"null".equals(strSimulatorName.trim()))
+			if (strSimulatorName != null && !strSimulatorName.trim().isEmpty()
+					&& !"null".equals(strSimulatorName.trim()))
 			{
 				strQuery += "and s.NOMBRE_SIMPLE = ? ";
 			}
@@ -95,7 +98,8 @@ public class SimulatorsManager
 			pPreparedStatement.setString(4, strLanguage);
 			pPreparedStatement.setString(5, strNRBE);
 			pPreparedStatement.setString(6, Constants.SimulatorMortgageCategory.HIPOTECA.name());
-			if (strSimulatorName != null && !strSimulatorName.trim().isEmpty() && !"null".equals(strSimulatorName.trim()))
+			if (strSimulatorName != null && !strSimulatorName.trim().isEmpty()
+					&& !"null".equals(strSimulatorName.trim()))
 			{
 				pPreparedStatement.setString(7, strSimulatorName);
 			}
@@ -110,8 +114,8 @@ public class SimulatorsManager
 				{
 					nSimulatorIdRef = nSimulatorId;
 					/*
-					 * si el obtejo simulador esta vacio siginifa que el la primera iteración, si no lo esta es un objeto
-					 * anterior y es necsario guardarlo en el arraylist de resultado
+					 * si el obtejo simulador esta vacio siginifa que el la primera iteración, si no lo esta es un
+					 * objeto anterior y es necsario guardarlo en el arraylist de resultado
 					 */
 					if (pSimulatorObject != null)
 					{
@@ -155,7 +159,7 @@ public class SimulatorsManager
 		return alReturn;
 	}
 
-	public static SimulatorEmailConfig getSimulatorEmailConfig(int nSimulatorId, String strLanguage) throws Exception
+	public static SimulatorEmailConfig getSimulatorEmailConfig(int nSimulatorId, String strNRBE) throws Exception
 	{
 		SimulatorEmailConfig pReturn = null;
 		Connection pConnection = null;
@@ -163,6 +167,11 @@ public class SimulatorsManager
 		ResultSet pResultSet = null;
 		String strQuery;
 		String strClave;
+		int nId = -1;
+		String strNRBEName = null;
+		String strSimpleName = null;
+		String strComercialName = null;
+		String strOfficeTo = null;
 		String strOfficeTemplate = null;
 		String strOfficeSubject = null;
 		String strOfficeFrom = null;
@@ -171,35 +180,46 @@ public class SimulatorsManager
 		String strCustomerFrom = null;
 		try
 		{
-			strQuery = "select e.id_simulador, e.clave, e.valor, " + "from BDPTB235_SIMULADORES s, "
-					+ "BDPTB273_SIMULADORES_EMAIL e" + "where s.id_simulador=e.id_simulador " + "and s.id_simulador = ?";
+			strQuery = "select s.*, o.NOM_ENT_TXT, e.clave, e.valor  "
+					+ "from BDPTB235_SIMULADORES s, BELTS002 o, BDPTB273_SIMULADORES_EMAIL e "
+					+ "where s.ENTIDAD = o.NRBE and s.id_simulador=e.id_simulador and s.id_simulador = ? and s.ENTIDAD=?";
 			/* se rellena la query con los datos */
 			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 			pPreparedStatement = pConnection.prepareStatement(strQuery);
-			pPreparedStatement.setString(1, strLanguage);
-			pPreparedStatement.setInt(2, nSimulatorId);
+			pPreparedStatement.setInt(1, nSimulatorId);
+			pPreparedStatement.setString(2, strNRBE);
 			pResultSet = pPreparedStatement.executeQuery();
 			while (pResultSet.next())
 			{
+				if (nId == -1)
+					nId = pResultSet.getInt("ID_SIMULADOR");
+				if (strNRBEName == null)
+					strNRBEName = pResultSet.getString("NOM_ENT_TXT");
+				if (strSimpleName == null)
+					strSimpleName = pResultSet.getString("NOMBRE_SIMPLE");
+				if (strComercialName == null)
+					strComercialName = pResultSet.getString("NOMBRE_COMERCIAL");
+				if (strOfficeTo == null)
+					strOfficeTo = pResultSet.getString("entidad_email_contacto");
 				strClave = pResultSet.getString("CLAVE");
 				switch (strClave)
 				{
-					case Constants.SIMULADOR_EMAIL_OFFICE_TEMPLATE:
+					case Constants.SIMULADOR_EMAIL_CONFIG_OFFICE_TEMPLATE:
 						strOfficeTemplate = pResultSet.getString("VALOR");
 						break;
-					case Constants.SIMULADOR_EMAIL_OFFICE_SUBJECT:
+					case Constants.SIMULADOR_EMAIL_CONFIG_OFFICE_SUBJECT:
 						strOfficeSubject = pResultSet.getString("VALOR");
 						break;
-					case Constants.SIMULADOR_EMAIL_OFFICE_FROM:
+					case Constants.SIMULADOR_EMAIL_CONFIG_OFFICE_FROM:
 						strOfficeFrom = pResultSet.getString("VALOR");
 						break;
-					case Constants.SIMULADOR_EMAIL_CUSTOMER_TEMPLATE:
+					case Constants.SIMULADOR_EMAIL_CONFIG_CUSTOMER_TEMPLATE:
 						strCustomerTemplate = pResultSet.getString("VALOR");
 						break;
-					case Constants.SIMULADOR_EMAIL_CUSTOMER_SUBJECT:
+					case Constants.SIMULADOR_EMAIL_CONFIG_CUSTOMER_SUBJECT:
 						strCustomerSubject = pResultSet.getString("VALOR");
 						break;
-					case Constants.SIMULADOR_EMAIL_CUSTOMER_FROM:
+					case Constants.SIMULADOR_EMAIL_CONFIG_CUSTOMER_FROM:
 						strCustomerFrom = pResultSet.getString("VALOR");
 						break;
 					default:
@@ -207,8 +227,13 @@ public class SimulatorsManager
 								+ strClave);
 						break;
 				}
-				pReturn = new SimulatorEmailConfig(nSimulatorId, strOfficeTemplate, strOfficeSubject, strOfficeFrom, strCustomerTemplate, strCustomerSubject, strCustomerFrom);
 			}
+			pReturn = new SimulatorEmailConfig(nId, strNRBE, strNRBEName, strSimpleName, strComercialName, strOfficeTo, strOfficeTemplate, strOfficeSubject, strOfficeFrom, strCustomerTemplate, strCustomerSubject, strCustomerFrom);
+			/*
+			 * if (pReturn == null) throw new
+			 * Exception("No se ha encontrado una configuración valida para el simulador con id " + nSimulatorId +
+			 * " y la entidad " + strNRBE);
+			 */
 		}
 		catch (Exception ex)
 		{
@@ -226,7 +251,7 @@ public class SimulatorsManager
 	 * Obtiene el código de entidad a partir de su nombre comercial
 	 * 
 	 * @param strNRBEName
-	 *           Nombre comercial de la entidad
+	 *            Nombre comercial de la entidad
 	 * @return Numero NRBE de la entidad
 	 * @throws Exception
 	 */
@@ -264,39 +289,6 @@ public class SimulatorsManager
 		return strReturn;
 	}
 
-	public static String getEmailToOffice(String strNRBE, String strComercialName) throws Exception
-	{
-		String strReturn = null;
-		String strQuery;
-		Connection pConnection = null;
-		PreparedStatement pPreparedStatement = null;
-		ResultSet pResultSet = null;
-		try
-		{
-			strQuery = "select ENTIDAD_EMAIL_CONTACTO from BDPTB235_SIMULADORES where entidad = ? and NOMBRE_COMERCIAL=?";
-			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-			pPreparedStatement = pConnection.prepareStatement(strQuery);
-			pPreparedStatement.setString(1, strNRBE);
-			pPreparedStatement.setString(2, strComercialName);
-			pResultSet = pPreparedStatement.executeQuery();
-			/* Recupera el valor del campo */
-			while (pResultSet.next())
-			{
-				strReturn = pResultSet.getString("ENTIDAD_EMAIL_CONTACTO");
-			}
-		}
-		catch (Exception ex)
-		{
-			pLog.error("Error al obtener el email a donde enviar los datos de contacto del simulador. ERROR:" + ex);
-			throw ex;
-		}
-		finally
-		{
-			DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
-		}
-		return strReturn;
-	}
-
 	public static String getEmailTemplate(String strTemplate) throws Exception
 	{
 		String strReturn;
@@ -308,5 +300,18 @@ public class SimulatorsManager
 		strReturn = Utils.getStringFromInputStream(pInputStream);
 		strReturn = strReturn.replace("", "");
 		return strReturn;
+	}
+
+	public static String proccessEmailTemplate(String strTemplate, Hashtable<String, String> htKeyValues)
+	{
+		String strRetun = strTemplate;
+		Enumeration<String> pEnumKeyValues = htKeyValues.keys();
+		while (pEnumKeyValues.hasMoreElements())
+		{
+			String strHtKey = (String) pEnumKeyValues.nextElement();
+			String strHtValue = (String) htKeyValues.get(strHtKey);
+			strRetun = strRetun.replaceAll("<%" + strHtKey + "%>", strHtValue.replaceAll("\n", "<br/>"));
+		}
+		return strRetun;
 	}
 }

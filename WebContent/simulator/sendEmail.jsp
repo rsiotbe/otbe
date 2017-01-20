@@ -1,3 +1,5 @@
+<%@page import="java.util.Hashtable"%>
+<%@page import="com.rsi.rvia.rest.simulators.SimulatorEmailConfig"%>
 <%@page import="java.net.HttpURLConnection"%>
 <%@page import="java.net.URLConnection"%>
 <%@page import="java.sql.Connection"%>
@@ -26,10 +28,8 @@
 
 
 <%
-	String 	PDF_RENDERER_ENDPOINT = "http://docrender.risa/docrender/rest/render/generate/pdf";
-	String	PDF_RENDERER_DOWNLOAD = "http://docrender.risa/docrender/rest/render/download/pdf/";
-	
 	Logger pLog = LoggerFactory.getLogger("sendEmail.jsp");
+	String strReturn;
 	
 	/* Se recuperan los parametros de entrada*/
 	JSONObject pJson = new JSONObject();
@@ -39,7 +39,6 @@
     String strNRBE;
     String strNRBEName;
     String strSimulatorType;
-    String strSimulatorName;
     String strLanguage;
     String strPdfConfig;
     String strEmailTemplate;
@@ -51,97 +50,124 @@
     String strNif;
     String strEmailFrom;
     String strHtmlTemplate;
-    
-    /* si no se detecta como parámetro el codigo de entidad se entiende que se está enviadno como JSON la información*/
-    if (request.getParameter(Constants.SIMULADOR_NRBE) == null)
+    try
     {
-   	 	/* si la petición viene en formato JSON */
-        StringBuffer jb = new StringBuffer();
-        String line = null;
-        try
-        {
-            BufferedReader reader = request.getReader();
-            while ((line = reader.readLine()) != null)
-                jb.append(line);
-        }
-        catch (Exception e)
-        {
-      	  pLog.error("Error al procesar los datos JSON recibidos", e);
-        }
-        JSONObject jsonObject = new JSONObject(jb.toString());
-        nSimulatorId  = jsonObject.optInt(Constants.SIMULADOR_ID);
-        strNRBE = jsonObject.optString(Constants.SIMULADOR_NRBE);
-        strNRBEName = jsonObject.optString(Constants.SIMULADOR_NRBE_NAME);
-        strSimulatorType = jsonObject.optString(Constants.SIMULADOR_TYPE);
-        strSimulatorName = jsonObject.optString(Constants.SIMULADOR_SIMPLE_NAME);
-        strLanguage = jsonObject.optString(Constants.SIMULADOR_LANGUAGE);
-        strPdfConfig = jsonObject.optString(Constants.SIMULADOR_EMAIL_PDF_CONF);
-        strEmailTemplate = jsonObject.optString(Constants.SIMULADOR_EMAIL_TEMPLATE);
-        strEmailUserName = jsonObject.optString(Constants.SIMULADOR_EMAIL_USER_NAME);
-        strEmailMail = jsonObject.optString(Constants.SIMULADOR_EMAIL_USER_EMAIL);
-        strEmailTelephone = jsonObject.optString(Constants.SIMULADOR_EMAIL_USER_TELEFONO);
-        strEmailComment = jsonObject.optString(Constants.SIMULADOR_EMAIL_USER_COMMENT);
-        fIsCustomer = jsonObject.optBoolean(Constants.SIMULADOR_EMAIL_IS_CUSTOMER);
-        strNif = jsonObject.optString(Constants.SIMULADOR_EMAIL_USER_NIF);
+	    /* si no se detecta como parámetro el codigo de entidad se entiende que se está enviadno como JSON la información*/
+	    if (request.getParameter(Constants.SIMULADOR_NRBE) == null)
+	    {
+	   	 	/* si la petición viene en formato JSON */
+	        StringBuffer jb = new StringBuffer();
+	        String line = null;
+	        try
+	        {
+	        	request.setCharacterEncoding("UTF-8");
+	            BufferedReader reader = request.getReader();
+	            while ((line = reader.readLine()) != null)
+	                jb.append(line);
+	        }
+	        catch (Exception e)
+	        {
+	      	  pLog.error("Error al procesar los datos JSON recibidos", e);
+	        }
+	        JSONObject jsonObject = new JSONObject(jb.toString());
+	        nSimulatorId  = jsonObject.optInt(Constants.SIMULADOR_ID);
+	        strNRBE = jsonObject.optString(Constants.SIMULADOR_NRBE);
+	        strLanguage = jsonObject.optString(Constants.SIMULADOR_LANGUAGE);
+	        strPdfConfig = jsonObject.optString(Constants.SIMULADOR_PDF_CONF);
+	        strEmailUserName = jsonObject.optString(Constants.SIMULADOR_EMAIL_USER_NAME);
+	        strEmailMail = jsonObject.optString(Constants.SIMULADOR_EMAIL_USER_EMAIL);
+	        strEmailTelephone = jsonObject.optString(Constants.SIMULADOR_EMAIL_USER_TELEFONO);
+	        strEmailComment = jsonObject.optString(Constants.SIMULADOR_EMAIL_USER_COMMENT);
+	        fIsCustomer = jsonObject.optBoolean(Constants.SIMULADOR_EMAIL_USER_IS_CUSTOMER);
+	        strNif = jsonObject.optString(Constants.SIMULADOR_EMAIL_USER_NIF);
+	    }
+	    else
+	    {
+	        /* Se recuperan los parámetros de entrada si el conetindo no es JSON*/
+	        nSimulatorId  = Integer.parseInt(request.getParameter(Constants.SIMULADOR_ID));
+	        strNRBE = (String) request.getParameter(Constants.SIMULADOR_NRBE);
+	        strLanguage = (String) request.getParameter(Constants.SIMULADOR_LANGUAGE);
+	        strPdfConfig = (String) request.getParameter(Constants.SIMULADOR_PDF_CONF);
+	        strEmailUserName = (String) request.getParameter(Constants.SIMULADOR_EMAIL_USER_NAME);
+	        strEmailMail = (String) request.getParameter(Constants.SIMULADOR_EMAIL_USER_EMAIL);
+	        strEmailTelephone = (String) request.getParameter(Constants.SIMULADOR_EMAIL_USER_TELEFONO);
+	        strEmailComment = (String) request.getParameter(Constants.SIMULADOR_EMAIL_USER_COMMENT);
+	        fIsCustomer = Boolean.parseBoolean(request.getParameter(Constants.SIMULADOR_EMAIL_USER_IS_CUSTOMER));
+	        strNif = (String) request.getParameter(Constants.SIMULADOR_EMAIL_USER_NIF);        
+	    }	
+		
+		pLog.info("Se recupera la configuración que le llega al jsp: \n" +
+				"SimulatorId:    " + nSimulatorId +"\n" +	
+				"NRBE:           " + strNRBE +"\n" +		
+				"Language:       " + strLanguage +"\n" +	
+				"PdfConfig: 	 " + strPdfConfig +"\n" +
+				"EmailUserName:  " + strEmailUserName +"\n" +	
+				"EmailMail:      " + strEmailMail +"\n" +	
+				"EmailTelephone: " + strEmailTelephone +"\n" +	
+				"EmailComment:   " + strEmailComment +"\n" +	
+				"IsCustomer:     " + fIsCustomer +"\n" +	
+				"Nif:            " + strNif +"");
+	
+		/* se genera el pdf */
+	 	/* Se cargan las propiedades del servicio */
+		Properties pPdfProperties = new Properties();
+		pPdfProperties.load(Email.class.getResourceAsStream("/simulator.pdf.properties"));
+			
+	  	pLog.info("Se procede a llamar al servicio de generación de pdf (" + (String)pPdfProperties.get("SERVICE_GENERATE") + ")con los datos: " + strPdfConfig);
+		Client pClient = RviaRestHttpClient.getClient ();
+	    WebTarget pTarget = pClient.target((String)pPdfProperties.get("SERVICE_GENERATE"));
+	  	Response pReturnPdf = pTarget.request().post(Entity.json(strPdfConfig));
+	  	String strResponseData = pReturnPdf.readEntity(String.class);
+	  	pLog.info("Respuesta del servicio: " + strResponseData);
+	  	JSONObject pResponse = (new JSONObject(strResponseData)).getJSONObject("DOC_RENDER");
+	  	/* s ecomprueba si ha devuelto error */
+	  	if("0".equals(pResponse.getString("codigoRetorno")))
+	  	{
+	  		pLog.error("El servicio de generación de PDF ha devuelto un error");
+	  		throw new Exception("Error en la respuesta del servicio pdf");
+	  	}
+		String strPdfId = pResponse.getJSONObject("Respuesta").getString("id");
+		pLog.info("Se recibe una petición de descarga PDF con ID " + strPdfId);
+		
+		/* se descarga el pdf */
+		String strUrlDownload = (String)pPdfProperties.get("SERVICE_DOWNLOAD") + strPdfId;
+		ByteArrayOutputStream pPdfStream = Utils.getFileFromUrl(strUrlDownload);		
+		
+		/* se obtiene la configuracion de envio del email */
+		SimulatorEmailConfig pSimulatorEmailConfig =  SimulatorsManager.getSimulatorEmailConfig(nSimulatorId, strNRBE);
+		/* se lee la configuración del servidor de envio de email */
+		Properties pEmailProterties = Email.loadProperties("simulator.email.properties");	
+		/* se envia el email a la sucursal*/
+		Email pEmail = new Email();
+		pEmail.setConfig(pEmailProterties);
+		pEmail.setFrom(pSimulatorEmailConfig.getOfficeFrom());
+		pEmail.addTo(pSimulatorEmailConfig.getOfficeTo());
+		pEmail.setSubject(pSimulatorEmailConfig.getOfficeSubject());
+		
+		/* se lee la platinlla y se remplazan los valores */
+		String strOfficeTemplate = pSimulatorEmailConfig.getOfficeTemplate();
+		String strHtmlOfficeTemplate = SimulatorsManager.getEmailTemplate(strOfficeTemplate);
+		/* se cra un hashtable donde se meten losd atos que se van a substituir en la plantilla */
+		Hashtable<String, String> htEmailTemplateData = new Hashtable<String, String>();
+	
+		htEmailTemplateData.put("NRBEName",pSimulatorEmailConfig.getNRBEName());
+		htEmailTemplateData.put("ComercialName",pSimulatorEmailConfig.getComercialName());
+		htEmailTemplateData.put("EmailUserName",strEmailUserName);
+		htEmailTemplateData.put("EmailMail",strEmailMail);
+		htEmailTemplateData.put("EmailTelephone",strEmailTelephone);
+		htEmailTemplateData.put("EmailComment",strEmailComment);
+		htEmailTemplateData.put("IsCustomer",String.valueOf(fIsCustomer));
+		htEmailTemplateData.put("Nif",strNif);
+	
+		String strFinalHtml = SimulatorsManager.proccessEmailTemplate(strHtmlOfficeTemplate, htEmailTemplateData);	 
+		pEmail.setBodyContent(strFinalHtml);
+		pEmail.addAttachedFile(new EmailAttachObject("solicitud.pdf", "application/pdf", pPdfStream.toByteArray()) );
+		pEmail.send();	
+		strReturn = Utils.generateWSResponseJsonOk("sendMail", "{\"status\":\"OK\"}");
     }
-    else
+    catch (Exception ex)
     {
-        /* Se recuperan los parametros de entrada si el conetindo no es JSON*/
-        nSimulatorId  = Integer.parseInt(request.getParameter(Constants.SIMULADOR_ID));
-        strNRBE = (String) request.getParameter(Constants.SIMULADOR_NRBE);
-        strNRBEName = (String) request.getParameter(Constants.SIMULADOR_NRBE_NAME);
-        strSimulatorType = (String) request.getParameter(Constants.SIMULADOR_TYPE);
-        strSimulatorName = (String) request.getParameter(Constants.SIMULADOR_SIMPLE_NAME);
-        strLanguage = (String) request.getParameter(Constants.SIMULADOR_LANGUAGE);
-        strPdfConfig = (String) request.getParameter(Constants.SIMULADOR_EMAIL_PDF_CONF);
-        strEmailTemplate = (String) request.getParameter(Constants.SIMULADOR_EMAIL_TEMPLATE);
-        strEmailUserName = (String) request.getParameter(Constants.SIMULADOR_EMAIL_USER_NAME);
-        strEmailMail = (String) request.getParameter(Constants.SIMULADOR_EMAIL_USER_EMAIL);
-        strEmailTelephone = (String) request.getParameter(Constants.SIMULADOR_EMAIL_USER_TELEFONO);
-        strEmailComment = (String) request.getParameter(Constants.SIMULADOR_EMAIL_USER_COMMENT);
-        fIsCustomer = Boolean.parseBoolean(request.getParameter(Constants.SIMULADOR_EMAIL_IS_CUSTOMER));
-        strNif = (String) request.getParameter(Constants.SIMULADOR_EMAIL_USER_NIF);        
-    }	
-	
-	pLog.info("Se recupera la configuración que le llega al jsp: \n" +
-			"nSimulatorId:      " + nSimulatorId +"\n" +	
-			"strNRBE:           " + strNRBE +"\n" +	
-			"strNRBEName:       " + strNRBEName +"\n" +			
-			"strSimulatorType:  " + strSimulatorType +"\n" +		
-			"strSimulatorName:  " + strSimulatorName +"\n" + 		
-			"strLanguage:       " + strLanguage +"\n" +	
-			"strPdfConfig: 	    " + strPdfConfig +"\n" +
-			"strEmailTemplate:  " + strEmailTemplate +"\n" +	
-			"strEmailUserName:  " + strEmailUserName +"\n" +	
-			"strEmailMail:      " + strEmailMail +"\n" +	
-			"strEmailTelephone: " + strEmailTelephone +"\n" +	
-			"strEmailComment:   " + strEmailComment +"\n" +	
-			"fIsCustomer:       " + fIsCustomer +"\n" +	
-			"strNif:            " + strNif +"");
-
-	/* se genera el pdf */
-  	pLog.info("Se procede a llamar al servicio de generación de pdf con los datos: " + strPdfConfig);
-	Client pClient = RviaRestHttpClient.getClient ();
-    WebTarget pTarget = pClient.target(PDF_RENDERER_ENDPOINT);
-  	Response pReturnPdf = pTarget.request().post(Entity.json(strPdfConfig));
-  	pLog.info("Respose POST: " + pReturnPdf.toString());
-	String strPdfId = (new JSONObject(pReturnPdf.getEntity().toString())).getJSONObject("response").getJSONObject("data").getString("id");
-	pLog.info("Se recibe una petición de descarga PDF con ID " + strPdfId);
-	ByteArrayOutputStream pPdfStream = Utils.getFileFromUrl(PDF_RENDERER_DOWNLOAD + strPdfId);		
-	/* se obtiene la configuración de BBDD para el simulador solicitado */
-	strEmailFrom = SimulatorsManager.getEmailToOffice(strNRBE, strSimulatorName);	
-	/* se obtiene el template del email */
-	strHtmlTemplate = SimulatorsManager.getEmailTemplate("//simuladores//plantillaEmail.html");
-	/* se lee la configuración de envio de email */
-	Properties pEmailProterties = Email.loadProperties("simulator.email.properties");	
-	/* se envia el email */
-	Email pEmail = new Email();
-	pEmail.setConfig(pEmailProterties);
-	pEmail.setFrom(strEmailFrom);
-	pEmail.addTo(strEmailMail);
-	pEmail.setSubject("Pruebas simuladores");
-	pEmail.setBodyContent(strHtmlTemplate);
-	pEmail.send();	
-	
-%>
-{}
+  	  pLog.error("Error al procesar la petición de PDF", ex);
+		strReturn = Utils.generateWSResponseJsonError("sendMail", 99999, ex.toString());
+    }
+%><%=strReturn%>
