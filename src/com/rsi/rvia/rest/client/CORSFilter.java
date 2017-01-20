@@ -8,7 +8,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.rsi.Constantes;
+import com.rsi.Constants;
 import com.rsi.rvia.rest.tool.AppConfigurationFactory;
 
 @Provider
@@ -23,7 +23,7 @@ public class CORSFilter implements ContainerResponseFilter
         try
         {
             properties = AppConfigurationFactory.getConfiguration();
-            if (!properties.getProperty(Constantes.ENVIRONMENT).equals(Constantes.Environment.PROD.name()))
+            if (!properties.getProperty(Constants.ENVIRONMENT).equals(Constants.Environment.PROD.name()))
             {
                 MultivaluedMap<String, Object> headers = responseContext.getHeaders();
                 headers.add("Access-Control-Allow-Origin", "*");
