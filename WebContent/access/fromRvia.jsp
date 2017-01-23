@@ -28,7 +28,7 @@
 </head>
 <%
 	Logger pLog = LoggerFactory.getLogger("fromRvia.jsp");
-	String URL_SERVER_2_LOCAL = "/api/static/mock/localhostRedirect.json";
+	String URL_SERVER_2_LOCAL = "http://lnxntf05:8008/api/static/mock/localhostRedirect.json";
 
 	MiqQuests pMiqQuests = null;
 	String strPathRest = null;
@@ -116,6 +116,7 @@
         pRequestConfigRvia = new RequestConfigRvia(request); 
         strUserIp = pRequestConfigRvia.getIp();
     	pLog.info("Ip del usuario: " + strUserIp);
+    	pLog.info("Se contrasta la IP con la gonfiguración leida en: " + URL_SERVER_2_LOCAL);
       	pHttpPost = new HttpPost(URL_SERVER_2_LOCAL);
      	pHttpClient = HttpClientBuilder.create().build();
      	pHttpResponse = pHttpClient.execute(pHttpPost);

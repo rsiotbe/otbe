@@ -29,7 +29,7 @@ public class RequestConfigRvia extends RequestConfig
     private static enum TokenKey
     {
         NODE("node"), RVIASESION("RVIASESION"), ISUMUSERPROFILE("isumUserProfile"), ISUMSERVICEID("isumServiceId"), LANG(
-                "lang"), NRBE("NRBE"), CANALAIX("canalAix"), CANAL("canal"), IP("IP");
+                "lang"), NRBE("NRBE"), CANALAIX("canalAix"), CANAL("canal"), IP("ip");
         private String value;
 
         private TokenKey(String newValue)
