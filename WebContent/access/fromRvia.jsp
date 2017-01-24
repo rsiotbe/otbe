@@ -112,33 +112,42 @@
         HttpClient pHttpClient;
         HttpResponse pHttpResponse;
         HttpEntity pHttpEntity; 
+        String strContent = null;
         
-        pRequestConfigRvia = new RequestConfigRvia(request); 
-        strUserIp = pRequestConfigRvia.getIp();
-    	pLog.info("Ip del usuario: " + strUserIp);
-    	pLog.info("Se contrasta la IP con la gonfiguración leida en: " + URL_SERVER_2_LOCAL);
-      	pHttpPost = new HttpPost(URL_SERVER_2_LOCAL);
-     	pHttpClient = HttpClientBuilder.create().build();
-     	pHttpResponse = pHttpClient.execute(pHttpPost);
-     	pHttpEntity = pHttpResponse.getEntity();         
-        if (pHttpEntity != null)
+        try
         {
-            pConfig = new JSONObject(EntityUtils.toString(pHttpEntity));
-        	pLog.info("Configuración leida:" + pConfig.toString());
-
+	        pRequestConfigRvia = new RequestConfigRvia(request); 
+	        strUserIp = pRequestConfigRvia.getIp();
+	    	pLog.info("Ip del usuario: " + strUserIp);
+	    	pLog.info("Se contrasta la IP con la configuración leida en: " + URL_SERVER_2_LOCAL);
+	      	pHttpPost = new HttpPost(URL_SERVER_2_LOCAL);
+	     	pHttpClient = HttpClientBuilder.create().build();
+	     	pHttpResponse = pHttpClient.execute(pHttpPost);
+	     	pHttpEntity = pHttpResponse.getEntity();        
+	     	strContent = EntityUtils.toString(pHttpEntity);
+	        pConfig = new JSONObject(strContent);
+	       	pLog.info("Configuración leida:" + pConfig.toString());
             JSONArray aIps = pConfig.getJSONArray("ips");
             for (int i =0; i < aIps.length();i++)
             {
-                JSONObject pItem = (JSONObject)aIps.get(i);
-                String strIp = pItem.getString("ip");
-                if(strIp.equals(strUserIp))
-                {
-                    strHost = pItem.getString("redirect");
-                	pLog.info("Se detecta la configuración de redirección y se redige la peteción a: " + strHost + "/api/rest" + strPathRest);
-                    break;
-                }               
-            }
-        }                
+               JSONObject pItem = (JSONObject)aIps.get(i);
+               String strIp = pItem.getString("ip");
+               if(strIp.equals(strUserIp))
+               {
+                   strHost = pItem.getString("redirect");
+               	   pLog.info("Se detecta la configuración de redirección y se redige la peteción a: " + strHost + "/api/rest" + strPathRest);
+                   break;
+               }               
+           } 
+           if(strHost.isEmpty())
+           		pLog.info("No se detecta ninguna redirección se continua con el path relativo: " + "/api/rest" + strPathRest);
+               
+        }
+        catch(Exception ex)
+        {
+            pLog.error("Error al compronar la redirección a localhost desde TEST", ex);
+            throw new Exception("Error al comprobar la redirección a localhost desde TEST", ex);
+        }
     }
 	
 %>
