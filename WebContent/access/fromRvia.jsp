@@ -1,8 +1,17 @@
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
-	import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
+	import="
+			org.apache.http.HttpEntity,
+			org.apache.http.HttpResponse,
+			org.apache.http.client.HttpClient,
+			org.apache.http.client.methods.HttpPost,
+			org.apache.http.entity.StringEntity,
+			org.apache.http.impl.client.HttpClientBuilder,
+			org.apache.http.util.EntityUtils,
+	        com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
     		com.rsi.rvia.rest.operation.MiqQuests,
+    		com.rsi.rvia.rest.session.RequestConfigRvia,
 		 	java.sql.Connection, java.net.URL,
 		 	java.util.Enumeration,
 		 	org.slf4j.Logger,org.slf4j.LoggerFactory,
@@ -79,10 +88,28 @@
  	String strHost="";
      String entorno = AppConfigurationFactory.getConfiguration().getProperty("env");
      if (entorno.equals("TEST"))
-     {
-        strHost="http://localhost:8080";
-     }
-	
+     {         
+         // Ip actual de conexión
+         RequestConfigRvia RQ = new RequestConfigRvia(request); 
+         String strAvtualIp=RQ.getIp();
+
+         // Cliente para consumir lista de ips que se derivarán a localhost
+         // .... generando cadena de ips ....
+         String strIpsToLocalhost="";
+         String strIpsListToLocalhostFile = "http://localhost:8008/api/static/mock/localhostRedirect.json";
+         HttpPost httpPost = new HttpPost(strIpsListToLocalhostFile);
+         HttpClient httpClient = HttpClientBuilder.create().build();
+         HttpResponse resp = httpClient.execute(httpPost);
+         HttpEntity entity = resp.getEntity();         
+         if (entity != null)
+         {
+             strIpsToLocalhost = EntityUtils.toString(entity);
+         }                
+         // Buscamos la ip actual en el fichero de ips que derivarán a localhost          
+         if(strIpsToLocalhost.indexOf(strAvtualIp) != -1){
+             strHost="http://localhost:8080";
+         }
+     }	
 %>
 <body>
 	<form id="formRedirect" action="<%=strHost%>/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
