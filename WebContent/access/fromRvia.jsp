@@ -150,7 +150,6 @@
             throw new Exception("Error al comprobar la redirección a localhost desde TEST", ex);
         }
     }
-     }	
 %>
 <body>
 	<form id="formRedirect" action="<%=strHost%>/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
