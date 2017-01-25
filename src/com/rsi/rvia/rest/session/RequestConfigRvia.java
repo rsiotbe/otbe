@@ -19,6 +19,7 @@ public class RequestConfigRvia extends RequestConfig
     private String            strRviaSessionId   = "";
     private String            strIsumUserProfile = "";
     private String            strIsumServiceId   = "";
+    private String            strIp              = "";
     private String            strToken           = "";
     private String            strIp              = "";
     /* tabla belts104 */
@@ -80,8 +81,8 @@ public class RequestConfigRvia extends RequestConfig
     public enum CanalHost
     {
         VALORES_BANCA_INTERNET(1), VALORES_BANCA_TELEFONICA(2), BANCA_INTERNET(3), BANCA_TELEFONICA(4), ABOGADOS(5), ABOGADOS_TELEFONICA(
-				6), TPV_VIRTUAL(7), SEGUROS(8), OFICINA(9), TPV_VIRTUAL_TELEFONICA(10), BANCA_MOVIL(11), BANCA_TABLET(
-				13), BANCA_TABLET_CAU(14);
+                6), TPV_VIRTUAL(7), SEGUROS(8), OFICINA(9), TPV_VIRTUAL_TELEFONICA(10), BANCA_MOVIL(11), BANCA_TABLET(
+                13), BANCA_TABLET_CAU(14);
         private final int value;
 
         CanalHost(int newValue)
@@ -145,11 +146,16 @@ public class RequestConfigRvia extends RequestConfig
         return strToken;
     }
 
+    public String getIp()
+    {
+        return strIp;
+    }
+
     /**
      * Constructor de la clase
      * 
      * @param request
-	 *            Objeto request recibido
+     *            Objeto request recibido
      * @throws Exception
      */
     public RequestConfigRvia(HttpServletRequest request) throws Exception
@@ -215,6 +221,10 @@ public class RequestConfigRvia extends RequestConfig
                             case CANAL:
                                 // Se buscan en todas los posibles valores de la enumeración
                                 pCanalHost = obtainCanalHostFromStringValue(strValue);
+                                break;
+                            case IP:
+                                // Se buscan en todas los posibles valores de la enumeración
+                                strIp = strValue;
                                 break;
                             default:
                                 // No hace nada.
@@ -286,7 +296,7 @@ public class RequestConfigRvia extends RequestConfig
      * Obtiene el valor de enumeración correspondiente al valor pasado
      * 
      * @param strValue
-	 *            Valor a buscar su representación en la enumeración
+     *            Valor a buscar su representación en la enumeración
      * @return Valor de la enumeración
      */
     private CanalFront obtainCanalWebFromStringValue(String strValue)
@@ -314,7 +324,7 @@ public class RequestConfigRvia extends RequestConfig
      * Obtiene el valor de enumeración correspondiente al valor pasado
      * 
      * @param strValue
-	 *            Valor a buscar su representación en la enumeración
+     *            Valor a buscar su representación en la enumeración
      * @return Valor de la enumeración
      */
     private CanalHost obtainCanalHostFromStringValue(String strValue)
