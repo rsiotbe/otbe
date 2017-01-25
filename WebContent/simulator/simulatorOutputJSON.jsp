@@ -58,8 +58,17 @@
     JSONObject pJsonResponse = new JSONObject();
 	SimulatorConfigObjectArray paSimulators = SimulatorsManager.getSimulatorsData(strNRBE, strNRBEName, 
 	        strSimulatorType, strSimulatorName, strLanguage);
-    pJsonData.put("data", paSimulators.toJson());
-    pJson.put("response", pJsonData);
-    strResponse = pJson.toString();
-    response.setContentType("application/json");
+	/* se comprueba si se genera algún objeto de respuesta, en caso negativo se devuelve un error 404 */
+	if(paSimulators.isEmpty())
+	{
+	    strResponse = "";
+	    response.sendError(404, "Datos no encontrados" );
+	}
+	else
+	{
+	    pJsonData.put("data", paSimulators.toJson());
+	    pJson.put("response", pJsonData);
+	    strResponse = pJson.toString();
+	    response.setContentType("application/json");	    
+	}
 %><%=strResponse%>

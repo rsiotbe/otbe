@@ -12,6 +12,7 @@ import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.conector.RestRviaConnector;
 import com.rsi.rvia.rest.conector.RestWSConnector;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
+import com.rsi.rvia.rest.error.exceptions.RestConnectorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
@@ -70,6 +71,14 @@ public class ResponseManager
             {
                 // Procesar html para extraer la coordenada
                 strJsonData = SignExtractor.extraerCoordenada(strJsonData);
+            }
+            else if (pResponseConnector.getStatus() != 200)
+            {
+                /*
+                 * se comprueba si al respuesta contiene un codigo de error http para genera la respuesta con el mismo
+                 * tipo
+                 */
+                throw new RestConnectorException(pResponseConnector.getStatus(), 99999, "Error al procesar la petición", pResponseConnector.getStatusInfo().getReasonPhrase(), null);
             }
             else
             {
