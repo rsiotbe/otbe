@@ -21,6 +21,7 @@ public class RequestConfigRvia extends RequestConfig
     private String            strIsumServiceId   = "";
     private String            strIp              = "";
     private String            strToken           = "";
+    private String            strIp              = "";
     /* tabla belts104 */
     private CanalHost         pCanalHost         = CanalHost.BANCA_INTERNET;
     /* tabla belts100 */
@@ -37,7 +38,7 @@ public class RequestConfigRvia extends RequestConfig
             value = newValue;
         }
 
-        private static TokenKey getValue(String value)
+        private static TokenKey getFromValue(String value)
         {
             for (TokenKey e : TokenKey.values())
             {
@@ -47,6 +48,11 @@ public class RequestConfigRvia extends RequestConfig
                 }
             }
             return null;
+        }
+
+        public String getValue()
+        {
+            return value;
         }
     }
 
@@ -108,6 +114,11 @@ public class RequestConfigRvia extends RequestConfig
     public String getRviaSessionId()
     {
         return strRviaSessionId;
+    }
+
+    public String getIp()
+    {
+        return strIp;
     }
 
     public String getIsumUserProfile()
@@ -174,7 +185,7 @@ public class RequestConfigRvia extends RequestConfig
                 for (int i = 0; i < strParameters.length; i++)
                 {
                     String[] strAux = strParameters[i].split("=");
-                    TokenKey strName = TokenKey.getValue(strAux[0]);
+                    TokenKey strName = TokenKey.getFromValue(strAux[0]);
                     String strValue = null;
                     if (strAux.length > 1)
                         strValue = strAux[1];
@@ -200,6 +211,9 @@ public class RequestConfigRvia extends RequestConfig
                             case NRBE:
                                 strNRBE = strValue;
                                 break;
+                            case IP:
+                                strIp = strValue;
+                                break;
                             case CANALAIX:
                                 // Se buscan en todas los posibles valores de la enumeración
                                 pCanalFront = obtainCanalWebFromStringValue(strValue);
@@ -223,14 +237,14 @@ public class RequestConfigRvia extends RequestConfig
             {
                 /* se intenta leer la información sin cifrar */
                 pLog.debug("La información no viene cifrada, se procede a leerla directamente de parámetros");
-                strNodeRvia = request.getParameter("node");
-                strRviaSessionId = request.getParameter("RVIASESION");
-                strIsumUserProfile = request.getParameter("isumProfile");
-                strIsumServiceId = request.getParameter("isumServiceId");
-                strLanguage = request.getParameter("lang");
-                strNRBE = request.getParameter("NRBE");
-                strIp = request.getParameter("IP");
-                pCanalFront = obtainCanalWebFromStringValue(request.getParameter("canalAix"));
+                strNodeRvia = request.getParameter(TokenKey.NODE.getValue());
+                strRviaSessionId = request.getParameter(TokenKey.RVIASESION.getValue());
+                strIsumUserProfile = request.getParameter(TokenKey.ISUMUSERPROFILE.getValue());
+                strIsumServiceId = request.getParameter(TokenKey.ISUMSERVICEID.getValue());
+                strLanguage = request.getParameter(TokenKey.LANG.getValue());
+                strNRBE = request.getParameter(TokenKey.NRBE.getValue());
+                strIp = request.getParameter(TokenKey.IP.getValue());
+                pCanalFront = obtainCanalWebFromStringValue(request.getParameter(TokenKey.CANALAIX.getValue()));
             }
             pCookiesRviaData = request.getCookies();
             /* se precargan las propiedades de comunicación con RVIA */
@@ -348,6 +362,7 @@ public class RequestConfigRvia extends RequestConfig
         pSb.append("Language              :" + strLanguage + "\n");
         pSb.append("NRBE                  :" + strNRBE + "\n");
         pSb.append("Token                 :" + strToken + "\n");
+        pSb.append("Ip                    :" + strIp + "\n");
         pSb.append("CanalFront (CanalAix) :" + pCanalFront.name() + "\n");
         pSb.append("CanalHost (Canal)     :" + pCanalHost.name() + "\n");
         if (pCookiesRviaData != null)

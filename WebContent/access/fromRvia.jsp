@@ -11,6 +11,7 @@
 			org.apache.http.impl.client.HttpClientBuilder,
 			org.apache.http.util.EntityUtils,
 	        com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
+	        com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
     		com.rsi.rvia.rest.operation.MiqQuests,
     		com.rsi.rvia.rest.session.RequestConfigRvia,
 		 	java.sql.Connection, java.net.URL,
@@ -149,7 +150,7 @@
             throw new Exception("Error al comprobar la redirección a localhost desde TEST", ex);
         }
     }
-	
+     }	
 %>
 <body>
 	<form id="formRedirect" action="<%=strHost%>/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
