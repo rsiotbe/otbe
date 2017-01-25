@@ -19,7 +19,6 @@ public class RequestConfigRvia extends RequestConfig
     private String            strRviaSessionId   = "";
     private String            strIsumUserProfile = "";
     private String            strIsumServiceId   = "";
-    private String            strIp              = "";
     private String            strToken           = "";
     private String            strIp              = "";
     /* tabla belts104 */
@@ -116,11 +115,6 @@ public class RequestConfigRvia extends RequestConfig
         return strRviaSessionId;
     }
 
-    public String getIp()
-    {
-        return strIp;
-    }
-
     public String getIsumUserProfile()
     {
         return strIsumUserProfile;
@@ -210,9 +204,6 @@ public class RequestConfigRvia extends RequestConfig
                                 break;
                             case NRBE:
                                 strNRBE = strValue;
-                                break;
-                            case IP:
-                                strIp = strValue;
                                 break;
                             case CANALAIX:
                                 // Se buscan en todas los posibles valores de la enumeración
