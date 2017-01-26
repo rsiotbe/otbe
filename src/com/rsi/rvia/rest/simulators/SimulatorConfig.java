@@ -118,6 +118,7 @@ public class SimulatorConfig
         JSONObject pReturn = new JSONObject();
         JSONObject pConfig = new JSONObject();
         JSONObject pTerms;
+        pReturn.put(Constants.SIMULADOR_ID, nId);
         pReturn.put(Constants.SIMULADOR_NRBE, strNRBE);
         pReturn.put(Constants.SIMULADOR_NRBE_NAME, strNRBEName);
         pReturn.put(Constants.SIMULADOR_SIMPLE_NAME, strSimpleName);
@@ -253,8 +254,8 @@ public class SimulatorConfig
                 JSONObject pResult = new JSONObject();
                 JSONObject pInterest = new JSONObject();
                 /* se calcula el objeto interes */
-                InterestType pInterestType = InterestType.valueOf(
-                        ((String) pConfigParams.get(strPattern + "interestType")).toUpperCase());
+                InterestType pInterestType = InterestType.valueOf(((String) pConfigParams.get(strPattern
+                        + "interestType")).toUpperCase());
                 pInterest.put("interestType", pInterestType.name());
                 if (pInterestType == InterestType.FIX)
                 {
@@ -264,8 +265,7 @@ public class SimulatorConfig
                 else if (pInterestType == InterestType.REFERENCE)
                 {
                     double dbInterestBase = Double.parseDouble((String) pConfigParams.get(strPattern + "interestBase"));
-                    double dbInterestDelta = Double.parseDouble(
-                            (String) pConfigParams.get(strPattern + "interestDelta"));
+                    double dbInterestDelta = Double.parseDouble((String) pConfigParams.get(strPattern + "interestDelta"));
                     double dbInterest = dbInterestBase + dbInterestDelta;
                     pInterest.put("interest", dbInterest);
                     pInterest.put("base", dbInterestBase);
