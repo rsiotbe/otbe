@@ -96,7 +96,7 @@
          // Cliente para consumir lista de ips que se derivarán a localhost
          // .... generando cadena de ips ....
          String strIpsToLocalhost="";
-         String strIpsListToLocalhostFile = "http://localhost:8008/api/static/mock/localhostRedirect.json";
+         String strIpsListToLocalhostFile = "http://lnxntf05:8008/api/static/mock/localhostRedirect.json";
          HttpPost httpPost = new HttpPost(strIpsListToLocalhostFile);
          HttpClient httpClient = HttpClientBuilder.create().build();
          HttpResponse resp = httpClient.execute(httpPost);
@@ -107,7 +107,7 @@
          }                
          // Buscamos la ip actual en el fichero de ips que derivarán a localhost          
          if(strIpsToLocalhost.indexOf(strAvtualIp) != -1){
-             strHost="http://localhost:8080";
+              strHost="http://localhost:8080";
          }
      }	
 %>
