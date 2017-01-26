@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8"/>
@@ -7,9 +8,11 @@
     <link rel="stylesheet" href="../css/styles.min.css"/>
 </head>
 <body>
-<!-- build:include:test test.html -->
-<!-- /build -->
 <div class="wr-simulador">
+    <div class="wr-cookies">
+        <p>Utilizamos cookies propias y de terceros para analizar y personalizar su navegación. Si continua navegando, consideramos que acepta su instalación y uso. Puede cambiar la configuración u obtener más información
+            <a  href="#" data-toggle="modal" data-target="#modal-cookies">aquí</a>. <span>&times;</span></p>
+    </div>
     <!--header-->
     <header class="header">
         <div class="container">
@@ -241,66 +244,16 @@
             <!--end panel resultado-->
             <div class="panel panel-default module-solucion js-module-solucion">
                 <div class="panel-header solucion-header">
-                    <div class="solucion-cabecera">
+                    <div class="solucion-cabecera solucion-error">
+                        <p><span class="solucion-cabecera-rotulo">Se ha producido un error.</span></p>
+                        <p>No se ha podido procesar tu solicitud, por favor inténtalo de nuevo en unos minutos.</p>
+                    </div>
+                    <div class="solucion-cabecera solucion-correct">
                         <p><span class="solucion-cabecera-rotulo">¡Gracias!</span></p>
-                        <p>Su solicitud se ha enviado correctamente.</p>
-                        <p>En breve nos pondremos en contacto con ustedes.</p>
+                        <p>Tu solicitud se ha enviado correctamente.</p>
+                        <p>En breve nos pondremos en contacto contigo.</p>
                     </div>
                 </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-12 resumen-resultado">
-                            <h3>Datos del préstamo <span class="js-name-credit name-credit"></span> solicitado:</h3></div>
-                        <div class="col-md-8 col-md-offset-2">
-                            <div class="row">
-                                <div class="col-md-4 col-xs-12"><span class="js-resumen-img img-resultado"></span></div>
-                                <div class="col-md-8 col-xs-12">
-                                    <div class="col-md-12"><span class="js-resultado-final"></span><span class="moneda">€</span><span class="year">mes</span></div>
-                                    <div class="col-md-12">
-                                        <div class="inline"><span class="titulo" data-translate="">Plazo:</span> <span class="js-resultado-plazo resultado">30</span> <span class="addon" data-translate="">meses</span> </div>
-                                        <div class="inline"><span class="titulo" data-translate="">Importe:</span> <span class="js-resultado-importe resultado">18.000</span> <span class="addon" data-translate="">€</span> </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--row-->
-                        </div>
-                        <div class="col-md-8 col-md-offset-2">
-                            <div class="tabla-resultado">
-                                <div class="form-inline">
-                                    <div class="form-group"><span class="text">Tipo de interés:</span><span class="result">(<span
-                                            class="js-resultado-tae"></span>% TAE)</span> <span class="result"><span
-                                            class="js-resultado-tin"></span>% TIN &nbsp;</span>
-                                    </div>
-                                </div>
-                                <div class="form-inline">
-                                    <div class="form-group"><span class="text js-">Comisiones:</span> <span class="result"><span class="js-resultado-comisiones"></span> €</span>
-                                    </div>
-                                </div>
-                                <div class="form-inline">
-                                    <div class="form-group"><span class="text js-">Gastos:</span> <span class="result"><span
-                                            class="js-resultado-gastos"></span> €</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-8 col-md-offset-2">
-                            <div class="row">
-                                <div class="col-md-offset-6 col-md-6 text-right"><a class="btn-ico descargar text-underline link-green" href="">Descargar info
-                                    préstamo</a></div>
-                            </div>
-                            <!--end row-->
-                        </div>
-                    </div>
-                    <!--end row-->
-                </div>
-                <!--end panel body-->
-                <div class="panel-footer">
-                    <div class="module-footer-condiciones">
-                        <p class="solucion-cabecera-rotulo">Condiciones</p>
-                        <div class="solucion-condiciones js-solucion-condiciones">
-
-                        </div>
-                    </div> <a class="js-btn-nuevo-calculo btn-calcular-arrow text-underline link-green" href="#">Simular Nuevo Préstamo</a></div>
                 <!--end panel footer-->
             </div>
             <!--end panel-->
@@ -310,7 +263,7 @@
         <!--panel formulario-->
         <div class="panel panel-default module-contratacion js-module-contratacion">
             <div class="panel-heading">
-                <h3 class="panel-title rotulo-contratacion" date-translate="">Solicitud Préstamo <span class="js-name-credit name-credit">AUTOMÓVIL</span>
+                <h3 class="panel-title rotulo-contratacion" date-translate="">Solicitud Préstamo <span class="js-name-credit name-credit">AUTOMÓVI</span>
                 </h3></div>
             <form method="post" id="formid" class="module-formulario">
                 <div class="panel-body">
@@ -414,6 +367,112 @@
     <!-- /.modal-dialog -->
 </div>
 <!--end modal condiciones-->
+<!--end modal cookies-->
+<div class="modal fade" id="modal-cookies" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                    aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Declaración sobre uso de cookies</h4></div>
+            <div class="modal-body">
+                <p>Una cookie es un pequeño archivo de texto que se instala en su terminal de ordenador (u otro dispositivo, como un teléfono móvil) a través de los sitios web que usted visita.</p>
+                <ol>
+                    <li><strong>Para qué se utilizan las <em>cookies</em></strong>
+                        <br>
+                        Son ampliamente utilizados para conocer la actividad de los visitantes al sitio web, con el fin de mejorar el mismo a partir del almacenamiento y recuperación de los datos de navegación de los usuarios. Las cookies también se utilizan para proporcionar información sobre la navegación de los usuarios a los propietarios de sitios web y sus colaboradores, con el fin de analizar el uso que realizan de la página web y personalizar el contenido.</li>
+                    <br>
+                    <li><strong>Información importante sobre cómo utilizamos las <em>cookies</em></strong>
+                        <br>
+                        Se utilizan las cookies a efectos estadísticos, funcionales y para mejorar nuestros servicios a través del análisis del uso que realizan los visitantes a nuestro sitio web, incluyendo el uso de nuestros servicios de banca por internet. En este último caso, podemos utilizar cookies para almacenar algunos datos de acceso, pero nunca las contraseñas. Las cookies hacen que sea más fácil para el usuario conectarse, navegar y utilizar el sitio web en futuras visitas<br>
+                        Algunos de los anunciantes y organizaciones de análisis web con los que se trabaja incorporan cookies en el ordenador del usuario a través del presente sitio web. Nuestros sitios también tienen  enlace  a infobolsa. El Grupo Caja Rural no controla las cookies  utilizadas por esta web externa. Para más información sobre estas cookies  web ajenas, aconsejamos revisar sus propias políticas de cookies.</li>
+                    <br>
+                    <li><strong><em>Cookies</em> propias</strong>
+                        <br>
+                        La siguiente tabla muestra las cookies que son fijadas por Grupo Caja Rural en el sitio web de la entidad y la finalidad para la que se utiliza cada una:</li>
+                    <br>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td><strong>Tipo de<em> cookie</em></strong></td>
+                            <td><strong>Para qué se utiliza</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong><em>Cookies</em> técnicas</strong></td>
+                            <td>Las cookies técnicas son aquellas imprescindibles y estrictamente necesarias para el correcto funcionamiento de un portal web y la utilización de las diferentes opciones y servicios que ofrece.<br>
+                                Por ejemplo, las que sirven para el mantenimiento de la sesión, la gestión del tiempo de respuesta, rendimiento o validación de opciones, utilizar elementos de seguridad, compartir contenido con redes sociales, etc.</td>
+                        </tr>
+                        <tr>
+                            <td><strong><em>Cookies</em> de personalización</strong></td>
+                            <td>Estas cookies permiten al usuario especificar o personalizar algunas características de las opciones generales de la página web. Por ejemplo, definir el idioma, configuración regional o tipo de navegador.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <li><strong><em>Cookies</em> de terceros</strong>
+                        <br>
+                        Existe una serie de proveedores que establecen las cookies con el fin de proporcionar determinados servicios. La siguiente tabla muestra las cookies que se establecen en la página web www.ruralvia.com, por parte de terceros, los fines para los que se utilizan y los enlaces a páginas web donde se puede encontrar más información sobre las cookies:</li>
+                    <br>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td><strong>Tipo de <em>cookie</em></strong></td>
+                            <td><strong>Para qué se utiliza</strong></td>
+                        </tr>
+                        <tr>
+                            <td><b><em>Cookies</em> analíticas</b></td>
+                            <td>
+                                <p>Las cookies de Google Analytics se utilizan con el fin de analizar y medir cómo los visitantes usan este sitio web. La información sirve para elaborar informes que permiten mejorar este sitio. Estas cookies recopilan información en forma anónima, incluyendo el número de visitantes al sitio, cómo han llegado al mismo y las páginas que visitó mientras navegaba en nuestro sitio web:</p>
+                                <p><a target="_blank" href="https://www.google.com/intl/es/policies/privacy/">https://www.google.com/intl/es/policies/privacy/</a></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b><em>Cookies</em> técnicas</b></td>
+                            <td>Las cookies del ISUM mantienen la sesión y permiten la identificación del usuario en las operativas de la parte privada del portal en Ruralvía, a las cuales tiene acceso.<br>
+                                Las cookies de BIGIp controlan y distribuyen la carga de usuarios en los servidores de banca.<br>
+                                Las cookies genéricas identifican el canal y el portal de Ruralvía a través el cual el usuario está operando.<br>
+                                Las cookies bannerPrincipal-[ruta]: indica que banners de una página se han visualizado ya para la siguiente vez mostrar uno nuevo.<br>
+                                Las cookies mpLocker-[ruta] : una vez visualizada una maxipubli, no se vuelve a visualizar en la sesión actual.<br>
+                                Las infocookie_1 , infocookie_2 ... : controlan cada una de las capas de aviso que se puedan mostrar en un portal. Una vez aceptadas no se vuelven a mostrar./td&gt;</td>
+                        </tr>
+                        <tr>
+                            <td><em><b>Cookies</b></em><b> de personalización</b></td>
+                            <td>
+                                <p>Estas <em>cookies</em> permiten al usuario especificar o personalizar algunas características de las opciones generales de la página web. Por ejemplo, definir el idioma, configuración regional o tipo de navegador.</p>
+                                <p>Google: <a href="http://www.google.es/intl/es/policies/technologies/types/&#10;" target="_blank">http://www.google.es/intl/es/policies/technologies/types/</a></p>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <li><strong>Cómo desactivar las <em>cookies 	</em></strong>
+                        <br>
+                        Para cumplir con la legislación vigente, tenemos que pedir su permiso para gestionar cookies. Si decide no autorizar el tratamiento indicándonos su no conformidad, solo usaríamos las cookies que son imprescindibles para la navegación por nuestra web. En este caso, no almacenaríamos ninguna cookie. En el caso de seguir navegando por nuestro sitio web sin denegar su autorización implica que acepta su uso.<br>
+                        <br>
+                        Tenga en cuenta que si rechaza o borra las cookies de navegación, no podremos mantener sus preferencias, algunas características de las páginas no estarán operativas, no podremos ofrecerle servicios personalizados y cada vez que vaya a navegar por nuestra web tendremos que solicitarle de nuevo su autorización para el uso de cookies.<br>
+                        <br>
+                        Puede modificar la configuración de su acceso a la página web. Debe saber que es posible eliminar las cookies o impedir que se registre esta información en su equipo en cualquier momento mediante la modificación de los parámetros de configuración de su navegador:<br>
+                        <br>
+                        <a href="http://windows.microsoft.com/es-es/windows-vista/block-or-allow-cookies" target="_blank">Configuración de&nbsp;<em>cookies 		</em>de Internet Explorer<br>
+                        </a><a href="http://support.mozilla.org/es/kb/habilitar-y-deshabilitar-cookies-que-los-sitios-we" target="_blank">Configuración de&nbsp;<em>cookies 		</em>de Firefox<br>
+                        </a><a href="https://support.google.com/chrome/answer/95647?hl=es" target="_blank">Configuración de <em>cookies</em> de Google Chrome<br>
+                        </a><a href="http://support.apple.com/kb/HT1677?viewlocale=es_ES&amp;locale=es_ES" target="_blank">Configuración de&nbsp;<em>cookies 		</em>de Safari 	</a><br>
+                        <br>
+                        El Grupo Caja Rural  no es titular ni patrocina los enlaces indicados anteriormente, por lo que no asume responsabilidad alguna sobre su contenido ni sobre su actualización.<br>
+                        <br>
+                        El usuario puede revocar su consentimiento para el uso de cookies en su navegador a través de los siguientes enlaces<br>
+                        Google Analytics: <a href="https://tools.google.com/dlpage/gaoptout?hl=None&#10;" target="_blank">https://tools.google.com/dlpage/gaoptout?hl=None</a><a href="https://www.linkedin.com/reg/join?trk=login_reg_redirect&amp;session_redirect=https%3A%2F%2Fwww.linkedin.com%2Fsettings%2F&#10;" target="_blank"><br>
+                        </a>Google: A través de los ajustes de cada navegador más arriba indicados para la desactivación o eliminación de <em>cookies.</em></li>
+                </ol>
+                <p class="cookies-date">Fecha de última revisión: 04 de Febrero de 2014</p>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!--end modal cookies-->
 <script type="text/javascript">
     var dataLoans = '__JSONDATA__';
 </script>
