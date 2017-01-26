@@ -40,26 +40,35 @@
             // TODO: report an error.
         }
         JSONObject jsonObject = new JSONObject(jb.toString());
-        strNRBE = jsonObject.optString(Constantes.SIMULADOR_NRBE);
-        strNRBEName = jsonObject.optString(Constantes.SIMULADOR_NRBE_NAME);
-        strSimulatorType = jsonObject.optString(Constantes.SIMULADOR_TYPE);
-        strSimulatorName = jsonObject.optString(Constantes.SIMULADOR_SIMPLE_NAME);
-        strLanguage = jsonObject.optString(Constantes.SIMULADOR_LANGUAGE);
+        strNRBE = jsonObject.optString(Constants.SIMULADOR_NRBE);
+        strNRBEName = jsonObject.optString(Constants.SIMULADOR_NRBE_NAME);
+        strSimulatorType = jsonObject.optString(Constants.SIMULADOR_TYPE);
+        strSimulatorName = jsonObject.optString(Constants.SIMULADOR_SIMPLE_NAME);
+        strLanguage = jsonObject.optString(Constants.SIMULADOR_LANGUAGE);
     }
     else
     {
         /* GET: Se recuperan los parametros de entrada */
-        strNRBE = (String) request.getParameter(Constantes.SIMULADOR_NRBE);
-        strNRBEName = (String) request.getParameter(Constantes.SIMULADOR_NRBE_NAME);
-        strSimulatorType = (String) request.getParameter(Constantes.SIMULADOR_TYPE);
-        strSimulatorName = (String) request.getParameter(Constantes.SIMULADOR_SIMPLE_NAME);
-        strLanguage = (String) request.getParameter(Constantes.SIMULADOR_LANGUAGE);
+        strNRBE = (String) request.getParameter(Constants.SIMULADOR_NRBE);
+        strNRBEName = (String) request.getParameter(Constants.SIMULADOR_NRBE_NAME);
+        strSimulatorType = (String) request.getParameter(Constants.SIMULADOR_TYPE);
+        strSimulatorName = (String) request.getParameter(Constants.SIMULADOR_SIMPLE_NAME);
+        strLanguage = (String) request.getParameter(Constants.SIMULADOR_LANGUAGE);
     }
     JSONObject pJsonResponse = new JSONObject();
-	SimulatorConfigObjectArray paSimulators = SimulatorsManager.getSimulatorsData(strNRBE, strNRBEName, strSimulatorType, strSimulatorName, strLanguage);
-            strSimulatorType, strSimulatorName, strLanguage);
-    pJsonData.put("data", paSimulators.toJson());
-    pJson.put("response", pJsonData);
-    strResponse = pJson.toString();
-    response.setContentType("application/json");
+	SimulatorConfigObjectArray paSimulators = SimulatorsManager.getSimulatorsData(strNRBE, strNRBEName, 
+	        strSimulatorType, strSimulatorName, strLanguage);
+	/* se comprueba si se genera algún objeto de respuesta, en caso negativo se devuelve un error 404 */
+	if(paSimulators.isEmpty())
+	{
+	    strResponse = "";
+	    response.sendError(404, "Datos no encontrados" );
+	}
+	else
+	{
+	    pJsonData.put("data", paSimulators.toJson());
+	    pJson.put("response", pJsonData);
+	    strResponse = pJson.toString();
+	    response.setContentType("application/json");	    
+	}
 %><%=strResponse%>
