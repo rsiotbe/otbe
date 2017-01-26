@@ -4,6 +4,8 @@ dist/
 /.settings/
 /.classpath
 .DS_Store
+.gitignore
 /bin/
 /WebContent/static/
 local.properties
+configurations/Banca.OracleConfig.properties
