@@ -131,25 +131,33 @@
 		
 		/* se descarga el pdf */
 		String strUrlDownload = (String)pPdfProperties.get("SERVICE_DOWNLOAD") + strPdfId;
+		pLog.info("Se intenta la descarga del pdf de la URL:  strUrlDownload");
 		ByteArrayOutputStream pPdfStream = Utils.getFileFromUrl(strUrlDownload);		
-		
+		if(pPdfStream == null)
+			pLog.error("El stream de PDF es nulo, la descarga ha fallado");
+		else
+			pLog.info("Se obtiene el stream de PDF. Tamaño: " + pPdfStream.size() + "bytes");
+	
 		/* se obtiene la configuracion de envio del email */
 		SimulatorEmailConfig pSimulatorEmailConfig =  SimulatorsManager.getSimulatorEmailConfig(nSimulatorId, strNRBE);
+		pLog.info("Se obtiene el objeto de configuración de envio de email: " + pSimulatorEmailConfig);
 		/* se lee la configuración del servidor de envio de email */
 		Properties pEmailProterties = Email.loadProperties("simulator.email.properties");	
+		pLog.info("Se obtiene el objeto de configuración del servidor de email: " + pEmailProterties);
 		/* se envia el email a la sucursal*/
 		Email pEmail = new Email();
 		pEmail.setConfig(pEmailProterties);
 		pEmail.setFrom(pSimulatorEmailConfig.getOfficeFrom());
 		pEmail.addTo(pSimulatorEmailConfig.getOfficeTo());
 		pEmail.setSubject(pSimulatorEmailConfig.getOfficeSubject());
+		pLog.info("Se asignan el origen y destino del email");
 		
 		/* se lee la platinlla y se remplazan los valores */
 		String strOfficeTemplate = pSimulatorEmailConfig.getOfficeTemplate();
 		String strHtmlOfficeTemplate = SimulatorsManager.getEmailTemplate(strOfficeTemplate);
 		/* se cra un hashtable donde se meten losd atos que se van a substituir en la plantilla */
+		pLog.info("Se procede a obtener y componer el cuerpo del mensaje");
 		Hashtable<String, String> htEmailTemplateData = new Hashtable<String, String>();
-	
 		htEmailTemplateData.put("NRBEName",pSimulatorEmailConfig.getNRBEName());
 		htEmailTemplateData.put("ComercialName",pSimulatorEmailConfig.getComercialName());
 		htEmailTemplateData.put("EmailUserName",strEmailUserName);
@@ -158,10 +166,11 @@
 		htEmailTemplateData.put("EmailComment",strEmailComment);
 		htEmailTemplateData.put("IsCustomer",String.valueOf(fIsCustomer));
 		htEmailTemplateData.put("Nif",strNif);
-	
 		String strFinalHtml = SimulatorsManager.proccessEmailTemplate(strHtmlOfficeTemplate, htEmailTemplateData);	 
 		pEmail.setBodyContent(strFinalHtml);
+		pLog.info("Se procede a adjuntar el fichero pdf al email");
 		pEmail.addAttachedFile(new EmailAttachObject("solicitud.pdf", "application/pdf", pPdfStream.toByteArray()) );
+		pLog.info("Se compone el email y se procede a su envio");
 		pEmail.send();	
 		strReturn = Utils.generateWSResponseJsonOk("sendMail", "{\"status\":\"OK\"}");
     }
