@@ -1,4 +1,4 @@
-package com.rsi.rvia.rest;
+package com.rsi.rvia.rest.endpoint.rsiapi;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -18,11 +18,13 @@ public class SaldosContratos
 {
 	private static Logger	pLog	= LoggerFactory.getLogger(SaldosContratos.class);
 
-	/** Obtiene posiciones de saldos a fin de mes para un acuerdo desde fecha inicio hasta fecha fin En el documento
+	/**
+	 * Obtiene posiciones de saldos a fin de mes para un acuerdo desde fecha inicio hasta fecha fin En el documento
 	 * Webservice2
 	 * 
 	 * @return Objeto que contiene la respuesta y en caso positivo los saldos por fin de mes
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	@GET
 	@Path("/contracts/balances/{idContract: [0-9]+}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -34,11 +36,13 @@ public class SaldosContratos
 		return pReturn;
 	}
 
-	/** Obtiene posiciones de saldos a fin de mes para un acuerdo desde fecha inicio hasta última fecha disponible En el
+	/**
+	 * Obtiene posiciones de saldos a fin de mes para un acuerdo desde fecha inicio hasta última fecha disponible En el
 	 * documento Webservice2
 	 * 
 	 * @return Objeto que contiene la respuesta y en caso positivo los saldos por fin de mes
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	@GET
 	@Path("/contracts/balances/{idContract: [0-9]+}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -50,11 +54,13 @@ public class SaldosContratos
 		return pReturn;
 	}
 
-	/** Obtiene posiciones de saldos a fin de mes para un acuerdo desde fecha inicio hasta fecha fin En el documento
+	/**
+	 * Obtiene posiciones de saldos a fin de mes para un acuerdo desde fecha inicio hasta fecha fin En el documento
 	 * Webservice2
 	 * 
 	 * @return Objeto que contiene la respuesta y en caso positivo los saldos por fin de mes
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	@GET
 	@Path("/contracts/balances/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -66,10 +72,12 @@ public class SaldosContratos
 		return pReturn;
 	}
 
-	/** Obtiene posiciones de saldos a fin de mes para un acuerdo desde fecha inicio hasta hoy En el documento Webservice2
+	/**
+	 * Obtiene posiciones de saldos a fin de mes para un acuerdo desde fecha inicio hasta hoy En el documento Webservice2
 	 * 
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	@GET
 	@Path("/contracts/balances/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -82,11 +90,13 @@ public class SaldosContratos
 		return pReturn;
 	}
 
-	/** Obtiene posiciones de saldos a fin de mes para un acuerdo desde fecha inicio hasta fecha fin En el documento
+	/**
+	 * Obtiene posiciones de saldos a fin de mes para un acuerdo desde fecha inicio hasta fecha fin En el documento
 	 * Webservice2
 	 * 
 	 * @return Objeto que contiene la respuesta y en caso positivo los saldos por fin de mes
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	@GET
 	@Path("/contracts/balances/classification/{codClasificacion: [0-9]}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -98,10 +108,12 @@ public class SaldosContratos
 		return pReturn;
 	}
 
-	/** Obtiene posiciones de saldos a fin de mes para un acuerdo desde fecha inicio hasta hoy En el documento Webservice2
+	/**
+	 * Obtiene posiciones de saldos a fin de mes para un acuerdo desde fecha inicio hasta hoy En el documento Webservice2
 	 * 
 	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	@GET
 	@Path("/contracts/balances/classification/{codClasificacion: [0-9]}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
 	@Produces(MediaType.APPLICATION_JSON)

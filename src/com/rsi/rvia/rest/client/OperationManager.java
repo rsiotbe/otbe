@@ -7,6 +7,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -21,8 +22,8 @@ import org.jose4j.lang.JoseException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.rsi.Constantes;
+import com.rsi.Constants;
+import com.rsi.Constants.SimulatorType;
 import com.rsi.isum.IsumValidation;
 import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.error.ErrorManager;
@@ -35,6 +36,7 @@ import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.simulators.SimulatorsManager;
 import com.rsi.rvia.rest.template.TemplateManager;
+import com.rsi.rvia.rest.tool.AppConfigurationFactory;
 import com.rsi.rvia.rest.tool.ServiceHelper;
 import com.rsi.rvia.rest.tool.Utils;
 
@@ -74,6 +76,11 @@ public class OperationManager
         {
             // Se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM.
             pRequestConfigRvia = getValidateSession(pRequest);
+            // Se comprueba si el servicio de isum está permitido.
+            if (!IsumValidation.IsValidService(pRequestConfigRvia))
+            {
+                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+            }
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             pMiqQuests = createMiqQuests(pUriInfo);
             // Se instancia el conector y se solicitan los datos.
@@ -125,6 +132,11 @@ public class OperationManager
         {
             // Se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM.
             pRequestConfigRvia = getValidateSession(pRequest);
+            // Se comprueba si el servicio de isum está permitido.
+            if (!IsumValidation.IsValidService(pRequestConfigRvia))
+            {
+                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+            }
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
             pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);
@@ -177,24 +189,12 @@ public class OperationManager
         int nReturnHttpCode = 200;
         String strTemplate = "";
         Response pResponseConnector;
-        RequestConfig pRequestConfig = null;
         String strPrimaryPath = "";
         String JWT = "";
-        MiqQuests pMiqQuests;
+        MiqQuests pMiqQuests = null;
         pSession = pRequest.getSession(true);
         try
         {
-            // Se obtiene los datos asociados a la petición de ruralvia.
-            // pSessionRviaData = new SessionRviaData(pRequest);
-            // if (pSessionRviaData != null)
-            // {
-            // Se establece el token de datos recibido desde ruralvia como dato de sesión.
-            // pSession.setAttribute("token", pSessionRviaData.getToken());
-            // Se comprueba si el servicio de isum está permitido.
-            // if (!IsumValidation.IsValidService(pSessionRviaData))
-            // throw new ISUMException(401, null, "Servicio no permitido",
-            // "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
-            // Se obtienen los datos necesario para realizar la petición al proveedor.
             strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
             // Si existe el parámetro help, invocamos a la ayuda y escapamos
             if (pRequest.getParameter("help") != null)
@@ -215,7 +215,7 @@ public class OperationManager
             {
                 // Si es login generamos JWT
                 HashMap<String, String> claims;
-                claims = doLogin();
+                claims = doLogin(pRequest);
                 if (pRequest.getParameter("idInternoPe") != null)
                 {
                     claims.remove("idInternoPe");
@@ -268,7 +268,7 @@ public class OperationManager
             if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
             {
                 pLog.info("La petición utiliza plantilla XHTML");
-                strJsonData = TemplateManager.processTemplate(strTemplate, null, strJsonData);
+                strJsonData = TemplateManager.processTemplate(pMiqQuests, strTemplate, null, strJsonData);
             }
             pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).header("Authorization", JWT).build();
         }
@@ -282,22 +282,33 @@ public class OperationManager
         return pResponseConnector;
     }
 
-    private static HashMap<String, String> doLogin() throws JoseException, IOException
+    private static HashMap<String, String> doLogin(HttpServletRequest pRequest) throws Exception
     {
+        String usuario = pRequest.getParameter("usuario");
+        String documento = pRequest.getParameter("documento");
+        String password = pRequest.getParameter("password");
+        String SOAPEndPoint = "http://soa.risa";
+        String entorno = AppConfigurationFactory.getConfiguration().getProperty("env");
+        if (entorno.equals("TEST"))
+        {
+            usuario = "03052445";
+            documento = "33334444S";
+            password = "03052445";
+            SOAPEndPoint = "http://soa02.risa";
+        }
         String strBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" "
                 + "xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">"
                 + "<soap:Header>" + "<ee:RSISecCampo1>03054906</ee:RSISecCampo1>"
                 + "<ee:RSISecCampo2>50456061H</ee:RSISecCampo2>" + "<ee:RSISecCampo3>20141217155327</ee:RSISecCampo3>"
                 + "<ee:RSISecCampo4></ee:RSISecCampo4>" + "<ee:RSISecCampo5>0f0262740a3f50d9</ee:RSISecCampo5>"
-                + "</soap:Header><soap:Body>" + "<ee:EE_I_AutenticarUsuario>" + "<ee:usuario>" + "03052445"
-                + "</ee:usuario>" + "<ee:password>" + "03052445" + "</ee:password>" + "<ee:documento>" + "33334444S"
+                + "</soap:Header><soap:Body>" + "<ee:EE_I_AutenticarUsuario>" + "<ee:usuario>" + usuario
+                + "</ee:usuario>" + "<ee:password>" + password + "</ee:password>" + "<ee:documento>" + documento
                 + "</ee:documento>" + "</ee:EE_I_AutenticarUsuario>" + "</soap:Body>" + "</soap:Envelope>";
-        // Create a StringEntity for the SOAP XML.
         StringEntity stringEntity = new StringEntity(strBody, "UTF-8");
         stringEntity.setChunked(true);
         // Request parameters and other properties.
-        HttpPost httpPost = new HttpPost("http://soa02.risa/SOA_Wallet/Empresa/PS/SE_WAL_AutenticarUsuario");
+        HttpPost httpPost = new HttpPost(SOAPEndPoint + "/SOA_Wallet/Empresa/PS/SE_WAL_AutenticarUsuario");
         httpPost.setEntity(stringEntity);
         httpPost.addHeader("Accept", "text/xml");
         httpPost.addHeader("SOAPAction", "");
@@ -315,8 +326,18 @@ public class OperationManager
         String codRetorno = strResponse.replaceAll("^.*<ee:codigoRetorno>([^<]*)</ee:codigoRetorno>.*$", "$1");
         if (Integer.parseInt(codRetorno) == 0)
         {
-            // pLog.warning("->>>>>>>>>>>>>>>>>>>> Error en el servicio de login");
-            return null;
+            if (entorno.equals("TEST"))
+            {
+                HashMap<String, String> fields = new HashMap<String, String>();
+                fields.put("codEntidad", "3076");
+                fields.put("idInternoPe", "1834908");
+                fields.put("codTarjeta", "307671667");
+                return fields;
+            }
+            else
+            {
+                return null;
+            }
         }
         else
         {
@@ -324,13 +345,18 @@ public class OperationManager
             String codEntidad = strResponse.replaceAll("^.*<ee:entidad>([^<]*)</ee:entidad>.*$", "$1");
             String idInternoPe = strResponse.replaceAll("^.*<ee:idInternoPe>([^<]*)</ee:idInternoPe>.*$", "$1");
             String nTarjeta = strResponse.replaceAll("^.*<ee:numeroTarjeta>([^<]*)</ee:numeroTarjeta>.*$", "$1");
-            fields.put("codEntidad", "3076");
-            fields.put("idInternoPe", "1834908");
-            fields.put("codTarjeta", "307671667");
-            // FIXME: Pendiente de cambiar en producción.
-            // fields.put("codEntidad", codEntidad.replace(" ", ""));
-            // fields.put("idInternoPe", idInternoPe.replace(" ", ""));
-            // fields.put("nTarjeta", nTarjeta.replace(" ", ""));
+            if (entorno.equals("TEST"))
+            {
+                fields.put("codEntidad", "3076");
+                fields.put("idInternoPe", "1834908");
+                fields.put("codTarjeta", "307671667");
+            }
+            else
+            {
+                fields.put("codEntidad", codEntidad.replace(" ", ""));
+                fields.put("idInternoPe", idInternoPe.replace(" ", ""));
+                fields.put("nTarjeta", nTarjeta.replace(" ", ""));
+            }
             return fields;
         }
     }
@@ -458,7 +484,7 @@ public class OperationManager
      * @return Objeto respuesta de Jersey
      */
     public static Response processDataFromSimulators(HttpServletRequest pRequest, UriInfo pUriInfo, String strNRBEName,
-            String strLoanName, String strLanguage, MediaType pMediaType)
+            SimulatorType pSimulatorType, String strLoanName, String strLanguage, MediaType pMediaType)
     {
         MiqQuests pMiqQuests = null;
         ErrorResponse pErrorCaptured = null;
@@ -469,9 +495,9 @@ public class OperationManager
         pSession = pRequest.getSession(true);
         try
         {
-            /* se obtiene el objeto petición */
-            pRequestConfig = new RequestConfig(pRequest);
             strNRBE = SimulatorsManager.getNRBEFromName(strNRBEName);
+            /* se obtiene el objeto petición */
+            pRequestConfig = new RequestConfig(strLanguage, strNRBE);
             /* si no viene idioma o definido se coge por defecto el de el objeto RequestConfig */
             if (strLanguage == null || strLanguage.trim().isEmpty())
                 strLanguage = pRequestConfig.getLanguage();
@@ -483,12 +509,61 @@ public class OperationManager
             }
             /* se obtiene el codigo de entidad de donde procede la llamada */
             JSONObject pDataInput = new JSONObject();
-            pDataInput.put(Constantes.SIMULADOR_NRBE, strNRBE);
-            pDataInput.put(Constantes.SIMULADOR_NRBE_NAME, strNRBEName);
-            pDataInput.put(Constantes.SIMULADOR_SIMPLE_NAME, strLoanName);
-            pDataInput.put(Constantes.SIMULADOR_LANGUAGE, strLanguage);
+            pDataInput.put(Constants.SIMULADOR_NRBE, strNRBE);
+            pDataInput.put(Constants.SIMULADOR_NRBE_NAME, strNRBEName);
+            pDataInput.put(Constants.SIMULADOR_SIMPLE_NAME, strLoanName);
+            pDataInput.put(Constants.SIMULADOR_TYPE, pSimulatorType.name());
+            pDataInput.put(Constants.SIMULADOR_LANGUAGE, strLanguage);
             /* se instancia el conector y se solicitan los datos */
             strJsonResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, pDataInput.toString());
+            pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonResponse);
+        }
+        catch (Exception ex)
+        {
+            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
+        }
+        try
+        {
+            /* Se construye la respuesta ya sea error, o correcta, json o template */
+            String entorno = AppConfigurationFactory.getConfiguration().getProperty("env");
+            if (Constants.Environment.TEST.name().equals(entorno))
+            {
+                // Utils.writeMock(pRequest, pUriInfo, pMiqQuests, strJsonResponse);
+            }
+            pResponseConnector = buildResponse(pErrorCaptured, pMediaType, pMiqQuests, strJsonResponse, pRequestConfig);
+        }
+        catch (Exception ex)
+        {
+            pLog.error("Se ha generado un error al procesar la respuesta final", ex);
+            pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
+            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).build();
+        }
+        pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
+        return pResponseConnector;
+    }
+
+    public static Response processDataFromSimulators(HttpServletRequest pRequest, UriInfo pUriInfo, String strJsonData,
+            MediaType pMediaType)
+    {
+        MiqQuests pMiqQuests = null;
+        ErrorResponse pErrorCaptured = null;
+        String strJsonResponse = "";
+        Response pResponseConnector;
+        RequestConfig pRequestConfig = null;
+        pSession = pRequest.getSession(true);
+        try
+        {
+            /* se obtiene el objeto petición */
+            pRequestConfig = new RequestConfig(new JSONObject(strJsonData));
+            /* se obtienen los datos necesario para realizar la petición al proveedor */
+            pMiqQuests = createMiqQuests(pUriInfo);
+            if (pMiqQuests == null)
+            {
+                throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
+            }
+            /* se instancia el conector y se solicitan los datos */
+            strJsonResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, strJsonData);
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonResponse);
         }
         catch (Exception ex)
@@ -512,26 +587,20 @@ public class OperationManager
     }
 
     /**
-     * @param json
-     * @return
+     * Devuelve el MediaType de la request o establece por defecto MediaType.TEXT_HTML_TYPE.
+     * 
+     * @param pRequest
+     * @return MediaType
      */
-    public static Response processDataFromPdf(UriInfo pUriInfo, JsonNode json)
+    public static MediaType getMediaType(HttpServletRequest pRequest)
     {
-        MiqQuests pMiqQuests = null;
-        try
+        MediaType mediaType = MediaType.TEXT_HTML_TYPE;
+        String headerType = pRequest.getHeader("content-type");
+        if (headerType != null)
         {
-            pMiqQuests = createMiqQuests(pUriInfo);
-            if (pMiqQuests == null)
-            {
-                throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
-            }
+            mediaType = MediaType.valueOf(headerType);
         }
-        catch (Exception e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
+        return mediaType;
     }
 
     /**
@@ -575,7 +644,7 @@ public class OperationManager
         if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE || pMediaType == MediaType.TEXT_HTML_TYPE)
         {
             pLog.info("La petición utiliza plantilla XHTML o HTML");
-            strJsonData = TemplateManager.processTemplate(strTemplate, pRequestConfig, strJsonData);
+            strJsonData = TemplateManager.processTemplate(pMiqQuests, strTemplate, pRequestConfig, strJsonData);
         }
         return (Response.status(nReturnHttpCode).entity(strJsonData).encoding(ENCODING_UTF8).build());
     }
@@ -587,7 +656,7 @@ public class OperationManager
      * @return RequestConfigRvia con todos los datos cargados del token
      * @throws Exception
      */
-    private static RequestConfigRvia getValidateSession(HttpServletRequest pRequest) throws Exception
+    public static RequestConfigRvia getValidateSession(HttpServletRequest pRequest) throws Exception
     {
         RequestConfigRvia pRequestConfigRvia = null;
         // Se obtiene los datos asociados a la petición de ruralvia.
@@ -638,11 +707,22 @@ public class OperationManager
         RestConnector pRestConnector = null;
         Response pResponseConnector = null;
         MultivaluedMap<String, String> pListParams = Utils.getParamByPath(pUriInfo);
+        MultivaluedMap<String, String> pQueryParams = Utils.queryStringToMultivaluedMap(pUriInfo);
+        MultivaluedMap<String, String> pAllParams = new MultivaluedHashMap<String, String>();
+        pAllParams.putAll(pListParams);
+        pAllParams.putAll(pQueryParams);
+        // MultivaluedMap<String, String> paramsToRvia = pMiqQuests.testInputParams(pAllParams);
         // Se instancia el conector y se solicitan los datos.
         pRestConnector = new RestConnector();
-        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pListParams, null);
+        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pAllParams, null);
         pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
         // Se procesa el resultado del conector paa evaluar y adaptar su contenido.
-        return (ResponseManager.processResponseConnector(pRequestConfig, pRestConnector, pResponseConnector, pMiqQuests));
+        String strRespuesta = ResponseManager.processResponseConnector(pRequestConfig, pRestConnector, pResponseConnector, pMiqQuests);
+        String entorno = AppConfigurationFactory.getConfiguration().getProperty(Constants.ENVIRONMENT);
+        if (Constants.Environment.TEST.name().equals(entorno))
+        {
+            // Utils.writeMock(pRequest, pUriInfo, pMiqQuests, strRespuesta);
+        }
+        return strRespuesta;
     }
 }

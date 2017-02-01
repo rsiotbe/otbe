@@ -85,7 +85,8 @@ public class RestWSConnector
         WebTarget pTarget = pClient.target(strUrlTotal);
         pLog.info("END_POINT:" + pMiqQuests.getEndPoint());
         Response pReturn = pTarget.request().header("Authorization", JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
-        pLog.info("GET: " + pReturn.toString());
+        // Evitar logueo de campos de login
+        logWithFilter(pReturn);
         return pReturn;
     }
 
@@ -157,8 +158,8 @@ public class RestWSConnector
         }
         strJsonData = pJson.toString();
         WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint(pRequest));
-        Response pReturn = pTarget.request().header("Authorization", JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).post(Entity.json(strJsonData));
-        pLog.info("Respose POST: " + pReturn.toString());
+        Response pReturn = pTarget.request().header("Authorization", JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).post(Entity.json(strJsonData));
+        logWithFilter(pReturn);
         return pReturn;
     }
 
@@ -180,9 +181,9 @@ public class RestWSConnector
      * @return Respuesta del proveedor de datos
      * @throws Exception
      */
-    public static Response put(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests, RequestConfig pRequestConfig,
-            String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject)
-            throws Exception
+    public static Response put(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests,
+            RequestConfig pRequestConfig, String strJsonData, MultivaluedMap<String, String> pPathParams,
+            HashMap<String, String> pParamsToInject) throws Exception
     {
         /*
          * se reutiliza la petición post puesto que es similar, en caso de una implementación diferente, es necesario
@@ -406,5 +407,19 @@ public class RestWSConnector
             }
         }
         return pParameters;
+    }
+
+    /**
+     * Filtra datos sensibles del request en la escritura de trazas
+     * 
+     * @param pRequest
+     * @return
+     */
+    private static void logWithFilter(Response pReturn)
+    {
+        if (pReturn.toString().indexOf("documento") == -1) // Campo devuelto por el servicio de login
+        {
+            pLog.info("GET: " + pReturn.toString());
+        }
     }
 }

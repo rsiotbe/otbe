@@ -1,5 +1,6 @@
 package com.rsi.rvia.rest.client;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.json.JSONArray;
@@ -11,10 +12,11 @@ import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.conector.RestRviaConnector;
 import com.rsi.rvia.rest.conector.RestWSConnector;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
+import com.rsi.rvia.rest.error.exceptions.RestConnectorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
+import com.rsi.rvia.rest.operation.MiqQuests.CompomentType;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
-
 
 /**
  * Clase para manejar la respuesta del RestConnector. Mira si es un error o si no lo es y compone una respuesta JSON
@@ -37,6 +39,14 @@ public class ResponseManager
      * @return
      * @throws Exception
      */
+    /**
+     * @param pRequestConfig
+     * @param pRestConnector
+     * @param pResponseConnector
+     * @param pMiqQuests
+     * @return
+     * @throws Exception
+     */
     public static String processResponseConnector(RequestConfig pRequestConfig, RestConnector pRestConnector,
             Response pResponseConnector, MiqQuests pMiqQuests) throws Exception
     {
@@ -49,37 +59,26 @@ public class ResponseManager
             /* no es un JSON, se evalua por si es un error web de ruralvia */
             if (RestRviaConnector.isRuralviaWebError(strJsonData))
             {
-                /* se procede a obtener la infomración del errorMap<String, String[]> parameters = request.getParameterMap();
-for(String parameter : parameters.keySet()) {
-    if(parameter.toLowerCase().startsWith("question")) {
-        String[] values = parameters.get(parameter);
-        //your code here
-    }
-}Map<String, String[]> parameters = request.getParameterMap();
-for(String parameter : parameters.keySet()) {
-    if(parameter.toLowerCase().startsWith("question")) {
-        String[] values = parameters.get(parameter);
-        //your code here
-    }
-}Map<String, String[]> parameters = request.getParameterMap();
-for(String parameter : parameters.keySet()) {
-    if(parameter.toLowerCase().startsWith("question")) {
-        String[] values = parameters.get(parameter);
-        //your code here
-    }
-}Map<String, String[]> parameters = request.getParameterMap();
-for(String parameter : parameters.keySet()) {
-    if(parameter.toLowerCase().startsWith("question")) {
-        String[] values = parameters.get(parameter);
-        //your code here
-    }
-} del interior del html devuelto por ruralvia */
+                /* se procede a obtener la infomración del error del interior del html devuelto por ruralvia */
                 throw RestRviaConnector.generateLogicalErrorException(strJsonData);
             }
             else if (RestRviaConnector.isRuralviaSessionTimeoutError(strJsonData))
             {
                 /* se procede a obtener la infomración del error del interior del html devuelto por ruralvia */
                 throw RestRviaConnector.generateLogicalErrorException(strJsonData);
+            }
+            else if (pMiqQuests.getComponentType() == CompomentType.COORD)
+            {
+                // Procesar html para extraer la coordenada
+                strJsonData = SignExtractor.extraerCoordenada(strJsonData);
+            }
+            else if (pResponseConnector.getStatus() != 200)
+            {
+                /*
+                 * se comprueba si al respuesta contiene un codigo de error http para genera la respuesta con el mismo
+                 * tipo
+                 */
+                throw new RestConnectorException(pResponseConnector.getStatus(), 99999, "Error al procesar la petición", pResponseConnector.getStatusInfo().getReasonPhrase(), null);
             }
             else
             {
@@ -95,7 +94,7 @@ for(String parameter : parameters.keySet()) {
         /* se comprueba si el json contiene un error, si es así se genera una excepción lógica */
         checkLogicalError(pRequestConfig, pMiqQuests, pResponseConnector, pJsonData);
         /* se formatea la respuesta para estandarizarla y eliminar información que el usuario final no necesita */
-        pJsonData = formatResponse(pJsonData, pMiqQuests.getIdMiq(), pRestConnector);
+        pJsonData = formatResponse(pJsonData, pMiqQuests, pRestConnector);
         return pJsonData.toString();
     }
 
@@ -146,7 +145,7 @@ for(String parameter : parameters.keySet()) {
      * @return
      * @throws Exception
      */
-    private static JSONObject formatResponse(JSONObject pJsonData, int nIdMiq, RestConnector pRestConnector)
+    private static JSONObject formatResponse(JSONObject pJsonData, MiqQuests pMiqQuests, RestConnector pRestConnector)
             throws Exception
     {
         /* se comprueba si el json pertenece a WS */
@@ -154,7 +153,7 @@ for(String parameter : parameters.keySet()) {
         {
             pJsonData = adjustWSJson(pJsonData);
         }
-        pJsonData = filterResponseFields(pJsonData, nIdMiq, pRestConnector);
+        pJsonData = filterResponseFields(pJsonData, pMiqQuests, pRestConnector);
         return pJsonData;
     }
 
@@ -221,11 +220,13 @@ for(String parameter : parameters.keySet()) {
         return pResponseObject;
     }
 
-    private static JSONObject filterResponseFields(JSONObject pJsonData, int nIdMiq, RestConnector pRestConnector)
-            throws Exception
+    private static JSONObject filterResponseFields(JSONObject pJsonData, MiqQuests pMiqQuests,
+            RestConnector pRestConnector) throws Exception
     {
+        // Estaría bien procesar los json estáticos aquí mismo
+        HttpServletRequest pRequest = pRestConnector.getRequest();
         /* Cargamos en el modelo los parámetros de salida */
-        SaveExitHierarchy.process(pJsonData, nIdMiq, pRestConnector.getMethod());
+        SaveExitHierarchy.process(pJsonData, pMiqQuests.getIdMiq(), pRestConnector.getMethod());
         // TODO: aqui ira el filtrado de campos de salida
         return pJsonData;
     }

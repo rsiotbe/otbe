@@ -4,11 +4,7 @@
  ************************************************************************/
 package com.rsi.rvia.translates;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import org.jsoup.nodes.Document;
@@ -16,105 +12,41 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.rsi.Constantes;
-import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
-import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.Constants;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
-import com.rsi.rvia.rest.tool.Utils;
 
 /** Clase que gestiona el cambio de idioma en el contenido HTML de la web. */
 public class TranslateProcessor
 {
-	private static Logger									pLog			= LoggerFactory.getLogger(TranslateProcessor.class);
-	public static Hashtable<String, TranslateEntry>	htCacheData	= new Hashtable<String, TranslateEntry>();
+	private static Logger	pLog	= LoggerFactory.getLogger(TranslateProcessor.class);
 
-	/**
-	 * Devuelve el tamaño de la cache
-	 * 
-	 * @return int con el tamaño de la cache
-	 */
-	public static int getCacheSize()
+	public static Hashtable<String, String> getTranslationsById(String[] pStrIds, String strLanguage) throws Exception
 	{
-		int nReturn = 0;
-		if (htCacheData != null)
-		{
-			nReturn = htCacheData.size();
-		}
-		return nReturn;
-	}
-
-	/**
-	 * Reinicia la Cache
-	 */
-	public static void resetCache()
-	{
-		if (htCacheData != null)
-		{
-			htCacheData = new Hashtable<String, TranslateEntry>();
-		}
-	}
-
-	/**
-	 * Devuelve los datos de la cache en formato texto
-	 * 
-	 * @return Contenido de la caché
-	 * @throws Exception
-	 */
-	public static String cacheToString() throws Exception
-	{
-		String strReturn;
-		strReturn = Utils.hastablePrettyPrintHtml(htCacheData);
-		return strReturn;
-	}
-
-	/**
-	 * Función que recibe una serie de identificadores de traducción e idioma y obtiene su traducción.
-	 * 
-	 * @param processIds
-	 *           Array de String con los identificadores
-	 * @param strLanguage
-	 *           String con el idioma (es_ES)
-	 * @return hastable con parejas identificador y su traducción.
-	 */
-	public static Hashtable<String, String> processIds(String[] pStrIds, String strLanguage)
-	{
-		ArrayList<String> alIdsTrans;
 		Hashtable<String, String> htReturn;
-		Hashtable<String, TranslateEntry> htTransData;
-		htTransData = new Hashtable<String, TranslateEntry>();
-		htReturn = new Hashtable<String, String>();
-		alIdsTrans = new ArrayList<String>(Arrays.asList(pStrIds));
-		pLog.debug("Se reciben los siguientes ids para traducir. astrIds:" + pStrIds);
-		try
-		{
-			htTransData = getTranslations(alIdsTrans);
-			pLog.debug("Traducciones recuperadas correctamente.");
-		}
-		catch (Exception ex)
-		{
-			pLog.error("Error al intentar recuperar las Traducciones de la BBDD", ex);
-		}
-		if (htTransData != null)
-		{
-			/* si no existe idioma se asigna espaol defecto */
-			if (strLanguage == null || strLanguage.trim().isEmpty())
-			{
-				strLanguage = Constantes.DEFAULT_LANGUAGE;
-				pLog.warn("No se ha definido idioma de la traduccion, se asigna el español");
-			}
-			for (int i = 0; i < pStrIds.length; i++)
-			{
-				String strAuxId = pStrIds[i];
-				if ((strAuxId == null) || (strAuxId.trim().isEmpty()))
-				{
-					continue;
-				}
-				String strAuxTrans = htTransData.get(strAuxId).getTranslate(strLanguage);
-				htReturn.put(strAuxId, strAuxTrans);
-			}
-		}
-		pLog.debug("datos a devolver por el metodo. htReturn: " + htReturn);
+		htReturn = TranslateCache.getTranslationsByCode(pStrIds, strLanguage);
+		return htReturn;
+	}
+
+	public static Hashtable<String, TranslateEntry> getTranslationsById(String[] pStrIds) throws Exception
+	{
+		Hashtable<String, TranslateEntry> htReturn;
+		htReturn = TranslateCache.getTranslationsByCode(pStrIds);
+		return htReturn;
+	}
+
+	public static Hashtable<String, String> getTranslationsByApp(String strAppName, String strLanguage)
+			throws Exception
+	{
+		Hashtable<String, String> htReturn;
+		htReturn = TranslateCache.getTranslationsByApp(strAppName, strLanguage);
+		return htReturn;
+	}
+
+	public static Hashtable<String, TranslateEntry> getTranslationsByApp(String strAppName) throws Exception
+	{
+		Hashtable<String, TranslateEntry> htReturn;
+		htReturn = TranslateCache.getTranslationsByApp(strAppName);
 		return htReturn;
 	}
 
@@ -122,12 +54,12 @@ public class TranslateProcessor
 	 * Función Principal, recibe el XHTML y el idioma y lo traduce
 	 * 
 	 * @param strHtmlt
-	 *           Texto html
+	 *            Texto html
 	 * @param pRequestConfigRvia
-	 *           Dattos de sessión de usuario de ruralvia
+	 *            Dattos de sessión de usuario de ruralvia
 	 * @return Documento jsoup con el HTML con la nueva traducción ya aplicada.
 	 */
-	public static Document processXHTML(String strHtmlt, RequestConfigRvia pRequestConfigRvia)
+	public static Document processXHTML(String strHtmlt, RequestConfigRvia pRequestConfigRvia, String strApp)
 	{
 		return processXHTML(new Document(strHtmlt), pRequestConfigRvia);
 	}
@@ -136,9 +68,9 @@ public class TranslateProcessor
 	 * Función Principal, recibe el documento Jsoup y el idioma y lo traduce
 	 * 
 	 * @param pDocument
-	 *           Documento jsoup que contien el html
+	 *            Documento jsoup que contien el html
 	 * @param pRequestConfig
-	 *           Dattos de sessión de usuario de ruralvia
+	 *            Dattos de sessión de usuario de ruralvia
 	 * @return Documento jsoup con el HTML con la nueva traducción ya aplicada.
 	 */
 	public static Document processXHTML(Document pDocument, RequestConfig pRequestConfig)
@@ -162,7 +94,9 @@ public class TranslateProcessor
 		{
 			try
 			{
-				htTransData = getTranslations(alIdsTrans);
+				String[] aIdsTrans = new String[alIdsTrans.size()];
+				aIdsTrans = alIdsTrans.toArray(aIdsTrans);
+				htTransData = getTranslationsById(aIdsTrans);
 				pLog.debug("Traducciones recuperadas correctamente.");
 			}
 			catch (Exception ex)
@@ -173,7 +107,7 @@ public class TranslateProcessor
 		if (htTransData != null && !htTransData.isEmpty())
 		{
 			if (strLanguage == null)
-				strLanguage = Constantes.DEFAULT_LANGUAGE;
+				strLanguage = Constants.DEFAULT_LANGUAGE;
 			pLog.debug("Documento premodificación es nulo?: " + (pDocument == null));
 			pDocument = modifyDocument(pDocument, htTransData, strLanguage);
 			pLog.debug("Documento modificado Correctamente. Tamaño de htTransData: " + htTransData.size());
@@ -182,79 +116,10 @@ public class TranslateProcessor
 	}
 
 	/**
-	 * Función para recuperar las traducciones dada una lista de IDs.
-	 * 
-	 * @param alIdsTrans
-	 *           ArrayList<String> con los IDs de las traducciones.
-	 * @return HashTable con las traducciones en todos los idiomas de cada ID de la lista inicial
-	 * @throws Exception
-	 */
-	private static Hashtable<String, TranslateEntry> getTranslations(ArrayList<String> alIdsTrans) throws Exception
-	{
-		String strNewsIds = "";
-		Hashtable<String, TranslateEntry> htResult = new Hashtable<String, TranslateEntry>();
-		for (String strId : alIdsTrans)
-		{
-			if (!htCacheData.containsKey(strId))
-			{
-				if (!strNewsIds.equals(""))
-				{
-					strNewsIds += ",";
-				}
-				strNewsIds += "'" + strId + "'";
-			}
-			else
-			{
-				htResult.put(strId, (TranslateEntry) htCacheData.get(strId));
-			}
-		}
-		if (!strNewsIds.equals(""))
-		{
-			Connection pConnection = null;
-			PreparedStatement pPreparedStatement = null;
-			ResultSet pResultSet = null;
-			try
-			{
-				String strQuery = "SELECT codigo,idioma,traduccion FROM bdptb079_idioma where codigo in (?)";
-				pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-				pPreparedStatement = pConnection.prepareStatement(strQuery);
-				pPreparedStatement.setString(1, strNewsIds);
-				pResultSet = pPreparedStatement.executeQuery();
-				while (pResultSet.next())
-				{
-					String strCode = (String) pResultSet.getString("codigo");
-					String strIdiom = (String) pResultSet.getString("idioma");
-					String strTraduction = (String) pResultSet.getString("traduccion");
-					if (!htResult.containsKey(strCode))
-					{
-						TranslateEntry pTrans = new TranslateEntry(strCode);
-						htResult.put(strCode, pTrans);
-						if (!htCacheData.containsKey(strCode))
-						{
-							htCacheData.put(strCode, pTrans);
-						}
-					}
-					htResult.get(strCode).addTranslate(strIdiom, strTraduction);
-					htCacheData.get(strCode).addTranslate(strIdiom, strTraduction);
-				}
-			}
-			catch (Exception ex)
-			{
-				pLog.error("Error al realizar la consulta a la BBDD.");
-			}
-			finally
-			{
-				DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
-			}
-		}
-		return htResult;
-	}
-
-	/**
 	 * Función que extrae todos los IDs de data-translate dado un Document(Jsoup)
 	 * 
 	 * @param pDocument
-	 *           Document(Jsoup) con el HTML parseado.
+	 *            Document(Jsoup) con el HTML parseado.
 	 * @return ArrayList<String> con los IDs de data-translate
 	 */
 	private static ArrayList<String> extractIdsFromDocument(Document pDocument)
@@ -276,11 +141,11 @@ public class TranslateProcessor
 	 * Función que modifica sus etiquetas data-translate con las nuevas traducciones.
 	 * 
 	 * @param doc
-	 *           Document(Jsoup) a modificar.
+	 *            Document(Jsoup) a modificar.
 	 * @param htData
-	 *           Hashtable con los IDs data.translate y las traducciones.
+	 *            Hashtable con los IDs data.translate y las traducciones.
 	 * @param strLanguage
-	 *           String con el idioma al que se quiere traducir.
+	 *            String con el idioma al que se quiere traducir.
 	 * @return Document(Jsoup) con la traducción ya puesta.
 	 */
 	private static Document modifyDocument(Document pDoc, Hashtable<String, TranslateEntry> htData, String strLanguage)
@@ -288,14 +153,14 @@ public class TranslateProcessor
 		Enumeration<String> pEnumHTData = htData.keys();
 		while (pEnumHTData.hasMoreElements())
 		{
-			String strHTKey = (String) pEnumHTData.nextElement();
-			Elements pListIDsTrans = pDoc.select("[data-translate=\"" + strHTKey + "\"]");
+			String strHtKey = (String) pEnumHTData.nextElement();
+			Elements pListIDsTrans = pDoc.select("[data-translate=\"" + strHtKey + "\"]");
 			for (Element pItem : pListIDsTrans)
 			{
 				if (pItem != null)
 				{
-					TranslateEntry pTrans = (TranslateEntry) htData.get(strHTKey);
-					String strTraduccion = pTrans.getTranslate(strLanguage);
+					TranslateEntry pTrans = (TranslateEntry) htData.get(strHtKey);
+					String strTraduccion = pTrans.getTranslation(strLanguage);
 					if (strTraduccion != null)
 					{
 						pItem.text(strTraduccion);

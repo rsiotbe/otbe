@@ -4,12 +4,12 @@ import java.util.Hashtable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.rsi.Constantes;
+import com.rsi.Constants;
 
 /**
  * Objeto que representa toda la información y configuración que contiene un simulador
  */
-public class SimulatorObject
+public class SimulatorConfig
 {
     private int                       nId;
     private String                    strNRBE;
@@ -75,7 +75,7 @@ public class SimulatorObject
      * @param fAllowUserTelephone
      *            Permite la ingresión de telefono de contacto con el cliente
      */
-    public SimulatorObject(int nId, String strNRBE, String strNRBEName, String strCategory, String strSimpleName,
+    public SimulatorConfig(int nId, String strNRBE, String strNRBEName, String strCategory, String strSimpleName,
             String strComercialName, String strLoanType, boolean fIsActive, boolean fAllowBooking,
             boolean fAllowUserEmail, boolean fAllowUserTelephone, String strCustomerSupportEmail,
             String strCustomerSupportTelephone, String strReceivingOfficeEmail, String strLOPD, String strDisclaimer,
@@ -118,52 +118,53 @@ public class SimulatorObject
         JSONObject pReturn = new JSONObject();
         JSONObject pConfig = new JSONObject();
         JSONObject pTerms;
-        pReturn.put(Constantes.SIMULADOR_NRBE, strNRBE);
-        pReturn.put(Constantes.SIMULADOR_NRBE_NAME, strNRBEName);
-        pReturn.put(Constantes.SIMULADOR_SIMPLE_NAME, strSimpleName);
-        pReturn.put(Constantes.SIMULADOR_COMERCIAL_NAME, strComercialName);
-        pReturn.put(Constantes.SIMULADOR_SAC_EMAIL, strCustomerSupportEmail);
-        pReturn.put(Constantes.SIMULADOR_SAC_TELEPHONE, strCustomerSupportTelephone);
-        pReturn.put(Constantes.SIMULADOR_OFICINA_EMAIL, strReceivingOfficeEmail);
-        pReturn.put(Constantes.SIMULADOR_CATEGORY, strCategory);
-        pReturn.put(Constantes.SIMULADOR_CALC_TYPE, pLoanType.name());
-        pReturn.put(Constantes.SIMULADOR_ACTIVE, fIsActive);
-        pReturn.put(Constantes.SIMULADOR_ALLOW_BOOKING, fAllowBooking);
-        pReturn.put(Constantes.SIMULADOR_ALLOW_USER_EMAIL, fAllowUserEmail);
-        pReturn.put(Constantes.SIMULADOR_ALLOW_USER_TELEPHONE, fAllowUserTelephone);
-        pReturn.put(Constantes.SIMULADOR_LOPD, strLOPD);
-        pReturn.put(Constantes.SIMULADOR_DISCLAIMER, strDisclaimer);
-        pReturn.put(Constantes.SIMULADOR_CONTRACT_CONDITIONS, strContractConditions);
-        pReturn.put(Constantes.SIMULADOR_DESCRIPTION, strDescription);
+        pReturn.put(Constants.SIMULADOR_ID, nId);
+        pReturn.put(Constants.SIMULADOR_NRBE, strNRBE);
+        pReturn.put(Constants.SIMULADOR_NRBE_NAME, strNRBEName);
+        pReturn.put(Constants.SIMULADOR_SIMPLE_NAME, strSimpleName);
+        pReturn.put(Constants.SIMULADOR_COMERCIAL_NAME, strComercialName);
+        pReturn.put(Constants.SIMULADOR_SAC_EMAIL, strCustomerSupportEmail);
+        pReturn.put(Constants.SIMULADOR_SAC_TELEPHONE, strCustomerSupportTelephone);
+        pReturn.put(Constants.SIMULADOR_OFICINA_EMAIL, strReceivingOfficeEmail);
+        pReturn.put(Constants.SIMULADOR_CATEGORY, strCategory);
+        pReturn.put(Constants.SIMULADOR_CALC_TYPE, pLoanType.name());
+        pReturn.put(Constants.SIMULADOR_ACTIVE, fIsActive);
+        pReturn.put(Constants.SIMULADOR_ALLOW_BOOKING, fAllowBooking);
+        pReturn.put(Constants.SIMULADOR_ALLOW_USER_EMAIL, fAllowUserEmail);
+        pReturn.put(Constants.SIMULADOR_ALLOW_USER_TELEPHONE, fAllowUserTelephone);
+        pReturn.put(Constants.SIMULADOR_LOPD, strLOPD);
+        pReturn.put(Constants.SIMULADOR_DISCLAIMER, strDisclaimer);
+        pReturn.put(Constants.SIMULADOR_CONTRACT_CONDITIONS, strContractConditions);
+        pReturn.put(Constants.SIMULADOR_DESCRIPTION, strDescription);
         /* se realiza la comprobación si tiene comisión de apertuyra para rellenar los datos */
+        pConfig.put("amount", getAmountJson());
+        pConfig.put("fee", getFees());
+        pTerms = getTerms();
         switch (pLoanType)
         {
             case FRENCHLOAN:
-                pConfig.put("amount", getAmountJson());
                 pConfig.put("interest", getInterestOneRange());
-                pConfig.put("term", getTerms());
-                pConfig.put("fee", getFees());
+                pConfig.put("term", pTerms);
                 break;
             case MORTGAGE:
-                pConfig.put("amount", getAmountJson());
                 pConfig.put("interest", getInterestOneRange());
                 /* se añade el parámetro especial de plazos por año */
-                pTerms = getTerms();
                 pTerms.put("deadlinePerYear", Integer.parseInt((String) pConfigParams.get("deadlinePerYear")));
                 pConfig.put("term", pTerms);
-                pConfig.put("fee", getFees());
                 /* porcentage maximo hipotecable de la vivienda */
                 pConfig.put("loanPercentMax", Double.parseDouble((String) pConfigParams.get("loanAmountPercentMax")));
+                pConfig.put("newLoanPercentMax", Double.parseDouble((String) pConfigParams.get("newLoanPercentMax")));
+                pConfig.put("oldLoanPercentMax", Double.parseDouble((String) pConfigParams.get("oldLoanPercentMax")));
                 break;
             case MORTGAGECHANGE:
-                pConfig.put("amount", getAmountJson());
                 pConfig.put("range", getInterestAndTermsTwoRanges());
                 /* se añade el parámetro especial de plazos por año */
-                pTerms = getTerms();
                 pTerms.put("deadlinePerYear", Integer.parseInt((String) pConfigParams.get("deadlinePerYear")));
-                pConfig.put("fee", getFees());
+                pConfig.put("term", pTerms);
                 /* porcentage maximo hipotecable de la vivienda */
                 pConfig.put("loanPercentMax", Double.parseDouble((String) pConfigParams.get("loanAmountPercentMax")));
+                pConfig.put("newLoanPercentMax", Double.parseDouble((String) pConfigParams.get("newLoanPercentMax")));
+                pConfig.put("oldLoanPercentMax", Double.parseDouble((String) pConfigParams.get("oldLoanPercentMax")));
                 break;
         }
         pReturn.put("config", pConfig);
@@ -205,7 +206,7 @@ public class SimulatorObject
         double dbAmountDefault;
         dbAmountMax = Double.parseDouble((String) pConfigParams.get("amountMax"));
         dbAmountMin = Double.parseDouble((String) pConfigParams.get("amountMin"));
-        dbAmountDefault = Double.parseDouble((String) pConfigParams.get("amountMin"));
+        dbAmountDefault = Double.parseDouble((String) pConfigParams.get("amountDefault"));
         pReturn = new JSONObject();
         pReturn.put("max", dbAmountMax);
         pReturn.put("min", dbAmountMin);
@@ -264,8 +265,7 @@ public class SimulatorObject
                 else if (pInterestType == InterestType.REFERENCE)
                 {
                     double dbInterestBase = Double.parseDouble((String) pConfigParams.get(strPattern + "interestBase"));
-                    double dbInterestDelta = Double.parseDouble((String) pConfigParams.get(strPattern
-                            + "interestDelta"));
+                    double dbInterestDelta = Double.parseDouble((String) pConfigParams.get(strPattern + "interestDelta"));
                     double dbInterest = dbInterestBase + dbInterestDelta;
                     pInterest.put("interest", dbInterest);
                     pInterest.put("base", dbInterestBase);
