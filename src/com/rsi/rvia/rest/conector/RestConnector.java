@@ -59,24 +59,23 @@ public class RestConnector
     {
         Response pReturn = null;
         String strMethod = pRequest.getMethod();
-        String strComponentType;
         this._requestMethod = strMethod;
         this._privateContextRequest = pRequest;
         /* se obtiene la configuración de la operativa desde base de datos */
-        strComponentType = pMiqQuests.getComponentType();
         pLog.info("Se obtiene la configuración de la base de datos. MiqQuest: " + pMiqQuests);
-        pLog.info("Se recibe una petición con tipo de metodo : " + strMethod + " a " + strComponentType);
-        switch (strComponentType)
+        pLog.info("Se recibe una petición con tipo de metodo : " + strMethod + " a "
+                + pMiqQuests.getComponentType().name());
+        switch (pMiqQuests.getComponentType())
         {
-            case "RVIA":
+            case RVIA:
                 pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, (RequestConfigRvia) pRequestConfig, strData, pPathParams, pParamsToInject);
                 break;
-            case "COORD":
+            case COORD:
                 pReturn = RestRviaConnector.doDirectConnectionToJsp(pRequest, pMiqQuests, (RequestConfigRvia) pRequestConfig, strData, pPathParams, pParamsToInject);
                 break;
-            case "WS":
-            case "API":
-            case "SIMULATOR":
+            case WS:
+            case API:
+            case SIMULATOR:
                 switch (strMethod)
                 {
                     case "GET":
@@ -100,6 +99,10 @@ public class RestConnector
                         break;
                 }
                 break;
+            case LITE:
+                throw new Exception("Tipo de componente sin desarrollar");
+            default:
+                throw new Exception("No se ha determinado un tipo de componente válido para la petición");
         }
         return pReturn;
     }
