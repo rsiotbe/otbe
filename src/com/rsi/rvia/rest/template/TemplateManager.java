@@ -11,6 +11,8 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.multibank.CssMultiBankProcessor;
+import com.rsi.rvia.rest.operation.MiqQuests;
+import com.rsi.rvia.rest.operation.MiqQuests.CompomentType;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.tool.Utils;
@@ -72,21 +74,27 @@ public class TemplateManager
      * Busca el template y lo lee, carga las traducciones, inyecta el script para ajustar el iframe, ajusta los estilos
      * para multicanalidad
      * 
+     * @param MiqQuests
+     *            Objeto MiqQuest asociado a la petición
      * @param strPathToTemplate
-     * @param pRequestConfigRvia
+     *            Ruta del template
+     * @param pRequestConfig
+     *            Objeto datos de sesion ruralvia
      * @return
      * @throws Exception
      */
-    public static String processTemplate(String strPathToTemplate, RequestConfigRvia pRequestConfigRvia)
-            throws Exception
+    public static String processTemplate(MiqQuests pMiqQuests, String strPathToTemplate,
+            RequestConfigRvia pRequestConfigRvia) throws Exception
     {
-        return processTemplate(strPathToTemplate, pRequestConfigRvia, "{}");
+        return processTemplate(pMiqQuests, strPathToTemplate, pRequestConfigRvia, "{}");
     }
 
     /**
      * Busca el template y lo lee, carga las traducciones, inyecta el script para ajustar el iframe, ajusta los estilos
      * para multicanalidad e inyecta los datos en json.
      * 
+     * @param MiqQuests
+     *            Objeto MiqQuest asociado a la petición
      * @param strPathToTemplate
      *            Ruta del template
      * @param pRequestConfig
@@ -96,8 +104,8 @@ public class TemplateManager
      * @return Template procesado.
      * @throws Exception
      */
-    public static String processTemplate(String strPathToTemplate, RequestConfig pRequestConfig, String strDataJson)
-            throws Exception
+    public static String processTemplate(MiqQuests pMiqQuests, String strPathToTemplate, RequestConfig pRequestConfig,
+            String strDataJson) throws Exception
     {
         String strReturn;
         Document pDocument;
@@ -126,8 +134,15 @@ public class TemplateManager
                 htCacheTemplate.put(strCacheKey, pDocument);
                 pDocument = Jsoup.parse(pDocument.toString(), "", Parser.htmlParser());
             }
-            pDocument = includeIframeScript(pDocument);
-            pDocument = includeUpdateRviaScript(pDocument);
+            /*
+             * si la platilla es de tipo ruralvia se añaden los script necesarios para mantener la sesión original de
+             * isum
+             */
+            if (pMiqQuests != null && pMiqQuests.getComponentType() == CompomentType.RVIA)
+            {
+                pDocument = includeIframeScript(pDocument);
+                pDocument = includeUpdateRviaScript(pDocument);
+            }
             pDocument = adjustCssMultiBank(pDocument, pRequestConfig);
             pDocument.outputSettings().escapeMode(EscapeMode.base);
             strReturn = pDocument.html();

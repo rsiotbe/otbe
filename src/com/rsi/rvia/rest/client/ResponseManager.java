@@ -14,6 +14,7 @@ import com.rsi.rvia.rest.conector.RestWSConnector;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 import com.rsi.rvia.rest.error.exceptions.RestConnectorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
+import com.rsi.rvia.rest.operation.MiqQuests.CompomentType;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 
@@ -49,7 +50,6 @@ public class ResponseManager
     public static String processResponseConnector(RequestConfig pRequestConfig, RestConnector pRestConnector,
             Response pResponseConnector, MiqQuests pMiqQuests) throws Exception
     {
-        String strCompType = pMiqQuests.getComponentType();
         String strJsonData;
         strJsonData = pResponseConnector.readEntity(String.class);
         JSONObject pJsonData;
@@ -67,7 +67,7 @@ public class ResponseManager
                 /* se procede a obtener la infomración del error del interior del html devuelto por ruralvia */
                 throw RestRviaConnector.generateLogicalErrorException(strJsonData);
             }
-            else if (strCompType.equals("COORD"))
+            else if (pMiqQuests.getComponentType() == CompomentType.COORD)
             {
                 // Procesar html para extraer la coordenada
                 strJsonData = SignExtractor.extraerCoordenada(strJsonData);
