@@ -79,8 +79,7 @@ public class OperationManager
             // Se comprueba si el servicio de isum está permitido.
             if (!IsumValidation.IsValidService(pRequestConfigRvia))
             {
-                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido",
-                        "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
             }
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             pMiqQuests = createMiqQuests(pUriInfo);
@@ -90,8 +89,7 @@ public class OperationManager
         }
         catch (Exception ex)
         {
-            pLog.error(
-                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
@@ -137,8 +135,7 @@ public class OperationManager
             // Se comprueba si el servicio de isum está permitido.
             if (!IsumValidation.IsValidService(pRequestConfigRvia))
             {
-                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido",
-                        "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
             }
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
@@ -148,15 +145,13 @@ public class OperationManager
         }
         catch (Exception ex)
         {
-            pLog.error(
-                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
         {
             /* Se construye la respuesta ya sea error, o correcta, json o template */
-            pResponseConnector = buildResponse(pErrorCaptured, MediaType.APPLICATION_XHTML_XML_TYPE, pMiqQuests,
-                    strJsonData, pRequestConfigRvia);
+            pResponseConnector = buildResponse(pErrorCaptured, MediaType.APPLICATION_XHTML_XML_TYPE, pMiqQuests, strJsonData, pRequestConfigRvia);
         }
         catch (Exception ex)
         {
@@ -231,8 +226,7 @@ public class OperationManager
                 else
                 {
                     // Login fallido
-                    throw new LogicalErrorException(403, 9999, "Login failed",
-                            "Suministre credenciales válidas para iniciar sesión", new Exception());
+                    throw new LogicalErrorException(403, 9999, "Login failed", "Suministre credenciales válidas para iniciar sesión", new Exception());
                 }
             }
             else
@@ -245,20 +239,17 @@ public class OperationManager
             {
                 throw new LogicalErrorException(401, 9999, "Unauthorized", "Sesión no válida", new Exception());
             }
-            pResponseConnector = pRestConnector.getData(pRequest, strData, null, pMiqQuests, pListParams,
-                    pParamsToInject);
+            pResponseConnector = pRestConnector.getData(pRequest, strData, null, pMiqQuests, pListParams, pParamsToInject);
             pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
             /* se procesa el resultado del conector paa evaluar y adaptar su contenido */
-            strJsonData = ResponseManager.processResponseConnector(null, pRestConnector, pResponseConnector,
-                    pMiqQuests);
+            strJsonData = ResponseManager.processResponseConnector(null, pRestConnector, pResponseConnector, pMiqQuests);
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
             /* se obtiene la plantilla destino si es que existe */
             strTemplate = pMiqQuests.getTemplate();
         }
         catch (Exception ex)
         {
-            pLog.error(
-                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
@@ -272,16 +263,14 @@ public class OperationManager
                     strTemplate = ErrorManager.ERROR_TEMPLATE;
                 strJsonData = pErrorCaptured.getJsonError();
                 nReturnHttpCode = pErrorCaptured.getHttpCode();
-                pLog.info(
-                        "Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
+                pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
             }
             if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
             {
                 pLog.info("La petición utiliza plantilla XHTML");
                 strJsonData = TemplateManager.processTemplate(strTemplate, null, strJsonData);
             }
-            pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).header("Authorization",
-                    JWT).build();
+            pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).header("Authorization", JWT).build();
         }
         catch (Exception ex)
         {
@@ -307,15 +296,33 @@ public class OperationManager
             password = "03052445";
             SOAPEndPoint = "http://soa02.risa";
         }
-        String strBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                + "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" "
-                + "xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">"
-                + "<soap:Header>" + "<ee:RSISecCampo1>03054906</ee:RSISecCampo1>"
-                + "<ee:RSISecCampo2>50456061H</ee:RSISecCampo2>" + "<ee:RSISecCampo3>20141217155327</ee:RSISecCampo3>"
-                + "<ee:RSISecCampo4></ee:RSISecCampo4>" + "<ee:RSISecCampo5>0f0262740a3f50d9</ee:RSISecCampo5>"
-                + "</soap:Header><soap:Body>" + "<ee:EE_I_AutenticarUsuario>" + "<ee:usuario>" + usuario
-                + "</ee:usuario>" + "<ee:password>" + password + "</ee:password>" + "<ee:documento>" + documento
-                + "</ee:documento>" + "</ee:EE_I_AutenticarUsuario>" + "</soap:Body>" + "</soap:Envelope>";
+        /*
+         * String strBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+         * "<soapenv:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+         * "xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">" + "<soapenv:Header>"
+         * + "<ee:RSISecCampo1>03054906</ee:RSISecCampo1>" + "<ee:RSISecCampo2>50456061H</ee:RSISecCampo2>" +
+         * "<ee:RSISecCampo3>20141217155327</ee:RSISecCampo3>" + "<ee:RSISecCampo4></ee:RSISecCampo4>" +
+         * "<ee:RSISecCampo5>0f0262740a3f50d9</ee:RSISecCampo5>" + "</soapenv:Header><soapenv:Body>" +
+         * "<ee:EE_I_AutenticarUsuario>" + "<ee:usuario>" + usuario + "</ee:usuario>" + "<ee:password>" + password +
+         * "</ee:password>" + "<ee:documento>" + documento + "</ee:documento>" + "</ee:EE_I_AutenticarUsuario>" +
+         * "</soapenv:Body>" + "</soapenv:Envelope>";
+         */
+        String strBody = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">"
+                + "   <soapenv:Header/>                                     "
+                + "   <soapenv:Body>                                        "
+                + "      <ee:EE_I_AutenticarUsuario>                        "
+                + "         <ee:usuario>"
+                + usuario
+                + "</ee:usuario>        "
+                + "         <ee:password>"
+                + password
+                + "</ee:password>     "
+                + "         <ee:documento>"
+                + documento
+                + "</ee:documento>  "
+                + "      </ee:EE_I_AutenticarUsuario>                       "
+                + "   </soapenv:Body>                                       "
+                + "</soapenv:Envelope>                                      ";
         StringEntity stringEntity = new StringEntity(strBody, "UTF-8");
         stringEntity.setChunked(true);
         // Request parameters and other properties.
@@ -333,6 +340,7 @@ public class OperationManager
         {
             strResponse = EntityUtils.toString(entity);
         }
+        pLog.info("Respuesta del servicio de login: " + strResponse);
         strResponse = strResponse.replace("\n", "");
         String codRetorno = strResponse.replaceAll("^.*<ee:codigoRetorno>([^<]*)</ee:codigoRetorno>.*$", "$1");
         if (Integer.parseInt(codRetorno) == 0)
@@ -356,6 +364,9 @@ public class OperationManager
             String codEntidad = strResponse.replaceAll("^.*<ee:entidad>([^<]*)</ee:entidad>.*$", "$1");
             String idInternoPe = strResponse.replaceAll("^.*<ee:idInternoPe>([^<]*)</ee:idInternoPe>.*$", "$1");
             String nTarjeta = strResponse.replaceAll("^.*<ee:numeroTarjeta>([^<]*)</ee:numeroTarjeta>.*$", "$1");
+            codEntidad = codEntidad.trim();
+            idInternoPe = idInternoPe.trim();
+            nTarjeta = nTarjeta.trim();
             if (entorno.equals("TEST"))
             {
                 fields.put("codEntidad", "3076");
@@ -406,15 +417,13 @@ public class OperationManager
         }
         catch (Exception ex)
         {
-            pLog.error(
-                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
         {
             /* Se construye la respuesta ya sea error, o correcta, json o template */
-            pResponseConnector = buildResponse(pErrorCaptured, MediaType.APPLICATION_XHTML_XML_TYPE, pMiqQuests,
-                    strJsonData, pRequestConfig);
+            pResponseConnector = buildResponse(pErrorCaptured, MediaType.APPLICATION_XHTML_XML_TYPE, pMiqQuests, strJsonData, pRequestConfig);
         }
         catch (Exception ex)
         {
@@ -461,8 +470,7 @@ public class OperationManager
         }
         catch (Exception ex)
         {
-            pLog.error(
-                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
@@ -519,8 +527,7 @@ public class OperationManager
             pMiqQuests = createMiqQuests(pUriInfo);
             if (pMiqQuests == null)
             {
-                throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación",
-                        "El path no corresponde con ninguna entrada de MiqQuest", null);
+                throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
             }
             /* se obtiene el codigo de entidad de donde procede la llamada */
             JSONObject pDataInput = new JSONObject();
@@ -535,8 +542,7 @@ public class OperationManager
         }
         catch (Exception ex)
         {
-            pLog.error(
-                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
@@ -576,8 +582,7 @@ public class OperationManager
             pMiqQuests = createMiqQuests(pUriInfo);
             if (pMiqQuests == null)
             {
-                throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación",
-                        "El path no corresponde con ninguna entrada de MiqQuest", null);
+                throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
             }
             /* se instancia el conector y se solicitan los datos */
             strJsonResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, strJsonData);
@@ -585,8 +590,7 @@ public class OperationManager
         }
         catch (Exception ex)
         {
-            pLog.error(
-                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
@@ -684,8 +688,7 @@ public class OperationManager
         // Se comprueba si el servicio de isum está permitido.
         if (!IsumValidation.IsValidService(pRequestConfigRvia))
         {
-            throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido",
-                    "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+            throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
         }
         return pRequestConfigRvia;
     }
@@ -733,12 +736,10 @@ public class OperationManager
         // MultivaluedMap<String, String> paramsToRvia = pMiqQuests.testInputParams(pAllParams);
         // Se instancia el conector y se solicitan los datos.
         pRestConnector = new RestConnector();
-        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pAllParams,
-                null);
+        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pAllParams, null);
         pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
         // Se procesa el resultado del conector paa evaluar y adaptar su contenido.
-        String strRespuesta = ResponseManager.processResponseConnector(pRequestConfig, pRestConnector,
-                pResponseConnector, pMiqQuests);
+        String strRespuesta = ResponseManager.processResponseConnector(pRequestConfig, pRestConnector, pResponseConnector, pMiqQuests);
         String entorno = AppConfigurationFactory.getConfiguration().getProperty(Constants.ENVIRONMENT);
         if (Constants.Environment.TEST.name().equals(entorno))
         {
