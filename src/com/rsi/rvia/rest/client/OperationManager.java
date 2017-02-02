@@ -377,7 +377,7 @@ public class OperationManager
             {
                 fields.put("codEntidad", codEntidad.replace(" ", ""));
                 fields.put("idInternoPe", idInternoPe.replace(" ", ""));
-                fields.put("nTarjeta", nTarjeta.replace(" ", ""));
+                fields.put("codTarjeta", nTarjeta.replace(" ", ""));
             }
             return fields;
         }
