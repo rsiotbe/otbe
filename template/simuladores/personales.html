@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="../css/styles.min.css"/>
 </head>
 <body>
+<!-- build:include:test test.html -->
+<!-- /build -->
 <div class="wr-simulador">
     <div class="wr-cookies">
         <p>Utilizamos cookies propias y de terceros para analizar y personalizar su navegación. Si continua navegando, consideramos que acepta su instalación y uso. Puede cambiar la configuración u obtener más información
@@ -303,8 +305,12 @@
                         <div class="col-md-8 col-md-offset-2">
                             <div class="checkbox">
                                 <label for="terms">
-                                    <input type="checkbox" id="terms" name="terms" class="js-form-check"> <a href="" data-toggle="modal" data-target="#modal-condiciones" class="link-green">He
-                                    leído y <span class="text-underline">acepto las condiciones del servicio</span></a> </label>
+                                    <input type="checkbox" id="terms" name="terms" class="js-form-check"> <a href=""
+                                                                                                             data-toggle="modal"
+                                                                                                             data-target="#modal-lopd"
+                                                                                                             class="link-green">He
+                                    leído y <span class="text-underline">acepto las condiciones del servicio</span></a>
+                                </label>
                                 <div><span class="error error-check js-error-check"></span></div>
                             </div>
                         </div>
@@ -367,6 +373,28 @@
     <!-- /.modal-dialog -->
 </div>
 <!--end modal condiciones-->
+
+<!-- modal aviso legal -->
+<div class="modal fade" id="modal-lopd" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Ley Orgánica de Protección de Datos de Carácter Personal</h4></div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- end modal aviso legal -->
+
 <!--end modal cookies-->
 <div class="modal fade" id="modal-cookies" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
