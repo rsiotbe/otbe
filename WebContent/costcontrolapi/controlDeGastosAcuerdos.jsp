@@ -44,6 +44,10 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
 	else{
 	    whereLineaEq=" AND trim(t1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0311','0321','0351','0352','0171','0551','0151')";
 	}
+	
+
+	
+	
 /* BEGIN: Extracción de los acuerdos y sus alias de Banca */
     String strQuery = 
    		 " select  substr(b.cta_aso,11,20) acuerdo, trim (b.descr_txt) txtproducto " +
@@ -52,7 +56,7 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
    				 " and a.estado='A'" +
    				 " and a.nrbe='" + request.getParameter("codEntidad") + "'" +
    				 " and a.tarjeta_cod='" + request.getParameter("codTarjeta") + "'" ;
-	
+    pLog.info("Query a banca para extraer los alias: "+ strQuery);    
 	Connection pConnection = null;
 	PreparedStatement pPreparedStatement = null;
 	ResultSet pResultSet = null;
@@ -63,6 +67,9 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
 	String strFiltroAcuerdos = " and t1.num_sec_ac in (";
 	String coma="";
 	String strIdInterno=request.getParameter("idInternoPe");
+
+	
+	
 	
    while (pResultSet.next())
    {      

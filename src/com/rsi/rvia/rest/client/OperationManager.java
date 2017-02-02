@@ -296,15 +296,22 @@ public class OperationManager
             password = "03052445";
             SOAPEndPoint = "http://soa02.risa";
         }
-        String strBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                + "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" "
-                + "xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">"
-                + "<soap:Header>" + "<ee:RSISecCampo1>03054906</ee:RSISecCampo1>"
-                + "<ee:RSISecCampo2>50456061H</ee:RSISecCampo2>" + "<ee:RSISecCampo3>20141217155327</ee:RSISecCampo3>"
-                + "<ee:RSISecCampo4></ee:RSISecCampo4>" + "<ee:RSISecCampo5>0f0262740a3f50d9</ee:RSISecCampo5>"
-                + "</soap:Header><soap:Body>" + "<ee:EE_I_AutenticarUsuario>" + "<ee:usuario>" + usuario
-                + "</ee:usuario>" + "<ee:password>" + password + "</ee:password>" + "<ee:documento>" + documento
-                + "</ee:documento>" + "</ee:EE_I_AutenticarUsuario>" + "</soap:Body>" + "</soap:Envelope>";
+        String strBody = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">"
+                + "   <soapenv:Header/>                                     "
+                + "   <soapenv:Body>                                        "
+                + "      <ee:EE_I_AutenticarUsuario>                        "
+                + "         <ee:usuario>"
+                + usuario
+                + "</ee:usuario>        "
+                + "         <ee:password>"
+                + password
+                + "</ee:password>     "
+                + "         <ee:documento>"
+                + documento
+                + "</ee:documento>  "
+                + "      </ee:EE_I_AutenticarUsuario>                       "
+                + "   </soapenv:Body>                                       "
+                + "</soapenv:Envelope>                                      ";
         StringEntity stringEntity = new StringEntity(strBody, "UTF-8");
         stringEntity.setChunked(true);
         // Request parameters and other properties.
@@ -322,6 +329,7 @@ public class OperationManager
         {
             strResponse = EntityUtils.toString(entity);
         }
+        pLog.info("Respuesta del servicio de login: " + strResponse);
         strResponse = strResponse.replace("\n", "");
         String codRetorno = strResponse.replaceAll("^.*<ee:codigoRetorno>([^<]*)</ee:codigoRetorno>.*$", "$1");
         if (Integer.parseInt(codRetorno) == 0)
@@ -345,6 +353,9 @@ public class OperationManager
             String codEntidad = strResponse.replaceAll("^.*<ee:entidad>([^<]*)</ee:entidad>.*$", "$1");
             String idInternoPe = strResponse.replaceAll("^.*<ee:idInternoPe>([^<]*)</ee:idInternoPe>.*$", "$1");
             String nTarjeta = strResponse.replaceAll("^.*<ee:numeroTarjeta>([^<]*)</ee:numeroTarjeta>.*$", "$1");
+            codEntidad = codEntidad.trim();
+            idInternoPe = idInternoPe.trim();
+            nTarjeta = nTarjeta.trim();
             if (entorno.equals("TEST"))
             {
                 fields.put("codEntidad", "3076");
@@ -355,7 +366,7 @@ public class OperationManager
             {
                 fields.put("codEntidad", codEntidad.replace(" ", ""));
                 fields.put("idInternoPe", idInternoPe.replace(" ", ""));
-                fields.put("nTarjeta", nTarjeta.replace(" ", ""));
+                fields.put("codTarjeta", nTarjeta.replace(" ", ""));
             }
             return fields;
         }
