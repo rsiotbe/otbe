@@ -191,7 +191,7 @@ public class OperationManager
         Response pResponseConnector;
         String strPrimaryPath = "";
         String JWT = "";
-        MiqQuests pMiqQuests;
+        MiqQuests pMiqQuests = null;
         pSession = pRequest.getSession(true);
         try
         {
@@ -268,7 +268,7 @@ public class OperationManager
             if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
             {
                 pLog.info("La petición utiliza plantilla XHTML");
-                strJsonData = TemplateManager.processTemplate(strTemplate, null, strJsonData);
+                strJsonData = TemplateManager.processTemplate(pMiqQuests, strTemplate, null, strJsonData);
             }
             pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).header("Authorization", JWT).build();
         }
@@ -666,7 +666,7 @@ public class OperationManager
         if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE || pMediaType == MediaType.TEXT_HTML_TYPE)
         {
             pLog.info("La petición utiliza plantilla XHTML o HTML");
-            strJsonData = TemplateManager.processTemplate(strTemplate, pRequestConfig, strJsonData);
+            strJsonData = TemplateManager.processTemplate(pMiqQuests, strTemplate, pRequestConfig, strJsonData);
         }
         return (Response.status(nReturnHttpCode).entity(strJsonData).encoding(ENCODING_UTF8).build());
     }

@@ -113,7 +113,7 @@
 		Properties pPdfProperties = new Properties();
 		pPdfProperties.load(Email.class.getResourceAsStream("/simulator.pdf.properties"));
 			
-	  	pLog.info("Se procede a llamar al servicio de generación de pdf (" + (String)pPdfProperties.get("SERVICE_GENERATE") + ")con los datos: " + strPdfConfig);
+	  	pLog.info("Se procede a llamar al servicio de generación de pdf (" + (String)pPdfProperties.get("SERVICE_GENERATE") + ") con los datos: " + strPdfConfig);
 		Client pClient = RviaRestHttpClient.getClient ();
 	    WebTarget pTarget = pClient.target((String)pPdfProperties.get("SERVICE_GENERATE"));
 	  	Response pReturnPdf = pTarget.request().post(Entity.json(strPdfConfig));
