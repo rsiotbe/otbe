@@ -114,7 +114,6 @@
         HttpResponse pHttpResponse;
         HttpEntity pHttpEntity; 
         String strContent = null;
-        
         try
         {
 	        pRequestConfigRvia = new RequestConfigRvia(request); 
