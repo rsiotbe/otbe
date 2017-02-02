@@ -118,7 +118,7 @@
 	    WebTarget pTarget = pClient.target((String)pPdfProperties.get("SERVICE_GENERATE"));
 	  	Response pReturnPdf = pTarget.request().post(Entity.json(strPdfConfig));
 	  	String strResponseData = pReturnPdf.readEntity(String.class);
-	  	pLog.info("Respuesta del servicio: " + strResponseData);
+	  	pLog.info("Respuesta del servicio: " + ((strResponseData.length() > 301)?(strResponseData.substring(0,300)):(strResponseData)));
 	  	JSONObject pResponse = (new JSONObject(strResponseData)).getJSONObject("DOC_RENDER");
 	  	/* s ecomprueba si ha devuelto error */
 	  	if("0".equals(pResponse.getString("codigoRetorno")))
@@ -131,7 +131,7 @@
 		
 		/* se descarga el pdf */
 		String strUrlDownload = (String)pPdfProperties.get("SERVICE_DOWNLOAD") + strPdfId;
-		pLog.info("Se intenta la descarga del pdf de la URL:  strUrlDownload");
+		pLog.info("Se intenta la descarga del pdf de la URL: " + strUrlDownload);
 		ByteArrayOutputStream pPdfStream = Utils.getFileFromUrl(strUrlDownload);		
 		if(pPdfStream == null)
 			pLog.error("El stream de PDF es nulo, la descarga ha fallado");
