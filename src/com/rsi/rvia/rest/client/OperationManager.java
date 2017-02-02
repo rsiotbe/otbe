@@ -296,17 +296,6 @@ public class OperationManager
             password = "03052445";
             SOAPEndPoint = "http://soa02.risa";
         }
-        /*
-         * String strBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-         * "<soapenv:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
-         * "xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">" + "<soapenv:Header>"
-         * + "<ee:RSISecCampo1>03054906</ee:RSISecCampo1>" + "<ee:RSISecCampo2>50456061H</ee:RSISecCampo2>" +
-         * "<ee:RSISecCampo3>20141217155327</ee:RSISecCampo3>" + "<ee:RSISecCampo4></ee:RSISecCampo4>" +
-         * "<ee:RSISecCampo5>0f0262740a3f50d9</ee:RSISecCampo5>" + "</soapenv:Header><soapenv:Body>" +
-         * "<ee:EE_I_AutenticarUsuario>" + "<ee:usuario>" + usuario + "</ee:usuario>" + "<ee:password>" + password +
-         * "</ee:password>" + "<ee:documento>" + documento + "</ee:documento>" + "</ee:EE_I_AutenticarUsuario>" +
-         * "</soapenv:Body>" + "</soapenv:Envelope>";
-         */
         String strBody = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">"
                 + "   <soapenv:Header/>                                     "
                 + "   <soapenv:Body>                                        "
