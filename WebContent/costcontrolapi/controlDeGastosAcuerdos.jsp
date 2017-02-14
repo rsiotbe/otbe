@@ -68,9 +68,6 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
 	String coma="";
 	String strIdInterno=request.getParameter("idInternoPe");
 
-	
-	
-	
    while (pResultSet.next())
    {      
        String strAcuerdo = (String) pResultSet.getString("acuerdo");
@@ -90,7 +87,7 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
 
 // FIXME: Eliminar en producción
  // Failback: si no existen acuerdos en banca por tema de entornos los sacamos de ci
-    if(! ",".equals(coma)){
+    if(! ",".equals(coma) || strIdInterno != null){
 	    strQuery = 
 	          " SELECT" +   
 	                "   t1.NUM_SEC_AC \"acuerdo\", trim(t2.NOMB_GRP_PD) \"txtproducto\"" +
