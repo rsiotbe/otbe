@@ -25,7 +25,7 @@ public class DomiciliacionRcbo
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      * @throws Exception
      */
-    @POST
+    @GET
     @Path("/coordenada")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getCoord(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
@@ -50,6 +50,8 @@ public class DomiciliacionRcbo
     public Response listaDeContratos(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception
     { // return Response.ok("Lista de contratos").build();
+        java.net.URL aUrl = new java.net.URL(pRequest.getRequestURL().toString());
+        pLog.info(aUrl.getProtocol() + "://" + aUrl.getHost() + ":" + aUrl.getPort());
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
         pLog.info("Lista de contratos");
         return pReturn;

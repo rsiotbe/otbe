@@ -64,7 +64,7 @@ public class RestRviaConnector
             String strClavePagina = pMiqQuests.getEndPoint();
             String strUrl = strHost + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + strSesId + "?clavePagina="
                     + strClavePagina;
-            pLog.trace("Se compone la url a invocar a ruralvia: " + strUrl);
+            pLog.trace("Se compone la url a invocar a ruralvia: " + strUrl + ":" + pRequestConfigRvia.getToken());
             Client pClient = RviaRestHttpClient.getClient();
             org.w3c.dom.Document pXmlDoc = InterrogateRvia.getXmlDatAndUserInfo(pRequest, strClavePagina);
             pLog.trace("Se obtiene el xml de configuración desde ruralvia y se procede a evaluar su contenido");
