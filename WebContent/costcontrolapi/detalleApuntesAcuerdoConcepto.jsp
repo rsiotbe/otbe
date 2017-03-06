@@ -10,10 +10,10 @@
 String uri = request.getRequestURI();
 String pageName = uri.substring(uri.lastIndexOf("/")+1);
 Logger pLog  = LoggerFactory.getLogger(pageName);
-	String strContrato = request.getParameter("idContract");  
-	String strLinea = request.getParameter("codLinea");
-	String strEntidad = request.getParameter("codEntidad");
-	String strTipoApunte = request.getParameter("tipoApunte");	
+    String strContrato = request.getParameter("idContract");  
+    String strLinea = request.getParameter("codLinea");
+    String strEntidad = request.getParameter("codEntidad");
+    String strTipoApunte = request.getParameter("tipoApunte");  
     String strDateFin = request.getParameter("mesFin"); 
     String strDateIni = request.getParameter("mesFin");
     
@@ -23,7 +23,7 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
     strDateIni= QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni);
  
     String strQuery =
-   	      " select" +
+          " select" +
            "   fecha_oprcn_dif \"fecha\"" +
            "   ,num_sec_ac \"acuerdo\"" +
            "   ,sgn \"tipoApunte\"" +
@@ -37,7 +37,7 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
            " and num_sec_ac = " + strContrato;
            
      if(strTipoApunte != null)    
-   	    strQuery = strQuery + " and trim(sgn) = '" + strTipoApunte + "'" ; 
+        strQuery = strQuery + " and trim(sgn) = '" + strTipoApunte + "'" ; 
      pLog.info("Query al customizador: " + strQuery);
     String strResponse = QueryCustomizer.process(request,strQuery);
     response.setHeader("content-type", "application/json");
