@@ -17,7 +17,7 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
     String strTipoApunte = request.getParameter("tipoApunte");  
     String strCategoria = request.getParameter("categoria"); 
     String strConceptoApunte = request.getParameter("concepto");
-    String strDateFin = request.getParameter("mesFin"); 
+    String strDateFin = request.getParameter("mesFin");
     String strDateIni = request.getParameter("mesFin");
     
     strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
