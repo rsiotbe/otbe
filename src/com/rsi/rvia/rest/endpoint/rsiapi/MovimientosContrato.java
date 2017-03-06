@@ -415,7 +415,8 @@ public class MovimientosContrato
      * pLog.info("Movimientos de un contrato"); return pReturn; }
      */
     /**
-     * Obtiene el detalle de movimientos por mes y signo para un contrato y mes. En el documento WebService3b
+     * Obtiene el detalle de movimientos por mes y signo para todos los contratos del cliente. En el documento
+     * WebService3b
      * 
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      * @throws Exception
@@ -432,7 +433,7 @@ public class MovimientosContrato
     }
 
     /**
-     * Obtiene el detalle de movimientos por mes para un contrato y mes. En el documento WebService3b
+     * Obtiene el detalle de movimientos para un mes y todos los contratos del cliente. En el documento WebService3b
      * 
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      * @throws Exception
@@ -445,6 +446,140 @@ public class MovimientosContrato
     {
         Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
         pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos de un mes y concepto, para todos los contratos del cliente. En el documento
+     * WebService3b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/contracts/detailmovements/concept/{concepto}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesParaConcepto(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos de un mes, signo, y concepto, para todos los contratos del cliente. En el
+     * documento WebService3b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/contracts/detailmovements/concept/{concepto}/type/{tipoApunte}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesParaTipoApunteYConcepto(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos de un mes, y concepto, para UN único acuerdo. En el documento WebService3b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/contracts/detailmovements/{idContract: [0-9]+}/concept/{concepto}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosAcuerdoMesParaConcepto(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos de un mes, signo, y concepto, para UN único acuerdo. En el documento
+     * WebService3b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/contracts/detailmovements/{idContract: [0-9]+}/concept/{concepto}/type/{tipoApunte}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosAcuerdoMesParaTipoApunteYConcepto(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos de un mes y categoria, para todos los contratos del cliente. En el documento
+     * WebService3b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/contracts/detailmovements/category/{categoria}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesParacategoria(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos de un mes, signo, y categoria, para todos los contratos del cliente. En el
+     * documento WebService3b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/contracts/detailmovements/category/{categoria}/type/{tipoApunte}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesParaTipoApunteYcategoria(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos de un mes, y categoria, para UN único acuerdo. En el documento WebService3b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/contracts/detailmovements/{idContract: [0-9]+}/category/{categoria}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosAcuerdoMesParacategoria(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos de un mes, signo, y categoria, para UN único acuerdo. En el documento
+     * WebService3b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/contracts/detailmovements/{idContract: [0-9]+}/category/{categoria}/type/{tipoApunte}/for/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosAcuerdoMesParaTipoApunteYcategoria(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
         return pReturn;
     }
 }
