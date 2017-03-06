@@ -49,6 +49,11 @@ public class Constants
     public static final String SIMULADOR_EMAIL_USER_NIF                 = "usuarioNif";
     public static final String SIMULADOR_EMAIL_USER_IS_CUSTOMER         = "usuarioEsCliente";
     // /////////////////////////
+    // Campos JSON traducciones
+    // /////////////////////////
+    public static final String TRANSLATE_APPNAME                        = "appName";
+    public static final String TRANSLATE_LANG                           = "lang";
+    // /////////////////////////
     // Campos utilizados para parsear la configuración de email desde BBDD
     // /////////////////////////
     public static final String SIMULADOR_EMAIL_CONFIG_OFFICE_TEMPLATE   = "sucursal_plantilla";

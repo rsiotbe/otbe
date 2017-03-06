@@ -14,18 +14,10 @@
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
-  <servlet>
-    <servlet-name>translation servlet</servlet-name>
-    <servlet-class>com.rsi.rvia.translates.TranslateService</servlet-class>
-  </servlet>  
   <servlet-mapping>
     <servlet-name>rest serlvet</servlet-name>
     <url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
-   <servlet-mapping>
-    <servlet-name>translation servlet</servlet-name>
-    <url-pattern>/translate/*</url-pattern>
-  </servlet-mapping> 
   <session-config>
     <cookie-config>
         <name>APIREST</name>
