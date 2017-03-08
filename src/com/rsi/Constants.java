@@ -70,6 +70,10 @@ public class Constants
     // General
     // /////////////////////////
     public static final String ENVIRONMENT                              = "env";
+    public static final String TARGET_MOCK_DIRECTORY                    = "targetMockRootDir";
+    public static final String TEMPLATE_BY_HTTP                         = "templateByHttp";
+    public static final String TEMPLATE_URL                             = "templateUrlHostToStaticRepository";
+    public static final String TEMPLATE_PATH_DISK                       = "templatePathDiskToStaticRepository";
 
     public enum SimulatorLoanCategory
     {

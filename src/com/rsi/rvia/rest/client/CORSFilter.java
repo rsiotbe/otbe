@@ -9,7 +9,7 @@ import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.Constants;
-import com.rsi.rvia.rest.tool.AppConfigurationFactory;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 
 @Provider
 public class CORSFilter implements ContainerResponseFilter
@@ -22,7 +22,7 @@ public class CORSFilter implements ContainerResponseFilter
         Properties properties;
         try
         {
-            properties = AppConfigurationFactory.getConfiguration();
+            properties = AppConfiguration.getInstance().getProperties();
             if (!properties.getProperty(Constants.ENVIRONMENT).equals(Constants.Environment.PROD.name()))
             {
                 MultivaluedMap<String, Object> headers = responseContext.getHeaders();

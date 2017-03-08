@@ -7,18 +7,41 @@ import org.slf4j.LoggerFactory;
 
 public class AppConfiguration
 {
-    private static Logger pLog = LoggerFactory.getLogger(AppConfiguration.class);
-    private Properties    pAppProperties;
+    private static Logger           pLog        = LoggerFactory.getLogger(AppConfiguration.class);
+    private static AppConfiguration pInstance   = null;
+    private Properties              pProperties = null;
 
-    public AppConfiguration() throws IOException
+    private AppConfiguration() throws IOException
     {
-        pLog.info("Cargando configuración de entorno...");
-        pAppProperties = new Properties();
-        pAppProperties.load(AppConfiguration.class.getClassLoader().getResourceAsStream("/application.properties"));
+        pProperties = new Properties();
+        pProperties.load(AppConfiguration.class.getClassLoader().getResourceAsStream("/application.properties"));
     }
 
-    public Properties getEnvProperties()
+    public static AppConfiguration getInstance()
     {
-        return pAppProperties;
+        if (pInstance == null)
+        {
+            try
+            {
+                pInstance = new AppConfiguration();
+                pLog.info("Se instanciando la configuración general de la aplicación");
+            }
+            catch (IOException e)
+            {
+                pLog.error("Error instanciando la configuración general de la aplicación", e);
+                pInstance = null;
+            }
+        }
+        return pInstance;
+    }
+
+    public Properties getProperties()
+    {
+        return pProperties;
+    }
+
+    public String getProperty(String strKey)
+    {
+        return pProperties.getProperty(strKey);
     }
 }

@@ -36,7 +36,7 @@ import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.simulators.SimulatorsManager;
 import com.rsi.rvia.rest.template.TemplateManager;
-import com.rsi.rvia.rest.tool.AppConfigurationFactory;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.ServiceHelper;
 import com.rsi.rvia.rest.tool.Utils;
 
@@ -288,7 +288,7 @@ public class OperationManager
         String documento = pRequest.getParameter("documento");
         String password = pRequest.getParameter("password");
         String SOAPEndPoint = "http://soa.risa";
-        String entorno = AppConfigurationFactory.getConfiguration().getProperty("env");
+        String entorno = AppConfiguration.getInstance().getProperty("env");
         if (entorno.equals("TEST"))
         {
             usuario = "03052445";
@@ -537,7 +537,7 @@ public class OperationManager
         try
         {
             /* Se construye la respuesta ya sea error, o correcta, json o template */
-            String entorno = AppConfigurationFactory.getConfiguration().getProperty("env");
+            String entorno = AppConfiguration.getInstance().getProperty(Constants.ENVIRONMENT);
             if (Constants.Environment.TEST.name().equals(entorno))
             {
                 // Utils.writeMock(pRequest, pUriInfo, pMiqQuests, strJsonResponse);
@@ -729,7 +729,7 @@ public class OperationManager
         pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
         // Se procesa el resultado del conector paa evaluar y adaptar su contenido.
         String strRespuesta = ResponseManager.processResponseConnector(pRequestConfig, pRestConnector, pResponseConnector, pMiqQuests);
-        String entorno = AppConfigurationFactory.getConfiguration().getProperty(Constants.ENVIRONMENT);
+        String entorno = AppConfiguration.getInstance().getProperty(Constants.ENVIRONMENT);
         if (Constants.Environment.TEST.name().equals(entorno))
         {
             // Utils.writeMock(pRequest, pUriInfo, pMiqQuests, strRespuesta);

@@ -33,6 +33,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constants;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 
@@ -155,8 +156,8 @@ public class Utils
      * @throws SQLException
      * @throws JSONException
      */
-    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet)
-            throws SQLException, JSONException
+    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet) throws SQLException,
+            JSONException
     {
         JSONObject pJsonRetorno = new JSONObject();
         JSONArray pJson = new JSONArray();
@@ -447,11 +448,11 @@ public class Utils
      * @param strJsonData
      * @throws Exception
      */
-    public static void writeMock(HttpServletRequest pRequest, UriInfo pUriInfo, MiqQuests pMiqQuests,
-            String strJsonData) throws Exception
+    public static void writeMock(HttpServletRequest pRequest, UriInfo pUriInfo, MiqQuests pMiqQuests, String strJsonData)
+            throws Exception
     {
         int i;
-        String strTargetMockRootDir = AppConfigurationFactory.getConfiguration().getProperty("targetMockRootDir");
+        String strTargetMockRootDir = AppConfiguration.getInstance().getProperty(Constants.TARGET_MOCK_DIRECTORY);
         String strPartes[] = pUriInfo.getPath().split("/");
         String strTestPath = strTargetMockRootDir;
         for (i = 0; i < strPartes.length - 1; i++)
