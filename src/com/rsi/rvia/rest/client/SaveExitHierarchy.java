@@ -254,7 +254,8 @@ public class SaveExitHierarchy
         }
         catch (Exception ex)
         {
-            pLog.error("No se ha podido insertar el campo de salida " + strExitFieldName + " con id " + nIdMiqExitField, ex);
+            pLog.error("No se ha podido insertar el campo de salida " + strExitFieldName + " con id "
+                    + nIdMiqExitField, ex);
         }
         finally
         {
@@ -274,7 +275,7 @@ public class SaveExitHierarchy
     {
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
-        String strQuery = "insert into BEL.BDPTB233_MIQ_QUEST_RL_EXITS values(?, ?, ?, ' ',null)";
+        String strQuery = "insert into BEL.BDPTB233_MIQ_QUEST_RL_EXITS values(?, ?, ?, null)";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
