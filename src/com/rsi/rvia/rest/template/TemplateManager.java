@@ -119,13 +119,17 @@ public class TemplateManager
         try
         {
             String strCacheKey = strPathToTemplate;
+            /* si no llega objeto pRequestConfig es porque no ha dado tienpo a instanciarse, se genera uno vacio */
+            if (pRequestConfig == null)
+                pRequestConfig = new RequestConfig();
             /* si se trata de una petición con datos de ruralvia se itneta recupera la información */
             if (RequestConfigRvia.class.isAssignableFrom(pRequestConfig.getClass()))
             {
                 /* en función del canalAix de la petición se obtiene la plantilla adecuada */
                 strPathToTemplate = adjustTemplateNameByChannel(strPathToTemplate, (RequestConfigRvia) pRequestConfig);
             }
-            strCacheKey = strPathToTemplate + "_" + pRequestConfig.getLanguage();
+            strCacheKey = strPathToTemplate;
+            strCacheKey += "_" + pRequestConfig.getLanguage();
             pLog.debug("strCacheKey:" + strCacheKey);
             if (htCacheTemplate.containsKey(strCacheKey))
             {
