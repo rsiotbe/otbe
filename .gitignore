@@ -9,3 +9,4 @@ dist/
 /WebContent/static/
 local.properties
 configurations/Banca.OracleConfig.properties
+configurations/CIP.OracleConfig.properties
