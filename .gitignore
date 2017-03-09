@@ -1,5 +1,6 @@
 build/
 dist/
+static/
 /reports/
 /.settings/
 /.classpath

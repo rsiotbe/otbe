@@ -17,7 +17,7 @@
 		 	java.sql.Connection, java.net.URL,
 		 	java.util.Enumeration,
 		 	org.slf4j.Logger,org.slf4j.LoggerFactory,
-		 	com.rsi.rvia.rest.tool.AppConfigurationFactory,
+		 	com.rsi.rvia.rest.tool.AppConfiguration,
 		 	com.rsi.rvia.rest.session.RequestConfigRvia,
 		 	org.json.JSONObject"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -100,7 +100,7 @@
 	
 	/* se comprueba si es necesario redirigir a la máquina local */
  	String strHost = "";
-    String entorno = AppConfigurationFactory.getConfiguration().getProperty("env");
+    String entorno = AppConfiguration.getInstance().getProperty("env");
     if (entorno.equals("TEST"))
     {         
     	pLog.info("Al estar en el entorno de TEST se entra a comprobar si es necesario redirir la petición a localhost");
