@@ -1,5 +1,6 @@
 package com.rsi.rvia.rest.client;
 
+import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -50,13 +51,87 @@ public class ResponseManager
     public static String processResponseConnector(RequestConfig pRequestConfig, RestConnector pRestConnector,
             Response pResponseConnector, MiqQuests pMiqQuests) throws Exception
     {
-        String strJsonData;
-        strJsonData = pResponseConnector.readEntity(String.class);
+        String strJsonData = pResponseConnector.readEntity(String.class);
         JSONObject pJsonData;
+        /**/
+        try
+        {
+            /* codigoRetorno = 1, con coderr */
+            Hashtable<String, Object> data = new Hashtable<String, Object>();
+            data.put("CANALAIX", "000001");
+            data.put("CONTRATACION", "N");
+            data.put("PATH", "/portal_rvia/ServletDirectorPortal;RVIASESION=GblLRpHvqL6PW_FPSaUZil_8-3VjrSSeyrdmPmmD_NSuJe2I7liv!-1655323657!-891786700");
+            data.put("HQDDNE", "false");
+            data.put("USUARIO_RACF", "323008MQ");
+            data.put("PRITAR", "3008894576");
+            data.put("IP", "172.22.45.16");
+            data.put("NUMTAR", "3008894576");
+            data.put("marcaAix", "0000");
+            data.put("CLAVE_PAGINA", "MENUP_RECIB_BAJA_DOMI");
+            data.put("SELCON", "00000000001933265892");
+            data.put("NUMEXP", "9999999999999999");
+            data.put("NUM_SESSION", "21135293");
+            data.put("marca", "0000");
+            data.put("MARCAAIX", "0000");
+            data.put("idioma", "es_ES");
+            data.put("USUARIO", "32894576");
+            data.put("JSP_A_DESPACHAR", "/recibos/menup_recib_baja_domi.jsp");
+            data.put("JSP_DESTINO", "/recibos/menup_recib_baja_domi.jsp");
+            data.put("canal", "000003");
+            data.put("canalAix", "000001");
+            data.put("METODO", "[Ljava.lang.String;@17bb21d2");
+            data.put("CONTRA_RACF", "323008MQ");
+            data.put("ENTID", "3008");
+            data.put("demo", "0");
+            data.put("CODOFI", "9640");
+            data.put("lineaGrupo", "0");
+            data.put("OPDORA", "AAAAAAAA");
+            data.put("CODERR", (new Long(779)).toString());
+            data.put("TXTERR", "No hay cuentas de pasivo");
+            data.put("JSP", "CLV_ERR_CTAS");
+            String strClavepagina = "MENUP_RECIB_BAJA_DOMI";
+            String strJsonResult = com.rsi.rvia.rest.tool.Utils.objectToJson(data);
+            strJsonResult = "{" + "\"" + strClavepagina + "\": { \"codigoRetorno\": \"1\", \"Respuesta\": "
+                    + strJsonResult + "}}";
+            strJsonData = "{"
+                    + "\"MENUP_RECIB_BAJA_DOMI\":{\"codigoRetorno\": \"1\", \"Respuesta\": {\"CANALAIX\":\"000001\",\"ENTID\":\"3008\",\"JSP_A_DESPACHAR\":\"/recibos/menup_recib_baja_domi.jsp\",\"canal\":\"000003\",\"NUM_SESSION\":\"21135293\",\"MARCAAIX\":\"0000\",\"IP\":\"172.22.45.16\",\"NUMTAR\":\"3008894576\",\"lineaGrupo\":\"0\",\"SELCON\":\"00000000001933265892\",\"OPDORA\":\"AAAAAAAA\",\"canalAix\":\"000001\",\"CLAVE_PAGINA\":\"MENUP_RECIB_BAJA_DOMI\",\"TXTERR\":\"No hay cuentas de pasivo\",\"CODOFI\":\"9640\",\"marca\":\"0000\",\"JSP\":\"CLV_ERR_CTAS\",\"demo\":\"0\",\"METODO\":\"[Ljava.lang.String;@17bb21d2\",\"CONTRA_RACF\":\"323008MQ\",\"CONTRATACION\":\"N\",\"idioma\":\"es_ES\",\"USUARIO\":\"32894576\",\"NUMEXP\":\"9999999999999999\",\"CODERR\":\"779\",\"JSP_DESTINO\":\"/recibos/menup_recib_baja_domi.jsp\",\"USUARIO_RACF\":\"323008MQ\",\"marcaAix\":\"0000\",\"PATH\":\"/portal_rvia/ServletDirectorPortal;RVIASESION=GblLRpHvqL6PW_FPSaUZil_8-3VjrSSeyrdmPmmD_NSuJe2I7liv!-1655323657!-891786700\",\"PRITAR\":\"3008894576\",\"HQDDNE\":\"false\"}}}";
+            /* codigoRetorno = 0 */
+            /*
+             * strJsonData = "{" + "\"" + strClavepagina +
+             * "\": { \"codigoRetorno\": \"0\", \"Errores\": { \"codigoMostrar\": \"99999\",\"mensajeMostrar\": \"No data\",\"solucion\":\"REVISE LA ESPECIFICACION DEL SERVICIO\"}}}}"
+             * ;
+             */
+            /* sin codigoRetorno */
+            /*
+             * strJsonData = "{" + "\"" + strClavepagina +
+             * "\": { \"cdgoRetorno\": \"0\", \"Errores\": { \"codigoMostrar\": \"99999\",\"mensajeMostrar\": \"No data\",\"solucion\":\"REVISE LA ESPECIFICACION DEL SERVICIO\"}}}}"
+             * ;
+             */
+            /* Respuesta correcta */
+            // strJsonData = pResponseConnector.readEntity(String.class);
+            /*
+             * try { String strPrimaryKey = ""; if (pJsonData.keys().hasNext()) { strPrimaryKey = (String)
+             * pJsonData.keys().next(); } if (!strPrimaryKey.trim().isEmpty()) { pJsonData = new JSONObject();
+             * pJsonData.put("data", pJsonData.getJSONObject(strPrimaryKey).getJSONObject("Respuesta")); } else throw
+             * new Exception("No se ha encontrado la raiz del json de WS"); } catch (Exception ex) {
+             * pLog.error("Error al obtener el cuerpo del mensaje de una respuesta WS", ex); throw ex; }
+             */
+        }
+        catch (Exception e)
+        {
+        }
+        /**/
+        if (pResponseConnector.getStatus() != Status.OK.getStatusCode())
+        {
+            /*
+             * se comprueba si al respuesta contiene un codigo de error http para genera la respuesta con el mismo tipo
+             */
+            throw new RestConnectorException(pResponseConnector.getStatus(), 99999, "Error al procesar la petición", pResponseConnector.getStatusInfo().getReasonPhrase(), null);
+        }
         /* se comprueba si el contenido de la respuesta es un JSON u otra cosa */
         if (!isDataAJson(strJsonData))
         {
-            /* no es un JSON, se evalua por si es un error web de ruralvia */
+            /* no es un JSON, viene html, se evalua por si es un error web de ruralvia */
             if (RestRviaConnector.isRuralviaWebError(strJsonData))
             {
                 /* se procede a obtener la infomración del error del interior del html devuelto por ruralvia */
@@ -72,29 +147,26 @@ public class ResponseManager
                 // Procesar html para extraer la coordenada
                 strJsonData = SignExtractor.extraerCoordenada(strJsonData);
             }
-            else if (pResponseConnector.getStatus() != 200)
-            {
-                /*
-                 * se comprueba si al respuesta contiene un codigo de error http para genera la respuesta con el mismo
-                 * tipo
-                 */
-                throw new RestConnectorException(pResponseConnector.getStatus(), 99999, "Error al procesar la petición", pResponseConnector.getStatusInfo().getReasonPhrase(), null);
-            }
             else
             {
                 /*
                  * se procede a generar un error generico ya que si el valor no es un JSON y no es de ruralvia no
                  * debería producirse
                  */
-                throw new ApplicationException(500, 99999, "Error al procesar la petición", "Se ha recibido unos datos no válidos", null);
+                throw new ApplicationException(500, 999996, "Error al procesar la petición", "Se ha recibido unos datos no válidos", null);
             }
         }
         /* se crea el objeto JSON para ser manejado */
         pJsonData = new JSONObject(strJsonData);
         /* se comprueba si el json contiene un error, si es así se genera una excepción lógica */
-        checkLogicalError(pRequestConfig, pMiqQuests, pResponseConnector, pJsonData);
-        /* se formatea la respuesta para estandarizarla y eliminar información que el usuario final no necesita */
-        pJsonData = formatResponse(pJsonData, pMiqQuests, pRestConnector);
+        String logicalError = checkLogicalError(pRequestConfig, pMiqQuests, pResponseConnector, pJsonData);
+        if (logicalError != null && logicalError.equals(RestRviaConnector.RESPONSE_OK))
+        {
+            /* se formatea la respuesta para estandarizarla y eliminar información que el usuario final no necesita */
+            pJsonData = formatResponse(pJsonData, pMiqQuests, pRestConnector);
+        }
+        else
+            pLog.debug("ResponseManager.processResponseConnector:es un warning");
         return pJsonData.toString();
     }
 
@@ -111,30 +183,48 @@ public class ResponseManager
      *            Objeto que contiene la información JSON
      * @throws ApplicationException
      */
-    private static void checkLogicalError(RequestConfig pRequestConfig, MiqQuests pMiqQuests, Response pResponse,
+    private static String checkLogicalError(RequestConfig pRequestConfig, MiqQuests pMiqQuests, Response pResponse,
             JSONObject pJsonData) throws ApplicationException
     {
-        Integer nHttpErrorCode = null;
-        /* se comprueba si la respuesta tiene un codigo http de error para utilizarlo */
-        if (pResponse.getStatus() != Status.OK.getStatusCode())
+        String pReturn = RestRviaConnector.RESPONSE_OK;
+        /* se comprueba el valor de la variable codigoRetorno por si aparece error generado por el conector WS */
+        pReturn = RestWSConnector.isWSError(pJsonData);
+        if (pReturn != null && pReturn.equals(RestRviaConnector.RESPONSE_NJS))
         {
-            nHttpErrorCode = pResponse.getStatus();
+            // sin campo codigoRetorno
+            throw new ApplicationException(500, 999995, "Error al procesar la información", "Error al acceder al contenido de un error de tipo ws", null);
         }
-        /* se comprueba si el mensaje contiene un error generado por el conector WS */
-        if (RestWSConnector.isWSError(pJsonData))
+        else if (pReturn != null && pReturn.equals(RestRviaConnector.RESPONSE_KO))
         {
-            /* se lanza la excepción de tipo lócigo, en caso de no lanzarse se genera una exceción de tipo general */
-            if (!RestWSConnector.throwWSError(nHttpErrorCode, pJsonData))
-                throw new ApplicationException(500, 999999, "Error al procesar la información", "Error al acceder al contenido de un error de tipo ws", null);
+            /* se ha recibido un codigo de error tipificado */
+            /* se lanza la excepción de tipo lógico, en caso de no lanzarse se genera una exceción de tipo general */
+            if (!RestWSConnector.throwWSError(pResponse.getStatus(), pJsonData))
+                throw new ApplicationException(500, 999998, "Error al procesar la información", "Error al acceder al contenido de un error de tipo ws", null);
         }
-        else if (RestRviaConnector.isRVIAError(pJsonData))
+        else
         {
-            /* se lanza la excepción de tipo lócigo, en caso de no lanzarse se genera una exceción de tipo general */
-            if (!RestRviaConnector.throwRVIAError((RequestConfigRvia) pRequestConfig, pMiqQuests, pJsonData))
-                throw new ApplicationException(500, 999999, "Error al procesar la información", "Error al acceder al contenido de un error de tipo ws", null);
+            pReturn = RestRviaConnector.isRVIAError(pJsonData, (RequestConfigRvia) pRequestConfig, pMiqQuests.getEndPoint());
+            if (pReturn != null)
+            {
+                if (pReturn.equals(RestRviaConnector.RESPONSE_NJS))
+                {
+                    // sin rama RESPUESTA
+                    throw new ApplicationException(500, 999997, "Error al procesar la información", "Error al acceder al contenido de un error de tipo ws", null);
+                }
+                else if (pReturn.equals(RestRviaConnector.RESPONSE_KO))
+                {
+                    /*
+                     * se lanza la excepción de tipo lógico, en caso de no lanzarse se genera una exceción de tipo
+                     * general
+                     */
+                    if (!RestRviaConnector.throwRVIAError((RequestConfigRvia) pRequestConfig, pMiqQuests, pJsonData))
+                        throw new ApplicationException(500, 999999, "Error al procesar la información", "Error al acceder al contenido de un error de tipo ws", null);
+                }
+            }
         }
         /* si la ejecución ha llegado aqui es que todo parece correcto, se continua */
         pLog.info("No se han detectado errores en el json de respuesta, se continua la ejecución normal");
+        return pReturn;
     }
 
     /**
@@ -206,7 +296,7 @@ public class ResponseManager
             {
                 pResponseObjectData = new JSONObject();
                 pResponseObject = new JSONObject();
-                pResponseObjectData.put("data", pJsonData.getJSONObject(strPrimaryKey).getJSONObject("Respuesta"));
+                pResponseObjectData.put("data", pJsonData.getJSONObject(strPrimaryKey).getJSONObject(RestWSConnector.RAMA_RESPUESTA));
                 pResponseObject.put("response", pResponseObjectData);
             }
             else

@@ -24,6 +24,7 @@ import org.w3c.dom.NodeList;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.RviaRestHttpClient;
+import com.rsi.rvia.rest.endpoint.ruralvia.translatejson.TranslateJsonCache;
 import com.rsi.rvia.rest.error.ErrorManager;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.error.exceptions.RestConnectorException;
@@ -34,7 +35,16 @@ import com.rsi.rvia.rest.session.RequestConfigRvia;
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
 public class RestRviaConnector
 {
-    private static Logger pLog = LoggerFactory.getLogger(RestRviaConnector.class);
+    private static Logger      pLog         = LoggerFactory.getLogger(RestRviaConnector.class);
+    public static final String RESPONSE_OK  = "00";
+    /** The Constant RESPONSE_WR. */
+    public static final String RESPONSE_WR  = "01";
+    /** The Constant RESPONSE_KO. */
+    public static final String RESPONSE_KO  = "02";
+    /** The Constant RESPONSE_NW. */
+    public static final String RESPONSE_NW  = "03";
+    /** The Constant RESPONSE_NJS. */
+    public static final String RESPONSE_NJS = "04";
 
     /**
      * Realiza la comunicación con RUralvia para obtener los datos necesarios de la operación
@@ -532,21 +542,36 @@ public class RestRviaConnector
      *            Objeto que contiene la información JSON
      * @return
      */
-    public static boolean isRVIAError(JSONObject pJsonData)
+    public static String isRVIAError(JSONObject pJsonData, RequestConfigRvia pSessionRviaData, String clave_pagina)
     {
-        boolean fReturn = false;
-        String strInnerCode;
+        String strInnerCode = "";
+        String strInnerTxt = "";
+        String isError = RESPONSE_OK;
+        JSONObject jsonObject = null;
         try
         {
-            strInnerCode = pJsonData.getString("CODERRR");
-            fReturn = (strInnerCode != null) && (!strInnerCode.trim().isEmpty());
+            jsonObject = RestWSConnector.getRespuesta(pJsonData);
+            if (jsonObject != null)
+            {
+                if (jsonObject.has("CODERR"))
+                    strInnerCode = jsonObject.getString("CODERR");
+                if (strInnerCode != null && !strInnerCode.isEmpty())
+                {
+                    if (jsonObject.has("TXTERR"))
+                        strInnerTxt = jsonObject.getString("TXTERR");
+                    isError = TranslateJsonCache.isErrorCode(strInnerCode, strInnerTxt, pSessionRviaData, clave_pagina);
+                }
+            }
+            else
+                isError = RESPONSE_NJS;
+            // fReturn = (strInnerCode != null) && (!strInnerCode.trim().isEmpty());
         }
         catch (Exception ex)
         {
             pLog.error("No es un error de RVIA");
-            fReturn = false;
+            isError = RESPONSE_NJS;
         }
-        return fReturn;
+        return isError;
     }
 
     /**

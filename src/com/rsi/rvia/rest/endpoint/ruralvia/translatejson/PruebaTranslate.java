@@ -23,6 +23,7 @@ import org.apache.http.impl.client.HttpClientBuilder; // nueva
 import org.jose4j.json.internal.json_simple.parser.JSONParser;
 import org.json.JSONException;
 import org.json.JSONObject;
+import com.rsi.rvia.rest.conector.RestRviaConnector;
 import com.rsi.rvia.rest.error.exceptions.ISUMException;
 
 public class PruebaTranslate
@@ -81,8 +82,9 @@ public class PruebaTranslate
         strReturn = "{" + "\"" + strClavepagina + "\": { \"codigoRetorno\": \"1\", \"Respuesta\": " + strJsonResult
                 + "}}";
         System.out.println("1_:" + strReturn);
-        procesa(strReturn);
-        procesa(strReturn, 0);
+        RestRviaConnector.isRVIAError(null);
+        // procesa(strReturn);
+        // procesa(strReturn, 0);
         /*
          * data = null; strReturn = "{" + "\"" + strClavepagina +
          * "\": { \"codigoRetorno\": \"0\", \"Errores\": { \"codigoMostrar\": \"99999\",\"mensajeMostrar\": \"No data\",\"solucion\":\"REVISE LA ESPECIFICACION DEL SERVICIO\"}}}}"
