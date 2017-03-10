@@ -102,7 +102,9 @@ public class TranslateCache
             ResultSet pResultSet = null;
             try
             {
-                String strQuery = "SELECT codigo,idioma,traduccion, aplicativo FROM bdptb079_idioma where codigo in (?)";
+                String strQuery = "SELECT A.codigo, A.idioma, A.traduccion, B.aplicativo"
+                    + " FROM bdptb079_idioma A, bdptb079_idioma_aplicativo B"
+                    + " where A.codigo=b.codigo and A.codigo in (?)";
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
                 pPreparedStatement.setString(1, strCodesToSearchInDDBB);
@@ -155,7 +157,9 @@ public class TranslateCache
         ResultSet pResultSet = null;
         try
         {
-            String strQuery = "SELECT codigo,idioma,traduccion, aplicativo FROM bdptb079_idioma where aplicativo = ?";
+            String strQuery = "SELECT A.codigo, A.idioma, A.traduccion, B.aplicativo"
+                + " FROM bdptb079_idioma A, bdptb079_idioma_aplicativo B"
+                + " where A.codigo=b.codigo and b.aplicativo = ?";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
             pPreparedStatement.setString(1, strAppName);
@@ -248,8 +252,7 @@ public class TranslateCache
         return htResult;
     }
 
-    public static Hashtable<String, String> getTranslationsByApp(String strAppName, String strLanguage)
-            throws Exception
+    public static Hashtable<String, String> getTranslationsByApp(String strAppName, String strLanguage) throws Exception
     {
         Hashtable<String, String> htResult = new Hashtable<String, String>();
         if (!alAppsFullLoaded.contains(strAppName))
