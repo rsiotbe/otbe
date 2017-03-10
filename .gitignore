@@ -7,7 +7,8 @@ reports/
 .DS_Store
 .gitignore
 bin/
-WebContent/static/
+WebContent/static
+application.properties
 local.properties
 configurations/Banca.OracleConfig.properties
 configurations/CIP.OracleConfig.properties
