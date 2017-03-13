@@ -1,6 +1,11 @@
 package com.rsi.rvia.rest.template;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Hashtable;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -10,11 +15,13 @@ import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constants;
 import com.rsi.rvia.rest.multibank.CssMultiBankProcessor;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.operation.MiqQuests.CompomentType;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.Utils;
 import com.rsi.rvia.translates.TranslateProcessor;
 
@@ -112,13 +119,17 @@ public class TemplateManager
         try
         {
             String strCacheKey = strPathToTemplate;
-            /* si se rtata de una petición codatos de ruralvia se itneta recupera la información */
+            /* si no llega objeto pRequestConfig es porque no ha dado tienpo a instanciarse, se genera uno vacio */
+            if (pRequestConfig == null)
+                pRequestConfig = new RequestConfig();
+            /* si se trata de una petición con datos de ruralvia se itneta recupera la información */
             if (RequestConfigRvia.class.isAssignableFrom(pRequestConfig.getClass()))
             {
                 /* en función del canalAix de la petición se obtiene la plantilla adecuada */
                 strPathToTemplate = adjustTemplateNameByChannel(strPathToTemplate, (RequestConfigRvia) pRequestConfig);
             }
-            strCacheKey = strPathToTemplate + "_" + pRequestConfig.getLanguage();
+            strCacheKey = strPathToTemplate;
+            strCacheKey += "_" + pRequestConfig.getLanguage();
             pLog.debug("strCacheKey:" + strCacheKey);
             if (htCacheTemplate.containsKey(strCacheKey))
             {
@@ -247,12 +258,37 @@ public class TemplateManager
     {
         Document pDocument;
         String strHtml = "";
-        InputStream pInputStream = (TemplateManager.class.getResourceAsStream(strPathToTemplate));
-        if (pInputStream == null)
+        String strTemplatePath;
+        /* se comprueba si se accede por http o por disco para leer la plantilla */
+        try
         {
-            pLog.error("No se encuentra el fichero template " + strPathToTemplate);
+            if (Boolean.parseBoolean(AppConfiguration.getInstance().getProperty(Constants.TEMPLATE_BY_HTTP)))
+            {
+                strTemplatePath = AppConfiguration.getInstance().getProperty(Constants.TEMPLATE_URL);
+                strTemplatePath += strPathToTemplate;
+                pLog.info("Se lee la plantilla desde red. Ruta: " + strTemplatePath);
+                URL pUrl = new URL(strTemplatePath);
+                URLConnection pURLConnection = pUrl.openConnection();
+                BufferedReader pBufferedReader = new BufferedReader(new InputStreamReader(pURLConnection.getInputStream()));
+                String strReadLine;
+                while ((strReadLine = pBufferedReader.readLine()) != null)
+                    strHtml += strReadLine;
+                pBufferedReader.close();
+            }
+            else
+            {
+                strTemplatePath = AppConfiguration.getInstance().getProperty(Constants.TEMPLATE_PATH_DISK);
+                strTemplatePath += strPathToTemplate;
+                pLog.info("Se lee la plantilla desde disco. Ruta: " + strTemplatePath);
+                InputStream pInputStream = new FileInputStream(strTemplatePath);
+                strHtml = Utils.getStringFromInputStream(pInputStream);
+            }
         }
-        strHtml = Utils.getStringFromInputStream(pInputStream);
+        catch (Exception ex)
+        {
+            pLog.error("No se ha podido cargar la plantilla " + strPathToTemplate, ex);
+            throw ex;
+        }
         pDocument = Jsoup.parse(strHtml, "", Parser.htmlParser());
         return pDocument;
     }

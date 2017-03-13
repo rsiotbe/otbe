@@ -161,7 +161,14 @@ public class MiqQuests
         URI pUriReturn = null;
         if (this.strEndPoint != null && this.strEndPoint.startsWith("/api/"))
         {
-            strRealEndPoint = "http://localhost:" + pRequest.getLocalPort() + this.strEndPoint;
+            if (pRequest.isSecure())
+            {
+                strRealEndPoint = "https://localhost";
+                Utils.configureSslTrustedServers();
+            }
+            else
+                strRealEndPoint = "http://localhost:" + pRequest.getLocalPort();
+            strRealEndPoint += this.strEndPoint;
             pUriReturn = UriBuilder.fromUri(strRealEndPoint).build();
         }
         else
