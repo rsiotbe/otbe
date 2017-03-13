@@ -678,4 +678,14 @@ public class Utils
             pSB.append(line);
         return pSB.toString();
     }
+
+    /**
+     * Configura la validación de certificados en las conexiones https para evitar errores de handshake por certificados
+     * no verificados
+     */
+    public static void configureSslTrustedServers()
+    {
+        SSLUtilities.trustAllHostnames();
+        SSLUtilities.trustAllHttpsCertificates();
+    }
 }

@@ -83,7 +83,7 @@ public class RestWSConnector
         urlQueryString += "idMiq=" + pMiqQuests.getIdMiq() + "&" + pathQueryParams;
         String strUrlTotal = pMiqQuests.getBaseWSEndPoint(pRequest) + "?" + urlQueryString;
         WebTarget pTarget = pClient.target(strUrlTotal);
-        pLog.info("END_POINT:" + pMiqQuests.getEndPoint());
+        pLog.info("Url final de petición de datos: " + strUrlTotal);
         Response pReturn = pTarget.request().header("Authorization", JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
         // Evitar logueo de campos de login
         logWithFilter(pReturn);
@@ -157,6 +157,7 @@ public class RestWSConnector
             pJson.put("idMiq", pMiqQuests.getIdMiq());
         }
         strJsonData = pJson.toString();
+        pLog.info("Url final de petición de datos: " + pMiqQuests.getBaseWSEndPoint(pRequest));
         WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint(pRequest));
         Response pReturn = pTarget.request().header("Authorization", JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).post(Entity.json(strJsonData));
         logWithFilter(pReturn);
