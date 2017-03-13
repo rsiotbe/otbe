@@ -15,7 +15,7 @@
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider"%>
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory"%>
 <%
-	pLog.info("GetNews ::: Start ::: ");
+	pLog.info("GetNews ::: Start");
 	JSONObject pJsonResponse = new JSONObject();
 	String strMethod = request.getMethod();
 	pLog.info("GetNews ::: Start ::: strMethod " + strMethod);
