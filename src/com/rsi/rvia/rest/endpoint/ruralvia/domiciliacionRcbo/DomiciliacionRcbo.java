@@ -59,11 +59,12 @@ public class DomiciliacionRcbo
     @Path("/contracts")
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
-    public Response listaDeContratosJSON(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
-            throws Exception
+    public Response listaDeContratosJSON(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            String strData) throws Exception
     {
         // return Response.ok("Lista de contratos").build();
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}",
+                MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Lista de contratos");
         return pReturn;
     }
@@ -82,7 +83,8 @@ public class DomiciliacionRcbo
     public Response listaDeEmisores(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception
     { // return Response.ok("Lista de contratos").build();
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}",
+                MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Lista de contratos");
         return pReturn;
     }
@@ -100,7 +102,8 @@ public class DomiciliacionRcbo
             String strData) throws Exception
     {
         // return Response.ok("Lista de contratos").build();
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}",
+                MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Lista de emisores");
         return pReturn;
     }
@@ -118,7 +121,8 @@ public class DomiciliacionRcbo
             String strData) throws Exception
     {
         // return Response.ok("Lista de contratos").build();
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}",
+                MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Lista de emisores");
         return pReturn;
     }
@@ -135,7 +139,8 @@ public class DomiciliacionRcbo
     public Response datosTransmitterJSONGet(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             String strData) throws Exception
     {
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData,
+                MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Datos de un emisor previa baja");
         return pReturn;
     }
@@ -154,7 +159,8 @@ public class DomiciliacionRcbo
     {
         // if (true)
         // throw new LogicalErrorException(403, 9999, "Error simulation", "Simulación de error", new Exception());
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData,
+                MediaType.APPLICATION_JSON_TYPE);
         // RequestConfigRvia pRequestConfigRvia = OperationManager.getValidateSession(pRequest);
         // Client pClient = RviaRestHttpClient.getClient();
         // Response Otra = OperationManager.processForAPI(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
