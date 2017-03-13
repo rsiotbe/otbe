@@ -1,8 +1,9 @@
 package com.rsi.rvia.rest.endpoint.ruralvia.sabiaQue;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
 
 /**
- * Servicio de login. Clase que responde a las peticiones REST
+ * Servicio de novedades. Clase que responde a las peticiones REST
  */
 @Path("/news")
 public class News
@@ -24,12 +25,13 @@ public class News
 	private static Logger	pLog	= LoggerFactory.getLogger(News.class);
 
 	/**
-	 * Obtiene el listado completo de tarjetas de un usuario
+	 * Obtiene el listado completo de novedades a mostrar al usuario
 	 * 
-	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de novedades
 	 * @throws Exception
 	 */
 	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getNews(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
 			throws Exception
@@ -40,17 +42,16 @@ public class News
 	}
 	
 	/**
-	 * Obtiene el listado completo de tarjetas de un usuario
+	 * Registra en BBDD las acciones del usuario sobre las novedades
 	 * 
-	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
 	 * @throws Exception
 	 */
-	@PUT
-	@Produces(MediaType.APPLICATION_JSON)
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
 	public Response updateNews(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
 			throws Exception
 	{
-		Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
+		Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
 		pLog.info(" ---------> News - updateNews");
 		return pReturn;
 	}
