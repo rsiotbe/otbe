@@ -25,9 +25,11 @@ public class DomiciliacionRcbo
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      * @throws Exception
      */
-    @POST
+    @GET
     @Path("/coordenada")
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
+            "application/x-ms-application" })
     public Response getCoord(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception
     {
