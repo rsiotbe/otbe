@@ -50,7 +50,7 @@ public class ResponseManager
     public static String processResponseConnector(RequestConfig pRequestConfig, RestConnector pRestConnector,
             Response pResponseConnector, MiqQuests pMiqQuests) throws Exception
     {
-        String strJsonData = pResponseConnector.readEntity(String.class);
+        String strResponseData = pResponseConnector.readEntity(String.class);
         JSONObject pJsonData;
         if (pResponseConnector.getStatus() != Status.OK.getStatusCode())
         {
@@ -60,23 +60,23 @@ public class ResponseManager
             throw new RestConnectorException(pResponseConnector.getStatus(), 99999, "Error al procesar la petición", pResponseConnector.getStatusInfo().getReasonPhrase(), null);
         }
         /* se comprueba si el contenido de la respuesta es un JSON u otra cosa */
-        if (!isDataAJson(strJsonData))
+        if (!isDataAJson(strResponseData))
         {
             /* no es un JSON, viene html, se evalua por si es un error web de ruralvia */
-            if (RestRviaConnector.isRuralviaWebError(strJsonData))
+            if (RestRviaConnector.isRuralviaWebError(strResponseData))
             {
                 /* se procede a obtener la infomración del error del interior del html devuelto por ruralvia */
-                throw RestRviaConnector.generateLogicalErrorException(strJsonData);
+                throw RestRviaConnector.generateLogicalErrorException(strResponseData);
             }
-            else if (RestRviaConnector.isRuralviaSessionTimeoutError(strJsonData))
+            else if (RestRviaConnector.isRuralviaSessionTimeoutError(strResponseData))
             {
                 /* se procede a obtener la infomración del error del interior del html devuelto por ruralvia */
-                throw RestRviaConnector.generateLogicalErrorException(strJsonData);
+                throw RestRviaConnector.generateLogicalErrorException(strResponseData);
             }
             else if (pMiqQuests.getComponentType() == CompomentType.COORD)
             {
                 // Procesar html para extraer la coordenada
-                strJsonData = SignExtractor.extraerCoordenada(strJsonData);
+                strResponseData = SignExtractor.extraerCoordenada(strResponseData);
             }
             else
             {
@@ -88,7 +88,7 @@ public class ResponseManager
             }
         }
         /* se crea el objeto JSON para ser manejado */
-        pJsonData = new JSONObject(strJsonData);
+        pJsonData = new JSONObject(strResponseData);
         /* se comprueba si el json contiene un error, si es así se genera una excepción lógica */
         String logicalError = checkLogicalError(pRequestConfig, pMiqQuests, pResponseConnector, pJsonData);
         if (logicalError != null && logicalError.equals(RestRviaConnector.RESPONSE_OK))
