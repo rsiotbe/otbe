@@ -167,7 +167,7 @@ public class TranslateJsonCacheTest
         when(pResultSet.getString("tiporesp")).thenReturn("uno");
         when(pResultSet.getString("desc_coderr")).thenReturn("dos");
         when(pResultSet.next()).thenReturn(true).thenReturn(false);
-        boolean error = TranslateJsonCache.isErrorCode("uno", "dos");
+        String error = TranslateJsonCache.isErrorCode("uno", "dos", null, "tres");
         int size = TranslateJsonCache.getCacheSize();
         try
         {
@@ -178,7 +178,7 @@ public class TranslateJsonCacheTest
         {
         }
         assertTrue(size == 3);
-        assertTrue(error);
+        assertTrue(error == "dos");
     }
 
     /**
@@ -192,10 +192,10 @@ public class TranslateJsonCacheTest
     {
         Field field = PowerMockito.field(TranslateJsonCache.class, "htTranslateCacheData");
         field.set(TranslateJsonCache.class, htTranslateCacheData);
-        boolean error = TranslateJsonCache.isErrorCode("strCode", "Mars");
+        String error = TranslateJsonCache.isErrorCode("strCode", "Mars", null, "strDesc");
         int size = TranslateJsonCache.getCacheSize();
         assertTrue(size == 3);
-        assertTrue(error);
+        assertTrue(error == "strCode");
     }
 
     /**
@@ -221,7 +221,7 @@ public class TranslateJsonCacheTest
         when(pResultSet.getString("tiporesp")).thenReturn("uno");
         when(pResultSet.getString("desc_coderr")).thenReturn("dos");
         when(pResultSet.next()).thenReturn(true).thenReturn(false);
-        boolean error = TranslateJsonCache.isErrorCode("99", "00");
+        String error = TranslateJsonCache.isErrorCode("99", "00", null, "02");
         int size = TranslateJsonCache.getCacheSize();
         try
         {
@@ -231,6 +231,6 @@ public class TranslateJsonCacheTest
         {
         }
         assertTrue(size == 3);
-        assertFalse(error);
+        assertFalse(error == "00");
     }
 }

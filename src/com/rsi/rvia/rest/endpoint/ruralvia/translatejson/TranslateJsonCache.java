@@ -64,6 +64,18 @@ public class TranslateJsonCache
     }
 
     /**
+     * Devuelve los datos de la cache.
+     * 
+     * @return Contenido de la caché
+     * @throws Exception
+     *             the exception
+     */
+    public static Hashtable<String, TranslateJsonObject> getCache() throws Exception
+    {
+        return htTranslateCacheData;
+    }
+
+    /**
      * Load data from DDBB.
      */
     private static boolean loadDataFromDDBB(String strCode, RequestConfigRvia pSessionRviaData, String clave_pagina)
@@ -78,7 +90,7 @@ public class TranslateJsonCache
             ResultSet pResultSet = null;
             try
             {
-                String strQuery = "SELECT tiporesp,desc_coderr FROM bdptb282_ERR_RVIA where id_coderr = ? and idiomaerr = ? and clave_pagina=?";
+                String strQuery = "SELECT tiporesp,desc_coderr, descripcion FROM bdptb282_ERR_RVIA where id_coderr = ? and idiomaerr = ? and clave_pagina=?";
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 System.out.println("loadDataFromDDBB:" + pConnection);
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
@@ -92,10 +104,12 @@ public class TranslateJsonCache
                 {
                     TranslateJsonObject jsonO = new TranslateJsonObject();
                     String tipo = (String) pResultSet.getString("tiporesp");
-                    String descripcion = (String) pResultSet.getString("desc_coderr");
+                    String desc_coderr = (String) pResultSet.getString("desc_coderr");
+                    String descripcion = (String) pResultSet.getString("descripcion");
                     jsonO.setStrCode(strCode);
-                    jsonO.setStrDesc(descripcion);
+                    jsonO.setStrDesc(desc_coderr);
                     jsonO.setStrTipo(tipo);
+                    jsonO.setDescripcion(descripcion);
                     htTranslateCacheData.put(strCode, jsonO);
                     existe = true;
                 }
@@ -134,18 +148,25 @@ public class TranslateJsonCache
             PreparedStatement pPreparedStatement = null;
             try
             {
-                String strQuery = "INSERT INTO BDPTB282_ERR_RVIA (ID_CODERR, TIPORESP, DESC_CODERR, IDIOMAERR, CLAVE_PAGINA, DESCRIPCION) VALUE (?, ?, ?, ?, ?, ?)";
+                String strQuery = "INSERT INTO BDPTB282_ERR_RVIA (ID_CODERR, TIPORESP, DESC_CODERR, IDIOMAERR, CLAVE_PAGINA, DESCRIPCION) ";
+                strQuery += "VALUES(" + strCode + ",'" + "02" + "','" + strDesc + "','"
+                        + pSessionRviaData.getLanguage() + "','" + clave_pagina + "','" + strDesc + "')";
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 System.out.println("putDataInDDBB:" + pConnection);
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
                 System.out.println("putDataInDDBB:" + pPreparedStatement);
-                System.out.println("putDataInDDBB:" + strCode);
-                pPreparedStatement.setString(1, strCode);
-                pPreparedStatement.setString(2, "02"); // por defecto es un error
-                pPreparedStatement.setString(3, strDesc);
-                pPreparedStatement.setString(4, pSessionRviaData.getLanguage());
-                pPreparedStatement.setString(5, clave_pagina); // por defecto es un error
-                pPreparedStatement.setString(6, strDesc);
+                System.out.println("putDataInDDBB:" + strCode + ":" + pSessionRviaData.getLanguage());
+                System.out.println("putDataInDDBB:" + strDesc + ":" + clave_pagina + ":" + strDesc);
+                // pPreparedStatement.setString(1, strCode);
+                // pPreparedStatement.setInt(1, (new Integer(strCode)).intValue());
+                /*
+                 * pPreparedStatement.setString(2, "02"); // por defecto es un error pPreparedStatement.setString(3,
+                 * strDesc);
+                 */
+                /*
+                 * pPreparedStatement.setString(4, pSessionRviaData.getLanguage()); pPreparedStatement.setString(5,
+                 * clave_pagina); pPreparedStatement.setString(6, strDesc);
+                 */
                 ok = pPreparedStatement.executeUpdate(strQuery);
                 if (ok > 0)
                     pConnection.commit();

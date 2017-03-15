@@ -1,6 +1,5 @@
 package com.rsi.rvia.rest.client;
 
-import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -53,74 +52,6 @@ public class ResponseManager
     {
         String strJsonData = pResponseConnector.readEntity(String.class);
         JSONObject pJsonData;
-        /**/
-        try
-        {
-            /* codigoRetorno = 1, con coderr */
-            Hashtable<String, Object> data = new Hashtable<String, Object>();
-            data.put("CANALAIX", "000001");
-            data.put("CONTRATACION", "N");
-            data.put("PATH", "/portal_rvia/ServletDirectorPortal;RVIASESION=GblLRpHvqL6PW_FPSaUZil_8-3VjrSSeyrdmPmmD_NSuJe2I7liv!-1655323657!-891786700");
-            data.put("HQDDNE", "false");
-            data.put("USUARIO_RACF", "323008MQ");
-            data.put("PRITAR", "3008894576");
-            data.put("IP", "172.22.45.16");
-            data.put("NUMTAR", "3008894576");
-            data.put("marcaAix", "0000");
-            data.put("CLAVE_PAGINA", "MENUP_RECIB_BAJA_DOMI");
-            data.put("SELCON", "00000000001933265892");
-            data.put("NUMEXP", "9999999999999999");
-            data.put("NUM_SESSION", "21135293");
-            data.put("marca", "0000");
-            data.put("MARCAAIX", "0000");
-            data.put("idioma", "es_ES");
-            data.put("USUARIO", "32894576");
-            data.put("JSP_A_DESPACHAR", "/recibos/menup_recib_baja_domi.jsp");
-            data.put("JSP_DESTINO", "/recibos/menup_recib_baja_domi.jsp");
-            data.put("canal", "000003");
-            data.put("canalAix", "000001");
-            data.put("METODO", "[Ljava.lang.String;@17bb21d2");
-            data.put("CONTRA_RACF", "323008MQ");
-            data.put("ENTID", "3008");
-            data.put("demo", "0");
-            data.put("CODOFI", "9640");
-            data.put("lineaGrupo", "0");
-            data.put("OPDORA", "AAAAAAAA");
-            data.put("CODERR", (new Long(779)).toString());
-            data.put("TXTERR", "No hay cuentas de pasivo");
-            data.put("JSP", "CLV_ERR_CTAS");
-            String strClavepagina = "MENUP_RECIB_BAJA_DOMI";
-            String strJsonResult = com.rsi.rvia.rest.tool.Utils.objectToJson(data);
-            strJsonResult = "{" + "\"" + strClavepagina + "\": { \"codigoRetorno\": \"1\", \"Respuesta\": "
-                    + strJsonResult + "}}";
-            strJsonData = "{"
-                    + "\"MENUP_RECIB_BAJA_DOMI\":{\"codigoRetorno\": \"1\", \"Respuesta\": {\"CANALAIX\":\"000001\",\"ENTID\":\"3008\",\"JSP_A_DESPACHAR\":\"/recibos/menup_recib_baja_domi.jsp\",\"canal\":\"000003\",\"NUM_SESSION\":\"21135293\",\"MARCAAIX\":\"0000\",\"IP\":\"172.22.45.16\",\"NUMTAR\":\"3008894576\",\"lineaGrupo\":\"0\",\"SELCON\":\"00000000001933265892\",\"OPDORA\":\"AAAAAAAA\",\"canalAix\":\"000001\",\"CLAVE_PAGINA\":\"MENUP_RECIB_BAJA_DOMI\",\"TXTERR\":\"No hay cuentas de pasivo\",\"CODOFI\":\"9640\",\"marca\":\"0000\",\"JSP\":\"CLV_ERR_CTAS\",\"demo\":\"0\",\"METODO\":\"[Ljava.lang.String;@17bb21d2\",\"CONTRA_RACF\":\"323008MQ\",\"CONTRATACION\":\"N\",\"idioma\":\"es_ES\",\"USUARIO\":\"32894576\",\"NUMEXP\":\"9999999999999999\",\"CODERR\":\"779\",\"JSP_DESTINO\":\"/recibos/menup_recib_baja_domi.jsp\",\"USUARIO_RACF\":\"323008MQ\",\"marcaAix\":\"0000\",\"PATH\":\"/portal_rvia/ServletDirectorPortal;RVIASESION=GblLRpHvqL6PW_FPSaUZil_8-3VjrSSeyrdmPmmD_NSuJe2I7liv!-1655323657!-891786700\",\"PRITAR\":\"3008894576\",\"HQDDNE\":\"false\"}}}";
-            /* codigoRetorno = 0 */
-            /*
-             * strJsonData = "{" + "\"" + strClavepagina +
-             * "\": { \"codigoRetorno\": \"0\", \"Errores\": { \"codigoMostrar\": \"99999\",\"mensajeMostrar\": \"No data\",\"solucion\":\"REVISE LA ESPECIFICACION DEL SERVICIO\"}}}}"
-             * ;
-             */
-            /* sin codigoRetorno */
-            /*
-             * strJsonData = "{" + "\"" + strClavepagina +
-             * "\": { \"cdgoRetorno\": \"0\", \"Errores\": { \"codigoMostrar\": \"99999\",\"mensajeMostrar\": \"No data\",\"solucion\":\"REVISE LA ESPECIFICACION DEL SERVICIO\"}}}}"
-             * ;
-             */
-            /* Respuesta correcta */
-            // strJsonData = pResponseConnector.readEntity(String.class);
-            /*
-             * try { String strPrimaryKey = ""; if (pJsonData.keys().hasNext()) { strPrimaryKey = (String)
-             * pJsonData.keys().next(); } if (!strPrimaryKey.trim().isEmpty()) { pJsonData = new JSONObject();
-             * pJsonData.put("data", pJsonData.getJSONObject(strPrimaryKey).getJSONObject("Respuesta")); } else throw
-             * new Exception("No se ha encontrado la raiz del json de WS"); } catch (Exception ex) {
-             * pLog.error("Error al obtener el cuerpo del mensaje de una respuesta WS", ex); throw ex; }
-             */
-        }
-        catch (Exception e)
-        {
-        }
-        /**/
         if (pResponseConnector.getStatus() != Status.OK.getStatusCode())
         {
             /*

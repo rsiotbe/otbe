@@ -11,6 +11,29 @@ public class TranslateJsonObject
     private String strDesc;
     /** The str tipo. */
     private String strTipo;
+    /** The descripcion. */
+    private String descripcion;
+
+    /**
+     * Gets the descripcion.
+     * 
+     * @return the descripcion
+     */
+    public String getDescripcion()
+    {
+        return descripcion;
+    }
+
+    /**
+     * Sets the descripcion.
+     * 
+     * @param descripcion
+     *            the new descripcion
+     */
+    public void setDescripcion(String descripcion)
+    {
+        this.descripcion = descripcion;
+    }
 
     /**
      * Gets the str code.

@@ -25,7 +25,7 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.RviaRestHttpClient;
 import com.rsi.rvia.rest.endpoint.ruralvia.translatejson.TranslateJsonCache;
-import com.rsi.rvia.rest.error.ErrorManager;
+import com.rsi.rvia.rest.endpoint.ruralvia.translatejson.TranslateJsonObject;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.error.exceptions.RestConnectorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
@@ -588,6 +588,7 @@ public class RestRviaConnector
             throws LogicalErrorException
     {
         boolean fReturn = false;
+        TranslateJsonObject jsonO = null;
         String strInnerCode;
         Integer nCode = null;
         String strMessage = null;
@@ -596,11 +597,21 @@ public class RestRviaConnector
         boolean fProcessed = false;
         try
         {
-            strInnerCode = pJsonData.getString("CODERRR");
-            nCode = Integer.parseInt(strInnerCode);
-            strDescription = pJsonData.getString("TXTERRR");
-            strMessage = ErrorManager.getFriendlyErrorFromRuralvia(strInnerCode, pSessionRviaData, pMiqQuests);
-            fProcessed = true;
+            pJsonData = RestWSConnector.getRespuesta(pJsonData);
+            if (pJsonData != null)
+            {
+                if (pJsonData.has("CODERR"))
+                {
+                    strInnerCode = pJsonData.getString("CODERR");
+                    jsonO = ((TranslateJsonObject) TranslateJsonCache.getCache().get(strInnerCode));
+                    nCode = Integer.parseInt(strInnerCode);
+                    strDescription = jsonO.getStrDesc();
+                    strMessage = jsonO.getDescripcion();
+                    // strMessage = ErrorManager.getFriendlyErrorFromRuralvia(strInnerCode, pSessionRviaData,
+                    // pMiqQuests);
+                    fProcessed = true;
+                }
+            }
         }
         catch (Exception ex)
         {
