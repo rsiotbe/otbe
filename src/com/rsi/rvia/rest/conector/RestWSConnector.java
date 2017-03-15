@@ -28,6 +28,7 @@ import com.rsi.rvia.rest.client.RviaRestHttpClient;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
+import com.rsi.rvia.rest.response.RviaRestResponseErrorItem;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.tool.GettersRequestParams;
@@ -292,24 +293,21 @@ public class RestWSConnector
      *            Objeto que contiene la información JSON
      * @return true si codigoRetorno es cero
      */
-    public static String isWSError(JSONObject pJsonData)
+    public static boolean isWSError(JSONObject pJsonData)
     {
-        String fReturn = RestRviaConnector.RESPONSE_OK;
         String strStatusResponse = getRetorno(pJsonData);
         if (strStatusResponse != null && !strStatusResponse.equals(""))
         {
             if (!strStatusResponse.equals("1"))
-                fReturn = RestRviaConnector.RESPONSE_KO;
+                return true;
         }
-        else
-            fReturn = RestRviaConnector.RESPONSE_NJS;
-        return fReturn;
+        return false;
     }
 
     public static JSONObject getRespuesta(JSONObject pJsonData)
     {
         JSONObject pJson = null;
-        String strPrimaryKey = getPrimaryKey(pJsonData);
+        String strPrimaryKey = Utils.getPrimaryKeyFromJson(pJsonData);
         try
         {
             if (strPrimaryKey != null && !strPrimaryKey.trim().isEmpty())
@@ -328,14 +326,26 @@ public class RestWSConnector
         return pJson;
     }
 
-    private static String getPrimaryKey(JSONObject pJsonData)
+    public static JSONObject getErrores(JSONObject pJsonData)
     {
-        String strPrimaryKey = "";
-        if (pJsonData.keys().hasNext())
+        JSONObject pJson = null;
+        String strPrimaryKey = Utils.getPrimaryKeyFromJson(pJsonData);
+        try
         {
-            strPrimaryKey = (String) pJsonData.keys().next();
+            if (strPrimaryKey != null && !strPrimaryKey.trim().isEmpty())
+            {
+                if (pJsonData.getJSONObject(strPrimaryKey).has(RAMA_ERROR))
+                    pJson = (JSONObject) pJsonData.getJSONObject(strPrimaryKey).getJSONObject(RAMA_ERROR);
+                else
+                    pJson = null;
+            }
         }
-        return strPrimaryKey;
+        catch (JSONException e)
+        {
+            pLog.error("RestWSConnector.getRespuesta:No tiene el componente Respuesta");
+            pJson = null;
+        }
+        return pJson;
     }
 
     private static String getRetorno(JSONObject pJsonData)
@@ -344,7 +354,7 @@ public class RestWSConnector
         String strStatusResponse = "";
         try
         {
-            strPrimaryKey = getPrimaryKey(pJsonData);
+            strPrimaryKey = Utils.getPrimaryKeyFromJson(pJsonData);
             if (strPrimaryKey != null && !strPrimaryKey.trim().isEmpty())
             {
                 strStatusResponse = pJsonData.getJSONObject(strPrimaryKey).getString(RAMA_RETORNO);
@@ -376,7 +386,7 @@ public class RestWSConnector
         boolean fProcessed = false;
         try
         {
-            String strPrimaryKey = getPrimaryKey(pJsonData);
+            String strPrimaryKey = Utils.getPrimaryKeyFromJson(pJsonData);
             if (strPrimaryKey != null && !strPrimaryKey.trim().isEmpty())
             {
                 JSONObject pJsonContent = pJsonData.getJSONObject(strPrimaryKey).getJSONObject(RAMA_ERROR);
@@ -398,6 +408,16 @@ public class RestWSConnector
         if (fProcessed)
             throw new LogicalErrorException(nHttpErrorCode, nCode, strMessage, strDescription, null);
         return true;
+    }
+
+    public static RviaRestResponseErrorItem generateRviaRestErrorItem(JSONObject pJsonData) throws JSONException
+    {
+        RviaRestResponseErrorItem pReturn;
+        JSONObject pError = RestWSConnector.getErrores(pJsonData);
+        String strCodeError = pError.getString(RAMA_COD_ERROR);
+        String strTextError = pError.getString(RAMA_MSG_ERROR);
+        pReturn = new RviaRestResponseErrorItem(strCodeError, strTextError);
+        return pReturn;
     }
 
     /**

@@ -21,8 +21,8 @@ public class SignExtractor
         // TODO: Pendiente de extraer los datos de tipo de firma directamente de tabla, si aplica.
         String tiopcf = "A";
         String tipope = "142";
-        strCoord = "{\"response\":{\"data\":[{\"type\":\"coordenada\",\"value\":\"" + strCoord + "\",\"TIOPCF\":\""
-                + tiopcf + "\",\"TIPOPE\":\"" + tipope + "\"}]}}";
+        strCoord = "{\"type\":\"coordenada\",\"value\":\"" + strCoord + "\",\"TIOPCF\":\"" + tiopcf
+                + "\",\"TIPOPE\":\"" + tipope + "\"}";
         return strCoord;
     }
 }

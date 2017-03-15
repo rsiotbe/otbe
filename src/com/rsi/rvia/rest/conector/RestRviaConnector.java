@@ -24,27 +24,25 @@ import org.w3c.dom.NodeList;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.RviaRestHttpClient;
-import com.rsi.rvia.rest.endpoint.ruralvia.translatejson.TranslateJsonCache;
-import com.rsi.rvia.rest.endpoint.ruralvia.translatejson.TranslateJsonObject;
+import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.error.exceptions.RestConnectorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
+import com.rsi.rvia.rest.response.RviaRestResponse;
+import com.rsi.rvia.rest.response.RviaRestResponse.Type;
+import com.rsi.rvia.rest.response.RviaRestResponseErrorItem;
+import com.rsi.rvia.rest.response.ruralvia.TranslateRviaJsonCache;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
+import com.rsi.rvia.rest.tool.Utils;
 
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
 public class RestRviaConnector
 {
-    private static Logger      pLog         = LoggerFactory.getLogger(RestRviaConnector.class);
-    public static final String RESPONSE_OK  = "00";
-    /** The Constant RESPONSE_WR. */
-    public static final String RESPONSE_WR  = "01";
-    /** The Constant RESPONSE_KO. */
-    public static final String RESPONSE_KO  = "02";
-    /** The Constant RESPONSE_NW. */
-    public static final String RESPONSE_NW  = "03";
-    /** The Constant RESPONSE_NJS. */
-    public static final String RESPONSE_NJS = "04";
+    private static Logger pLog                       = LoggerFactory.getLogger(RestRviaConnector.class);
+    private static String PRIMARY_KEY_JSON_RESPONSE  = "ruralvia";
+    private static String CLAVE_PAGINA_JSON_RESPONSE = "clavePagina";
+    private static String DATA_JSON_RESPONSE         = "data";
 
     /**
      * Realiza la comunicación con RUralvia para obtener los datos necesarios de la operación
@@ -536,89 +534,77 @@ public class RestRviaConnector
     }
 
     /**
-     * Comprueba si el contenido del JSON es un error generado por ruralvia WS
+     * Comprueba si el contenido del JSON es de tipo WS
      * 
      * @param pJsonData
      *            Objeto que contiene la información JSON
      * @return
      */
-    public static String isRVIAError(JSONObject pJsonData, RequestConfigRvia pSessionRviaData, String clave_pagina)
-    {
-        String strInnerCode = "";
-        String strInnerTxt = "";
-        String isError = RESPONSE_OK;
-        JSONObject jsonObject = null;
-        try
-        {
-            jsonObject = RestWSConnector.getRespuesta(pJsonData);
-            if (jsonObject != null)
-            {
-                if (jsonObject.has("CODERR"))
-                    strInnerCode = jsonObject.getString("CODERR");
-                if (strInnerCode != null && !strInnerCode.isEmpty())
-                {
-                    if (jsonObject.has("TXTERR"))
-                        strInnerTxt = jsonObject.getString("TXTERR");
-                    isError = TranslateJsonCache.isErrorCode(strInnerCode, strInnerTxt, pSessionRviaData, clave_pagina);
-                }
-            }
-            else
-                isError = RESPONSE_NJS;
-            // fReturn = (strInnerCode != null) && (!strInnerCode.trim().isEmpty());
-        }
-        catch (Exception ex)
-        {
-            pLog.error("No es un error de RVIA");
-            isError = RESPONSE_NJS;
-        }
-        return isError;
-    }
-
-    /**
-     * @param pSessionRviaData
-     *            Datos de sesión del usuario en ruralvia
-     * @param pRestConnector
-     *            Conector al origen de los datos
-     * @param pJsonData
-     *            Objeto que contiene la información JSON
-     * @return Indica si se ha llegado ha lanzar una excepción de error
-     * @throws LogicalErrorException
-     */
-    public static boolean throwRVIAError(RequestConfigRvia pSessionRviaData, MiqQuests pMiqQuests, JSONObject pJsonData)
-            throws LogicalErrorException
+    public static boolean isRviaJson(JSONObject pJsonData)
     {
         boolean fReturn = false;
-        TranslateJsonObject jsonO = null;
-        String strInnerCode;
-        Integer nCode = null;
-        String strMessage = null;
-        String strDescription = null;
-        Integer nHttpErrorCode = 400;
-        boolean fProcessed = false;
+        String strPrimaryKey = Utils.getPrimaryKeyFromJson(pJsonData);
+        if (PRIMARY_KEY_JSON_RESPONSE.equals(strPrimaryKey))
+        {
+            fReturn = true;
+        }
+        return fReturn;
+    }
+
+    public static RviaRestResponse.Type getResponseType(JSONObject pJsonData) throws JSONException,
+            ApplicationException
+    {
+        String strInnerCode = null;
+        String strInnerTxt = "";
+        String strClavePagina;
+        RviaRestResponse.Type pReturn = Type.OK;
+        JSONObject pJson = pJsonData.getJSONObject(PRIMARY_KEY_JSON_RESPONSE);
+        strClavePagina = pJson.getString(CLAVE_PAGINA_JSON_RESPONSE);
+        JSONObject pJsonInnerData = pJson.getJSONObject(DATA_JSON_RESPONSE);
+        if (pJsonInnerData.has("CODERR"))
+            strInnerCode = pJsonInnerData.getString("CODERR");
+        if (strInnerCode != null && !strInnerCode.isEmpty() && (Integer.parseInt(strInnerCode) > 0))
+        {
+            if (pJsonInnerData.has("TXTERR"))
+                strInnerTxt = pJsonInnerData.getString("TXTERR");
+            pReturn = TranslateRviaJsonCache.isErrorCode(strInnerCode, strInnerTxt, strClavePagina);
+        }
+        return pReturn;
+    }
+
+    public static RviaRestResponseErrorItem generateRviaRestErrorItem(JSONObject pJsonData) throws JSONException
+    {
+        RviaRestResponseErrorItem pReturn;
+        String strErrorCode = "";
+        String strTextError = "";
+        JSONObject pJson = pJsonData.getJSONObject(PRIMARY_KEY_JSON_RESPONSE);
+        JSONObject pJsonInnerData = pJson.getJSONObject(DATA_JSON_RESPONSE);
+        if (pJsonInnerData.has("CODERR"))
+        {
+            strErrorCode = pJsonInnerData.getString("CODERR");
+        }
+        if (pJsonInnerData.has("TXTERR"))
+            strTextError = pJsonInnerData.getString("TXTERR");
+        pReturn = new RviaRestResponseErrorItem(strErrorCode, strTextError);
+        return pReturn;
+    }
+
+    public static JSONObject getRespuesta(JSONObject pJsonData)
+    {
+        JSONObject pJson = null;
         try
         {
-            pJsonData = RestWSConnector.getRespuesta(pJsonData);
-            if (pJsonData != null)
-            {
-                if (pJsonData.has("CODERR"))
-                {
-                    strInnerCode = pJsonData.getString("CODERR");
-                    jsonO = ((TranslateJsonObject) TranslateJsonCache.getCache().get(strInnerCode));
-                    nCode = Integer.parseInt(strInnerCode);
-                    strDescription = jsonO.getStrDesc();
-                    strMessage = jsonO.getDescripcion();
-                    // strMessage = ErrorManager.getFriendlyErrorFromRuralvia(strInnerCode, pSessionRviaData,
-                    // pMiqQuests);
-                    fProcessed = true;
-                }
-            }
+            pJson = pJsonData.getJSONObject(PRIMARY_KEY_JSON_RESPONSE);
+            if (pJson.has(DATA_JSON_RESPONSE))
+                pJson = (JSONObject) pJson.getJSONObject(DATA_JSON_RESPONSE);
+            else
+                pJson = null;
         }
-        catch (Exception ex)
+        catch (JSONException e)
         {
-            pLog.error("Error al obtener el cuerpo del mensaje de error de una respuesta RVIA", ex);
+            pLog.error("RestRviaConnector.getRespuesta:No tiene el componente Respuesta");
+            pJson = null;
         }
-        if (fProcessed)
-            throw new LogicalErrorException(nHttpErrorCode, nCode, strMessage, strDescription, null);
-        return fReturn;
+        return pJson;
     }
 }

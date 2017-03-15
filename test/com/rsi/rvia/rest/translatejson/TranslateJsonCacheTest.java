@@ -18,13 +18,14 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
-import com.rsi.rvia.rest.endpoint.ruralvia.translatejson.TranslateJsonCache;
+import com.rsi.rvia.rest.response.RviaRestResponse.Type;
+import com.rsi.rvia.rest.response.ruralvia.TranslateRviaJsonCache;
 
 /**
  * The Class TranslateJsonCacheTest.
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ TranslateJsonCache.class, DDBBPoolFactory.class })
+@PrepareForTest({ TranslateRviaJsonCache.class, DDBBPoolFactory.class })
 public class TranslateJsonCacheTest
 {
     /** The cache data. */
@@ -41,7 +42,7 @@ public class TranslateJsonCacheTest
     ResultSet                         pResultSet;
     /** The translate json cache class. */
     @InjectMocks
-    TranslateJsonCache                translateJsonCache;
+    TranslateRviaJsonCache            translateJsonCache;
 
     /**
      * Setup test.
@@ -70,9 +71,9 @@ public class TranslateJsonCacheTest
     @Test
     public void getCacheSizeTest() throws IllegalArgumentException, IllegalAccessException
     {
-        Field field = PowerMockito.field(TranslateJsonCache.class, "htTranslateCacheData");
-        field.set(TranslateJsonCache.class, htTranslateCacheData);
-        int size = TranslateJsonCache.getCacheSize();
+        Field field = PowerMockito.field(TranslateRviaJsonCache.class, "htTranslateCacheData");
+        field.set(TranslateRviaJsonCache.class, htTranslateCacheData);
+        int size = TranslateRviaJsonCache.getCacheSize();
         assertTrue(size == 3);
     }
 
@@ -88,8 +89,8 @@ public class TranslateJsonCacheTest
     @Test
     public void getCacheSizeTest_Null() throws IllegalArgumentException, IllegalAccessException
     {
-        TranslateJsonCache.resetCache();
-        int size = TranslateJsonCache.getCacheSize();
+        TranslateRviaJsonCache.resetCache();
+        int size = TranslateRviaJsonCache.getCacheSize();
         assertTrue(size == 0);
     }
 
@@ -104,12 +105,12 @@ public class TranslateJsonCacheTest
     @Test
     public void resetCacheTest() throws IllegalArgumentException, IllegalAccessException
     {
-        Field field = PowerMockito.field(TranslateJsonCache.class, "htTranslateCacheData");
-        field.set(TranslateJsonCache.class, htTranslateCacheData);
-        int size = TranslateJsonCache.getCacheSize();
+        Field field = PowerMockito.field(TranslateRviaJsonCache.class, "htTranslateCacheData");
+        field.set(TranslateRviaJsonCache.class, htTranslateCacheData);
+        int size = TranslateRviaJsonCache.getCacheSize();
         assertTrue(size == 3);
-        TranslateJsonCache.resetCache();
-        size = TranslateJsonCache.getCacheSize();
+        TranslateRviaJsonCache.resetCache();
+        size = TranslateRviaJsonCache.getCacheSize();
         assertTrue(size == 0);
     }
 
@@ -124,8 +125,8 @@ public class TranslateJsonCacheTest
     @Test
     public void resetCacheTest_Null() throws IllegalArgumentException, IllegalAccessException
     {
-        TranslateJsonCache.resetCache();
-        int size = TranslateJsonCache.getCacheSize();
+        TranslateRviaJsonCache.resetCache();
+        int size = TranslateRviaJsonCache.getCacheSize();
         assertTrue(size == 0);
     }
 
@@ -138,9 +139,9 @@ public class TranslateJsonCacheTest
     @Test
     public void cacheToStringTest() throws Exception
     {
-        Field field = PowerMockito.field(TranslateJsonCache.class, "htTranslateCacheData");
-        field.set(TranslateJsonCache.class, htTranslateCacheData);
-        String strCache = TranslateJsonCache.cacheToString();
+        Field field = PowerMockito.field(TranslateRviaJsonCache.class, "htTranslateCacheData");
+        field.set(TranslateRviaJsonCache.class, htTranslateCacheData);
+        String strCache = TranslateRviaJsonCache.cacheToString();
         assertTrue(!strCache.isEmpty());
     }
 
@@ -154,8 +155,8 @@ public class TranslateJsonCacheTest
     public void isErrorCodeTest_NotValueInCacheAndError() throws Exception
     {
         System.out.println("isErrorCodeTest_NotValueInCacheAndError");
-        Field field = PowerMockito.field(TranslateJsonCache.class, "htTranslateCacheData");
-        field.set(TranslateJsonCache.class, htTranslateCacheData);
+        Field field = PowerMockito.field(TranslateRviaJsonCache.class, "htTranslateCacheData");
+        field.set(TranslateRviaJsonCache.class, htTranslateCacheData);
         String strQuery = "SELECT tiporesp,desc_coderr FROM bdptb276_ERR_RVIA where id_coderr = ?";
         // String strQuery = "SELECT id_coderr,tiporesp FROM bdptb276_err_rvia where id_coderr =1";
         PowerMockito.mockStatic(DDBBPoolFactory.class);
@@ -167,18 +168,10 @@ public class TranslateJsonCacheTest
         when(pResultSet.getString("tiporesp")).thenReturn("uno");
         when(pResultSet.getString("desc_coderr")).thenReturn("dos");
         when(pResultSet.next()).thenReturn(true).thenReturn(false);
-        String error = TranslateJsonCache.isErrorCode("uno", "dos", null, "tres");
-        int size = TranslateJsonCache.getCacheSize();
-        try
-        {
-            System.out.println("isErrorCodeTest_NotValueInCacheAndError:" + TranslateJsonCache.cacheToString());
-            System.out.println("isErrorCodeTest_NotValueInCacheAndError:" + error);
-        }
-        catch (Exception e)
-        {
-        }
+        Type pType = TranslateRviaJsonCache.isErrorCode("uno", "dos", "tres");
+        int size = TranslateRviaJsonCache.getCacheSize();
         assertTrue(size == 3);
-        assertTrue(error == "dos");
+        assertTrue(pType == Type.ERROR);
     }
 
     /**
@@ -190,12 +183,12 @@ public class TranslateJsonCacheTest
     @Test
     public void isErrorCodeTest_ValueInCacheAndError() throws Exception
     {
-        Field field = PowerMockito.field(TranslateJsonCache.class, "htTranslateCacheData");
-        field.set(TranslateJsonCache.class, htTranslateCacheData);
-        String error = TranslateJsonCache.isErrorCode("strCode", "Mars", null, "strDesc");
-        int size = TranslateJsonCache.getCacheSize();
+        Field field = PowerMockito.field(TranslateRviaJsonCache.class, "htTranslateCacheData");
+        field.set(TranslateRviaJsonCache.class, htTranslateCacheData);
+        Type pType = TranslateRviaJsonCache.isErrorCode("strCode", "Mars", "strDesc");
+        int size = TranslateRviaJsonCache.getCacheSize();
         assertTrue(size == 3);
-        assertTrue(error == "strCode");
+        assertTrue(pType == Type.ERROR);
     }
 
     /**
@@ -208,8 +201,8 @@ public class TranslateJsonCacheTest
     public void isErrorCodeTest_NotValueInCacheAndNoError() throws Exception
     {
         System.out.println("isErrorCodeTest_NotValueInCacheAndNoError");
-        Field field = PowerMockito.field(TranslateJsonCache.class, "htTranslateCacheData");
-        field.set(TranslateJsonCache.class, htTranslateCacheData);
+        Field field = PowerMockito.field(TranslateRviaJsonCache.class, "htTranslateCacheData");
+        field.set(TranslateRviaJsonCache.class, htTranslateCacheData);
         // String strQuery = "SELECT codigo,descripcion FROM bdptb079_idioma where codigo in (?)";
         String strQuery = "SELECT tiporesp,desc_coderr FROM bdptb276_err_rvia where id_coderr = ?";
         PowerMockito.mockStatic(DDBBPoolFactory.class);
@@ -221,16 +214,9 @@ public class TranslateJsonCacheTest
         when(pResultSet.getString("tiporesp")).thenReturn("uno");
         when(pResultSet.getString("desc_coderr")).thenReturn("dos");
         when(pResultSet.next()).thenReturn(true).thenReturn(false);
-        String error = TranslateJsonCache.isErrorCode("99", "00", null, "02");
-        int size = TranslateJsonCache.getCacheSize();
-        try
-        {
-            System.out.println("isErrorCodeTest_NotValueInCacheAndNoError:" + error);
-        }
-        catch (Exception e)
-        {
-        }
+        Type pType = TranslateRviaJsonCache.isErrorCode("99", "00", "02");
+        int size = TranslateRviaJsonCache.getCacheSize();
         assertTrue(size == 3);
-        assertFalse(error == "00");
+        assertFalse(pType == Type.OK);
     }
 }
