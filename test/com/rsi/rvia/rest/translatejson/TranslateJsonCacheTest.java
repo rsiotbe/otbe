@@ -168,7 +168,7 @@ public class TranslateJsonCacheTest
         when(pResultSet.getString("tiporesp")).thenReturn("uno");
         when(pResultSet.getString("desc_coderr")).thenReturn("dos");
         when(pResultSet.next()).thenReturn(true).thenReturn(false);
-        Type pType = TranslateRviaJsonCache.isErrorCode("uno", "dos", "tres");
+        Type pType = TranslateRviaJsonCache.isErrorCode("uno", "dos", 1000);
         int size = TranslateRviaJsonCache.getCacheSize();
         assertTrue(size == 3);
         assertTrue(pType == Type.ERROR);
@@ -185,7 +185,7 @@ public class TranslateJsonCacheTest
     {
         Field field = PowerMockito.field(TranslateRviaJsonCache.class, "htTranslateCacheData");
         field.set(TranslateRviaJsonCache.class, htTranslateCacheData);
-        Type pType = TranslateRviaJsonCache.isErrorCode("strCode", "Mars", "strDesc");
+        Type pType = TranslateRviaJsonCache.isErrorCode("strCode", "Mars", 1000);
         int size = TranslateRviaJsonCache.getCacheSize();
         assertTrue(size == 3);
         assertTrue(pType == Type.ERROR);
@@ -214,7 +214,7 @@ public class TranslateJsonCacheTest
         when(pResultSet.getString("tiporesp")).thenReturn("uno");
         when(pResultSet.getString("desc_coderr")).thenReturn("dos");
         when(pResultSet.next()).thenReturn(true).thenReturn(false);
-        Type pType = TranslateRviaJsonCache.isErrorCode("99", "00", "02");
+        Type pType = TranslateRviaJsonCache.isErrorCode("99", "00", 1000);
         int size = TranslateRviaJsonCache.getCacheSize();
         assertTrue(size == 3);
         assertFalse(pType == Type.OK);

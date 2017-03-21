@@ -101,7 +101,7 @@ public class TranslateRviaJsonCache
     /**
      * Load data from DDBB.
      */
-    private static TranslateRviaJsonObject loadDataFromDDBB(String strErrorCode, String strClavePagina)
+    private static TranslateRviaJsonObject loadDataFromDDBB(String strErrorCode, int nIdMiq)
             throws ApplicationException
     {
         boolean fIsError = false;
@@ -113,14 +113,14 @@ public class TranslateRviaJsonCache
             ResultSet pResultSet = null;
             try
             {
-                String strQuery = "SELECT * FROM bdptb282_ERR_RVIA where coderr = ? and clave_pagina=?";
+                String strQuery = "SELECT * FROM bdptb282_ERR_RVIA where coderr = ? and Id_Miq=?";
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pLog.trace("pConnection:" + pConnection);
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
                 pLog.trace("pPreparedStatement:" + pPreparedStatement);
                 pLog.trace("strErrorCode:" + strErrorCode);
                 pPreparedStatement.setString(1, strErrorCode);
-                pPreparedStatement.setString(2, strClavePagina);
+                pPreparedStatement.setInt(2, nIdMiq);
                 pResultSet = pPreparedStatement.executeQuery();
                 while (pResultSet.next())
                 {
@@ -131,7 +131,7 @@ public class TranslateRviaJsonCache
                     pTRJO.setCode(strErrorCode);
                     pTRJO.setTexterror(strTextError);
                     pTRJO.setType(Type.valueOf(strType));
-                    pTRJO.setClavePagina(strClavePagina);
+                    pTRJO.setIdMiq(nIdMiq);
                     pTRJO.setDescription(strDescription);
                 }
             }
@@ -177,8 +177,7 @@ public class TranslateRviaJsonCache
      * ApplicationException(500, 999993, "Error al procesar la información", "Error al acceder a BBDD", null); } }
      * return nResult; }
      */
-    private static int putDataInDDBB(String strErrorCode, String strErrorText, String strClavePagina)
-            throws ApplicationException
+    private static int putDataInDDBB(String strErrorCode, String strErrorText, int nIdMiq) throws ApplicationException
     {
         int nResult = -1;
         boolean fIsError = false;
@@ -188,15 +187,15 @@ public class TranslateRviaJsonCache
             PreparedStatement pPreparedStatement = null;
             try
             {
-                String strQuery = "INSERT INTO BDPTB282_ERR_RVIA (CODERR, TIPORESP, TEXTERROR, CLAVE_PAGINA, DESCRIPCION) ";
-                strQuery += "VALUES('" + strErrorCode + "','" + "ERROR" + "','" + strErrorText + "','" + strClavePagina
+                String strQuery = "INSERT INTO BDPTB282_ERR_RVIA (CODERR, TIPORESP, TEXTERROR, ID_MIQ, DESCRIPCION) ";
+                strQuery += "VALUES('" + strErrorCode + "','" + "ERROR" + "','" + strErrorText + "','" + nIdMiq
                         + "','Error generado automáticamente')";
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pLog.trace("pConnection:" + pConnection);
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
                 pLog.trace("pPreparedStatement:" + pPreparedStatement);
                 pLog.trace("strErrorCode:" + strErrorCode);
-                pLog.trace("strClavePagina:" + strClavePagina);
+                pLog.trace("nIdMiq:" + nIdMiq);
                 // pPreparedStatement.setString(1, strCode);
                 // pPreparedStatement.setInt(1, (new Integer(strCode)).intValue());
                 /*
@@ -244,7 +243,7 @@ public class TranslateRviaJsonCache
      * htTranslateCacheData.get(strCode); if (pTRJO.getDesc().equals(strDesc)) tipoErr = pTRJO.getTipo().name(); }
      * return tipoErr; }
      */
-    public static RviaRestResponse.Type isErrorCode(String strErrorCode, String strTextError, String strClavePagina)
+    public static RviaRestResponse.Type isErrorCode(String strErrorCode, String strTextError, int nIdMiq)
             throws ApplicationException
     {
         RviaRestResponse.Type pReturn;
@@ -256,15 +255,15 @@ public class TranslateRviaJsonCache
         /* si no se encuentra se intenta cargar de bbdd */
         if (pTRJO == null)
         {
-            pTRJO = loadDataFromDDBB(strErrorCode, strClavePagina);
+            pTRJO = loadDataFromDDBB(strErrorCode, nIdMiq);
             /* si no se ha podido cargar de bbdd por que no se encuentra, se inserta la info y se genera el objeto */
             if (pTRJO == null)
             {
-                putDataInDDBB(strErrorCode, strTextError, strClavePagina);
+                putDataInDDBB(strErrorCode, strTextError, nIdMiq);
                 pTRJO = new TranslateRviaJsonObject();
                 pTRJO.setCode(strErrorCode);
                 pTRJO.setTexterror(strTextError);
-                pTRJO.setClavePagina(strClavePagina);
+                pTRJO.setIdMiq(nIdMiq);
                 pTRJO.setType(RviaRestResponse.Type.ERROR);
             }
             htTranslateCacheData.put(strErrorCode, pTRJO);

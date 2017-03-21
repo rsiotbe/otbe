@@ -13,8 +13,8 @@ public class TranslateRviaJsonObject
     private RviaRestResponse.Type pType;
     /** The str desc. */
     private String                strTextError;
-    /** The clave pagina. */
-    private String                strClavePagina;
+    /** The nIdMiq */
+    private int                   nIdMiq;
     /** The descripcion. */
     private String                strDescription;
 
@@ -76,9 +76,9 @@ public class TranslateRviaJsonObject
      * @param strDesc
      *            the new ClavePagina
      */
-    public void setClavePagina(String strClavePagina)
+    public void setIdMiq(int nIdMiq)
     {
-        this.strClavePagina = strClavePagina;
+        this.nIdMiq = nIdMiq;
     }
 
     /**
@@ -125,6 +125,6 @@ public class TranslateRviaJsonObject
 
     public String toString()
     {
-        return strCode + "::" + strTextError + "::" + pType + "::" + strClavePagina + "::" + strDescription;
+        return strCode + "::" + strTextError + "::" + pType + "::" + nIdMiq + "::" + strDescription;
     }
 }

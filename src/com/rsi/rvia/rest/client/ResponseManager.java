@@ -127,7 +127,7 @@ public class ResponseManager
         }
         else if (RestRviaConnector.isRviaJson(pJsonData))
         {
-            RviaRestResponse.Type pType = RestRviaConnector.getResponseType(pJsonData);
+            RviaRestResponse.Type pType = RestRviaConnector.getResponseType(pJsonData, pMiqQuests.getIdMiq());
             switch (pType)
             {
                 case ERROR:

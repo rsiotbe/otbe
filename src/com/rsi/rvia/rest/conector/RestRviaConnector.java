@@ -551,15 +551,13 @@ public class RestRviaConnector
         return fReturn;
     }
 
-    public static RviaRestResponse.Type getResponseType(JSONObject pJsonData) throws JSONException,
+    public static RviaRestResponse.Type getResponseType(JSONObject pJsonData, int nIdMiq) throws JSONException,
             ApplicationException
     {
         String strInnerCode = null;
         String strInnerTxt = "";
-        String strClavePagina;
         RviaRestResponse.Type pReturn = Type.OK;
         JSONObject pJson = pJsonData.getJSONObject(PRIMARY_KEY_JSON_RESPONSE);
-        strClavePagina = pJson.getString(CLAVE_PAGINA_JSON_RESPONSE);
         JSONObject pJsonInnerData = pJson.getJSONObject(DATA_JSON_RESPONSE);
         if (pJsonInnerData.has("CODERR"))
             strInnerCode = pJsonInnerData.getString("CODERR");
@@ -567,7 +565,7 @@ public class RestRviaConnector
         {
             if (pJsonInnerData.has("TXTERR"))
                 strInnerTxt = pJsonInnerData.getString("TXTERR");
-            pReturn = TranslateRviaJsonCache.isErrorCode(strInnerCode, strInnerTxt, strClavePagina);
+            pReturn = TranslateRviaJsonCache.isErrorCode(strInnerCode, strInnerTxt, nIdMiq);
         }
         return pReturn;
     }
