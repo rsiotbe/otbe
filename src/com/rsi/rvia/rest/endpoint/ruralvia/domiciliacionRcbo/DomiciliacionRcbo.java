@@ -52,6 +52,8 @@ public class DomiciliacionRcbo
     public Response listaDeContratos(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception
     { // return Response.ok("Lista de contratos").build();
+        java.net.URL aUrl = new java.net.URL(pRequest.getRequestURL().toString());
+        pLog.info(aUrl.getProtocol() + "://" + aUrl.getHost() + ":" + aUrl.getPort());
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
         pLog.info("Lista de contratos");
         return pReturn;

@@ -2,6 +2,7 @@
 <%@page import="com.rsi.rvia.rest.operation.MiqQuests"%>
 <%@page import="com.rsi.rvia.rest.template.TemplateManager"%>
 <%@page import="com.rsi.rvia.translates.TranslateCache"%>
+<%@page import="com.rsi.rvia.rest.response.ruralvia.TranslateRviaJsonCache"%>
 <%@page import="java.util.Hashtable"%>
 <%@page import="java.util.Enumeration"%>
 <%@page import="org.slf4j.Logger"%>
@@ -22,6 +23,7 @@
 	htCaches.put("Plantillas_HTML", TemplateManager.class);
 	htCaches.put("CSS_Multientidad", CssMultiBankProcessor.class);
 	htCaches.put("Traducciones", TranslateCache.class);
+	htCaches.put("Errores_Ruralvia", TranslateRviaJsonCache.class);
 		
 	String strParamClean 	= (String) request.getParameter("clean");
 	String strParamViewData	= (String) request.getParameter("viewData");

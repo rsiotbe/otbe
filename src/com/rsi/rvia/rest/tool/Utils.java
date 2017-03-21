@@ -678,4 +678,40 @@ public class Utils
             pSB.append(line);
         return pSB.toString();
     }
+
+    /**
+     * Indica si la cadena que recibe es un objeto json o no
+     * 
+     * @param strData
+     * @return
+     */
+    public static boolean isDataAJson(String strData)
+    {
+        try
+        {
+            new JSONObject(strData);
+        }
+        catch (JSONException ex)
+        {
+            try
+            {
+                new JSONArray(strData);
+            }
+            catch (JSONException ex1)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static String getPrimaryKeyFromJson(JSONObject pJsonData)
+    {
+        String strPrimaryKey = "";
+        if (pJsonData.keys().hasNext())
+        {
+            strPrimaryKey = (String) pJsonData.keys().next();
+        }
+        return strPrimaryKey;
+    }
 }
