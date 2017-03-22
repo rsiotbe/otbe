@@ -15,8 +15,9 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
     String strContrato = request.getParameter("idContract");  
     String strEntidad = request.getParameter("codEntidad");
     String strIdInternoPe = request.getParameter("idInternoPe");
+    
     String strDateFin = request.getParameter("mesFin"); 
-    String strDateIni = request.getParameter("mesFin");
+    String strDateIni = request.getParameter("mesInicio");
     
     String strParamLocalidad = request.getParameter("localidad"); 
     String strParamCategoria = request.getParameter("categoria");     
@@ -31,7 +32,13 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
     }
     else if(strParamComercio != null){
         strFiltro = "and nvl(trim(e.nomcomred),'OTROS') = '" + strParamComercio + "'";
-    }    
+    }       
+    if(strDateIni == null){
+        strDateIni = strDateFin;
+    }      
+    if(strDateFin == null){
+        strDateFin = "9999-11";
+    }      
     
     strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
     strDateIni= QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni);
