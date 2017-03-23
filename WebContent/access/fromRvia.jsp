@@ -29,7 +29,6 @@
 </head>
 <%
 	Logger pLog = LoggerFactory.getLogger("fromRvia.jsp");
-	String URL_SERVER_2_LOCAL = "http://lnxntf05:8008/api/static/mock/localhostRedirect.json";
 
 	MiqQuests pMiqQuests = null;
 	String strPathRest = null;
@@ -38,7 +37,11 @@
 	String strIdMiq = null;
 	String strToken = null;
 	String strMethod = null;
+	String strData = null;
 	String strInputs = "";
+	boolean fToLocalhost = false;
+	String strLocalhostPort = "8080";
+	String strFinalUrl;
 
 	strIdMiq = request.getParameter("idMiq");
 	pLog.info("Se recibe una petición para acceder a la operativa con idMiq " + strIdMiq);
@@ -52,29 +55,42 @@
 	}
 	strToken = request.getParameter("token");
 	strMethod = request.getParameter("method");
+	
+	/* se comprueba si es necesario redirigir la petición a localhost */
+	if((request.getParameter("tolocalhost")!= null) && ("on".equals(request.getParameter("tolocalhost"))))
+		fToLocalhost = true;
+	if(request.getParameter("localhostPort")!= null && !(request.getParameter("localhostPort").trim().isEmpty()))
+	    strLocalhostPort = request.getParameter("localhostPort");
+	if(request.getParameter("data")!= null && !(request.getParameter("data").trim().isEmpty()))
+	    strData = request.getParameter("data");
+
 	if (strMethod == null)
 		strMethod = "GET";
 	pLog.trace("Method: " + strMethod);
 	pLog.trace("IdMiq: " + strIdMiq);
 	pLog.trace("Token: " + strToken);
+	pLog.trace("Data: " + strData);
+	pLog.trace("ToLocalhost: " + fToLocalhost);
+	pLog.trace("LocalhostPort: " + strLocalhostPort);
 	
-
-	Enumeration <String> enumParams = request.getParameterNames();
-	while(enumParams.hasMoreElements())
+	Enumeration <String> pEnumParams = request.getParameterNames();
+	while(pEnumParams.hasMoreElements())
 	{
-		String strParamName = enumParams.nextElement().toString();
-		String[] sMultiple = request.getParameterValues(strParamName);
-		if(1 >= sMultiple.length)
+		String strParamName = pEnumParams.nextElement().toString();
+		String[] astrValues = request.getParameterValues(strParamName);
+		if(1 >= astrValues.length)
 		{
+		    if(("tolocalhost".equals(strParamName)) || ("localhostPort".equals(strParamName)) || ("method".equals(strParamName)) || ("idMiq".equals(strParamName)))
+		        continue;
 			out.println("<!-- " + strParamName + " = " + request.getParameter(strParamName) + "-->\n" );
 			strInputs += "<input type='hidden' value='" + request.getParameter(strParamName) + "' name='" + strParamName + "'>\n";
 		}
 		else
 		{
-			for( int i=0; i<sMultiple.length; i++ )
+			for( int i=0; i < astrValues.length; i++ )
 			{
-				out.println("<!-- " + strParamName + "[" + i + "] = " + sMultiple[i] + "-->\n" );
-				strInputs=strInputs+"<input type='hidden' value='" +sMultiple[i] + "' name='" + strParamName + "'>\n";
+				out.println("<!-- " + strParamName + "[" + i + "] = " + astrValues[i] + "-->\n" );
+				strInputs=strInputs+"<input type='hidden' value='" +astrValues[i] + "' name='" + strParamName + "'>\n";
 			}
 		}
 	}
@@ -100,11 +116,8 @@
 	
 	/* se comprueba si es necesario redirigir a la máquina local */
  	String strHost = "";
-    String entorno = AppConfiguration.getInstance().getProperty("env");
-    if (entorno.equals("TEST"))
+    if (fToLocalhost)
     {         
-    	pLog.info("Al estar en el entorno de TEST se entra a comprobar si es necesario redirir la petición a localhost");
-
     	/* se recupera la ip del usuairo que genra la invoación para comprobar si está en la lista de ips redireccionables */
         RequestConfigRvia pRequestConfigRvia;
         String strUserIp;
@@ -114,44 +127,16 @@
         HttpResponse pHttpResponse;
         HttpEntity pHttpEntity; 
         String strContent = null;
-        try
-        {
-	        pRequestConfigRvia = new RequestConfigRvia(request); 
-	        strUserIp = pRequestConfigRvia.getIp();
-	    	pLog.info("Ip del usuario: " + strUserIp);
-	    	pLog.info("Se contrasta la IP con la configuración leida en: " + URL_SERVER_2_LOCAL);
-	      	pHttpPost = new HttpPost(URL_SERVER_2_LOCAL);
-	     	pHttpClient = HttpClientBuilder.create().build();
-	     	pHttpResponse = pHttpClient.execute(pHttpPost);
-	     	pHttpEntity = pHttpResponse.getEntity();        
-	     	strContent = EntityUtils.toString(pHttpEntity);
-	        pConfig = new JSONObject(strContent);
-	       	pLog.info("Configuración leida:" + pConfig.toString());
-            JSONArray aIps = pConfig.getJSONArray("ips");
-            for (int i =0; i < aIps.length();i++)
-            {
-               JSONObject pItem = (JSONObject)aIps.get(i);
-               String strIp = pItem.getString("ip");
-               if(strIp.equals(strUserIp))
-               {
-                   strHost = pItem.getString("redirect");
-               	   pLog.info("Se detecta la configuración de redirección y se redige la peteción a: " + strHost + "/api/rest" + strPathRest);
-                   break;
-               }               
-           } 
-           if(strHost.isEmpty())
-           		pLog.info("No se detecta ninguna redirección se continua con el path relativo: " + "/api/rest" + strPathRest);
-               
-        }
-        catch(Exception ex)
-        {
-            pLog.error("Error al compronar la redirección a localhost desde TEST", ex);
-            throw new Exception("Error al comprobar la redirección a localhost desde TEST", ex);
-        }
+        pRequestConfigRvia = new RequestConfigRvia(request); 
+        strUserIp = pRequestConfigRvia.getIp();
+        strHost = "localhost:" + strLocalhostPort;
+    	pLog.info("Se procesa la petición apuntando a localhost, puerto " + strLocalhostPort + " apuntando a la máquina " + strUserIp);
     }
+    strFinalUrl = strHost + "/api/rest" + strPathRest;
+    pLog.info("Dirección final del iframe: " + strFinalUrl);
 %>
 <body>
-	<form id="formRedirect" action="<%=strHost%>/api/rest<%=strPathRest%>" method="<%=strMethod%>" enctype="multipart/form-data">
+	<form id="formRedirect" action="<%=strFinalUrl%>" method="<%=strMethod%>" enctype="multipart/form-data">
 		<%=strInputs%> 
 <%
 	if(!strError.trim().isEmpty())
