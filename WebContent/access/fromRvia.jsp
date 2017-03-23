@@ -58,7 +58,7 @@
 	strMethod = request.getParameter("method");
 	
 	/* se comprueba si es necesario redirigir la petición a localhost */
-	if((request.getParameter("tolocalhost")!= null) && ("on".equals(request.getParameter("tolocalhost"))))
+	if((request.getParameter("toLocalhost")!= null) && ("on".equals(request.getParameter("toLocalhost"))))
 		fToLocalhost = true;
 	if(request.getParameter("localhostPort")!= null && !(request.getParameter("localhostPort").trim().isEmpty()))
 	    strLocalhostPort = request.getParameter("localhostPort");
