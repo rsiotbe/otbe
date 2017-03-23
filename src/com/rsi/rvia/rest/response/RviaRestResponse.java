@@ -8,11 +8,11 @@ public class RviaRestResponse
 {
     private JSONObject    pJson;
     private int           nHttpCode;
-    private static String ROOT_NODE    = "response";
-    private static String DATA_NODE    = "data";
-    private static String STATUS_NODE  = "status";
-    private static String MESSAGE_NODE = "message";
-    private static String LEVEL_NODE   = "level";
+    private static String ROOT_NODE     = "response";
+    private static String DATA_NODE     = "data";
+    private static String STATUS_NODE   = "status";
+    private static String MESSAGES_LIST = "messages";
+    private static String LEVEL_NODE    = "level";
 
     public enum Type
     {
@@ -35,7 +35,7 @@ public class RviaRestResponse
         pStatus.put(LEVEL_NODE, pType.name());
         if (pErrorItem != null)
             pMessageArray.put(pErrorItem.getJsonObject());
-        pStatus.put(MESSAGE_NODE, pMessageArray);
+        pStatus.put(MESSAGES_LIST, pMessageArray);
         pAux.put(STATUS_NODE, pStatus);
         pJson = new JSONObject();
         pJson.put(ROOT_NODE, pAux);
@@ -64,7 +64,7 @@ public class RviaRestResponse
         pStatus.put(LEVEL_NODE, pType.name());
         if (pErrorItem != null)
             pMessageArray.put(pErrorItem.getJsonObject());
-        pStatus.put(MESSAGE_NODE, pMessageArray);
+        pStatus.put(MESSAGES_LIST, pMessageArray);
         pAux.put(STATUS_NODE, pStatus);
         pJson = new JSONObject();
         pJson.put(ROOT_NODE, pAux);
