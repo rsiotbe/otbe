@@ -57,12 +57,12 @@
 	strMethod = request.getParameter("method");
 	
 	/* se comprueba si es necesario redirigir la petición a localhost */
-	if(request.getParameter("tolocalhost")!= null)
-		fToLocalhost = Boolean.parseBoolean(request.getParameter("tolocalhost"));
-	if(request.getParameter("localhostPort")!= null)
+	if((request.getParameter("tolocalhost")!= null) && ("on".equals(request.getParameter("tolocalhost"))))
+		fToLocalhost = true;
+	if(request.getParameter("localhostPort")!= null && !(request.getParameter("localhostPort").trim().isEmpty()))
 	    strLocalhostPort = request.getParameter("localhostPort");
-	if(request.getParameter("data")!= null)
-	    strLocalhostPort = request.getParameter("data");
+	if(request.getParameter("data")!= null && !(request.getParameter("data").trim().isEmpty()))
+	    strData = request.getParameter("data");
 
 	if (strMethod == null)
 		strMethod = "GET";
@@ -73,23 +73,24 @@
 	pLog.trace("ToLocalhost: " + fToLocalhost);
 	pLog.trace("LocalhostPort: " + strLocalhostPort);
 	
-
-	Enumeration <String> enumParams = request.getParameterNames();
-	while(enumParams.hasMoreElements())
+	Enumeration <String> pEnumParams = request.getParameterNames();
+	while(pEnumParams.hasMoreElements())
 	{
-		String strParamName = enumParams.nextElement().toString();
-		String[] sMultiple = request.getParameterValues(strParamName);
-		if(1 >= sMultiple.length)
+		String strParamName = pEnumParams.nextElement().toString();
+		String[] astrValues = request.getParameterValues(strParamName);
+		if(1 >= astrValues.length)
 		{
+		    if(("tolocalhost".equals(strParamName)) || ("localhostPort".equals(strParamName)) || ("method".equals(strParamName)) || ("idMiq".equals(strParamName)))
+		        continue;
 			out.println("<!-- " + strParamName + " = " + request.getParameter(strParamName) + "-->\n" );
 			strInputs += "<input type='hidden' value='" + request.getParameter(strParamName) + "' name='" + strParamName + "'>\n";
 		}
 		else
 		{
-			for( int i=0; i<sMultiple.length; i++ )
+			for( int i=0; i < astrValues.length; i++ )
 			{
-				out.println("<!-- " + strParamName + "[" + i + "] = " + sMultiple[i] + "-->\n" );
-				strInputs=strInputs+"<input type='hidden' value='" +sMultiple[i] + "' name='" + strParamName + "'>\n";
+				out.println("<!-- " + strParamName + "[" + i + "] = " + astrValues[i] + "-->\n" );
+				strInputs=strInputs+"<input type='hidden' value='" +astrValues[i] + "' name='" + strParamName + "'>\n";
 			}
 		}
 	}
