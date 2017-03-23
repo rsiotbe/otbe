@@ -40,6 +40,7 @@
 	String strData = null;
 	String strInputs = "";
 	boolean fToLocalhost = false;
+	boolean fLocalhostHttps = false;
 	String strLocalhostPort = "8080";
 	String strFinalUrl;
 
@@ -61,6 +62,8 @@
 		fToLocalhost = true;
 	if(request.getParameter("localhostPort")!= null && !(request.getParameter("localhostPort").trim().isEmpty()))
 	    strLocalhostPort = request.getParameter("localhostPort");
+	if((request.getParameter("localhostHttps")!= null) && ("on".equals(request.getParameter("localhostHttps"))))
+	    fLocalhostHttps = true;
 	if(request.getParameter("data")!= null && !(request.getParameter("data").trim().isEmpty()))
 	    strData = request.getParameter("data");
 
@@ -72,6 +75,7 @@
 	pLog.trace("Data: " + strData);
 	pLog.trace("ToLocalhost: " + fToLocalhost);
 	pLog.trace("LocalhostPort: " + strLocalhostPort);
+	pLog.trace("LocalhostHttps: " + fLocalhostHttps);
 	
 	Enumeration <String> pEnumParams = request.getParameterNames();
 	while(pEnumParams.hasMoreElements())
@@ -129,8 +133,11 @@
         String strContent = null;
         pRequestConfigRvia = new RequestConfigRvia(request); 
         strUserIp = pRequestConfigRvia.getIp();
-        strHost = "localhost:" + strLocalhostPort;
-    	pLog.info("Se procesa la petición apuntando a localhost, puerto " + strLocalhostPort + " apuntando a la máquina " + strUserIp);
+        if(fLocalhostHttps)
+        	strHost = "https://localhost:" + strLocalhostPort;
+        else
+        	strHost = "http://localhost:" + strLocalhostPort;
+        pLog.info("Se procesa la petición apuntando a localhost, puerto " + strLocalhostPort + " apuntando a la máquina " + strUserIp);
     }
     strFinalUrl = strHost + "/api/rest" + strPathRest;
     pLog.info("Dirección final del iframe: " + strFinalUrl);
