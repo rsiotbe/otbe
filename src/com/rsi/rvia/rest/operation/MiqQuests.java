@@ -164,7 +164,6 @@ public class MiqQuests
             if (pRequest.isSecure())
             {
                 strRealEndPoint = "https://localhost";
-                Utils.configureSslTrustedServers();
             }
             else
                 strRealEndPoint = "http://localhost:" + pRequest.getLocalPort();

@@ -680,12 +680,38 @@ public class Utils
     }
 
     /**
-     * Configura la validación de certificados en las conexiones https para evitar errores de handshake por certificados
-     * no verificados
+     * Indica si la cadena que recibe es un objeto json o no
+     * 
+     * @param strData
+     * @return
      */
-    public static void configureSslTrustedServers()
+    public static boolean isDataAJson(String strData)
     {
-        SSLUtilities.trustAllHostnames();
-        SSLUtilities.trustAllHttpsCertificates();
+        try
+        {
+            new JSONObject(strData);
+        }
+        catch (JSONException ex)
+        {
+            try
+            {
+                new JSONArray(strData);
+            }
+            catch (JSONException ex1)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static String getPrimaryKeyFromJson(JSONObject pJsonData)
+    {
+        String strPrimaryKey = "";
+        if (pJsonData.keys().hasNext())
+        {
+            strPrimaryKey = (String) pJsonData.keys().next();
+        }
+        return strPrimaryKey;
     }
 }

@@ -62,7 +62,7 @@ public class ErrorManager
         try
         {
             /* se hace una consulta a la tabla especifa de errores por clave página */
-            String strQuery = "SELECT * FROM BDPTB090_ERRORES where CODERR = ? and IDIOMAERR = ? and CLAVE_PAGINA = ?";
+            String strQuery = "SELECT * FROM bel.BDPTB090_ERRORES where CODERR = ? and IDIOMAERR = ? and CLAVE_PAGINA = ?";
             strLanguage = pSessionRviaData.getLanguage();
             strClavepagina = pMiqQuests.getEndPoint();
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -90,7 +90,7 @@ public class ErrorManager
             try
             {
                 /* se hace una consulta a la tabla especifa de errores por clave página */
-                String strQuery = "SELECT * FROM BELTS105 where CODERR = ? and IDIOMAERR = ?";
+                String strQuery = "SELECT * FROM bel.BELTS105 where CODERR = ? and IDIOMAERR = ?";
                 strLanguage = pSessionRviaData.getLanguage();
                 strClavepagina = pMiqQuests.getEndPoint();
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
