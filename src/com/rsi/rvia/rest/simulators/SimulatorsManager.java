@@ -68,7 +68,7 @@ public class SimulatorsManager
                     + "(select i.traduccion from BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_condiciones) as texto_condiciones, "
                     + "(select i.traduccion from BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_aviso_legal) as texto_aviso_legal, "
                     + "(select i.traduccion from BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_desc) as texto_desc, "
-                    + "p.clave, p.valor " + "from BDPTB235_SIMULADORES s, " + "BDPTB236_PARAM_SIMULADORES p "
+                    + "p.clave, p.valor " + "from BEL.BDPTB235_SIMULADORES s, " + "BEL.BDPTB236_PARAM_SIMULADORES p "
                     + "where s.id_simulador=p.id_simulador " + "and s.entidad = ? " + "and s.activo = '1' ";
             /* se conmpone la condición de categoria con una clausula 'IN' */
             pSimulatorType = SimulatorType.valueOf(strSimulatorType);
@@ -180,7 +180,7 @@ public class SimulatorsManager
         try
         {
             strQuery = "select s.*, o.NOM_ENT_TXT, e.clave, e.valor  "
-                    + "from BDPTB235_SIMULADORES s, BELTS002 o, BDPTB273_SIMULADORES_EMAIL e "
+                    + "from BEL.BDPTB235_SIMULADORES s, BEL.BELTS002 o, BEL.BDPTB273_SIMULADORES_EMAIL e "
                     + "where s.ENTIDAD = o.NRBE and s.id_simulador=e.id_simulador and s.id_simulador = ? and s.ENTIDAD=?";
             /* se rellena la query con los datos */
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
