@@ -17,8 +17,6 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%
     Logger pLog = LoggerFactory.getLogger("simulatorOutputJSON.jsp");
-    JSONObject pJson = new JSONObject();
-    JSONObject pJsonData = new JSONObject();
     String strResponse;
     String strNRBE;
     String strNRBEName;
@@ -55,20 +53,16 @@
         strSimulatorName = (String) request.getParameter(Constants.SIMULADOR_SIMPLE_NAME);
         strLanguage = (String) request.getParameter(Constants.SIMULADOR_LANGUAGE);
     }
-    JSONObject pJsonResponse = new JSONObject();
 	SimulatorConfigObjectArray paSimulators = SimulatorsManager.getSimulatorsData(strNRBE, strNRBEName, 
 	        strSimulatorType, strSimulatorName, strLanguage);
 	/* se comprueba si se genera algún objeto de respuesta, en caso negativo se devuelve un error 404 */
 	if(paSimulators.isEmpty())
 	{
-	    strResponse = "";
-	    response.sendError(404, "Datos no encontrados" );
+	    strResponse = Utils.generateWSResponseJsonError("simulatorConfig", 404, "Datos no encontrados");
 	}
 	else
 	{
-	    pJsonData.put("data", paSimulators.toJson());
-	    pJson.put("response", pJsonData);
-	    strResponse = pJson.toString();
+	    strResponse = Utils.generateWSResponseJsonOk("simulatorConfig", paSimulators.toJson().toString());
 	    response.setContentType("application/json");	    
 	}
 %><%=strResponse%>

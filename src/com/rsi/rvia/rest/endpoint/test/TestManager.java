@@ -14,6 +14,7 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
+import com.rsi.rvia.rest.response.RviaRestResponse;
 
 @Path("/test")
 public class TestManager
@@ -29,7 +30,8 @@ public class TestManager
     {
         pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.APPLICATION_JSON + " que genera "
                 + MediaType.APPLICATION_JSON);
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}",
+                MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Se devuelve la respuesta final al usuario");
         return pReturn;
     }
@@ -44,8 +46,8 @@ public class TestManager
     {
         pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.MULTIPART_FORM_DATA + " que genera "
                 + MediaType.TEXT_HTML);
-        String strData = "";
-        Response pReturn = OperationManager.processTemplateFromRvia(pRequest, pUriInfo, strData);
+        RviaRestResponse pRviaRestResponse = null;
+        Response pReturn = OperationManager.processTemplateFromRvia(pRequest, pUriInfo, pRviaRestResponse);
         pLog.info("Se devuelve la respuesta final al usuario");
         pResponse.setContentType(MediaType.APPLICATION_XHTML_XML);
         return pReturn;
@@ -55,13 +57,12 @@ public class TestManager
     @Path("/simuladores")
     @Produces(MediaType.TEXT_HTML)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response getSimuladoresJSON(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
-            throws Exception
+    public Response getSimuladoresJSON(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
     {
         pLog.info("Se recibe una peticion de simuladores de tipo " + MediaType.MULTIPART_FORM_DATA + " que genera "
                 + MediaType.TEXT_HTML);
-        String strData = "";
-        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, strData);
+        RviaRestResponse pRviaRestResponse = null;
+        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, pRviaRestResponse);
         pLog.info("Se devuelve la respuesta final al usuario");
         return pReturn;
     }
@@ -75,7 +76,8 @@ public class TestManager
         pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.APPLICATION_JSON + " que genera "
                 + MediaType.APPLICATION_JSON);
         String strData = "";
-        Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData,
+                MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Se devuelve la respuesta final al usuario");
         return pReturn;
     }
@@ -87,7 +89,8 @@ public class TestManager
             throws Exception
     {
         pLog.info("Se recibe una peticion de cards");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData,
+                MediaType.APPLICATION_XHTML_XML_TYPE);
         return pReturn;
     }
 
@@ -98,7 +101,8 @@ public class TestManager
             throws Exception
     {
         pLog.info("Se recibe una peticion de cards/{card}");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData,
+                MediaType.APPLICATION_JSON_TYPE);
         return pReturn;
     }
 
@@ -108,7 +112,9 @@ public class TestManager
     public Response getError(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
     {
         pLog.info("Se recibe una peticion de RviaError");
+        // FIXME: Adaptar para nueva gestión de errores.
         String strData = "{}";
+        RviaRestResponse pRviaRestResponse = null;
         if (pRequest.getParameter("errorCode") != null)
         {
             String strErrorCode = (String) pRequest.getParameter("errorCode");
@@ -131,7 +137,7 @@ public class TestManager
             strData = "{" + "\"code\":999999," + "\"httpCode\":500," + "\"message\":\"Error interno del servidor.\","
                     + "\"description\":\"Se ha producido un error interno en el servidor.\"" + "}";
         }
-        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, strData);
+        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, pRviaRestResponse);
         return pReturn;
     }
 }
