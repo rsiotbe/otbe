@@ -157,7 +157,7 @@ public class TranslateJsonCacheTest
         System.out.println("isErrorCodeTest_NotValueInCacheAndError");
         Field field = PowerMockito.field(TranslateRviaJsonCache.class, "htTranslateCacheData");
         field.set(TranslateRviaJsonCache.class, htTranslateCacheData);
-        String strQuery = "SELECT tiporesp,desc_coderr FROM bdptb276_ERR_RVIA where id_coderr = ?";
+        String strQuery = "SELECT tiporesp,desc_coderr FROM bel.bdptb276_ERR_RVIA where id_coderr = ?";
         // String strQuery = "SELECT id_coderr,tiporesp FROM bdptb276_err_rvia where id_coderr =1";
         PowerMockito.mockStatic(DDBBPoolFactory.class);
         PowerMockito.when(DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca)).thenReturn(pConnection);
@@ -203,8 +203,8 @@ public class TranslateJsonCacheTest
         System.out.println("isErrorCodeTest_NotValueInCacheAndNoError");
         Field field = PowerMockito.field(TranslateRviaJsonCache.class, "htTranslateCacheData");
         field.set(TranslateRviaJsonCache.class, htTranslateCacheData);
-        // String strQuery = "SELECT codigo,descripcion FROM bdptb079_idioma where codigo in (?)";
-        String strQuery = "SELECT tiporesp,desc_coderr FROM bdptb276_err_rvia where id_coderr = ?";
+        // String strQuery = "SELECT codigo,descripcion FROM bel.bdptb079_idioma where codigo in (?)";
+        String strQuery = "SELECT tiporesp,desc_coderr FROM bel.bdptb276_err_rvia where id_coderr = ?";
         PowerMockito.mockStatic(DDBBPoolFactory.class);
         PowerMockito.when(DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca)).thenReturn(pConnection);
         when(pConnection.prepareStatement(strQuery)).thenReturn(pPreparedStatement);
