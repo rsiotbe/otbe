@@ -568,8 +568,7 @@ public class RestRviaConnector
         JSONObject pJsonInnerData = pJson.getJSONObject(DATA_JSON_RESPONSE);
         if (pJsonInnerData.has("CODERR"))
         {
-            Object codErr = pJsonInnerData.get("CODERR");
-            strInnerCode = codErr.toString();
+            strInnerCode = pJsonInnerData.get("CODERR").toString();
         }
         if (strInnerCode != null && !strInnerCode.isEmpty() && (Integer.parseInt(strInnerCode) > 0))
         {
@@ -589,7 +588,7 @@ public class RestRviaConnector
         JSONObject pJsonInnerData = pJson.getJSONObject(DATA_JSON_RESPONSE);
         if (pJsonInnerData.has("CODERR"))
         {
-            strErrorCode = pJsonInnerData.getString("CODERR");
+            strErrorCode = pJsonInnerData.get("CODERR").toString();
         }
         if (pJsonInnerData.has("TXTERR"))
             strTextError = pJsonInnerData.getString("TXTERR");
