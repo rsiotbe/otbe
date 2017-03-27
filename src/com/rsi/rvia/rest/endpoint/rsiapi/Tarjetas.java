@@ -302,4 +302,285 @@ public class Tarjetas
 		pLog.info("Movimientos de un contrato");
 		return pReturn;
 	}
+	
+    /**
+     * Obtiene el detalle de movimientos para todos los contratos de tarjetas hasta hoy. En el documento WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesAllContractsDesdeHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para todos los contratos de tarjetas de una categoría hasta hoy. En el documento
+     * WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/category/{categoria}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesAllContractsCategoriaDesdeHastaHoy(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para todos los contratos de tarjetas en una localidad hasta hoy. En el documento
+     * WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/location/{localidad}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesAllContractsLocalidadDesdeHastaHoy(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para todos los contratos de tarjetas para un comercio hasta hoy. En el documento
+     * WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/commerce/{comercio}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesAllContractsComercioDesdeHastaHoy(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para un contrato, hasta hoy. En el documento WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/{idContract}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesDesdeHastaHoy(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+            throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para un contrato, hasta hoy, y una categoría concreta. En el documento WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/{idContract}/category/{categoria}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesContratoYCategoriaDesdeHastaHoy(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para un contrato, hasta hoy, y una localización concreta. En el documento
+     * WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/{idContract}/location/{localidad}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesContratoYLocalidadDesdeHastaHoy(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para un contrato, hasta hoy, y un comercio concreto. En el documento WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/{idContract}/commerce/{comercio}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesContratoYComercioDesdeHastaHoy(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para todos los contratos de tarjetas entre dos fechas. En el documento WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesAllContractsDesdeHasta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para todos los contratos de tarjetas de una categoría entre dos fechas. En el documento
+     * WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/category/{categoria}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesAllContractsCategoriaDesdeHasta(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para todos los contratos de tarjetas en una localidad entre dos fechas. En el documento
+     * WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/location/{localidad}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesAllContractsLocalidadDesdeHasta(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para todos los contratos de tarjetas para un comercio entre dos fechas. En el documento
+     * WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/commerce/{comercio}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesAllContractsComercioDesdeHasta(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para un contrato, entre dos fechas. En el documento WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/{idContract}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesDesdeHasta(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+            throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para un contrato, entre dos fechas, y una categoría concreta. En el documento WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/{idContract}/category/{categoria}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesContratoYCategoriaDesdeHasta(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para un contrato, entre dos fechas, y una localización concreta. En el documento
+     * WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/{idContract}/location/{localidad}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesContratoYLocalidadDesdeHasta(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el detalle de movimientos para un contrato, entre dos fechas, y un comercio concreto. En el documento WebService6b
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @throws Exception
+     */
+    @GET
+    @Path("/cards/detailmovements/{idContract}/commerce/{comercio}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response detalleMovimientosMesContratoYComercioDesdeHasta(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo, String strData) throws Exception
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Movimientos de un contrato");
+        return pReturn;
+    }	
+	
 }

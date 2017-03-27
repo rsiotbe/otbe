@@ -12,3 +12,11 @@ application.properties
 local.properties
 configurations/Banca.OracleConfig.properties
 configurations/CIP.OracleConfig.properties
+configurations/application{DESA}.properties
+configurations/Banca.OracleConfig{DESA}.properties
+configurations/CIP.OracleConfig{DESA}.properties
+configurations/logback{DESA}.xml
+configurations/MySqlConfig{DESA}.properties
+configurations/simulator.email{DESA}.properties
+configurations/simulator.pdf{DESA}.properties
+WebContent/WEB-INF/web{DESA}.xml

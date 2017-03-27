@@ -375,46 +375,6 @@ public class MovimientosContrato
     }
 
     /**
-     * Obtiene un agregado de movimientos por mes y signo para un concepto de clasificaciOn de producto, entre dos
-     * fechas dadas. La clasificación de producto viene dada por: - 1) Pasivo a la vista: 03/11 y 03/21 - 2) Depósitos:
-     * 03/51 y 03/52 - 3) Préstamos: 01/51 - 4) Tarjetas de crédito: 01/51 - 5) Tarjetas crédito y débito: 01/51 y 05/51
-     * Adeudos y abonos históricos para una linea En el documento WebService3
-     * 
-     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
-     * @throws Exception
-     */
-    /*
-     * @GET
-     * @Path(
-     * "/contracts/movementsbymonth/classification/{codClasificacion}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}"
-     * )
-     * @Produces(MediaType.APPLICATION_JSON) public Response sumaMovimientosMesClasificacionDesdeHasta(@Context
-     * HttpServletRequest pRequest,
-     * @Context UriInfo pUriInfo, String strData) throws Exception { Response pReturn =
-     * OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-     * pLog.info("Movimientos de un contrato"); return pReturn; }
-     */
-    /**
-     * Obtiene un agregado de movimientos por mes y signo para un concepto de clasificaciOn de producto, y a partir de
-     * una fecha. La clasificación de producto viene dada por: - 1) Pasivo a la vista: 03/11 y 03/21 - 2) Depósitos:
-     * 03/51 y 03/52 - 3) Préstamos: 01/51 - 4) Tarjetas de crédito: 01/51 - 5) Tarjetas crédito y débito: 01/51 y 05/51
-     * Adeudos y abonos históricos para una linea En el documento WebService3
-     * 
-     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
-     * @throws Exception
-     */
-    /*
-     * @GET
-     * @Path(
-     * "/contracts/movementsbymonth/classification/{codClasificacion}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate"
-     * )
-     * @Produces(MediaType.APPLICATION_JSON) public Response sumaMovimientosMesClasificacionDesdeHastaHoy(@Context
-     * HttpServletRequest pRequest,
-     * @Context UriInfo pUriInfo, String strData) throws Exception { Response pReturn =
-     * OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-     * pLog.info("Movimientos de un contrato"); return pReturn; }
-     */
-    /**
      * Obtiene el detalle de movimientos por mes y signo para todos los contratos del cliente. En el documento
      * WebService3b
      * 
