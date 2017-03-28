@@ -15,6 +15,7 @@ public class AppConfiguration
     {
         pProperties = new Properties();
         pProperties.load(AppConfiguration.class.getClassLoader().getResourceAsStream("/application.properties"));
+        pLog.info("Se cargan las propiedades generales de la aplaición");
     }
 
     public static AppConfiguration getInstance()
@@ -24,7 +25,7 @@ public class AppConfiguration
             try
             {
                 pInstance = new AppConfiguration();
-                pLog.info("Se instanciando la configuración general de la aplicación");
+                pLog.info("Se instancian la configuración general de la aplicación");
             }
             catch (IOException e)
             {
@@ -42,6 +43,7 @@ public class AppConfiguration
 
     public String getProperty(String strKey)
     {
+        pLog.info("Se obtiene la propiedad las propiedades generales de la aplicación");
         return pProperties.getProperty(strKey);
     }
 }
