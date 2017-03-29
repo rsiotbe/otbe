@@ -97,8 +97,13 @@ public class DDBBPoolFactory
             pLog.debug("Se procede a conectar con la base de datos de tipo " + pDDBBProvider.name());
             /* se leen las propiedaddes de de esta conexión */
             Properties pProperties = new Properties();
+            pLog.debug("Se procede a conectar con la base de datos de tipo " + pDDBBProvider.name());
             pProperties.load(DDBBPoolFactory.class.getResourceAsStream(strPropertiesFile));
-            boolean fUseLocalPool = Boolean.parseBoolean(pProperties.getProperty("fUseLocalPool"));
+            pLog.debug("Se carga el contenido del fichero properties de BBDD en memoria");
+            String strAuxValue = pProperties.getProperty("fUseLocalPool");
+            pLog.debug("Se lee la propiedad fUseLocalPool: " + strAuxValue);
+            boolean fUseLocalPool = Boolean.parseBoolean(strAuxValue);
+            pLog.debug("Se parsea le valor de la propiedad a booleano. Valor: " + fUseLocalPool);
             if (fUseLocalPool)
             {
                 /* por conexión con el pool del servidor */
