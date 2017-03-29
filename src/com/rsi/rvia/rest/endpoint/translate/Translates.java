@@ -26,7 +26,7 @@ public class Translates
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML,
             MediaType.APPLICATION_FORM_URLENCODED, "application/x-ms-application" })
     public Response getTranslateAllLanguageGet(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-            @PathParam("appName") String strAppName) throws Exception
+            @PathParam("appName") String strAppName)
     {
         return process(pRequest, pUriInfo, strAppName, "ALL", MediaType.APPLICATION_JSON_TYPE);
     }
@@ -37,7 +37,7 @@ public class Translates
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML,
             MediaType.APPLICATION_FORM_URLENCODED, "application/x-ms-application" })
     public Response getTranslateLanguageGet(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-            @PathParam("appName") String strAppName, @PathParam("idioma") String strLanguage) throws Exception
+            @PathParam("appName") String strAppName, @PathParam("idioma") String strLanguage)
     {
         return process(pRequest, pUriInfo, strAppName, strLanguage, MediaType.APPLICATION_JSON_TYPE);
     }

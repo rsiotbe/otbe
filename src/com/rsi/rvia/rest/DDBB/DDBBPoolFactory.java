@@ -43,12 +43,12 @@ public class DDBBPoolFactory
                     break;
                 case OracleCIP:
                     /* se obtiene de forma sincronizada el objeto datasource asociado */
-                    pOracleCIP = loadDDBBDataSource(pDDBBProvider, pOracleBanca);
+                    pOracleCIP = loadDDBBDataSource(pDDBBProvider, pOracleCIP);
                     pReturn = pOracleCIP.getConnection();
                     break;
                 case MySql:
                     /* se obtiene de forma sincronizada el objeto datasource asociado */
-                    pOracleCIP = loadDDBBDataSource(pDDBBProvider, pOracleBanca);
+                    pMySql = loadDDBBDataSource(pDDBBProvider, pMySql);
                     pReturn = pMySql.getConnection();
                     break;
             }

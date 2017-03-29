@@ -21,8 +21,7 @@ public class AlertasMovilCuentas
     /**
      * Obtiene el listado de cuentas del cliente.
      * 
-     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
-     * @throws Exception
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas @
      */
     @GET
     @Path("/contracts")
@@ -30,7 +29,6 @@ public class AlertasMovilCuentas
     @Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
             "application/x-ms-application" })
     public Response listaDeContratos(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
-            throws Exception
     { // return Response.ok("Lista de contratos").build();
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
         pLog.info("Lista de contratos 1");
@@ -42,7 +40,6 @@ public class AlertasMovilCuentas
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
     public Response listaDeContratosJSON(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
-            throws Exception
     {
         // return Response.ok("Lista de contratos").build();
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
