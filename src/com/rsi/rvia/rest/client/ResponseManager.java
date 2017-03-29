@@ -57,15 +57,13 @@ public class ResponseManager
             if (RestRviaConnector.isRuralviaWebError(strResponseData))
             {
                 /* se evalua el html para construir un error JSOn con los datos obtenidos */
-                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999",
-                        "Error no controlado de ruralvia");
+                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Error no controlado de ruralvia");
                 pRviaRestResponse = new RviaRestResponse(RviaRestResponse.Type.ERROR, "{}", pRviaRestResponseErrorItem);
             }
             else if (RestRviaConnector.isRuralviaSessionTimeoutError(strResponseData))
             {
                 /* se evalua el html para construir un error JSOn con los datos obtenidos */
-                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999",
-                        "Error de timeout");
+                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Error de timeout");
                 pRviaRestResponse = new RviaRestResponse(Type.ERROR, "{}", pRviaRestResponseErrorItem);
             }
             else if (pMiqQuests.getComponentType() == CompomentType.COORD)
@@ -81,8 +79,7 @@ public class ResponseManager
                  * debería producirse
                  */
                 /* se evalua el html para construir un error JSOn con los datos obtenidos */
-                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999",
-                        "Error no controlado al procesar la petición");
+                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Error no controlado al procesar la petición");
                 pRviaRestResponse = new RviaRestResponse(Type.ERROR, "{}", pRviaRestResponseErrorItem);
             }
         }
@@ -139,8 +136,7 @@ public class ResponseManager
                     break;
                 case WARNING:
                     RviaRestResponseErrorItem pWarningItem = RestRviaConnector.generateRviaRestErrorItem(pJsonData);
-                    pRviaRestResponse = new RviaRestResponse(Type.WARNING, RestRviaConnector.getRespuesta(pJsonData),
-                            pWarningItem);
+                    pRviaRestResponse = new RviaRestResponse(Type.WARNING, RestRviaConnector.getRespuesta(pJsonData), pWarningItem);
                     break;
                 default:
                     pRviaRestResponse = new RviaRestResponse(Type.OK, RestRviaConnector.getRespuesta(pJsonData));
@@ -149,7 +145,8 @@ public class ResponseManager
         }
         else
         {
-            JSONObject pData = RestWSConnector.getRespuesta(pJsonData);
+            JSONObject pData = null;
+            pData = RestWSConnector.getRespuesta(pJsonData);
             int nHttpCode = pResponseConnector.getStatus();
             pRviaRestResponse = new RviaRestResponse(Type.OK, nHttpCode, pData);
         }
@@ -182,8 +179,7 @@ public class ResponseManager
             {
                 pResponseObjectData = new JSONObject();
                 pResponseObject = new JSONObject();
-                pResponseObjectData.put("data",
-                        pJsonData.getJSONObject(strPrimaryKey).getJSONObject(RestWSConnector.RAMA_RESPUESTA));
+                pResponseObjectData.put("data", pJsonData.getJSONObject(strPrimaryKey).getJSONObject(RestWSConnector.RAMA_RESPUESTA));
                 pResponseObject.put("response", pResponseObjectData);
             }
             else
@@ -202,7 +198,7 @@ public class ResponseManager
     {
         /* Cargamos en el modelo los parámetros de salida */
         SaveExitHierarchy.process(pRviaRestResponse.getJsonObject(), pMiqQuests.getIdMiq(), pRestConnector.getMethod());
-        // TODO: aqui ira el filtrado de campos de salida
+        // TODO: aqui ira el filtrado de campos de salida, caso de existir algún dia.
         return pRviaRestResponse;
     }
 }

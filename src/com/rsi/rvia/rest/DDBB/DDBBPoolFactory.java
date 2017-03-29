@@ -42,11 +42,11 @@ public class DDBBPoolFactory
                     pReturn = pOracleBanca.getConnection();
                     break;
                 case OracleCIP:
-                    pOracleCIP = loadDDBBDataSource(pDDBBProvider, pOracleBanca, "/CIP.OracleConfig.properties");
+                    pOracleCIP = loadDDBBDataSource(pDDBBProvider, pOracleCIP, "/CIP.OracleConfig.properties");
                     pReturn = pOracleCIP.getConnection();
                     break;
                 case MySql:
-                    pOracleCIP = loadDDBBDataSource(pDDBBProvider, pOracleBanca, "/MySqlConfig.properties");
+                    pMySql = loadDDBBDataSource(pDDBBProvider, pMySql, "/MySqlConfig.properties");
                     pReturn = pMySql.getConnection();
                     break;
             }
