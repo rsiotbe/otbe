@@ -26,12 +26,10 @@ public class TestManager
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response cashierLocatiorJson(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
-            throws Exception
     {
         pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.APPLICATION_JSON + " que genera "
                 + MediaType.APPLICATION_JSON);
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}",
-                MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Se devuelve la respuesta final al usuario");
         return pReturn;
     }
@@ -42,7 +40,7 @@ public class TestManager
     @Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
             "application/x-ms-application" })
     public Response cashierLocatior(@Context HttpServletRequest pRequest, @Context HttpServletResponse pResponse,
-            @Context UriInfo pUriInfo) throws Exception
+            @Context UriInfo pUriInfo)
     {
         pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.MULTIPART_FORM_DATA + " que genera "
                 + MediaType.TEXT_HTML);
@@ -57,7 +55,7 @@ public class TestManager
     @Path("/simuladores")
     @Produces(MediaType.TEXT_HTML)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response getSimuladoresJSON(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
+    public Response getSimuladoresJSON(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         pLog.info("Se recibe una peticion de simuladores de tipo " + MediaType.MULTIPART_FORM_DATA + " que genera "
                 + MediaType.TEXT_HTML);
@@ -71,13 +69,12 @@ public class TestManager
     @Path("/simuladores")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getSimuladores(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
+    public Response getSimuladores(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.APPLICATION_JSON + " que genera "
                 + MediaType.APPLICATION_JSON);
         String strData = "";
-        Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData,
-                MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Se devuelve la respuesta final al usuario");
         return pReturn;
     }
@@ -86,11 +83,9 @@ public class TestManager
     @Path("/cards")
     @Produces(MediaType.TEXT_HTML)
     public Response getAllUserCards(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
-            throws Exception
     {
         pLog.info("Se recibe una peticion de cards");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData,
-                MediaType.APPLICATION_XHTML_XML_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);
         return pReturn;
     }
 
@@ -98,18 +93,16 @@ public class TestManager
     @Path("/cards/{card}")
     @Produces(MediaType.TEXT_PLAIN)
     public Response getCard(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
-            throws Exception
     {
         pLog.info("Se recibe una peticion de cards/{card}");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData,
-                MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
         return pReturn;
     }
 
     @GET
     @Path("/rviaerror")
     @Produces(MediaType.TEXT_HTML)
-    public Response getError(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo) throws Exception
+    public Response getError(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         pLog.info("Se recibe una peticion de RviaError");
         // FIXME: Adaptar para nueva gestión de errores.

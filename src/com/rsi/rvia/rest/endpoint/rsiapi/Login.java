@@ -18,22 +18,20 @@ import com.rsi.rvia.rest.client.OperationManager;
 @Path("/rsiapi")
 public class Login
 {
-	private static Logger	pLog	= LoggerFactory.getLogger(Login.class);
+    private static Logger pLog = LoggerFactory.getLogger(Login.class);
 
-	/**
-	 * Obtiene el listado completo de tarjetas de un usuario
-	 * 
-	 * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
-	 * @throws Exception
-	 */
-	@GET
-	@Path("/login")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response loginProcess(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
-			throws Exception
-	{
-		Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, strData, MediaType.TEXT_PLAIN_TYPE);
-		pLog.info(" ---------> Login");
-		return pReturn;
-	}
+    /**
+     * Obtiene el listado completo de tarjetas de un usuario
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     */
+    @GET
+    @Path("/login")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response loginProcess(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        Response pReturn = OperationManager.processForAPI(pRequest, pUriInfo, "", MediaType.TEXT_PLAIN_TYPE);
+        pLog.info(" ---------> Login");
+        return pReturn;
+    }
 }

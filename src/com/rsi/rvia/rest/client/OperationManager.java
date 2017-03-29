@@ -178,7 +178,7 @@ public class OperationManager
      * @throws NoSuchAlgorithmException
      */
     public static Response processForAPI(HttpServletRequest pRequest, UriInfo pUriInfo, String strData,
-            MediaType pMediaType) throws JoseException, IOException, NoSuchAlgorithmException, InvalidKeySpecException
+            MediaType pMediaType)
     {
         ErrorResponse pErrorCaptured = null;
         RestConnector pRestConnector;

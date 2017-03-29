@@ -10,7 +10,6 @@ bin/
 WebContent/static
 application.properties
 local.properties
-configurations/Banca.OracleConfig.properties
 configurations/CIP.OracleConfig.properties
 configurations/application{DESA}.properties
 configurations/Banca.OracleConfig{DESA}.properties
@@ -20,3 +19,5 @@ configurations/MySqlConfig{DESA}.properties
 configurations/simulator.email{DESA}.properties
 configurations/simulator.pdf{DESA}.properties
 WebContent/WEB-INF/web{DESA}.xml
+/bin/
+/bin/

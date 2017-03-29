@@ -3,7 +3,6 @@ package com.rsi.rvia.rest.DDBB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Properties;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,15 +37,18 @@ public class DDBBPoolFactory
             switch (pDDBBProvider)
             {
                 case OracleBanca:
-                    pOracleBanca = loadDDBBDataSource(pDDBBProvider, pOracleBanca, "/Banca.OracleConfig.properties");
+                    /* se obtiene de forma sincronizada el objeto datasource asociado */
+                    pOracleBanca = loadDDBBDataSource(pDDBBProvider, pOracleBanca);
                     pReturn = pOracleBanca.getConnection();
                     break;
                 case OracleCIP:
-                    pOracleCIP = loadDDBBDataSource(pDDBBProvider, pOracleCIP, "/CIP.OracleConfig.properties");
+                    /* se obtiene de forma sincronizada el objeto datasource asociado */
+                    pOracleCIP = loadDDBBDataSource(pDDBBProvider, pOracleCIP);
                     pReturn = pOracleCIP.getConnection();
                     break;
                 case MySql:
-                    pMySql = loadDDBBDataSource(pDDBBProvider, pMySql, "/MySqlConfig.properties");
+                    /* se obtiene de forma sincronizada el objeto datasource asociado */
+                    pMySql = loadDDBBDataSource(pDDBBProvider, pMySql);
                     pReturn = pMySql.getConnection();
                     break;
             }
@@ -89,59 +91,39 @@ public class DDBBPoolFactory
         }
     }
 
-    private synchronized static DataSource loadDDBBDataSource(DDBBProvider pDDBBProvider, DataSource pDataSource,
-            String strPropertiesFile) throws Exception
+    /**
+     * Mñetodo sincronizado que se utiliza para obtener el datasource de conexiones a una BBDD
+     * 
+     * @param pDDBBProvider
+     *            Proveedor de BBDD a utilizar
+     * @param pDataSource
+     *            Variable que contiene el DataSource para asegurarse que solo s einstancia uno si no existe otro
+     *            anterior
+     * @return Datasource asociado al proveedor de datos
+     * @throws Exception
+     */
+    private synchronized static DataSource loadDDBBDataSource(DDBBProvider pDDBBProvider, DataSource pDataSource)
+            throws Exception
     {
         if (pDataSource == null)
         {
             pLog.debug("Se procede a conectar con la base de datos de tipo " + pDDBBProvider.name());
-            /* se leen las propiedaddes de de esta conexión */
-            Properties pProperties = new Properties();
-            pProperties.load(DDBBPoolFactory.class.getResourceAsStream(strPropertiesFile));
-            boolean fUseLocalPool = Boolean.parseBoolean(pProperties.getProperty("fUseLocalPool"));
-            if (fUseLocalPool)
+            switch (pDDBBProvider)
             {
-                /* por conexión con el pool del servidor */
-                pLog.debug("Se utiliza el pool de base de datos del servidor");
-                switch (pDDBBProvider)
-                {
-                    case OracleBanca:
-                        pDataSource = DDBBPool.getDatasourceFromBancaOracleServerPool();
-                        break;
-                    case OracleCIP:
-                        pDataSource = DDBBPool.getDatasourceFromCIPOracleServerPool();
-                        break;
-                    case MySql:
-                        pDataSource = DDBBPool.getDatasourceFromMySqlServerPool();
-                        break;
-                    default:
-                        pLog.error("Proveedor de base de datos no encontrado, no existe configuración para este proveedor. Proveedor:"
-                                + pDDBBProvider.name());
-                        pDataSource = null;
-                        break;
-                }
-            }
-            else
-            {
-                /* por conexión al pool interno generado por la aplicación */
-                pLog.debug("Se utiliza el pool local de base de datos");
-                switch (pDDBBProvider)
-                {
-                    case OracleBanca:
-                        pDataSource = DDBBPool.getDatasourceFromBancaOracleLocalPool(pProperties);
-                        break;
-                    case OracleCIP:
-                        pDataSource = DDBBPool.getDatasourceFromCIPOracleLocalPool(pProperties);
-                        break;
-                    case MySql:
-                        pDataSource = DDBBPool.getDatasourceFromMySqlLocalPool(pProperties);
-                        break;
-                    default:
-                        pLog.error("Proveedor de base de datos no encontrado, no existe configuración para este proveedor. Proveedor:"
-                                + pDDBBProvider.name());
-                        pDataSource = null;
-                        break;
-                }
+                case OracleBanca:
+                    pDataSource = DDBBPool.getDatasourceFromBancaOracleServerPool();
+                    break;
+                case OracleCIP:
+                    pDataSource = DDBBPool.getDatasourceFromCIPOracleServerPool();
+                    break;
+                case MySql:
+                    pDataSource = DDBBPool.getDatasourceFromMySqlServerPool();
+                    break;
+                default:
+                    pLog.error("Proveedor de base de datos no encontrado, no existe configuración para este proveedor. Proveedor:"
+                            + pDDBBProvider.name());
+                    pDataSource = null;
+                    break;
             }
         }
         return pDataSource;
