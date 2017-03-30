@@ -1,4 +1,4 @@
-package com.rsi.rvia.rest.endpoint.ruralvia.mobileAlerts;
+package com.rsi.rvia.rest.endpoint.ruralvia.mobilealerts;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -14,15 +14,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
 
-@Path("/alerts/mobile/cards")
-public class AlertasMovilTarjetas
+@Path("/alerts/mobile/foreign")
+public class AlertasMovilExtranjero
 {
-    private static Logger pLog = LoggerFactory.getLogger(AlertasMovilTarjetas.class);
+    private static Logger pLog = LoggerFactory.getLogger(AlertasMovilExtranjero.class);
 
     /**
      * Obtiene el listado de cuentas del cliente.
      * 
-     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas @
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      */
     @GET
     @Path("/contracts")
