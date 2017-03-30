@@ -115,8 +115,13 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
 	    pConnection = null;
 	    pPreparedStatement = null;
 	    pResultSet = null;
+	    
+	    pLog.info("Query a CI: "+strQuery);
+	    
+	    //strQuery="select * from BEL.BDPTB222_MIQ_QUESTS "; 
+	    
 	    pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleCIP);
-	    pPreparedStatement = pConnection.prepareStatement(strQuery);
+	    pPreparedStatement = pConnection.prepareStatement(strQuery);	    
 	    pResultSet = pPreparedStatement.executeQuery();
 	    strAliases = "";
 	    strFiltroAcuerdos = " and t1.num_sec_ac in (";
