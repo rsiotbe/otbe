@@ -269,8 +269,7 @@ public class TemplateManager
                 pLog.info("Se lee la plantilla desde red. Ruta: " + strTemplatePath);
                 URL pUrl = new URL(strTemplatePath);
                 URLConnection pURLConnection = pUrl.openConnection();
-                BufferedReader pBufferedReader = new BufferedReader(
-                        new InputStreamReader(pURLConnection.getInputStream()));
+                BufferedReader pBufferedReader = new BufferedReader(new InputStreamReader(pURLConnection.getInputStream()));
                 String strReadLine;
                 while ((strReadLine = pBufferedReader.readLine()) != null)
                     strHtml += strReadLine;
@@ -278,9 +277,7 @@ public class TemplateManager
             }
             else
             {
-                // Se parte de la ruta de aplicación web.
-                strTemplatePath = TemplateManager.class.getResource("/../..").getPath();
-                strTemplatePath += AppConfiguration.getInstance().getProperty(Constants.TEMPLATE_PATH_DISK);
+                strTemplatePath = AppConfiguration.getInstance().getProperty(Constants.TEMPLATE_PATH_DISK);
                 strTemplatePath += strPathToTemplate;
                 pLog.info("Se lee la plantilla desde disco. Ruta: " + strTemplatePath);
                 InputStream pInputStream = new FileInputStream(strTemplatePath);
