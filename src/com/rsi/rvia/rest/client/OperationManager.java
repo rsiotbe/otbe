@@ -76,7 +76,7 @@ public class OperationManager
         try
         {
             // Se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM.
-            pRequestConfigRvia = getValidateSession(pRequest);
+            pRequestConfigRvia = getValidateSessionRvia(pRequest);
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             pMiqQuests = createMiqQuests(pUriInfo);
             // Se instancia el conector y se solicitan los datos.
@@ -128,12 +128,7 @@ public class OperationManager
         try
         {
             // Se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM.
-            pRequestConfigRvia = getValidateSession(pRequest);
-            // Se comprueba si el servicio de isum está permitido.
-            if (!IsumValidation.IsValidService(pRequestConfigRvia))
-            {
-                throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
-            }
+            pRequestConfigRvia = getValidateSessionRvia(pRequest);
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
             pLog.debug("Path en el que se recibne la petición: " + strPrimaryPath);
@@ -672,7 +667,7 @@ public class OperationManager
      * @return RequestConfigRvia con todos los datos cargados del token
      * @throws Exception
      */
-    public static RequestConfigRvia getValidateSession(HttpServletRequest pRequest) throws Exception
+    public static RequestConfigRvia getValidateSessionRvia(HttpServletRequest pRequest) throws Exception
     {
         RequestConfigRvia pRequestConfigRvia = null;
         // Se obtiene los datos asociados a la petición de ruralvia.
