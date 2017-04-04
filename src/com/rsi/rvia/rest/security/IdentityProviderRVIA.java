@@ -19,6 +19,10 @@ import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.tool.AppConfiguration;
 
+/**
+ * @author zenhaust
+ * @class Gestor de login y tokens de autorización a partir de usuarios de Ruralvía
+ */
 public class IdentityProviderRVIA implements IdentityProvider
 {
     private static Logger           pLog = LoggerFactory.getLogger(IdentityProviderRVIA.class);
@@ -38,16 +42,36 @@ public class IdentityProviderRVIA implements IdentityProvider
         _JWT = "";
     }
 
+    /**
+     * Generador de JWT
+     * 
+     * @param claims
+     * @param strTokenId
+     * @return
+     * @throws Exception
+     */
     private String generateJWT(HashMap<String, String> claims, String strTokenId) throws Exception
     {
         return ManageJWToken.generateJWT(claims, strTokenId);
     };
 
+    /**
+     * Validación de JWT y extraccíon de campos de payload
+     * 
+     * @param jwt
+     * @param strTokenId
+     * @return
+     * @throws Exception
+     */
     private HashMap<String, String> validateJWT(String jwt, String strTokenId) throws Exception
     {
         return ManageJWToken.validateJWT(jwt, strTokenId);
     };
 
+    /*
+     * (non-Javadoc)
+     * @see com.rsi.rvia.rest.security.IdentityProvider#process()
+     */
     public void process() throws Exception
     {
         _claims = null;
@@ -63,7 +87,7 @@ public class IdentityProviderRVIA implements IdentityProvider
                 _claims.put("idInternoPe", _pRequest.getParameter("idInternoPe"));
             }
             if (_claims != null)
-                _JWT = generateJWT(_claims, "tk1");
+                _JWT = generateJWT(_claims, _tokenId);
             else
             {
                 // Login fallido
@@ -75,13 +99,21 @@ public class IdentityProviderRVIA implements IdentityProvider
             // Else verificamos JWT
             _JWT = _pRequest.getHeader("Authorization");
         }
-        _pParamsToInject = validateJWT(_JWT, "tk1");
+        _pParamsToInject = validateJWT(_JWT, _tokenId);
         if (_pParamsToInject == null)
         {
             throw new LogicalErrorException(401, 9999, "Unauthorized", "Sesión no válida", new Exception());
         }
     };
 
+    /**
+     * Proceso de login sobre servicio de Wallet con campos de usuario de Ruralvía
+     * 
+     * @param pRequest
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     */
     private HashMap<String, String> doLogin(HttpServletRequest pRequest) throws ClientProtocolException, IOException
     {
         String usuario = pRequest.getParameter("usuario");
@@ -172,11 +204,19 @@ public class IdentityProviderRVIA implements IdentityProvider
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see com.rsi.rvia.rest.security.IdentityProvider#getClaims()
+     */
     public HashMap<String, String> getClaims()
     {
         return _claims;
     };
 
+    /*
+     * (non-Javadoc)
+     * @see com.rsi.rvia.rest.security.IdentityProvider#getJWT()
+     */
     public String getJWT()
     {
         return _JWT;

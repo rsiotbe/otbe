@@ -6,6 +6,10 @@ import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.operation.MiqQuests;
 
+/**
+ * @author zenhaust
+ * @class Factory proveedor de gestor de identidad
+ */
 public class IdentityProviderFactory
 {
     private static Logger pLog = LoggerFactory.getLogger(DDBBProvider.class);
@@ -15,12 +19,19 @@ public class IdentityProviderFactory
         RSI, RVIA, TRUSTED;
     }
 
-    public static IdentityProvider getIdentityProvider(HttpServletRequest pRequest, MiqQuests pMiqQuests,
-            IdProvider pIdProvider) throws Exception
+    /**
+     * @param pRequest
+     * @param pMiqQuests
+     * @param pIdProvider
+     * @return Instancia de proveedor de identidad
+     * @throws Exception
+     */
+    public static IdentityProvider getIdentityProvider(HttpServletRequest pRequest, MiqQuests pMiqQuests)
+            throws Exception
     {
         IdentityProvider rIdentityProvider;
-        pLog.debug("Retornando proveedor de identidad " + pIdProvider.name());
-        switch (pIdProvider)
+        pLog.debug("Retornando proveedor de identidad: " + pMiqQuests.getIdProvider().name());
+        switch (pMiqQuests.getIdProvider())
         {
             case RSI:
                 rIdentityProvider = new IdentityProviderRVIA(pRequest, pMiqQuests);
@@ -29,11 +40,11 @@ public class IdentityProviderFactory
                 rIdentityProvider = new IdentityProviderRVIA(pRequest, pMiqQuests);
                 break;
             case TRUSTED:
-                rIdentityProvider = new IdentityProviderRVIA(pRequest, pMiqQuests);
+                rIdentityProvider = new IdentityProviderTRUSTED(pRequest, pMiqQuests);
                 break;
             default:
                 pLog.error("Proveedor de identidad no encontrado, no existe configuración para este proveedor. Proveedor:"
-                        + pIdProvider.name());
+                        + pMiqQuests.getIdProvider().name());
                 rIdentityProvider = null;
                 break;
         }
