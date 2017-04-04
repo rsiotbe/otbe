@@ -1,4 +1,4 @@
-package com.rsi.rvia.rest.endpoint.ruralvia.sabiaQue;
+package com.rsi.rvia.rest.endpoint.ruralvia.sabiaque;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;

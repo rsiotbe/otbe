@@ -1,4 +1,4 @@
-package com.rsi.rvia.rest.endpoint.ruralvia.mobileAlerts;
+package com.rsi.rvia.rest.endpoint.ruralvia.mobilealerts;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -14,10 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
 
-@Path("/alerts/mobile/foreign")
-public class AlertasMovilExtranjero
+@Path("/alerts/mobile/security")
+public class AlertasMovilSeguridad
 {
-    private static Logger pLog = LoggerFactory.getLogger(AlertasMovilExtranjero.class);
+    private static Logger pLog = LoggerFactory.getLogger(AlertasMovilSeguridad.class);
 
     /**
      * Obtiene el listado de cuentas del cliente.
@@ -51,7 +51,7 @@ public class AlertasMovilExtranjero
     /**
      * Obtiene el listado de emisores de asociados a una cuenta.
      * 
-     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas @
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      */
     @GET
     @Path("/{idContract}/transmitter")
@@ -68,7 +68,7 @@ public class AlertasMovilExtranjero
     /**
      * Obtiene el listado de emisores de decibos para una cuenta.
      * 
-     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas @
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      */
     @GET
     @Path("/{idContract}/transmitter")
@@ -84,7 +84,7 @@ public class AlertasMovilExtranjero
     /**
      * Obtiene el listado de emisores de decibos para una cuenta.
      * 
-     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas @
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      */
     @POST
     @Path("/{idContract}/transmitter")
@@ -100,7 +100,7 @@ public class AlertasMovilExtranjero
     /**
      * Obtiene el listado de emisores de decibos para una cuenta.
      * 
-     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas @
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      */
     @GET
     @Path("/{idContract}/transmitter/{idTransmitter}")
@@ -116,7 +116,7 @@ public class AlertasMovilExtranjero
     /**
      * Obtiene el listado de emisores de decibos para una cuenta.
      * 
-     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas @
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      */
     @POST
     @Path("/{idContract}/transmitter/{idTransmitter}")
