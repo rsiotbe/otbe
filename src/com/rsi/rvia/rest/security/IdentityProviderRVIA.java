@@ -27,27 +27,31 @@ public class IdentityProviderRVIA implements IdentityProvider
     private String                  _JWT;
     private MiqQuests               _pMiqQuests;
     private HashMap<String, String> _pParamsToInject;
+    private String                  _tokenId;
 
     public IdentityProviderRVIA(HttpServletRequest pRequest, MiqQuests pMiqQuests)
     {
         _pRequest = pRequest;
         _pMiqQuests = pMiqQuests;
+        _tokenId = "rviatk1";
         _claims = null;
         _JWT = "";
     }
 
-    public String generateJWT(HashMap<String, String> claims, String strTokenId) throws Exception
+    private String generateJWT(HashMap<String, String> claims, String strTokenId) throws Exception
     {
         return ManageJWToken.generateJWT(claims, strTokenId);
     };
 
-    public HashMap<String, String> validateJWT(String jwt, String strTokenId) throws Exception
+    private HashMap<String, String> validateJWT(String jwt, String strTokenId) throws Exception
     {
         return ManageJWToken.validateJWT(jwt, strTokenId);
     };
 
     public void process() throws Exception
     {
+        _claims = null;
+        _JWT = "";
         // String strPrimaryPath = _pRequest.
         if (_pMiqQuests.getPathRest().indexOf("/login") != -1)
         {
@@ -59,7 +63,7 @@ public class IdentityProviderRVIA implements IdentityProvider
                 _claims.put("idInternoPe", _pRequest.getParameter("idInternoPe"));
             }
             if (_claims != null)
-                _JWT = ManageJWToken.generateJWT(_claims, "tk1");
+                _JWT = generateJWT(_claims, "tk1");
             else
             {
                 // Login fallido
@@ -78,7 +82,7 @@ public class IdentityProviderRVIA implements IdentityProvider
         }
     };
 
-    public HashMap<String, String> doLogin(HttpServletRequest pRequest) throws ClientProtocolException, IOException
+    private HashMap<String, String> doLogin(HttpServletRequest pRequest) throws ClientProtocolException, IOException
     {
         String usuario = pRequest.getParameter("usuario");
         String documento = pRequest.getParameter("documento");
@@ -167,4 +171,14 @@ public class IdentityProviderRVIA implements IdentityProvider
             return fields;
         }
     }
+
+    public HashMap<String, String> getClaims()
+    {
+        return _claims;
+    };
+
+    public String getJWT()
+    {
+        return _JWT;
+    };
 }

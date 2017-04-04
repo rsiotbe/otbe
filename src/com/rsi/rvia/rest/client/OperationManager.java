@@ -30,7 +30,6 @@ import com.rsi.rvia.rest.error.ErrorManager;
 import com.rsi.rvia.rest.error.ErrorResponse;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 import com.rsi.rvia.rest.error.exceptions.ISUMException;
-import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.response.RviaRestResponse;
 import com.rsi.rvia.rest.security.IdentityProvider;
@@ -210,34 +209,19 @@ public class OperationManager
             pIdentityProvider.process();
             // Cuando exista un login rest hay que cambiar todos esto.
             // Si estamos invocando a login tendremos los campos resueltos o el error
-            if (strPrimaryPath.indexOf("/login") != -1)
-            {
-                // Si es login generamos JWT
-                HashMap<String, String> claims;
-                claims = doLogin(pRequest);
-                if (pRequest.getParameter("idInternoPe") != null)
-                {
-                    claims.remove("idInternoPe");
-                    claims.put("idInternoPe", pRequest.getParameter("idInternoPe"));
-                }
-                if (claims != null)
-                    JWT = ManageJWToken.generateJWT(claims, "tk1");
-                else
-                {
-                    // Login fallido
-                    throw new LogicalErrorException(403, 9999, "Login failed", "Suministre credenciales válidas para iniciar sesión", new Exception());
-                }
-            }
-            else
-            {
-                // Else verificamos JWT
-                JWT = pRequest.getHeader("Authorization");
-            }
-            HashMap<String, String> pParamsToInject = ManageJWToken.validateJWT(JWT, "tk1");
-            if (pParamsToInject == null)
-            {
-                throw new LogicalErrorException(401, 9999, "Unauthorized", "Sesión no válida", new Exception());
-            }
+            /*
+             * if (strPrimaryPath.indexOf("/login") != -1) { // Si es login generamos JWT HashMap<String, String>
+             * claims; claims = doLogin(pRequest); if (pRequest.getParameter("idInternoPe") != null) {
+             * claims.remove("idInternoPe"); claims.put("idInternoPe", pRequest.getParameter("idInternoPe")); } if
+             * (claims != null) JWT = ManageJWToken.generateJWT(claims, "tk1"); else { // Login fallido throw new
+             * LogicalErrorException(403, 9999, "Login failed", "Suministre credenciales válidas para iniciar sesión",
+             * new Exception()); } } else { // Else verificamos JWT JWT = pRequest.getHeader("Authorization"); }
+             * HashMap<String, String> pParamsToInject = ManageJWToken.validateJWT(JWT, "tk1"); if (pParamsToInject ==
+             * null) { throw new LogicalErrorException(401, 9999, "Unauthorized", "Sesión no válida", new Exception());
+             * }
+             */
+            JWT = pIdentityProvider.getJWT();
+            HashMap<String, String> pParamsToInject = pIdentityProvider.getClaims();
             pResponseConnector = pRestConnector.getData(pRequest, strData, null, pMiqQuests, pListParams, pParamsToInject);
             pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
             /* se procesa el resultado del conector paa evaluar y adaptar su contenido */
