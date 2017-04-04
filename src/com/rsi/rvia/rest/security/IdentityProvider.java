@@ -12,4 +12,6 @@ public interface IdentityProvider
     public HashMap<String, String> validateJWT(String jwt, String strTokenId) throws Exception;
 
     public HashMap<String, String> doLogin(HttpServletRequest pRequest) throws ClientProtocolException, IOException;
+
+    public void process() throws Exception;
 }

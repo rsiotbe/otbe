@@ -33,6 +33,9 @@ import com.rsi.rvia.rest.error.exceptions.ISUMException;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.response.RviaRestResponse;
+import com.rsi.rvia.rest.security.IdentityProvider;
+import com.rsi.rvia.rest.security.IdentityProviderFactory;
+import com.rsi.rvia.rest.security.IdentityProviderFactory.IdProvider;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.simulators.SimulatorsManager;
@@ -202,6 +205,9 @@ public class OperationManager
             // Se instancia el conector y se solicitan los datos.
             pRestConnector = new RestConnector();
             // BEGIN: Gestión de login y token.
+            // Si los servicios que se invocan son de rsiapi
+            IdentityProvider pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests, IdProvider.RVIA);
+            pIdentityProvider.process();
             // Cuando exista un login rest hay que cambiar todos esto.
             // Si estamos invocando a login tendremos los campos resueltos o el error
             if (strPrimaryPath.indexOf("/login") != -1)

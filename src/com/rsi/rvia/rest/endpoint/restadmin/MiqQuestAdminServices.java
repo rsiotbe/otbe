@@ -24,7 +24,7 @@ public class MiqQuestAdminServices
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas @
      */
     @GET
-    @Path("/miqs/")
+    @Path("/login")
     // @Path("/contracts/movementsbymonth/{idContract: [0-9]+}/from/{mesInicio}/to/{mesFin}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response logn(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
@@ -41,7 +41,7 @@ public class MiqQuestAdminServices
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas @
      */
     @GET
-    @Path("/miqs/")
+    @Path("/miqs")
     // @Path("/contracts/movementsbymonth/{idContract: [0-9]+}/from/{mesInicio}/to/{mesFin}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response listado(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)

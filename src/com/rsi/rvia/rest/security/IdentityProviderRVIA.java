@@ -15,11 +15,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.Constants;
 import com.rsi.rvia.rest.client.ManageJWToken;
+import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
+import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.tool.AppConfiguration;
 
 public class IdentityProviderRVIA implements IdentityProvider
 {
-    private static Logger pLog = LoggerFactory.getLogger(IdentityProviderRVIA.class);
+    private static Logger           pLog = LoggerFactory.getLogger(IdentityProviderRVIA.class);
+    private HttpServletRequest      _pRequest;
+    private HashMap<String, String> _claims;
+    private String                  _JWT;
+    private MiqQuests               _pMiqQuests;
+    private HashMap<String, String> _pParamsToInject;
+
+    public IdentityProviderRVIA(HttpServletRequest pRequest, MiqQuests pMiqQuests)
+    {
+        _pRequest = pRequest;
+        _pMiqQuests = pMiqQuests;
+        _claims = null;
+        _JWT = "";
+    }
 
     public String generateJWT(HashMap<String, String> claims, String strTokenId) throws Exception
     {
@@ -29,6 +44,38 @@ public class IdentityProviderRVIA implements IdentityProvider
     public HashMap<String, String> validateJWT(String jwt, String strTokenId) throws Exception
     {
         return ManageJWToken.validateJWT(jwt, strTokenId);
+    };
+
+    public void process() throws Exception
+    {
+        // String strPrimaryPath = _pRequest.
+        if (_pMiqQuests.getPathRest().indexOf("/login") != -1)
+        {
+            // Si es login generamos JWT
+            _claims = doLogin(_pRequest);
+            if (_pRequest.getParameter("idInternoPe") != null)
+            {
+                _claims.remove("idInternoPe");
+                _claims.put("idInternoPe", _pRequest.getParameter("idInternoPe"));
+            }
+            if (_claims != null)
+                _JWT = ManageJWToken.generateJWT(_claims, "tk1");
+            else
+            {
+                // Login fallido
+                throw new LogicalErrorException(403, 9999, "Login failed", "Suministre credenciales válidas para iniciar sesión", new Exception());
+            }
+        }
+        else
+        {
+            // Else verificamos JWT
+            _JWT = _pRequest.getHeader("Authorization");
+        }
+        _pParamsToInject = validateJWT(_JWT, "tk1");
+        if (_pParamsToInject == null)
+        {
+            throw new LogicalErrorException(401, 9999, "Unauthorized", "Sesión no válida", new Exception());
+        }
     };
 
     public HashMap<String, String> doLogin(HttpServletRequest pRequest) throws ClientProtocolException, IOException
