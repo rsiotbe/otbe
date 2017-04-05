@@ -7,6 +7,11 @@ package com.rsi;
  */
 public class Constants
 {
+    public enum Languages
+    {
+        ca_ES, de_DE, en_UK, es_ES, eu_ES, fr_FR, gl_ES, it_IT, pt_PT, va_ES
+    }
+
     // /////////////////////////
     // Default Values
     // /////////////////////////

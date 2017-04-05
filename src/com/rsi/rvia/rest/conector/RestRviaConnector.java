@@ -33,6 +33,7 @@ import com.rsi.rvia.rest.response.RviaRestResponse;
 import com.rsi.rvia.rest.response.RviaRestResponse.Type;
 import com.rsi.rvia.rest.response.RviaRestResponseErrorItem;
 import com.rsi.rvia.rest.response.ruralvia.TranslateRviaJsonCache;
+import com.rsi.rvia.rest.response.ruralvia.TranslateRviaJsonObject;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.tool.Utils;
 
@@ -558,7 +559,7 @@ public class RestRviaConnector
         return fReturn;
     }
 
-    public static RviaRestResponse.Type getResponseType(JSONObject pJsonData, int nIdMiq)
+    public static RviaRestResponse.Type getResponseType(JSONObject pJsonData, int nIdMiq, String languaje)
             throws JSONException, ApplicationException
     {
         String strInnerCode = null;
@@ -574,12 +575,12 @@ public class RestRviaConnector
         {
             if (pJsonInnerData.has("TXTERR"))
                 strInnerTxt = pJsonInnerData.getString("TXTERR");
-            pReturn = TranslateRviaJsonCache.isErrorCode(strInnerCode, strInnerTxt, nIdMiq);
+            pReturn = TranslateRviaJsonCache.isErrorCode(strInnerCode, strInnerTxt, nIdMiq, languaje);
         }
         return pReturn;
     }
 
-    public static RviaRestResponseErrorItem generateRviaRestErrorItem(JSONObject pJsonData) throws JSONException
+    public static RviaRestResponseErrorItem generateRviaRestErrorItem(JSONObject pJsonData, int idMiq) throws Exception
     {
         RviaRestResponseErrorItem pReturn;
         String strErrorCode = "";
@@ -591,8 +592,18 @@ public class RestRviaConnector
             strErrorCode = pJsonInnerData.get("CODERR").toString();
         }
         if (pJsonInnerData.has("TXTERR"))
+        {
             strTextError = pJsonInnerData.getString("TXTERR");
-        pReturn = new RviaRestResponseErrorItem(strErrorCode, strTextError);
+        }
+        TranslateRviaJsonObject errorObj = TranslateRviaJsonCache.getError(idMiq, strErrorCode);
+        if (errorObj != null)
+        {
+            pReturn = new RviaRestResponseErrorItem(errorObj);
+        }
+        else
+        {
+            pReturn = new RviaRestResponseErrorItem(strErrorCode, strTextError);
+        }
         return pReturn;
     }
 
