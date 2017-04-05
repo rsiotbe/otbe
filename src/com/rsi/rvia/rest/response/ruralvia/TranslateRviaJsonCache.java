@@ -3,6 +3,7 @@ package com.rsi.rvia.rest.response.ruralvia;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Hashtable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,16 +84,16 @@ public class TranslateRviaJsonCache
      * 
      * @param strErrorCode
      * @param nIdMiq
-     * @param languaje
+     * @param strLanguaje
      * @return
      * @throws ApplicationException
      */
-    private static TranslateRviaJsonObject loadDataFromDDBB(String strErrorCode, int nIdMiq, String languaje)
+    private static TranslateRviaJsonObject loadDataFromDDBB(String strErrorCode, int nIdMiq, String strLanguaje)
             throws ApplicationException
     {
         boolean fIsError = false;
         TranslateRviaJsonObject pTRJO = null;
-        String lang = languaje == null ? Constants.DEFAULT_LANGUAGE : languaje;
+        String srtLang = strLanguaje == null ? Constants.DEFAULT_LANGUAGE : strLanguaje;
         if (!strErrorCode.isEmpty())
         {
             Connection pConnection = null;
@@ -109,8 +110,8 @@ public class TranslateRviaJsonCache
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
                 pLog.trace("pPreparedStatement:" + pPreparedStatement);
                 pLog.trace("strErrorCode:" + strErrorCode);
-                pPreparedStatement.setString(1, lang);
-                pPreparedStatement.setString(2, lang);
+                pPreparedStatement.setString(1, srtLang);
+                pPreparedStatement.setString(2, srtLang);
                 pPreparedStatement.setString(3, strErrorCode);
                 pPreparedStatement.setInt(4, nIdMiq);
                 pResultSet = pPreparedStatement.executeQuery();
@@ -144,11 +145,13 @@ public class TranslateRviaJsonCache
         return pTRJO;
     }
 
-    private static int putDataInDDBB(String strErrorCode, String strErrorText, int nIdMiq) throws ApplicationException
+    private static synchronized int putDataInDDBB(String strErrorCode, String strErrorText, int nIdMiq)
+            throws ApplicationException, SQLException
     {
         final int THREE_OK = 6; // Se corresponde con tres ejecuciones de query OK.
         final String DEFAULT_COMMENT = "Error generado automáticamente";
         final String DEFAULT_LEVEL = RviaRestResponse.Type.ERROR.name();
+        final String DEFAULT_APP = "AUTO";
         int nResult = 0;
         boolean fIsError = false;
         Connection pConnection1 = null;
@@ -166,11 +169,16 @@ public class TranslateRviaJsonCache
                 // Insertar en BDPTB282_ERR_RVIA
                 //
                 String strQuery1 = "INSERT INTO bel.BDPTB282_ERR_RVIA (CODERR, TIPORESP, TEXTERROR, ID_MIQ, DESCRIPCION) ";
-                strQuery1 += "VALUES('" + code + "','" + DEFAULT_LEVEL + "','" + strErrorText + "','" + nIdMiq + "','"
-                        + DEFAULT_COMMENT + "')";
+                strQuery1 += "VALUES(?, ?, ?, ?, ?)";
                 pConnection1 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
+                pConnection1.setAutoCommit(false);
                 pLog.trace("pConnection1:" + pConnection1);
                 pPreparedStatement1 = pConnection1.prepareStatement(strQuery1);
+                pPreparedStatement1.setString(1, code);
+                pPreparedStatement1.setString(2, DEFAULT_LEVEL);
+                pPreparedStatement1.setString(3, strErrorText);
+                pPreparedStatement1.setString(4, String.valueOf(nIdMiq));
+                pPreparedStatement1.setString(5, code);
                 pLog.trace("pPreparedStatement1:" + pPreparedStatement1);
                 pLog.trace("strErrorCode:" + strErrorCode);
                 pLog.trace("nIdMiq:" + nIdMiq);
@@ -179,15 +187,24 @@ public class TranslateRviaJsonCache
                 // Insertar en BDPTB079_IDIOMA
                 //
                 String strQuery2 = "";
-                for (Languages lang : Languages.values())
+                Languages[] values = Languages.values();
+                for (int i = 0; i < values.length; i++)
                 {
                     strQuery2 += "INSERT INTO bel.BDPTB079_IDIOMA (IDIOMA, CODIGO, TRADUCCION, COMENTARIO) ";
-                    strQuery2 += "VALUES('" + lang + "','" + code + "','" + strErrorText + "','" + "','"
-                            + DEFAULT_COMMENT + "');";
+                    strQuery2 += "VALUES(?, ?, ?, ?)";
                 }
                 pConnection2 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
+                pConnection2.setAutoCommit(false);
                 pLog.trace("pConnection2:" + pConnection2);
                 pPreparedStatement2 = pConnection2.prepareStatement(strQuery2);
+                int count = 1;
+                for (Languages lang : Languages.values())
+                {
+                    pPreparedStatement2.setString(count++, lang.name());
+                    pPreparedStatement2.setString(count++, code);
+                    pPreparedStatement2.setString(count++, strErrorText);
+                    pPreparedStatement2.setString(count++, DEFAULT_COMMENT);
+                }
                 pLog.trace("pPreparedStatement2:" + pPreparedStatement2);
                 nResult += pPreparedStatement2.executeUpdate(strQuery2);
                 //
@@ -195,10 +212,14 @@ public class TranslateRviaJsonCache
                 // APLICATIVO='AUTO' (Autocensado)
                 //
                 String strQuery3 = "INSERT INTO bel.BDPTB079_IDIOMA_APLICATIVO (CODIGO, APLICATIVO, OPCIONES) ";
-                strQuery3 += "VALUES('" + code + "','" + "AUTO" + "','" + nIdMiq + "')";
+                strQuery3 += "VALUES(?, ?, ?)";
                 pConnection3 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
+                pConnection3.setAutoCommit(false);
                 pLog.trace("pConnection3:" + pConnection3);
                 pPreparedStatement3 = pConnection3.prepareStatement(strQuery3);
+                pPreparedStatement3.setString(1, code);
+                pPreparedStatement3.setString(2, DEFAULT_APP);
+                pPreparedStatement3.setString(3, String.valueOf(nIdMiq));
                 pLog.trace("pPreparedStatement3:" + pPreparedStatement3);
                 nResult += pPreparedStatement3.executeUpdate(strQuery3);
                 if (nResult == THREE_OK)
@@ -210,11 +231,17 @@ public class TranslateRviaJsonCache
             }
             catch (Exception ex)
             {
+                pConnection1.rollback();
+                pConnection2.rollback();
+                pConnection3.rollback();
                 pLog.error("Error al realizar la consulta a la BBDD", ex);
                 fIsError = true;
             }
             finally
             {
+                pConnection1.setAutoCommit(true);
+                pConnection2.setAutoCommit(true);
+                pConnection3.setAutoCommit(true);
                 DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement1, pConnection1);
                 DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement2, pConnection2);
                 DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement3, pConnection3);
@@ -228,7 +255,7 @@ public class TranslateRviaJsonCache
     }
 
     public static RviaRestResponse.Type isErrorCode(String strErrorCode, String strTextError, int nIdMiq,
-            String languaje) throws ApplicationException
+            String strLanguaje) throws ApplicationException, SQLException
     {
         RviaRestResponse.Type pReturn;
         TranslateRviaJsonObject pTRJO;
@@ -239,7 +266,7 @@ public class TranslateRviaJsonCache
         /* si no se encuentra se intenta cargar de bbdd */
         if (pTRJO == null)
         {
-            pTRJO = loadDataFromDDBB(strErrorCode, nIdMiq, languaje);
+            pTRJO = loadDataFromDDBB(strErrorCode, nIdMiq, strLanguaje);
             /* si no se ha podido cargar de bbdd por que no se encuentra, se inserta la info y se genera el objeto */
             if (pTRJO == null)
             {

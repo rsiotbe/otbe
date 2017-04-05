@@ -3,6 +3,7 @@ package com.rsi.rvia.rest.conector;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
@@ -559,8 +560,8 @@ public class RestRviaConnector
         return fReturn;
     }
 
-    public static RviaRestResponse.Type getResponseType(JSONObject pJsonData, int nIdMiq, String languaje)
-            throws JSONException, ApplicationException
+    public static RviaRestResponse.Type getResponseType(JSONObject pJsonData, int nIdMiq, String srtLanguaje)
+            throws JSONException, ApplicationException, SQLException
     {
         String strInnerCode = null;
         String strInnerTxt = "";
@@ -575,7 +576,7 @@ public class RestRviaConnector
         {
             if (pJsonInnerData.has("TXTERR"))
                 strInnerTxt = pJsonInnerData.getString("TXTERR");
-            pReturn = TranslateRviaJsonCache.isErrorCode(strInnerCode, strInnerTxt, nIdMiq, languaje);
+            pReturn = TranslateRviaJsonCache.isErrorCode(strInnerCode, strInnerTxt, nIdMiq, srtLanguaje);
         }
         return pReturn;
     }

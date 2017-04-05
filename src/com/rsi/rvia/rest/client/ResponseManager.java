@@ -96,12 +96,12 @@ public class ResponseManager
      * 
      * @param pJsonData
      *            Objeto que contiene la información JSON
-     * @param languaje
+     * @param strLanguaje
      * @return
      * @throws Exception
      */
     private static RviaRestResponse formatResponse(JSONObject pJsonData, MiqQuests pMiqQuests,
-            RestConnector pRestConnector, Response pResponseConnector, String languaje) throws Exception
+            RestConnector pRestConnector, Response pResponseConnector, String strLanguaje) throws Exception
     {
         RviaRestResponse pRviaRestResponse;
         /* se comprueba si el mensaje pertenece as un WS */
@@ -125,7 +125,7 @@ public class ResponseManager
         }
         else if (RestRviaConnector.isRviaJson(pJsonData))
         {
-            RviaRestResponse.Type pType = RestRviaConnector.getResponseType(pJsonData, pMiqQuests.getIdMiq(), languaje);
+            RviaRestResponse.Type pType = RestRviaConnector.getResponseType(pJsonData, pMiqQuests.getIdMiq(), strLanguaje);
             switch (pType)
             {
                 case ERROR:
