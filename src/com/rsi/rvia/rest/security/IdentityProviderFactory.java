@@ -34,7 +34,7 @@ public class IdentityProviderFactory
         switch (pMiqQuests.getIdProvider())
         {
             case RSI:
-                rIdentityProvider = new IdentityProviderRVIA(pRequest, pMiqQuests);
+                rIdentityProvider = new IdentityProviderRSI(pRequest, pMiqQuests);
                 break;
             case RVIA:
                 rIdentityProvider = new IdentityProviderRVIA(pRequest, pMiqQuests);
