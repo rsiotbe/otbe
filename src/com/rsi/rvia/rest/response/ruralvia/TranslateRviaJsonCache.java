@@ -191,7 +191,7 @@ public class TranslateRviaJsonCache
                 for (int i = 0; i < values.length; i++)
                 {
                     strQuery2 += "INSERT INTO bel.BDPTB079_IDIOMA (IDIOMA, CODIGO, TRADUCCION, COMENTARIO) ";
-                    strQuery2 += "VALUES(?, ?, ?, ?)";
+                    strQuery2 += "VALUES(?, ?, ?, ?);";
                 }
                 pConnection2 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection2.setAutoCommit(false);
