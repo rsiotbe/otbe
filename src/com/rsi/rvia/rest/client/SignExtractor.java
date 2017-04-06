@@ -1,10 +1,12 @@
 package com.rsi.rvia.rest.client;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 
 public class SignExtractor
 {
-    public static String extraerCoordenada(String pHtml) throws ApplicationException
+    public static JSONObject extraerCoordenada(String pHtml) throws ApplicationException, JSONException
     {
         String strCoord = "";
         int inicio = pHtml.indexOf("COORDENADA");
@@ -21,8 +23,11 @@ public class SignExtractor
         // TODO: Pendiente de extraer los datos de tipo de firma directamente de tabla, si aplica.
         String tiopcf = "A";
         String tipope = "142";
-        strCoord = "{\"type\":\"coordenada\",\"value\":\"" + strCoord + "\",\"TIOPCF\":\"" + tiopcf
-                + "\",\"TIPOPE\":\"" + tipope + "\"}";
-        return strCoord;
+        JSONObject pJson = new JSONObject();
+        pJson.put("type", "coordenada");
+        pJson.put("value", strCoord);
+        pJson.put("TIOPCF", tiopcf);
+        pJson.put("TIPOPE", tipope);
+        return pJson;
     }
 }

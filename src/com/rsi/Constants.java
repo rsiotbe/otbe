@@ -79,6 +79,10 @@ public class Constants
     public static final String TEMPLATE_BY_HTTP                         = "templateByHttp";
     public static final String TEMPLATE_URL                             = "templateUrlHostToStaticRepository";
     public static final String TEMPLATE_PATH_DISK                       = "templatePathDiskToStaticRepository";
+    // /////////////////////////
+    // Errors
+    // /////////////////////////
+    public static final String ERROR_SIGN_BLOCKED                       = "808";
 
     public enum SimulatorLoanCategory
     {
