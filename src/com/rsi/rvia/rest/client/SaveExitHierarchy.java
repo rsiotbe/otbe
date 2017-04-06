@@ -204,7 +204,7 @@ public class SaveExitHierarchy
      * 
      * @return Identificador a utilizar
      */
-    private static Integer getNextExitFieldId()
+    private static synchronized Integer getNextExitFieldId()
     {
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
@@ -238,7 +238,7 @@ public class SaveExitHierarchy
      * @param nIdMiqExitField
      * @param strExitFieldName
      */
-    private static void insertNewExitField(int nIdMiqExitField, String strExitFieldName, String strPath)
+    private static synchronized void insertNewExitField(int nIdMiqExitField, String strExitFieldName, String strPath)
     {
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
@@ -254,8 +254,7 @@ public class SaveExitHierarchy
         }
         catch (Exception ex)
         {
-            pLog.error("No se ha podido insertar el campo de salida " + strExitFieldName + " con id "
-                    + nIdMiqExitField, ex);
+            pLog.error("No se ha podido insertar el campo de salida " + strExitFieldName + " con id " + nIdMiqExitField, ex);
         }
         finally
         {
@@ -271,7 +270,8 @@ public class SaveExitHierarchy
      * @param strExitFieldName
      *            Nombre del campo de salida
      */
-    private static void createRelationExitFieldAndOperation(int nIdMiq, int nIdMiqExitField, String strExitFieldName)
+    private static synchronized void createRelationExitFieldAndOperation(int nIdMiq, int nIdMiqExitField,
+            String strExitFieldName)
     {
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
