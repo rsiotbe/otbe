@@ -351,7 +351,7 @@ public class MiqQuests
     {
         MiqQuests pMiqQuests = null;
         /* si la caché no está cargada se carga */
-        // if (getCacheSize() == 0)
+        if (getCacheSize() == 0)
         loadDDBBCache();
         pMiqQuests = htCacheDataId.get(nMiqQuestId);
         return pMiqQuests;
