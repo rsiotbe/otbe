@@ -3,6 +3,7 @@ package com.rsi.rvia.rest.conector;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import com.rsi.rvia.rest.response.RviaRestResponse;
 import com.rsi.rvia.rest.response.RviaRestResponse.Type;
 import com.rsi.rvia.rest.response.RviaRestResponseErrorItem;
 import com.rsi.rvia.rest.response.ruralvia.TranslateRviaJsonCache;
+import com.rsi.rvia.rest.response.ruralvia.TranslateRviaJsonObject;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.tool.Utils;
 
@@ -558,8 +560,8 @@ public class RestRviaConnector
         return fReturn;
     }
 
-    public static RviaRestResponse.Type getResponseType(JSONObject pJsonData, int nIdMiq)
-            throws JSONException, ApplicationException
+    public static RviaRestResponse.Type getResponseType(JSONObject pJsonData, int nIdMiq, String srtLanguaje)
+            throws JSONException, ApplicationException, SQLException
     {
         String strInnerCode = null;
         String strInnerTxt = "";
@@ -574,12 +576,12 @@ public class RestRviaConnector
         {
             if (pJsonInnerData.has("TXTERR"))
                 strInnerTxt = pJsonInnerData.getString("TXTERR");
-            pReturn = TranslateRviaJsonCache.isErrorCode(strInnerCode, strInnerTxt, nIdMiq);
+            pReturn = TranslateRviaJsonCache.isErrorCode(strInnerCode, strInnerTxt, nIdMiq, srtLanguaje);
         }
         return pReturn;
     }
 
-    public static RviaRestResponseErrorItem generateRviaRestErrorItem(JSONObject pJsonData) throws JSONException
+    public static RviaRestResponseErrorItem generateRviaRestErrorItem(JSONObject pJsonData, int idMiq) throws Exception
     {
         RviaRestResponseErrorItem pReturn;
         String strErrorCode = "";
@@ -591,8 +593,18 @@ public class RestRviaConnector
             strErrorCode = pJsonInnerData.get("CODERR").toString();
         }
         if (pJsonInnerData.has("TXTERR"))
+        {
             strTextError = pJsonInnerData.getString("TXTERR");
-        pReturn = new RviaRestResponseErrorItem(strErrorCode, strTextError);
+        }
+        TranslateRviaJsonObject errorObj = TranslateRviaJsonCache.getError(idMiq, strErrorCode);
+        if (errorObj != null)
+        {
+            pReturn = new RviaRestResponseErrorItem(errorObj, pJsonData);
+        }
+        else
+        {
+            pReturn = new RviaRestResponseErrorItem(strErrorCode, strTextError);
+        }
         return pReturn;
     }
 

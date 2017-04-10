@@ -17,6 +17,7 @@ public class RequestConfigRvia extends RequestConfig
     private static Properties pAddressRviaProp   = new Properties();
     private URI               pUriRvia           = null;
     private String            strRviaSessionId   = "";
+    private String            strRviaUserId      = "";
     private String            strIsumUserProfile = "";
     private String            strIsumServiceId   = "";
     private String            strToken           = "";
@@ -28,8 +29,8 @@ public class RequestConfigRvia extends RequestConfig
 
     private static enum TokenKey
     {
-        NODE("node"), RVIASESION("RVIASESION"), ISUMUSERPROFILE("isumUserProfile"), ISUMSERVICEID("isumServiceId"), LANG(
-                "lang"), NRBE("NRBE"), CANALAIX("canalAix"), CANAL("canal"), IP("ip");
+        NODE("node"), RVIASESION("RVIASESION"), RVIAUSERID("rviaUserId"), ISUMUSERPROFILE("isumUserProfile"), ISUMSERVICEID(
+                "isumServiceId"), LANG("lang"), NRBE("NRBE"), CANALAIX("canalAix"), CANAL("canal"), IP("ip");
         private String value;
 
         private TokenKey(String newValue)
@@ -115,6 +116,11 @@ public class RequestConfigRvia extends RequestConfig
         return strRviaSessionId;
     }
 
+    public String getRviaUserId()
+    {
+        return strRviaUserId;
+    }
+
     public String getIsumUserProfile()
     {
         return strIsumUserProfile;
@@ -193,6 +199,9 @@ public class RequestConfigRvia extends RequestConfig
                             case RVIASESION:
                                 strRviaSessionId = strValue;
                                 break;
+                            case RVIAUSERID:
+                                strRviaUserId = strValue;
+                                break;
                             case ISUMUSERPROFILE:
                                 strIsumUserProfile = new String(strValue);
                                 break;
@@ -230,6 +239,7 @@ public class RequestConfigRvia extends RequestConfig
                 pLog.debug("La información no viene cifrada, se procede a leerla directamente de parámetros");
                 strNodeRvia = request.getParameter(TokenKey.NODE.getValue());
                 strRviaSessionId = request.getParameter(TokenKey.RVIASESION.getValue());
+                strRviaUserId = request.getParameter(TokenKey.RVIAUSERID.getValue());
                 strIsumUserProfile = request.getParameter(TokenKey.ISUMUSERPROFILE.getValue());
                 strIsumServiceId = request.getParameter(TokenKey.ISUMSERVICEID.getValue());
                 strLanguage = request.getParameter(TokenKey.LANG.getValue());
@@ -349,6 +359,7 @@ public class RequestConfigRvia extends RequestConfig
         pSb.append("NodeRvia              :" + strNodeRvia + "\n");
         pSb.append("URI                   :" + pUriRvia + "\n");
         pSb.append("RviaSessionId         :" + strRviaSessionId + "\n");
+        pSb.append("RviaUserId            :" + strRviaUserId + "\n");
         pSb.append("IsumUserProfile       :" + strIsumUserProfile + "\n");
         pSb.append("Language              :" + strLanguage + "\n");
         pSb.append("NRBE                  :" + strNRBE + "\n");

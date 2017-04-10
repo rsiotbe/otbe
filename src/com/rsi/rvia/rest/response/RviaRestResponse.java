@@ -41,7 +41,7 @@ public class RviaRestResponse
         pJson.put(ROOT_NODE, pAux);
     }
 
-    public RviaRestResponse(Type pType, String strJsonData, RviaRestResponseErrorItem pErrorItem) throws JSONException
+    public RviaRestResponse(Type pType, JSONObject pJsonData, RviaRestResponseErrorItem pErrorItem) throws JSONException
     {
         JSONObject pAux;
         JSONObject pStatus;
@@ -58,9 +58,7 @@ public class RviaRestResponse
         pAux = new JSONObject();
         pStatus = new JSONObject();
         pMessageArray = new JSONArray();
-        if (strJsonData == null || strJsonData.trim().isEmpty())
-            strJsonData = "{}";
-        pAux.put(DATA_NODE, new JSONObject(strJsonData));
+        pAux.put(DATA_NODE, pJsonData);
         pStatus.put(LEVEL_NODE, pType.name());
         if (pErrorItem != null)
             pMessageArray.put(pErrorItem.getJsonObject());
@@ -70,19 +68,9 @@ public class RviaRestResponse
         pJson.put(ROOT_NODE, pAux);
     }
 
-    public RviaRestResponse(Type pType, JSONObject pData, RviaRestResponseErrorItem pErrorItem) throws JSONException
+    public RviaRestResponse(Type pType, JSONObject pJsonData) throws JSONException
     {
-        this(pType, pData.toString(), pErrorItem);
-    }
-
-    public RviaRestResponse(Type pType, String strJsonData) throws JSONException
-    {
-        this(pType, strJsonData, null);
-    }
-
-    public RviaRestResponse(Type pType, JSONObject pData) throws JSONException
-    {
-        this(pType, pData.toString(), null);
+        this(pType, pJsonData, null);
     }
 
     public RviaRestResponse(Type pType, int nHttpCode, JSONObject pData, RviaRestResponseErrorItem pErrorItem)

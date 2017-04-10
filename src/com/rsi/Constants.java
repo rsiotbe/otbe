@@ -7,6 +7,11 @@ package com.rsi;
  */
 public class Constants
 {
+    public enum Languages
+    {
+        ca_ES, de_DE, en_UK, es_ES, eu_ES, fr_FR, gl_ES, it_IT, pt_PT, va_ES
+    }
+
     // /////////////////////////
     // Default Values
     // /////////////////////////
@@ -74,6 +79,10 @@ public class Constants
     public static final String TEMPLATE_BY_HTTP                         = "templateByHttp";
     public static final String TEMPLATE_URL                             = "templateUrlHostToStaticRepository";
     public static final String TEMPLATE_PATH_DISK                       = "templatePathDiskToStaticRepository";
+    // /////////////////////////
+    // Errors
+    // /////////////////////////
+    public static final String ERROR_SIGN_BLOCKED                       = "808";
 
     public enum SimulatorLoanCategory
     {
