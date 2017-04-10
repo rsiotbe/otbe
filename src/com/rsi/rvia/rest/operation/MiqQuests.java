@@ -23,7 +23,8 @@ import com.rsi.rvia.rest.tool.Utils;
  */
 public class MiqQuests
 {
-    private static Logger                          pLog                          = LoggerFactory.getLogger(MiqQuests.class);
+    private static Logger                          pLog                          = LoggerFactory.getLogger(
+            MiqQuests.class);
     private int                                    nIdMiq;
     private String                                 strPathRest;
     private CompomentType                          pCompomentType;
@@ -238,7 +239,9 @@ public class MiqQuests
             pResultSet = pPreparedStatement.executeQuery();
             while (pResultSet.next())
             {
-                MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"), pResultSet.getString("opciones"));
+                MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"),
+                        pResultSet.getString("component_type"), pResultSet.getString("end_point"),
+                        pResultSet.getString("miq_out_template"), pResultSet.getString("opciones"));
                 if (!htCacheDataId.containsKey(pResultSet.getInt("id_miq")))
                     htCacheDataId.put(pResultSet.getInt("id_miq"), pMiqQuests);
                 if (!htCacheDataPath.containsKey(pResultSet.getString("path_rest")))
@@ -281,7 +284,10 @@ public class MiqQuests
         while (pResultSet.next())
         {
             String idMiq = pResultSet.getString("id_miq");
-            MiqQuestParam pMiqQuestParam = new MiqQuestParam(pResultSet.getInt("id_miq_param"), pResultSet.getString("paramname"), pResultSet.getString("paramvalue"), pResultSet.getString("paramdesc"), pResultSet.getString("paramtype"), pResultSet.getString("headername"), pResultSet.getString("aliasname"));
+            MiqQuestParam pMiqQuestParam = new MiqQuestParam(pResultSet.getInt("id_miq_param"),
+                    pResultSet.getString("paramname"), pResultSet.getString("paramvalue"),
+                    pResultSet.getString("paramdesc"), pResultSet.getString("paramtype"),
+                    pResultSet.getString("headername"), pResultSet.getString("aliasname"));
             // if (pResultSet.getString("aliasname") != null)
             // {
             // if (!"".equals(pResultSet.getString("aliasname").trim()))
@@ -352,7 +358,9 @@ public class MiqQuests
         MiqQuests pMiqQuests = null;
         /* si la caché no está cargada se carga */
         if (getCacheSize() == 0)
-        loadDDBBCache();
+        {
+            loadDDBBCache();
+        }
         pMiqQuests = htCacheDataId.get(nMiqQuestId);
         return pMiqQuests;
     }

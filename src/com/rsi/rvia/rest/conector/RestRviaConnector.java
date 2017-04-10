@@ -599,7 +599,7 @@ public class RestRviaConnector
         TranslateRviaJsonObject errorObj = TranslateRviaJsonCache.getError(idMiq, strErrorCode);
         if (errorObj != null)
         {
-            pReturn = new RviaRestResponseErrorItem(errorObj);
+            pReturn = new RviaRestResponseErrorItem(errorObj, pJsonData);
         }
         else
         {
