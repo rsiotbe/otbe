@@ -34,7 +34,6 @@
             strFieldDsiplay = " nvl(trim(e.nomcomred),'OTROS') \"concepto\", ";
         }          
     }
-   
     
     if(strDateFin == null){
         strDateFin = "9999-12-31";

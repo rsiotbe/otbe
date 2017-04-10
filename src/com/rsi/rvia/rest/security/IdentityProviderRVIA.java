@@ -99,8 +99,8 @@ public class IdentityProviderRVIA implements IdentityProvider
             // Else verificamos JWT
             _JWT = _pRequest.getHeader("Authorization");
         }
-        _pParamsToInject = validateJWT(_JWT, _tokenId);
-        if (_pParamsToInject == null)
+        _claims = validateJWT(_JWT, _tokenId);
+        if (_claims == null)
         {
             throw new LogicalErrorException(401, 9999, "Unauthorized", "Sesión no válida", new Exception());
         }
