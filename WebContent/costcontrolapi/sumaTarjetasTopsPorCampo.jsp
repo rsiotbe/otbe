@@ -34,7 +34,6 @@
             strFieldDsiplay = " nvl(trim(e.nomcomred),'OTROS') \"concepto\", ";
         }          
     }
-   
     
     if(strDateFin == null){
         strDateFin = "9999-12-31";
@@ -61,6 +60,7 @@
                    "   and e.cod_nrbe_en = h.cod_nrbe_en " +
                    " WHERE e.COD_NRBE_EN = '" + strEntidad + "'" +
                    " and e.codrespu = '000' " +
+                   " and e.indcruce = 1 " +
                    " and e.FECHA_OPRCN < to_date('" + strDateFin + "', 'yyyy-mm-dd')" +
                    " and e.FECHA_OPRCN > to_date('" + strDateIni + "', 'yyyy-mm-dd')" +
                    " and f.mi_fecha_fin = to_date('9999-12-31', 'yyyy-mm-dd') " ;
