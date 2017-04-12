@@ -43,7 +43,7 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
     }
     else{
            strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);  
-           strQuery = strQuery + " and fecha_oprcn_dif < " +             
+           strQuery = strQuery + " and fecha_oprcn_dif <= " +             
                  " ( select max(tm.fecha_oprcn_dif) " +
                  " from rdwc01.mi_do_apte_cta tm where cod_nrbe_en='" + strEntidad + "' " +
                  " and tm.fecha_oprcn_dif < to_date('" + strDateFin + "','yyyy-mm-dd') " + 
