@@ -60,7 +60,7 @@ public class IdentityProviderRVIA implements IdentityProvider
      * 
      * @param jwt
      * @param strTokenId
-     * @return
+     * @return HashMap con los campos del payload
      * @throws Exception
      */
     private HashMap<String, String> validateJWT(String jwt, String strTokenId) throws Exception
@@ -110,7 +110,7 @@ public class IdentityProviderRVIA implements IdentityProvider
      * Proceso de login sobre servicio de Wallet con campos de usuario de Ruralvía
      * 
      * @param pRequest
-     * @return
+     * @return HashMap con los campos del payload, o null si falló login
      * @throws ClientProtocolException
      * @throws IOException
      */

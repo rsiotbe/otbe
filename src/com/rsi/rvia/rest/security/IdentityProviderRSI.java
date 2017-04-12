@@ -46,6 +46,8 @@ public class IdentityProviderRSI implements IdentityProvider
     }
 
     /**
+     * Generador de JWT
+     * 
      * @param claims
      * @param strTokenId
      * @return
@@ -57,9 +59,11 @@ public class IdentityProviderRSI implements IdentityProvider
     };
 
     /**
+     * Validación de JWT y extraccíon de campos de payload
+     * 
      * @param jwt
      * @param strTokenId
-     * @return
+     * @return HashMap con los campos del payload
      * @throws Exception
      */
     private HashMap<String, String> validateJWT(String jwt, String strTokenId) throws Exception
@@ -104,10 +108,10 @@ public class IdentityProviderRSI implements IdentityProvider
     };
 
     /**
-     * Proceso de login según campos del request
+     * Proceso de login sobre intranet de RSI, es decir, usuarios válidos de LDAP
      * 
      * @param pRequest
-     * @return
+     * @return HashMap con los campos del payload, o null si falló login
      * @throws ClientProtocolException
      * @throws IOException
      */
