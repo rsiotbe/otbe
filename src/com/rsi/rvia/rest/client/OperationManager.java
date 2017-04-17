@@ -205,6 +205,11 @@ public class OperationManager
             JWT = pIdentityProvider.getJWT();
             HashMap<String, String> pParamsToInject = pIdentityProvider.getClaims();
             pResponseConnector = pRestConnector.getData(pRequest, strData, null, pMiqQuests, pListParams, pParamsToInject);
+            int nHttpCode = pResponseConnector.getStatus();
+            if (nHttpCode != 200)
+            {
+                throw new ApplicationException(nHttpCode, 99999, "Respuesta errónea de end point", "No se ha podido recuperar la información de la operación", new Exception());
+            }
             pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
             strJsonData = pResponseConnector.readEntity(String.class);
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
