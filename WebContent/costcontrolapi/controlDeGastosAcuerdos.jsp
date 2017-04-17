@@ -4,7 +4,7 @@
 		 com.rsi.rvia.rest.client.QueryCustomizer,
 		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
 		 com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider,
-		 com.rsi.rvia.rest.error.exceptions.LogicalErrorException,
+		 com.rsi.rvia.rest.error.exceptions.ApplicationException,
         java.sql.Connection,
         java.sql.PreparedStatement,
         java.sql.ResultSet,
@@ -207,26 +207,26 @@ String strResponse="";
 	}
 	catch(Exception ex){
 	    //throw new Exception();
-	    throw new LogicalErrorException(500, 9999, "Jsp error", "", new Exception());
+	    throw new ApplicationException(500, 9999, "Jsp error", "", new Exception());
 	}
 	finally{
 	    try {
 	        pResultSet.close();
 	    }
         catch(Exception ex){
-            throw new LogicalErrorException(500, 9999, "Jsp error", " - ", new Exception());
+            throw new ApplicationException(500, 9999, "Jsp error", " - ", new Exception());
         }
         try {
             pPreparedStatement.close();
         }
         catch(Exception ex){
-            throw new LogicalErrorException(500, 9999, "Jsp error", " - ", new Exception());
+            throw new ApplicationException(500, 9999, "Jsp error", " - ", new Exception());
         }
         try {
             pConnection.close();
         }
         catch(Exception ex){
-            throw new LogicalErrorException(500, 9999, "Jsp error", " - ", new Exception());
+            throw new ApplicationException(500, 9999, "Jsp error", " - ", new Exception());
         }        
 	}
 	response.setHeader("content-type", "application/json");
