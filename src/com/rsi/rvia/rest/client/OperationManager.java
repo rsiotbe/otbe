@@ -234,11 +234,11 @@ public class OperationManager
             }
             pResponseConnector = pRestConnector.getData(pRequest, strData, null, pMiqQuests, pListParams, pParamsToInject);
             pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
-            /* se procesa el resultado del conector paa evaluar y adaptar su contenido */
-            // pRviaRestResponse = ResponseManager.processResponseConnector(null, pRestConnector, pResponseConnector,
-            // pMiqQuests);
-            /* se obtiene la plantilla destino si es que existe */
-            // strTemplate = pMiqQuests.getTemplate();
+            int nHttpCode = pResponseConnector.getStatus();
+            if (nHttpCode != 200)
+            {
+                throw new ApplicationException(nHttpCode, 99999, "Respuesta errónea desde end point", "No se ha podido recuperar la información de la operación", new Exception());
+            }
             strJsonData = pResponseConnector.readEntity(String.class);
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
         }
