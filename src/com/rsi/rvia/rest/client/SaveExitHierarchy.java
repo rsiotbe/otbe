@@ -40,6 +40,22 @@ public class SaveExitHierarchy
     }
 
     /**
+     * Inicia el proceso de censo de los campos de salida a partir de la sección response del objeto json de salida
+     * 
+     * @param pJsonData
+     *            String a convertir a objeto json
+     * @param nIdMiq
+     *            Identidicador del servicio RESTFul
+     * @paarm strMethod Verbo de solicitud
+     * @throws Exception
+     */
+    public static void process(String pJsonData, int nIdMiq, String strMethod) throws Exception
+    {
+        JSONObject json = new JSONObject(pJsonData);
+        process(json, nIdMiq, strMethod);
+    }
+
+    /**
      * Realiza un recorrido recursivo sobre un objeto json
      * 
      * @param secResponse

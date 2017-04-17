@@ -161,6 +161,7 @@ public class OperationManager
      * @param pMediaType
      *            Tipo de mediatype que debe cumplir la petición
      * @return Objeto respuesta de Jersey
+     * @throws Exception
      * @throws JoseException
      * @throws IOException
      * @throws InvalidKeySpecException
@@ -207,6 +208,14 @@ public class OperationManager
             pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
             strJsonData = pResponseConnector.readEntity(String.class);
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
+            try
+            {
+                SaveExitHierarchy.process(strJsonData, pMiqQuests.getIdMiq(), pRestConnector.getMethod());
+            }
+            catch (Exception ex)
+            {
+                pLog.error("Error al grabar la jerarquía de salida.");
+            }
         }
         catch (Exception ex)
         {
