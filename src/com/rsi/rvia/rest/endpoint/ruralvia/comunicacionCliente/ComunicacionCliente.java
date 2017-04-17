@@ -32,7 +32,7 @@ public class ComunicacionCliente
     @Path("/unreaded")
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
-    public Response MessagesUnreaded(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+    public Response unreadedMessages(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception
     {
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
@@ -47,13 +47,13 @@ public class ComunicacionCliente
      * @throws Exception
      */
     @GET
-    @Path("/ReceivedList")
+    @Path("/receivedList")
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
-    public Response MessagesReceivedList(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+    public Response receivedMessagesList(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception
     {
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
+    	Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Lista de mensajes");
         return pReturn;
     }
@@ -68,14 +68,30 @@ public class ComunicacionCliente
     @Path("/deletedList")
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
-    public Response MessageDeletedList(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+    public Response deletedMessagesList(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception
     {
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
+    	Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Lista de mensajes");
         return pReturn;
     }
-    
+    /**
+     * Obtiene el listado de mensajes de la bandeja de borrados del cliente.
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de mensajes
+     * @throws Exception
+     */
+    @GET
+    @Path("/archivedList")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    public Response archivedMessagesList(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+            throws Exception
+    {
+    	Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Lista de mensajes");
+        return pReturn;
+    }
     /**
      * Obtiene el listado de mensajes de la bandeja de enviados del cliente.
      * 
@@ -86,10 +102,10 @@ public class ComunicacionCliente
     @Path("/sentList")
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
-    public Response MessageSentList(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+    public Response sentMessageList(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception
     {
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
+    	Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Lista de mensajes");
         return pReturn;
     }
@@ -107,7 +123,7 @@ public class ComunicacionCliente
     public Response MessageDetails(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception
     { 
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
+    	Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Detalle de Mensajes");
         return pReturn;
     }
