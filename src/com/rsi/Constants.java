@@ -87,7 +87,14 @@ public class Constants
     // /////////////////////////
     // Errors
     // /////////////////////////
-    public static final String   ERROR_SIGN_BLOCKED                             = "808";
+    public static final String ERROR_SIGN_BLOCKED                       = "808";
+    public static final String ERROR_EMPTY_LIST                         = "REST-0001";
+    // /////////////////////////
+    // JSON keys
+    // /////////////////////////
+    public static final String KEY_ERROR_CODE                           = "CODERR";
+    public static final String KEY_ERROR_TEXT                           = "TXTERR";
+    public static final String KEY_LIST_NAME                            = "NOMBRELISTACUENTA";
 
     public enum SimulatorLoanCategory
     {

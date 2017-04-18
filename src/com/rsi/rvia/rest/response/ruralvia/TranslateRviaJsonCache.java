@@ -175,7 +175,7 @@ public class TranslateRviaJsonCache
                 pPreparedStatement1.setString(2, DEFAULT_LEVEL);
                 pPreparedStatement1.setString(3, strErrorText);
                 pPreparedStatement1.setLong(4, nIdMiq);
-                pPreparedStatement1.setString(5, "");
+                pPreparedStatement1.setString(5, DEFAULT_COMMENT);
                 pLog.trace("pPreparedStatement1:" + pPreparedStatement1);
                 pLog.trace("strErrorCode:" + strErrorCode);
                 pLog.trace("nIdMiq:" + nIdMiq);
