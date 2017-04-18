@@ -66,8 +66,8 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
         strQuery = strQuery + " and num_sec_ac =" + strContrato; 
      } 
     
-   strQuery = strQuery + " AND COD_CTA='01'" + 
-   				 filtroTipoApunte +
+   strQuery = strQuery + " and cod_cta = '01' and ind_accion <> '3' " + 
+      	 filtroTipoApunte +
    				 " group by to_char(fecha_oprcn_dif,'YYYY-MM'), case" +
    				 "   when trim(CONCPT_APNTE) like 'TRF.%' then 'TRANSFERENCIAS'" +
    				 "   when trim(COD_ORGN_APNTE) in ('TF','TR') then 'TRANSFERENCIAS'" +
