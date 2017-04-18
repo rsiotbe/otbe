@@ -77,15 +77,21 @@ public class RviaRestResponseErrorItem
      */
     private void formatError(String errorCode, JSONObject pJsonData) throws JSONException
     {
+        JSONObject data = pJsonData.getJSONObject("ruralvia").getJSONObject("data");
+        JSONObject userData = data.getJSONObject("userData");
+        JSONObject nrbeData = data.getJSONObject("nrbeData");
         // En caso de crecer los errores a tratar, se usará un enum y un switch
         if (errorCode.equals(Constants.ERROR_SIGN_BLOCKED))
         {
-            JSONObject data = pJsonData.getJSONObject("ruralvia").getJSONObject("data");
-            JSONObject userData = data.getJSONObject("userData");
-            JSONObject nrbeData = data.getJSONObject("nrbeData");
             String textFormatted = Utils.formatString(pJson.getString(KEY_TEXT), userData.getString("user"), null,
                     null);
             pJson.put(KEY_TEXT, textFormatted);
+            String descriptionFormatted = Utils.formatString(pJson.getString(KEY_DESCRIPTION),
+                    nrbeData.getString("telephone"), nrbeData.getString("email"), null);
+            pJson.put(KEY_DESCRIPTION, descriptionFormatted);
+        }
+        else if (errorCode.equals(Constants.ERROR_EMPTY_LIST))
+        {
             String descriptionFormatted = Utils.formatString(pJson.getString(KEY_DESCRIPTION),
                     nrbeData.getString("telephone"), nrbeData.getString("email"), null);
             pJson.put(KEY_DESCRIPTION, descriptionFormatted);

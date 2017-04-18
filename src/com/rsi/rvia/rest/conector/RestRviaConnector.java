@@ -14,6 +14,7 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -22,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import com.rsi.Constants;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.RviaRestHttpClient;
@@ -563,20 +565,21 @@ public class RestRviaConnector
     public static RviaRestResponse.Type getResponseType(JSONObject pJsonData, int nIdMiq, String srtLanguaje)
             throws JSONException, ApplicationException, SQLException
     {
-        String strInnerCode = null;
-        String strInnerTxt = "";
         RviaRestResponse.Type pReturn = Type.OK;
         JSONObject pJson = pJsonData.getJSONObject(PRIMARY_KEY_JSON_RESPONSE);
         JSONObject pJsonInnerData = pJson.getJSONObject(DATA_JSON_RESPONSE);
-        if (pJsonInnerData.has("CODERR"))
+        String strInnerCode = getErrorCode(pJsonInnerData);
+        String strInnerTxt = "";
+        if (strInnerCode != null)
         {
-            strInnerCode = pJsonInnerData.get("CODERR").toString();
-        }
-        if (strInnerCode != null && !strInnerCode.isEmpty() && (Integer.parseInt(strInnerCode) > 0))
-        {
-            if (pJsonInnerData.has("TXTERR"))
-                strInnerTxt = pJsonInnerData.getString("TXTERR");
+            strInnerTxt = getErrorText(pJsonInnerData);
             pReturn = TranslateRviaJsonCache.isErrorCode(strInnerCode, strInnerTxt, nIdMiq, srtLanguaje);
+        }
+        // Comprobación de LISCUEN vacío.
+        else if (isEmptyList(pJsonInnerData))
+        {
+            pReturn = TranslateRviaJsonCache.isErrorCode(Constants.ERROR_EMPTY_LIST, strInnerTxt, nIdMiq, srtLanguaje);
+            setErrorCode(pJsonInnerData, Constants.ERROR_EMPTY_LIST);
         }
         return pReturn;
     }
@@ -584,17 +587,13 @@ public class RestRviaConnector
     public static RviaRestResponseErrorItem generateRviaRestErrorItem(JSONObject pJsonData, int idMiq) throws Exception
     {
         RviaRestResponseErrorItem pReturn;
-        String strErrorCode = "";
-        String strTextError = "";
         JSONObject pJson = pJsonData.getJSONObject(PRIMARY_KEY_JSON_RESPONSE);
         JSONObject pJsonInnerData = pJson.getJSONObject(DATA_JSON_RESPONSE);
-        if (pJsonInnerData.has("CODERR"))
+        String strErrorCode = getErrorCode(pJsonInnerData);
+        String strTextError = "";
+        if (strErrorCode != null)
         {
-            strErrorCode = pJsonInnerData.get("CODERR").toString();
-        }
-        if (pJsonInnerData.has("TXTERR"))
-        {
-            strTextError = pJsonInnerData.getString("TXTERR");
+            strTextError = getErrorText(pJsonInnerData);
         }
         TranslateRviaJsonObject errorObj = TranslateRviaJsonCache.getError(idMiq, strErrorCode);
         if (errorObj != null)
@@ -625,5 +624,42 @@ public class RestRviaConnector
             pJson = null;
         }
         return pJson;
+    }
+
+    private static String getErrorCode(JSONObject json) throws JSONException
+    {
+        String strErrorCode = null;
+        if (json.has(Constants.KEY_ERROR_CODE))
+        {
+            strErrorCode = json.get(Constants.KEY_ERROR_CODE).toString();
+        }
+        return strErrorCode;
+    }
+
+    private static String getErrorText(JSONObject json) throws JSONException
+    {
+        String strErrorCode = null;
+        if (json.has(Constants.KEY_ERROR_TEXT))
+        {
+            strErrorCode = json.getString(Constants.KEY_ERROR_TEXT);
+        }
+        return strErrorCode;
+    }
+
+    private static boolean isEmptyList(JSONObject json) throws JSONException
+    {
+        boolean isEmpty = false;
+        if (json.has(Constants.KEY_LIST_NAME))
+        {
+            String strListName = json.getString(Constants.KEY_LIST_NAME);
+            JSONArray list = json.optJSONArray(strListName);
+            isEmpty = list == null || list.length() == 0;
+        }
+        return true;
+    }
+
+    private static void setErrorCode(JSONObject pJsonData, String strErrorCode) throws JSONException
+    {
+        pJsonData.put(Constants.KEY_ERROR_CODE, strErrorCode);
     }
 }
