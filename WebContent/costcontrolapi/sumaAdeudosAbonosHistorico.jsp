@@ -80,7 +80,7 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
    }   
    strDateIni = strDateIni + "-01";         
    strQuery = strQuery + " and fecha_oprcn_dif >= to_date('" + strDateIni + "','yyyy-mm-dd')";
-   String strRestrictorApuntes = " and cod_cta = '01'";
+   String strRestrictorApuntes = " and cod_cta = '01' and ind_accion <> '3' ";
    strQuery = strQuery + strRestrictorApuntes;
   
    if(strContrato == null){
