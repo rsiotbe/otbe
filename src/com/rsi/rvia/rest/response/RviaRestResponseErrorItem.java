@@ -90,16 +90,16 @@ public class RviaRestResponseErrorItem
             String textFormatted = Utils.formatString(pJson.getString(KEY_TEXT), paramsText);
             pJson.put(KEY_TEXT, textFormatted);
             List<String> paramsDesc = new ArrayList<String>();
-            paramsDesc.add(userData.getString("telephone"));
-            paramsDesc.add(userData.getString("email"));
+            paramsDesc.add(nrbeData.getString("telephone"));
+            paramsDesc.add(nrbeData.getString("email"));
             String descriptionFormatted = Utils.formatString(pJson.getString(KEY_DESCRIPTION), paramsDesc);
             pJson.put(KEY_DESCRIPTION, descriptionFormatted);
         }
         else if (errorCode.equals(Constants.ERROR_EMPTY_LIST))
         {
             List<String> params = new ArrayList<String>();
-            params.add(userData.getString("telephone"));
-            params.add(userData.getString("email"));
+            params.add(nrbeData.getString("telephone"));
+            params.add(nrbeData.getString("email"));
             String descriptionFormatted = Utils.formatString(pJson.getString(KEY_DESCRIPTION), params);
             pJson.put(KEY_DESCRIPTION, descriptionFormatted);
         }
