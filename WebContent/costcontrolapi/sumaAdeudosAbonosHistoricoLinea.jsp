@@ -16,7 +16,7 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
     String strEntidad = request.getParameter("codEntidad").toString();
     String strDateIni = request.getParameter("mesInicio").toString();
     String strDateFin = request.getParameter("mesFin");   
-    
+
     String strLinea = request.getParameter("codLinea");
     String whereLineaEq="";
     if(strLinea != null){
@@ -47,7 +47,7 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
    }   
    strDateIni = strDateIni + "-01";         
    strQuery = strQuery + " and fecha_oprcn_dif >= round(to_date('" + strDateIni + "','yyyy-mm-dd'),'mm')";   
-   strQuery = strQuery + " and cod_cta = '01'";
+   strQuery = strQuery + " and cod_cta = '01' and ind_accion <> '3' ";
   
    if(strContrato == null){
       //strQuery = strQuery + whereLineaEq; 
