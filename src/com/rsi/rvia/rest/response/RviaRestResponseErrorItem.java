@@ -1,5 +1,7 @@
 package com.rsi.rvia.rest.response;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import com.rsi.Constants;
@@ -83,17 +85,22 @@ public class RviaRestResponseErrorItem
         // En caso de crecer los errores a tratar, se usará un enum y un switch
         if (errorCode.equals(Constants.ERROR_SIGN_BLOCKED))
         {
-            String textFormatted = Utils.formatString(pJson.getString(KEY_TEXT), userData.getString("user"), null,
-                    null);
+            List<String> paramsText = new ArrayList<String>();
+            paramsText.add(userData.getString("user"));
+            String textFormatted = Utils.formatString(pJson.getString(KEY_TEXT), paramsText);
             pJson.put(KEY_TEXT, textFormatted);
-            String descriptionFormatted = Utils.formatString(pJson.getString(KEY_DESCRIPTION),
-                    nrbeData.getString("telephone"), nrbeData.getString("email"), null);
+            List<String> paramsDesc = new ArrayList<String>();
+            paramsDesc.add(userData.getString("telephone"));
+            paramsDesc.add(userData.getString("email"));
+            String descriptionFormatted = Utils.formatString(pJson.getString(KEY_DESCRIPTION), paramsDesc);
             pJson.put(KEY_DESCRIPTION, descriptionFormatted);
         }
         else if (errorCode.equals(Constants.ERROR_EMPTY_LIST))
         {
-            String descriptionFormatted = Utils.formatString(pJson.getString(KEY_DESCRIPTION),
-                    nrbeData.getString("telephone"), nrbeData.getString("email"), null);
+            List<String> params = new ArrayList<String>();
+            params.add(userData.getString("telephone"));
+            params.add(userData.getString("email"));
+            String descriptionFormatted = Utils.formatString(pJson.getString(KEY_DESCRIPTION), params);
             pJson.put(KEY_DESCRIPTION, descriptionFormatted);
         }
     }

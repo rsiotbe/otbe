@@ -717,11 +717,11 @@ public class Utils
         return strPrimaryKey;
     }
 
-    public static String formatString(String message, String param1, String param2, String param3)
+    public static String formatString(String message, List<String> params)
     {
         try
         {
-            return MessageFormat.format(message, param1, param2, param3);
+            return MessageFormat.format(message, params.toArray());
         }
         catch (MissingResourceException e)
         {
