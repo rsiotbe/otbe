@@ -649,7 +649,7 @@ public class RestRviaConnector
             JSONArray list = json.optJSONArray(strListName);
             isEmpty = list == null || list.length() == 0;
         }
-        return true;
+        return isEmpty;
     }
 
     private static void setErrorCode(JSONObject pJsonData, String strErrorCode) throws JSONException
