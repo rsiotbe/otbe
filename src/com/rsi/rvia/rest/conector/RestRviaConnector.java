@@ -631,7 +631,11 @@ public class RestRviaConnector
         String strErrorCode = null;
         if (json.has(Constants.KEY_ERROR_CODE))
         {
-            strErrorCode = json.get(Constants.KEY_ERROR_CODE).toString();
+            String strErrorCodeTemp = json.get(Constants.KEY_ERROR_CODE).toString();
+            if (!strErrorCodeTemp.isEmpty() && (Integer.parseInt(strErrorCodeTemp) > 0))
+            {
+                strErrorCode = strErrorCodeTemp;
+            }
         }
         return strErrorCode;
     }
