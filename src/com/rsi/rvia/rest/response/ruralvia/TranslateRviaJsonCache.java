@@ -254,9 +254,16 @@ public class TranslateRviaJsonCache
         RviaRestResponse.Type pReturn;
         TranslateRviaJsonObject pTRJO;
         // ver tabla BDPTB090_ERRORES y BELTS105
-        pReturn = RviaRestResponse.Type.OK;
+        pTRJO = getRviaTranslation(strErrorCode, strTextError, nIdMiq, strLanguaje);
+        pReturn = pTRJO.getTipo();
+        return pReturn;
+    }
+
+    private static TranslateRviaJsonObject getRviaTranslation(String strErrorCode, String strTextError, int nIdMiq,
+            String strLanguaje) throws ApplicationException, SQLException
+    {
         // Se busca el error en la caché de errores por clave IDMIQ_ERRORCODE
-        pTRJO = getError(nIdMiq, strErrorCode);
+        TranslateRviaJsonObject pTRJO = getError(nIdMiq, strErrorCode);
         /* si no se encuentra se intenta cargar de bbdd */
         if (pTRJO == null)
         {
@@ -273,8 +280,7 @@ public class TranslateRviaJsonCache
             }
             putError(nIdMiq, strErrorCode, pTRJO);
         }
-        pReturn = pTRJO.getTipo();
-        return pReturn;
+        return pTRJO;
     }
 
     public static TranslateRviaJsonObject getError(int nIdMiq, String strErrorCode)
