@@ -83,7 +83,7 @@ public class Constants
     // Errors
     // /////////////////////////
     public static final String ERROR_SIGN_BLOCKED                       = "808";
-    public static final String ERROR_EMPTY_LIST                         = "REST-0001";
+    public static final String ERROR_EMPTY_LIST                         = "779";
     // /////////////////////////
     // JSON keys
     // /////////////////////////

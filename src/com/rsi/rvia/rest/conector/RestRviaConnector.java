@@ -573,12 +573,12 @@ public class RestRviaConnector
         if (strInnerCode != null)
         {
             strInnerTxt = getErrorText(pJsonInnerData);
-            pReturn = TranslateRviaJsonCache.isErrorCode(strInnerCode, strInnerTxt, nIdMiq, srtLanguaje);
+            pReturn = TranslateRviaJsonCache.getRviaResponseType(strInnerCode, strInnerTxt, nIdMiq, srtLanguaje);
         }
         // Comprobación de LISCUEN vacío.
         else if (isEmptyList(pJsonInnerData))
         {
-            pReturn = TranslateRviaJsonCache.isErrorCode(Constants.ERROR_EMPTY_LIST, strInnerTxt, nIdMiq, srtLanguaje);
+            pReturn = TranslateRviaJsonCache.getRviaResponseType(Constants.ERROR_EMPTY_LIST, strInnerTxt, nIdMiq, srtLanguaje);
             setErrorCode(pJsonInnerData, Constants.ERROR_EMPTY_LIST);
         }
         return pReturn;
