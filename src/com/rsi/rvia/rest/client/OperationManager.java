@@ -71,6 +71,7 @@ public class OperationManager
         try
         {
             // Se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM.
+        	// comentada para postman
             pRequestConfigRvia = getValidateSessionRvia(pRequest);
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             pMiqQuests = createMiqQuests(pUriInfo);
