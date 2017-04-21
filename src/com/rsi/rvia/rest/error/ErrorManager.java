@@ -55,7 +55,6 @@ public class ErrorManager
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
-        String strLanguage;
         String strClavepagina;
         String strReturn = null;
         ;
@@ -63,12 +62,11 @@ public class ErrorManager
         {
             /* se hace una consulta a la tabla especifa de errores por clave página */
             String strQuery = "SELECT * FROM bel.BDPTB090_ERRORES where CODERR = ? and IDIOMAERR = ? and CLAVE_PAGINA = ?";
-            strLanguage = pSessionRviaData.getLanguage();
             strClavepagina = pMiqQuests.getEndPoint();
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
             pPreparedStatement.setInt(1, Integer.parseInt(strErrorCode));
-            pPreparedStatement.setString(2, strLanguage);
+            pPreparedStatement.setString(2, pSessionRviaData.getLanguage().name());
             pPreparedStatement.setString(3, strClavepagina);
             pResultSet = pPreparedStatement.executeQuery();
             while (pResultSet.next())
@@ -91,12 +89,11 @@ public class ErrorManager
             {
                 /* se hace una consulta a la tabla especifa de errores por clave página */
                 String strQuery = "SELECT * FROM bel.BELTS105 where CODERR = ? and IDIOMAERR = ?";
-                strLanguage = pSessionRviaData.getLanguage();
                 strClavepagina = pMiqQuests.getEndPoint();
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
                 pPreparedStatement.setInt(1, Integer.parseInt(strErrorCode));
-                pPreparedStatement.setString(2, strLanguage);
+                pPreparedStatement.setString(2, pSessionRviaData.getLanguage().name());
                 pResultSet = pPreparedStatement.executeQuery();
                 while (pResultSet.next())
                 {

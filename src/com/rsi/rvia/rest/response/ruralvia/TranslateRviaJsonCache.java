@@ -8,7 +8,7 @@ import java.util.Hashtable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.Constants;
-import com.rsi.Constants.Languages;
+import com.rsi.Constants.Language;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
@@ -22,8 +22,7 @@ import com.rsi.rvia.rest.tool.Utils;
 public class TranslateRviaJsonCache
 {
     /** The p log. */
-    private static Logger                                     pLog                 = LoggerFactory.getLogger(
-            TranslateRviaJsonCache.class);
+    private static Logger                                     pLog                 = LoggerFactory.getLogger(TranslateRviaJsonCache.class);
     /** The ht translate cache data. */
     private static Hashtable<String, TranslateRviaJsonObject> htTranslateCacheData = new Hashtable<String, TranslateRviaJsonObject>();
 
@@ -88,12 +87,13 @@ public class TranslateRviaJsonCache
      * @return
      * @throws ApplicationException
      */
-    private static TranslateRviaJsonObject loadDataFromDDBB(String strErrorCode, int nIdMiq, String strLanguaje)
+    private static TranslateRviaJsonObject loadDataFromDDBB(String strErrorCode, int nIdMiq, Language pLanguage)
             throws ApplicationException
     {
         boolean fIsError = false;
         TranslateRviaJsonObject pTRJO = null;
-        String srtLang = strLanguaje == null ? Constants.DEFAULT_LANGUAGE : strLanguaje;
+        if (pLanguage == null)
+            pLanguage = Constants.DEFAULT_LANGUAGE;
         if (!strErrorCode.isEmpty())
         {
             Connection pConnection = null;
@@ -110,8 +110,8 @@ public class TranslateRviaJsonCache
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
                 pLog.trace("pPreparedStatement:" + pPreparedStatement);
                 pLog.trace("strErrorCode:" + strErrorCode);
-                pPreparedStatement.setString(1, srtLang);
-                pPreparedStatement.setString(2, srtLang);
+                pPreparedStatement.setString(1, pLanguage.name());
+                pPreparedStatement.setString(2, pLanguage.name());
                 pPreparedStatement.setString(3, strErrorCode);
                 pPreparedStatement.setInt(4, nIdMiq);
                 pResultSet = pPreparedStatement.executeQuery();
@@ -137,9 +137,7 @@ public class TranslateRviaJsonCache
             {
                 DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
                 if (fIsError)
-                    throw new ApplicationException(500, 999994,
-                            "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD",
-                            null);
+                    throw new ApplicationException(500, 999994, "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD", null);
             }
         }
         return pTRJO;
@@ -186,7 +184,7 @@ public class TranslateRviaJsonCache
                 // Insertar en BDPTB079_IDIOMA
                 //
                 String strQuery2 = "INSERT ALL";
-                Languages[] values = Languages.values();
+                Language[] values = Language.values();
                 for (int i = 0; i < values.length; i++)
                 {
                     strQuery2 += " INTO bel.BDPTB079_IDIOMA (IDIOMA, CODIGO, TRADUCCION, COMENTARIO) VALUES (?, ?, ?, ?)";
@@ -197,9 +195,9 @@ public class TranslateRviaJsonCache
                 pLog.trace("pConnection2:" + pConnection2);
                 pPreparedStatement2 = pConnection2.prepareStatement(strQuery2);
                 int count = 1;
-                for (Languages lang : Languages.values())
+                for (Language lang : Language.values())
                 {
-                    pPreparedStatement2.setString(count++, lang.toString());
+                    pPreparedStatement2.setString(count++, lang.name());
                     pPreparedStatement2.setString(count++, code);
                     pPreparedStatement2.setString(count++, strErrorText);
                     pPreparedStatement2.setString(count++, DEFAULT_COMMENT);
@@ -244,16 +242,14 @@ public class TranslateRviaJsonCache
                 DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement2, pConnection2);
                 DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement3, pConnection3);
                 if (fIsError)
-                    throw new ApplicationException(500, 999993,
-                            "Error al procesar insertar respues ta de error de ruralvia", "Error al acceder a BBDD",
-                            null);
+                    throw new ApplicationException(500, 999993, "Error al procesar insertar respues ta de error de ruralvia", "Error al acceder a BBDD", null);
             }
         }
         return nResult;
     }
 
     public static RviaRestResponse.Type isErrorCode(String strErrorCode, String strTextError, int nIdMiq,
-            String strLanguaje) throws ApplicationException, SQLException
+            Language pLanguage) throws ApplicationException, SQLException
     {
         RviaRestResponse.Type pReturn;
         TranslateRviaJsonObject pTRJO;
@@ -264,7 +260,7 @@ public class TranslateRviaJsonCache
         /* si no se encuentra se intenta cargar de bbdd */
         if (pTRJO == null)
         {
-            pTRJO = loadDataFromDDBB(strErrorCode, nIdMiq, strLanguaje);
+            pTRJO = loadDataFromDDBB(strErrorCode, nIdMiq, pLanguage);
             /* si no se ha podido cargar de bbdd por que no se encuentra, se inserta la info y se genera el objeto */
             if (pTRJO == null)
             {

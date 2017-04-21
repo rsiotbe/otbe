@@ -6,6 +6,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constants.Language;
 import com.rsi.rvia.rest.error.exceptions.SessionException;
 import com.rsi.rvia.rest.tool.RviaConnectCipher;
 
@@ -209,7 +210,7 @@ public class RequestConfigRvia extends RequestConfig
                                 strIsumServiceId = strValue;
                                 break;
                             case LANG:
-                                strLanguage = strValue;
+                                pLanguage = Language.valueOf(strValue);
                                 break;
                             case NRBE:
                                 strNRBE = strValue;
@@ -242,7 +243,7 @@ public class RequestConfigRvia extends RequestConfig
                 strRviaUserId = request.getParameter(TokenKey.RVIAUSERID.getValue());
                 strIsumUserProfile = request.getParameter(TokenKey.ISUMUSERPROFILE.getValue());
                 strIsumServiceId = request.getParameter(TokenKey.ISUMSERVICEID.getValue());
-                strLanguage = request.getParameter(TokenKey.LANG.getValue());
+                pLanguage = Language.valueOf(request.getParameter(TokenKey.LANG.getValue()));
                 strNRBE = request.getParameter(TokenKey.NRBE.getValue());
                 strIp = request.getParameter(TokenKey.IP.getValue());
                 pCanalFront = obtainCanalWebFromStringValue(request.getParameter(TokenKey.CANALAIX.getValue()));
@@ -361,7 +362,7 @@ public class RequestConfigRvia extends RequestConfig
         pSb.append("RviaSessionId         :" + strRviaSessionId + "\n");
         pSb.append("RviaUserId            :" + strRviaUserId + "\n");
         pSb.append("IsumUserProfile       :" + strIsumUserProfile + "\n");
-        pSb.append("Language              :" + strLanguage + "\n");
+        pSb.append("Language              :" + pLanguage.name() + "\n");
         pSb.append("NRBE                  :" + strNRBE + "\n");
         pSb.append("Token                 :" + strToken + "\n");
         pSb.append("Ip                    :" + strIp + "\n");

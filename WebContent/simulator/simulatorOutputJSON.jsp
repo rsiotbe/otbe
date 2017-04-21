@@ -14,6 +14,7 @@
 <%@page import="org.slf4j.LoggerFactory"%>
 <%@page import="com.rsi.rvia.rest.simulators.SimulatorConfigObjectArray"%>
 <%@page import="com.rsi.Constants"%>
+<%@page import="com.rsi.Constants.Language"%>
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%
     Logger pLog = LoggerFactory.getLogger("simulatorOutputJSON.jsp");
@@ -23,6 +24,7 @@
     String strSimulatorType;
     String strSimulatorName;
     String strLanguage;
+    Language pLanguage;
     if (request.getMethod().equals(javax.ws.rs.HttpMethod.POST))
     {
         StringBuffer jb = new StringBuffer();
@@ -53,8 +55,17 @@
         strSimulatorName = (String) request.getParameter(Constants.SIMULADOR_SIMPLE_NAME);
         strLanguage = (String) request.getParameter(Constants.SIMULADOR_LANGUAGE);
     }
+    /* se obtiene le objeto idioma */
+    if(strLanguage == null || strLanguage.trim().isEmpty())
+    {
+        pLanguage = Constants.DEFAULT_LANGUAGE;
+    }
+    else
+    {
+        pLanguage = Language.valueOf(strLanguage);
+    }
 	SimulatorConfigObjectArray paSimulators = SimulatorsManager.getSimulatorsData(strNRBE, strNRBEName, 
-	        strSimulatorType, strSimulatorName, strLanguage);
+	        strSimulatorType, strSimulatorName, pLanguage);
 	/* se comprueba si se genera algún objeto de respuesta, en caso negativo se devuelve un error 404 */
 	if(paSimulators.isEmpty())
 	{

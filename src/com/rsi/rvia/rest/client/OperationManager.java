@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.Constants;
+import com.rsi.Constants.Language;
 import com.rsi.Constants.SimulatorType;
 import com.rsi.isum.IsumValidation;
 import com.rsi.rvia.rest.conector.RestConnector;
@@ -373,6 +374,7 @@ public class OperationManager
         MiqQuests pMiqQuests = null;
         ErrorResponse pErrorCaptured = null;
         String strNRBE;
+        Language pLanguage;
         RviaRestResponse pRviaRestResponse = null;
         Response pResponseConnector;
         RequestConfig pRequestConfig = null;
@@ -384,7 +386,9 @@ public class OperationManager
             pRequestConfig = new RequestConfig(strLanguage, strNRBE);
             /* si no viene idioma o definido se coge por defecto el de el objeto RequestConfig */
             if (strLanguage == null || strLanguage.trim().isEmpty())
-                strLanguage = pRequestConfig.getLanguage();
+                pLanguage = pRequestConfig.getLanguage();
+            else
+                pLanguage = Language.valueOf(strLanguage);
             /* se obtienen los datos necesario para realizar la petición al proveedor */
             pMiqQuests = createMiqQuests(pUriInfo);
             if (pMiqQuests == null)
@@ -397,7 +401,7 @@ public class OperationManager
             pDataInput.put(Constants.SIMULADOR_NRBE_NAME, strNRBEName);
             pDataInput.put(Constants.SIMULADOR_SIMPLE_NAME, strLoanName);
             pDataInput.put(Constants.SIMULADOR_TYPE, pSimulatorType.name());
-            pDataInput.put(Constants.SIMULADOR_LANGUAGE, strLanguage);
+            pDataInput.put(Constants.SIMULADOR_LANGUAGE, pLanguage.name());
             /* se instancia el conector y se solicitan los datos */
             pRviaRestResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, pDataInput.toString());
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + pRviaRestResponse.toJsonString());

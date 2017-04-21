@@ -16,6 +16,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.Constants;
+import com.rsi.Constants.Language;
 import com.rsi.rvia.rest.multibank.CssMultiBankProcessor;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.operation.MiqQuests.CompomentType;
@@ -141,7 +142,7 @@ public class TemplateManager
             {
                 pLog.info("Template NO cacheado, se procede a leerlo, tratarlo y cachearlo");
                 pDocument = readTemplate(strPathToTemplate);
-                pDocument = translateXhtml(pDocument, pRequestConfig);
+                pDocument = translateHTML(pDocument, pRequestConfig.getLanguage());
                 htCacheTemplate.put(strCacheKey, pDocument);
                 pDocument = Jsoup.parse(pDocument.toString(), "", Parser.htmlParser());
             }
@@ -242,9 +243,9 @@ public class TemplateManager
      *            Datos de sesión de ruralvia para el usuario
      * @return Documento HTML con las traducciones
      */
-    private static Document translateXhtml(Document pDocument, RequestConfig pRequestConfig)
+    public static Document translateHTML(Document pDocument, Language pLanguage)
     {
-        return TranslateProcessor.processXHTML(pDocument, pRequestConfig);
+        return TranslateProcessor.processHTML(pDocument, pLanguage);
     }
 
     /**
@@ -254,7 +255,7 @@ public class TemplateManager
      * @return Documento jsoup con el HTML
      * @throws Exception
      */
-    private static Document readTemplate(String strPathToTemplate) throws Exception
+    public static Document readTemplate(String strPathToTemplate) throws Exception
     {
         Document pDocument;
         String strHtml = "";

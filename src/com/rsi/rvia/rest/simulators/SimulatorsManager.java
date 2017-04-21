@@ -7,14 +7,18 @@ import java.sql.ResultSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import org.json.JSONObject;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Entities.EscapeMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.Constants;
+import com.rsi.Constants.Language;
 import com.rsi.Constants.SimulatorType;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
+import com.rsi.rvia.rest.template.TemplateManager;
 import com.rsi.rvia.rest.tool.Utils;
 
 public class SimulatorsManager
@@ -34,7 +38,7 @@ public class SimulatorsManager
      * @throws Exception
      */
     public static SimulatorConfigObjectArray getSimulatorsData(String strNRBE, String strNRBEName,
-            String strSimulatorType, String strSimulatorName, String strLanguage) throws Exception
+            String strSimulatorType, String strSimulatorName, Language pLanguage) throws Exception
     {
         SimulatorConfigObjectArray alReturn = new SimulatorConfigObjectArray();
         Connection pConnection = null;
@@ -58,12 +62,13 @@ public class SimulatorsManager
         String strContractConditions;
         String strLOPD;
         String strDescription;
+        boolean fDownloadByForm;
         SimulatorType pSimulatorType;
         try
         {
             strQuery = "select s.id_simulador, s.entidad, s.categoria, s.nombre_simple, s.nombre_comercial, s.tipo_calculo, s.activo, "
                     + "s.contratar, s.contacto_email, s.contacto_telef, s.atencion_cliente_email, s.atencion_cliente_telef, "
-                    + "s.entidad_email_contacto, "
+                    + "s.entidad_email_contacto, s.pdf_con_formualario, "
                     + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_lopd) as texto_lopd, "
                     + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_condiciones) as texto_condiciones, "
                     + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_aviso_legal) as texto_aviso_legal, "
@@ -90,10 +95,10 @@ public class SimulatorsManager
             /* se rellena la query con los datos */
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
-            pPreparedStatement.setString(1, strLanguage);
-            pPreparedStatement.setString(2, strLanguage);
-            pPreparedStatement.setString(3, strLanguage);
-            pPreparedStatement.setString(4, strLanguage);
+            pPreparedStatement.setString(1, pLanguage.name());
+            pPreparedStatement.setString(2, pLanguage.name());
+            pPreparedStatement.setString(3, pLanguage.name());
+            pPreparedStatement.setString(4, pLanguage.name());
             pPreparedStatement.setString(5, strNRBE);
             pPreparedStatement.setString(6, Constants.SimulatorMortgageCategory.HIPOTECA.name());
             if (strSimulatorName != null && !strSimulatorName.trim().isEmpty()
@@ -135,7 +140,8 @@ public class SimulatorsManager
                     strContractConditions = pResultSet.getString("TEXTO_CONDICIONES");
                     strLOPD = pResultSet.getString("TEXTO_LOPD");
                     strDescription = pResultSet.getString("TEXTO_DESC");
-                    pSimulatorObject = new SimulatorConfig(nSimulatorId, strNRBE, strNRBEName, strCategory, strSimpleName, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail, fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone, strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions, strDescription);
+                    fDownloadByForm = pResultSet.getBoolean("PDF_CON_FORMUALARIO");
+                    pSimulatorObject = new SimulatorConfig(nSimulatorId, strNRBE, strNRBEName, strCategory, strSimpleName, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail, fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone, strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions, strDescription, fDownloadByForm);
                 }
                 pSimulatorObject.addConfigParam(pResultSet.getString("CLAVE"), pResultSet.getString("VALOR"));
             }
@@ -170,12 +176,15 @@ public class SimulatorsManager
         String strSimpleName = null;
         String strComercialName = null;
         String strOfficeTo = null;
-        String strOfficeTemplate = null;
-        String strOfficeSubject = null;
-        String strOfficeFrom = null;
-        String strCustomerTemplate = null;
-        String strCustomerSubject = null;
-        String strCustomerFrom = null;
+        String strOfficeClaimTemplate = null;
+        String strOfficeClaimSubject = null;
+        String strOfficeClaimFrom = null;
+        String strOfficeDraftTemplate = null;
+        String strOfficeDraftSubject = null;
+        String strOfficeDraftFrom = null;
+        String strCustomerDraftTemplate = null;
+        String strCustomerDraftSubject = null;
+        String strCustomerDraftFrom = null;
         try
         {
             strQuery = "select s.*, o.NOM_ENT_TXT, e.clave, e.valor  "
@@ -202,23 +211,32 @@ public class SimulatorsManager
                 strClave = pResultSet.getString("CLAVE");
                 switch (strClave)
                 {
-                    case Constants.SIMULADOR_EMAIL_CONFIG_OFFICE_TEMPLATE:
-                        strOfficeTemplate = pResultSet.getString("VALOR");
+                    case Constants.SIMULADOR_EMAIL_CONFIG_OFFICE_CLAIM_TEMPLATE:
+                        strOfficeClaimTemplate = pResultSet.getString("VALOR");
                         break;
-                    case Constants.SIMULADOR_EMAIL_CONFIG_OFFICE_SUBJECT:
-                        strOfficeSubject = pResultSet.getString("VALOR");
+                    case Constants.SIMULADOR_EMAIL_CONFIG_OFFICE_CLAIM_SUBJECT:
+                        strOfficeClaimSubject = pResultSet.getString("VALOR");
                         break;
-                    case Constants.SIMULADOR_EMAIL_CONFIG_OFFICE_FROM:
-                        strOfficeFrom = pResultSet.getString("VALOR");
+                    case Constants.SIMULADOR_EMAIL_CONFIG_OFFICE_CLAIM_FROM:
+                        strOfficeClaimFrom = pResultSet.getString("VALOR");
                         break;
-                    case Constants.SIMULADOR_EMAIL_CONFIG_CUSTOMER_TEMPLATE:
-                        strCustomerTemplate = pResultSet.getString("VALOR");
+                    case Constants.SIMULADOR_EMAIL_CONFIG_OFFICE_DRAFT_TEMPLATE:
+                        strOfficeDraftTemplate = pResultSet.getString("VALOR");
                         break;
-                    case Constants.SIMULADOR_EMAIL_CONFIG_CUSTOMER_SUBJECT:
-                        strCustomerSubject = pResultSet.getString("VALOR");
+                    case Constants.SIMULADOR_EMAIL_CONFIG_OFFICE_DRAFT_SUBJECT:
+                        strOfficeDraftSubject = pResultSet.getString("VALOR");
                         break;
-                    case Constants.SIMULADOR_EMAIL_CONFIG_CUSTOMER_FROM:
-                        strCustomerFrom = pResultSet.getString("VALOR");
+                    case Constants.SIMULADOR_EMAIL_CONFIG_OFFICE_DRAFT_FROM:
+                        strOfficeDraftFrom = pResultSet.getString("VALOR");
+                        break;
+                    case Constants.SIMULADOR_EMAIL_CONFIG_CUSTOMER_DRAFT_TEMPLATE:
+                        strCustomerDraftTemplate = pResultSet.getString("VALOR");
+                        break;
+                    case Constants.SIMULADOR_EMAIL_CONFIG_CUSTOMER_DRAFT_SUBJECT:
+                        strCustomerDraftSubject = pResultSet.getString("VALOR");
+                        break;
+                    case Constants.SIMULADOR_EMAIL_CONFIG_CUSTOMER_DRAFT_FROM:
+                        strCustomerDraftFrom = pResultSet.getString("VALOR");
                         break;
                     default:
                         pLog.warn("Se ha leido una propiedad que no está censada para el envio de email. Porpiedad: "
@@ -226,12 +244,7 @@ public class SimulatorsManager
                         break;
                 }
             }
-            pReturn = new SimulatorEmailConfig(nId, strNRBE, strNRBEName, strSimpleName, strComercialName, strOfficeTo, strOfficeTemplate, strOfficeSubject, strOfficeFrom, strCustomerTemplate, strCustomerSubject, strCustomerFrom);
-            /*
-             * if (pReturn == null) throw new
-             * Exception("No se ha encontrado una configuración valida para el simulador con id " + nSimulatorId +
-             * " y la entidad " + strNRBE);
-             */
+            pReturn = new SimulatorEmailConfig(nId, strNRBE, strNRBEName, strSimpleName, strComercialName, strOfficeTo, strOfficeClaimTemplate, strOfficeClaimSubject, strOfficeClaimFrom, strOfficeDraftTemplate, strOfficeDraftSubject, strOfficeDraftFrom, strCustomerDraftTemplate, strCustomerDraftSubject, strCustomerDraftFrom);
         }
         catch (Exception ex)
         {
@@ -287,16 +300,14 @@ public class SimulatorsManager
         return strReturn;
     }
 
-    public static String getEmailTemplate(String strTemplate) throws Exception
+    public static String getEmailTemplate(String strPathToTemplate, Language pLanguage) throws Exception
     {
         String strReturn;
-        InputStream pInputStream = (SimulatorsManager.class.getResourceAsStream(strTemplate));
-        if (pInputStream == null)
-        {
-            pLog.error("No se encuentra el fichero template " + strTemplate);
-        }
-        strReturn = Utils.getStringFromInputStream(pInputStream);
-        strReturn = strReturn.replace("", "");
+        Document pDocument;
+        pDocument = TemplateManager.readTemplate(strPathToTemplate);
+        pDocument = TemplateManager.translateHTML(pDocument, pLanguage);
+        pDocument.outputSettings().escapeMode(EscapeMode.base);
+        strReturn = pDocument.html();
         return strReturn;
     }
 
@@ -308,8 +319,10 @@ public class SimulatorsManager
         {
             String strHtKey = (String) pEnumKeyValues.nextElement();
             String strHtValue = (String) htKeyValues.get(strHtKey);
-            strRetun = strRetun.replaceAll("<%" + strHtKey + "%>", strHtValue.replaceAll("\n", "<br/>"));
+            String strReplaceText = "<replace_key value=\"" + strHtKey + "\" />";
+            strRetun = strRetun.replaceAll(strReplaceText, strHtValue);
         }
+        strRetun = strRetun.replaceAll("\n", "<br/>");
         return strRetun;
     }
 }

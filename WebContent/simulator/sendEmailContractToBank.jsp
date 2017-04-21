@@ -22,13 +22,14 @@
 <%@page import="com.rsi.rvia.rest.tool.*"%>		 
 <%@page import="com.rsi.rvia.mail.*"%>		 
 <%@page import="com.rsi.Constants"%>
+<%@page import="com.rsi.Constants.Language"%>
 <%@page import="javax.ws.rs.core.*"%>
 <%@page import="javax.ws.rs.client.*"%>
 <%@ page language="java" pageEncoding="UTF-8"%>
 
 
 <%
-	Logger pLog = LoggerFactory.getLogger("sendEmail.jsp");
+	Logger pLog = LoggerFactory.getLogger("sendEmailContractToBank.jsp");
 	String strReturn;
 	
 	/* Se recuperan los parametros de entrada*/
@@ -40,6 +41,7 @@
     String strNRBEName;
     String strSimulatorType;
     String strLanguage;
+    Language pLanguage;
     String strPdfConfig;
     String strEmailTemplate;
     String strEmailUserName;
@@ -95,18 +97,27 @@
 	        fIsCustomer = Boolean.parseBoolean(request.getParameter(Constants.SIMULADOR_EMAIL_USER_IS_CUSTOMER));
 	        strNif = (String) request.getParameter(Constants.SIMULADOR_EMAIL_USER_NIF);        
 	    }	
-		
+	    /* se obtiene le objeto idioma */
+        if(strLanguage == null || strLanguage.trim().isEmpty())
+        {
+            pLanguage = Constants.DEFAULT_LANGUAGE;
+        }
+        else
+        {
+            pLanguage = Language.valueOf(strLanguage);
+        }
+        
 		pLog.info("Se recupera la configuración que le llega al jsp: \n" +
-				"SimulatorId:    " + nSimulatorId +"\n" +	
-				"NRBE:           " + strNRBE +"\n" +		
-				"Language:       " + strLanguage +"\n" +	
-				"PdfConfig: 	 " + strPdfConfig +"\n" +
-				"EmailUserName:  " + strEmailUserName +"\n" +	
-				"EmailMail:      " + strEmailMail +"\n" +	
-				"EmailTelephone: " + strEmailTelephone +"\n" +	
-				"EmailComment:   " + strEmailComment +"\n" +	
-				"IsCustomer:     " + fIsCustomer +"\n" +	
-				"Nif:            " + strNif +"");
+				"SimulatorId:    " + nSimulatorId 		+"\n" +	
+				"NRBE:           " + strNRBE 			+"\n" +		
+				"Language:       " + pLanguage.name() 	+"\n" +	
+				"PdfConfig: 	 " + strPdfConfig 		+"\n" +
+				"EmailUserName:  " + strEmailUserName 	+"\n" +	
+				"EmailMail:      " + strEmailMail 		+"\n" +	
+				"EmailTelephone: " + strEmailTelephone 	+"\n" +	
+				"EmailComment:   " + strEmailComment 	+"\n" +	
+				"IsCustomer:     " + fIsCustomer 		+"\n" +	
+				"Nif:            " + strNif);
 	
 		/* se genera el pdf */
 	 	/* Se cargan las propiedades del servicio */
@@ -147,14 +158,14 @@
 		/* se envia el email a la sucursal*/
 		Email pEmail = new Email();
 		pEmail.setConfig(pEmailProterties);
-		pEmail.setFrom(pSimulatorEmailConfig.getOfficeFrom());
+		pEmail.setFrom(pSimulatorEmailConfig.getOfficeClaimFrom());
 		pEmail.addTo(pSimulatorEmailConfig.getOfficeTo());
-		pEmail.setSubject(pSimulatorEmailConfig.getOfficeSubject());
+		pEmail.setSubject(pSimulatorEmailConfig.getOfficeClaimSubject());
 		pLog.info("Se asignan el origen y destino del email");
 		
 		/* se lee la platinlla y se remplazan los valores */
-		String strOfficeTemplate = pSimulatorEmailConfig.getOfficeTemplate();
-		String strHtmlOfficeTemplate = SimulatorsManager.getEmailTemplate(strOfficeTemplate);
+		String strOfficeTemplate = pSimulatorEmailConfig.getOfficeClaimTemplate();
+ 		String strHtmlOfficeTemplate = SimulatorsManager.getEmailTemplate(strOfficeTemplate, pLanguage);
 		/* se cra un hashtable donde se meten losd atos que se van a substituir en la plantilla */
 		pLog.info("Se procede a obtener y componer el cuerpo del mensaje");
 		Hashtable<String, String> htEmailTemplateData = new Hashtable<String, String>();

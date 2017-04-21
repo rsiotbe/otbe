@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constants.Language;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.tool.Utils;
@@ -114,6 +115,7 @@ public class TranslateCache
                     String strAppName = (String) pResultSet.getString("aplicativo");
                     String strCode = (String) pResultSet.getString("codigo");
                     String strLang = (String) pResultSet.getString("idioma");
+                    Language pLanguage = Language.valueOf(strLang);
                     String strTranslate = (String) pResultSet.getString("traduccion");
                     /* si el resultado pertenece a una aplicación aun no definida, se da de alta */
                     if (!htTranslateCacheData.containsKey(strAppName))
@@ -125,7 +127,7 @@ public class TranslateCache
                     if (pTranslationApp.existTranslation(strCode))
                     {
                         TranslateEntry pTranslateEntry = pTranslationApp.getTranslation(strCode);
-                        pTranslateEntry.addTranslation(strLang, strTranslate);
+                        pTranslateEntry.addTranslation(pLanguage, strTranslate);
                     }
                     /*
                      * si la aplicación traducida no tiene todaviae el codigo, se añade el nuevo objeto Translate entry
@@ -134,7 +136,7 @@ public class TranslateCache
                     else
                     {
                         TranslateEntry pTranslateEntry = new TranslateEntry(strCode, strAppName);
-                        pTranslateEntry.addTranslation(strLang, strTranslate);
+                        pTranslateEntry.addTranslation(pLanguage, strTranslate);
                         pTranslationApp.addTranslateEntry(strCode, pTranslateEntry);
                     }
                 }
@@ -168,6 +170,7 @@ public class TranslateCache
             {
                 String strCode = (String) pResultSet.getString("codigo");
                 String strLang = (String) pResultSet.getString("idioma");
+                Language pLanguage = Language.valueOf(strLang);
                 String strTranslate = (String) pResultSet.getString("traduccion");
                 /* si el resultado pertenece a una aplicación aun no definida, se da de alta */
                 if (!htTranslateCacheData.containsKey(strAppName))
@@ -178,10 +181,10 @@ public class TranslateCache
                 /* si la aplicación traducida ya tiene el codigo, se añade la nueva traducción */
                 if (pTranslationApp.existTranslation(strCode))
                 {
-                    if (!pTranslationApp.existTranslationInLanguaje(strCode, strLang))
+                    if (!pTranslationApp.existTranslationInLanguaje(strCode, pLanguage))
                     {
                         TranslateEntry pTranslateEntry = pTranslationApp.getTranslation(strCode);
-                        pTranslateEntry.addTranslation(strLang, strTranslate);
+                        pTranslateEntry.addTranslation(pLanguage, strTranslate);
                     }
                 }
                 /*
@@ -191,7 +194,7 @@ public class TranslateCache
                 else
                 {
                     TranslateEntry pTranslateEntry = new TranslateEntry(strCode, strAppName);
-                    pTranslateEntry.addTranslation(strLang, strTranslate);
+                    pTranslateEntry.addTranslation(pLanguage, strTranslate);
                     pTranslationApp.addTranslateEntry(strCode, pTranslateEntry);
                 }
             }
@@ -209,7 +212,7 @@ public class TranslateCache
         }
     }
 
-    public static Hashtable<String, String> getTranslationsByCode(String[] astrCodes, String strLanguage)
+    public static Hashtable<String, String> getTranslationsByCode(String[] astrCodes, Language pLanguage)
             throws Exception
     {
         Hashtable<String, String> htResult = new Hashtable<String, String>();
@@ -224,7 +227,7 @@ public class TranslateCache
                 TranslationApp pTranslationApp = htTranslateCacheData.get(strAppName);
                 if (pTranslationApp.existTranslation(strCode))
                 {
-                    htResult.put(strCode, pTranslationApp.getTranslation(strCode, strLanguage));
+                    htResult.put(strCode, pTranslationApp.getTranslation(strCode, pLanguage));
                 }
             }
         }
@@ -252,7 +255,7 @@ public class TranslateCache
         return htResult;
     }
 
-    public static Hashtable<String, String> getTranslationsByApp(String strAppName, String strLanguage)
+    public static Hashtable<String, String> getTranslationsByApp(String strAppName, Language pLanguage)
             throws Exception
     {
         Hashtable<String, String> htResult = new Hashtable<String, String>();
@@ -266,7 +269,7 @@ public class TranslateCache
         while (e.hasMoreElements())
         {
             String strCode = (String) e.nextElement();
-            htResult.put(strCode, pTranslationApp.getTranslation(strCode, strLanguage));
+            htResult.put(strCode, pTranslationApp.getTranslation(strCode, pLanguage));
         }
         return htResult;
     }
