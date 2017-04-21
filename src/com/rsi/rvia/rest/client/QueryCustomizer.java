@@ -53,49 +53,67 @@ public class QueryCustomizer
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
-        pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleCIP);
-        pPreparedStatement = pConnection.prepareStatement(strQuery);
-        pResultSet = pPreparedStatement.executeQuery();
         JSONObject pJson = new JSONObject();
         JSONObject pJsonExit = new JSONObject();
-        JSONObject converted = Utils.convertResultSetToJSONWithTotalRegCount(pResultSet);
-        JSONArray json = (JSONArray) converted.get("records");
-        int nTotalNumReg = converted.getInt("totalrecordcount");
-        JSONObject jsonMeta = new JSONObject();
-        jsonMeta.put("pagesize", Integer.parseInt(strPageSize));
-        jsonMeta.put("pagenumber", Integer.parseInt(pageNumber));
-        jsonMeta.put("totalrecordcount", nTotalNumReg);
-        pResultSet.close();
-        pPreparedStatement.close();
-        pConnection.close();
-        if (request.getParameter("pagesize") != null)
+        JSONArray json = null;
+        JSONObject jsonMeta = null;
+        try
         {
-            pJsonExit.put("paginationinfo", jsonMeta);
+            pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleCIP);
+            pPreparedStatement = pConnection.prepareStatement(strQuery);
+            pResultSet = pPreparedStatement.executeQuery();
+            JSONObject converted = Utils.convertResultSetToJSONWithTotalRegCount(pResultSet);
+            json = (JSONArray) converted.get("records");
+            int nTotalNumReg = converted.getInt("totalrecordcount");
+            jsonMeta = new JSONObject();
+            jsonMeta.put("pagesize", Integer.parseInt(strPageSize));
+            jsonMeta.put("pagenumber", Integer.parseInt(pageNumber));
+            jsonMeta.put("totalrecordcount", nTotalNumReg);
+            if (request.getParameter("pagesize") != null)
+            {
+                pJsonExit.put("paginationinfo", jsonMeta);
+            }
+            pJsonExit.put("data", json);
+            pJson.put("response", pJsonExit);
         }
-        pJsonExit.put("data", json);
-        pJson.put("response", pJsonExit);
+        catch (Exception ex)
+        {
+            pLog.error("Error en el proceso de construir una query", ex);
+        }
+        finally
+        {
+            DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
+        }
         return pJson.toString();
     }
 
     public static String getLastChargeDate(String pTabla, String pPeriodicidad) throws Exception
     {
-        String strQuery = " select to_char(mi_fecha_proceso,'yyyy-mm-dd') ultimaCarga from rdwc01.ce_carga_tabla"
-                + " where nomtabla='" + pTabla + "'" + " AND MI_PERIODICIDAD='" + pPeriodicidad + "'";
-        pLog.info("Query para última fecha de carga: " + strQuery);
+        String strRetorno = "9999-12-31";
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
-        pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleCIP);
-        pPreparedStatement = pConnection.prepareStatement(strQuery);
-        pResultSet = pPreparedStatement.executeQuery();
-        String strRetorno = "9999-12-31";
-        while (pResultSet.next())
+        try
         {
-            strRetorno = pResultSet.getString("ultimaCarga");
+            String strQuery = " select to_char(mi_fecha_proceso,'yyyy-mm-dd') ultimaCarga from rdwc01.ce_carga_tabla"
+                    + " where nomtabla='" + pTabla + "'" + " AND MI_PERIODICIDAD='" + pPeriodicidad + "'";
+            pLog.info("Query para última fecha de carga: " + strQuery);
+            pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleCIP);
+            pPreparedStatement = pConnection.prepareStatement(strQuery);
+            pResultSet = pPreparedStatement.executeQuery();
+            while (pResultSet.next())
+            {
+                strRetorno = pResultSet.getString("ultimaCarga");
+            }
         }
-        pResultSet.close();
-        pPreparedStatement.close();
-        pConnection.close();
+        catch (Exception ex)
+        {
+            pLog.error("Error al comprobar la última carga", ex);
+        }
+        finally
+        {
+            DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
+        }
         return strRetorno;
     }
 
