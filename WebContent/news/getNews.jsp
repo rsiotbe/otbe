@@ -76,6 +76,9 @@ public JSONArray getNews (String strCodNrbe, String strProfile, String strUser) 
 	{
 		pLog.info("GetNews ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
 	}
+	finally{
+	    DDBBPoolFactory.closeDDBBObjects(pLog, null, null, pConnection);
+	}
 	
 	CallableStatement pCallableStatement = null;
 	
@@ -102,14 +105,7 @@ public JSONArray getNews (String strCodNrbe, String strProfile, String strUser) 
 	}
 	finally
 	{
-		try{
-			pCallableStatement.close();
-			pConnection.close();
-		}
-		catch (Exception e)
-		{
-			pLog.error("GetNews ::: getNews ::: pCallableStatement Close Exception " + e.getMessage());				
-		}
+	    DDBBPoolFactory.closeDDBBObjects(pLog, null, pCallableStatement, pConnection);
 	}  
 	return pJsongetNewsResponse;
 }
@@ -177,6 +173,9 @@ public JSONObject callBBDD(int strCod, String strUser, String strQuery) throws E
 	{
 		pLog.info("GetNews ::: callBBDD ::: callBBDD Exception " + ex.getMessage());
 	}
+	finally{
+	    DDBBPoolFactory.closeDDBBObjects(pLog, null, null, pConnection);
+	}
 	
 	CallableStatement pCallableStatement = null;
 	try
@@ -208,15 +207,7 @@ public JSONObject callBBDD(int strCod, String strUser, String strQuery) throws E
 	}
 	finally
 	{
-		try
-		{
-			pCallableStatement.close();
-			pConnection.close();
-		}
-		catch (Exception e)
-		{
-			pLog.error("GetNews ::: callBBDD ::: pCallableStatement finally Exception " + e.getMessage());
-		}
+	    DDBBPoolFactory.closeDDBBObjects(pLog, null, pCallableStatement, pConnection);
 	}
 	return pJsonUpdateResponse;
 }
