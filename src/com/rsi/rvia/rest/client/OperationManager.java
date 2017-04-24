@@ -350,6 +350,10 @@ public class OperationManager
             String nTarjeta = strResponse.replaceAll("^.*<ee:numeroTarjeta>([^<]*)</ee:numeroTarjeta>.*$", "$1");
             codEntidad = codEntidad.trim();
             idInternoPe = idInternoPe.trim();
+            while (codEntidad.length() < 4)
+            {
+                codEntidad = "0" + codEntidad;
+            }
             nTarjeta = nTarjeta.trim();
             if (entorno.equals("TEST"))
             {
