@@ -188,6 +188,10 @@ public class IdentityProviderRVIA implements IdentityProvider
             codEntidad = codEntidad.trim();
             idInternoPe = idInternoPe.trim();
             nTarjeta = nTarjeta.trim();
+            while (codEntidad.length() < 4)
+            {
+                codEntidad = "0" + codEntidad;
+            }
             if (entorno.equals("TEST"))
             {
                 fields.put("codEntidad", "3076");
