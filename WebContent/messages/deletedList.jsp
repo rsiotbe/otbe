@@ -19,9 +19,9 @@
 	JSONObject pJsonResponse = new JSONObject();
 	response.setHeader("content-type", "application/json");
 
-	String strUser = (String) session.getAttribute("USUARIO");
-	String strLanguage = (String) session.getAttribute("idioma");
-	String strCodNrbe = (String) session.getAttribute("ENTALT");
+	String strUser = request.getParameter("codUser");
+	String strLanguage = request.getParameter("idioma");
+	String strCodNrbe =  request.getParameter("codNrbe");
 	JSONArray pJsonResult = getDeletedList(strCodNrbe, strLanguage, strUser);
 	pJsonResponse.put("deletedMessages", pJsonResult);
 	%><%=Utils.generateWSResponseJsonOk("deletedMessages", pJsonResponse.toString())%>
@@ -29,7 +29,7 @@
 
 String strErrorCode = "errorCode";
 String strErrorMessage = "errorMessage";
-Logger pLog = LoggerFactory.getLogger("getNews.jsp");
+Logger pLog = LoggerFactory.getLogger("deletedList.jsp");
 
 /*
  * Devuelve el listado de noticias para mostrar al usuario.

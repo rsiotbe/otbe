@@ -19,9 +19,9 @@
 	JSONObject pJsonResponse = new JSONObject();
 	response.setHeader("content-type", "application/json");
 
-	String strUser = (String) session.getAttribute("USUARIO");
-	String strLanguage = (String) session.getAttribute("idioma");
-	String strCodNrbe = (String) session.getAttribute("ENTALT");
+	String strUser = request.getParameter("codUser");
+	String strLanguage = request.getParameter("idioma");
+	String strCodNrbe =  request.getParameter("codNrbe");
 	JSONArray pJsonResult = getArchivedList(strCodNrbe, strLanguage, strUser);
 	pJsonResponse.put("archivedMessages", pJsonResult);
 	%><%=Utils.generateWSResponseJsonOk("archivedMessages", pJsonResponse.toString())%>
@@ -29,7 +29,7 @@
 
 String strErrorCode = "errorCode";
 String strErrorMessage = "errorMessage";
-Logger pLog = LoggerFactory.getLogger("getNews.jsp");
+Logger pLog = LoggerFactory.getLogger("archivedList.jsp");
 
 /*
  * Devuelve el listado de noticias para mostrar al usuario.

@@ -19,9 +19,9 @@
 	JSONObject pJsonResponse = new JSONObject();
 	response.setHeader("content-type", "application/json");
 
-	String strUser = (String) session.getAttribute("USUARIO");
-	String strLanguage = (String) session.getAttribute("idioma");
-	String strCodNrbe = (String) session.getAttribute("ENTALT");
+	String strUser = request.getParameter("codUser");
+	String strLanguage = request.getParameter("idioma");
+	String strCodNrbe =  request.getParameter("codNrbe");
 	JSONArray pJsonResult = getSentList(strCodNrbe, strLanguage, strUser);
 	pJsonResponse.put("sentMessages", pJsonResult);
 	%><%=Utils.generateWSResponseJsonOk("sentMessages", pJsonResponse.toString())%>
@@ -29,7 +29,7 @@
 
 String strErrorCode = "errorCode";
 String strErrorMessage = "errorMessage";
-Logger pLog = LoggerFactory.getLogger("getNews.jsp");
+Logger pLog = LoggerFactory.getLogger("sentList.jsp");
 
 /*
  * Devuelve el listado de noticias para mostrar al usuario.
@@ -39,7 +39,7 @@ public JSONArray getSentList (String strCodNrbe, String strLanguage, String strU
 	pLog.info("Messages ::: getSentList ::: Start ");
 	Connection pConnection = null;
 	JSONArray pJsongetNewsResponse = null;
-	String strQuery = "{call BEL.PK_CONSULTA_BUZON_MOVIL.getSentMessages(?,?,?,?)}";
+	String strQuery = "{call PK_CONSULTA_BUZON_MOVIL.getSentMessages(?,?,?,?)}";
 	try
 	{
 		pLog.info("Messages ::: getSentList ::: DDBBProvider ");

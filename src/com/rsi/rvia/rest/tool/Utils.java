@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -26,15 +27,18 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.MissingResourceException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
+
 import org.apache.commons.collections4.MapUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.rsi.Constants;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
@@ -139,6 +143,10 @@ public class Utils
                 else if (rsmd.getColumnType(i) == java.sql.Types.TIMESTAMP)
                 {
                     pJsonObj.put(column_name, pResultSet.getTimestamp(column_name));
+                }
+                else if (rsmd.getColumnType(i) == java.sql.Types.CLOB)
+                {
+                    pJsonObj.put(column_name, clobToString(pResultSet.getClob(column_name)));
                 }
                 else
                 {
@@ -727,5 +735,35 @@ public class Utils
         {
             return "";
         }
+    }
+    
+
+    private static String clobToString(java.sql.Clob data)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        try
+        {
+            final Reader         reader = data.getCharacterStream();
+            final BufferedReader br     = new BufferedReader(reader);
+
+            int b;
+            while(-1 != (b = br.read()))
+            {
+                sb.append((char)b);
+            }
+
+            br.close();
+        }
+        catch (SQLException e)
+        {
+            return e.toString();
+        }
+        catch (IOException e)
+        {
+            return e.toString();
+        }
+
+        return sb.toString();
     }
 }

@@ -29,13 +29,13 @@ public class ComunicacionCliente
      * @throws Exception
      */
     @GET
-    @Path("/unreaded")
+    @Path("/unreadedList")
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
     public Response unreadedMessages(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception
     {
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
+    	Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Mensajes no leidos");
         return pReturn;
     }
@@ -113,21 +113,39 @@ public class ComunicacionCliente
     /**
      * Obtiene el detalle de un mensaje.
      * 
-     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de mensajes
+     * @throws Exception
+     */
+    @GET
+    @Path("/historyList")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    public Response historyMessageList(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+            throws Exception
+    { 
+    	Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Historico de Mensajes");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el listado de historicos de un mensaje.
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de mensajes
      * @throws Exception
      */
     @GET
     @Path("/detail")
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
-    public Response MessageDetails(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+    public Response messageDetails(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception
     { 
     	Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Detalle de Mensajes");
         return pReturn;
     }
-
+    
     /**
      * Envía un nuevo mensaje.
      * 
