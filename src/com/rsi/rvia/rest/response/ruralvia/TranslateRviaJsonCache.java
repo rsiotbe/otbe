@@ -22,7 +22,8 @@ import com.rsi.rvia.rest.tool.Utils;
 public class TranslateRviaJsonCache
 {
     /** The p log. */
-    private static Logger                                     pLog                 = LoggerFactory.getLogger(TranslateRviaJsonCache.class);
+    private static Logger                                     pLog                 = LoggerFactory.getLogger(
+            TranslateRviaJsonCache.class);
     /** The ht translate cache data. */
     private static Hashtable<String, TranslateRviaJsonObject> htTranslateCacheData = new Hashtable<String, TranslateRviaJsonObject>();
 
@@ -137,7 +138,9 @@ public class TranslateRviaJsonCache
             {
                 DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
                 if (fIsError)
-                    throw new ApplicationException(500, 999994, "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD", null);
+                    throw new ApplicationException(500, 999994,
+                            "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD",
+                            null);
             }
         }
         return pTRJO;
@@ -242,25 +245,27 @@ public class TranslateRviaJsonCache
                 DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement2, pConnection2);
                 DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement3, pConnection3);
                 if (fIsError)
-                    throw new ApplicationException(500, 999993, "Error al procesar insertar respues ta de error de ruralvia", "Error al acceder a BBDD", null);
+                    throw new ApplicationException(500, 999993,
+                            "Error al procesar insertar respues ta de error de ruralvia", "Error al acceder a BBDD",
+                            null);
             }
         }
         return nResult;
     }
 
-    public static RviaRestResponse.Type isErrorCode(String strErrorCode, String strTextError, int nIdMiq,
+    public static RviaRestResponse.Type getRviaResponseType(String strErrorCode, String strTextError, int nIdMiq,
             Language pLanguage) throws ApplicationException, SQLException
     {
         RviaRestResponse.Type pReturn;
         TranslateRviaJsonObject pTRJO;
         // ver tabla BDPTB090_ERRORES y BELTS105
-        pTRJO = getRviaTranslation(strErrorCode, strTextError, nIdMiq, strLanguaje);
+        pTRJO = getRviaTranslation(strErrorCode, strTextError, nIdMiq, pLanguage);
         pReturn = pTRJO.getTipo();
         return pReturn;
     }
 
     private static TranslateRviaJsonObject getRviaTranslation(String strErrorCode, String strTextError, int nIdMiq,
-            String strLanguaje) throws ApplicationException, SQLException
+            Language pLanguage) throws ApplicationException, SQLException
     {
         // Se busca el error en la caché de errores por clave IDMIQ_ERRORCODE
         TranslateRviaJsonObject pTRJO = getError(nIdMiq, strErrorCode);
