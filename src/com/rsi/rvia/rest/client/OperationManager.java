@@ -249,6 +249,10 @@ public class OperationManager
         return pResponseConnector;
     }
 
+            while (codEntidad.length() < 4)
+            {
+                codEntidad = "0" + codEntidad;
+            }
     /**
      * Se procesa la petición sin validar sesion en ISUM para devolver un template.
      * 
