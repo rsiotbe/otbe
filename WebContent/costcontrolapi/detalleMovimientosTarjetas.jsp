@@ -46,7 +46,9 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
             " select /" + "*" + "+ FULL(e) *" + "/ " +
                     "   e.fecha_oprcn \"fechaOperacion\", " +
                     "   e.hora_oprcn_u \"horaOperacion\", " +
-                    "   e.imptrn \"importe\", " +
+                    "   case " +
+                    "       when e.tipfac2 = '0033' then (e.imptrn * -1) else e.imptrn " +
+                    "   end \"importe\", " +        
                     "   nvl(trim(e.nomcomred),'OTROS') \"nombreComercio\", " +
                     "   nvl(trim(e.localidad2),'OTROS') \"localidad\", " +
                     "   e.codact \"codCategoria\", " +

@@ -16,7 +16,6 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
     String strDateIni = request.getParameter("mesInicio").toString();
     String strDateFin = request.getParameter("mesFin");   
     String strCodCta = "";
-
     if(strDateFin == null){
         strDateFin = "9999-12-31";
      }
@@ -24,10 +23,13 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
         strDateFin = QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
      }           
     strDateIni = QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni);
-
    String strQuery =          
            " select /" + "*" + "+ FULL(e) *" + "/  to_char(e.fecha_oprcn,'YYYY-MM')  \"mes\", " +
-                   " e.num_sec_ac \"acuerdo\", sum(e.imptrn) \"importe\", count(*) \"numero\" " +
+                   " e.num_sec_ac \"acuerdo\", " + 
+	               " sum (case " +
+	               "       when e.tipfac2 = '0033' then (e.imptrn * -1) else e.imptrn " +
+	               "   end) \"importe\", " +        
+                   " count(*) \"numero\" " +
                    " from" +
                    "     rdwc01.MI_MPA2_OPERAC_TARJETAS e," +
                    "     rdwc01.mi_ac_cont_gen f" +
