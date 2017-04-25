@@ -149,7 +149,7 @@ public class TranslateRviaJsonCache
     private static synchronized int putDataInDDBB(String strErrorCode, String strErrorText, int nIdMiq)
             throws ApplicationException, SQLException
     {
-        final int THREE_OK = 3; // Se corresponde con tres ejecuciones de query OK.
+        int OKS = 0; // Se corresponde con tres ejecuciones de query OK.
         final String DEFAULT_COMMENT = "Error generado automáticamente";
         final String DEFAULT_LEVEL = RviaRestResponse.Type.ERROR.name();
         final String DEFAULT_APP = "AUTO";
@@ -165,6 +165,7 @@ public class TranslateRviaJsonCache
         {
             try
             {
+                OKS++;
                 String code = DEFAULT_LEVEL + "_" + nIdMiq + "_" + strErrorCode; // Formato: ERROR_IDMIQ_CODERROR;
                 //
                 // Insertar en BDPTB282_ERR_RVIA
@@ -190,6 +191,7 @@ public class TranslateRviaJsonCache
                 Language[] values = Language.values();
                 for (int i = 0; i < values.length; i++)
                 {
+                    OKS++;
                     strQuery2 += " INTO bel.BDPTB079_IDIOMA (IDIOMA, CODIGO, TRADUCCION, COMENTARIO) VALUES (?, ?, ?, ?)";
                 }
                 strQuery2 += " SELECT * FROM DUAL";
@@ -211,6 +213,7 @@ public class TranslateRviaJsonCache
                 // Insertar en BDPTB079_IDIOMA_APLICATIVO
                 // APLICATIVO='AUTO' (Autocensado)
                 //
+                OKS++;
                 String strQuery3 = "INSERT INTO bel.BDPTB079_IDIOMA_APLICATIVO (CODIGO, APLICATIVO, OPCIONES) VALUES (?, ?, ?)";
                 pConnection3 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection3.setAutoCommit(false);
@@ -221,7 +224,7 @@ public class TranslateRviaJsonCache
                 pPreparedStatement3.setString(3, String.valueOf(nIdMiq));
                 pLog.trace("pPreparedStatement3:" + pPreparedStatement3);
                 nResult += pPreparedStatement3.executeUpdate();
-                if (nResult == THREE_OK)
+                if (nResult == OKS)
                 {
                     pConnection1.commit();
                     pConnection2.commit();
