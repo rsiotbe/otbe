@@ -81,7 +81,7 @@ String strResponse="";
 			      coma=",";
 			   }
 			   if(coma.equals("")){
-			   	strFiltroAcuerdos="-1";
+			   	strFiltroAcuerdos=strFiltroAcuerdos + "-1";
 			   }
 			   strFiltroAcuerdos = strFiltroAcuerdos + ") ";				
 			   DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
@@ -210,7 +210,9 @@ String strResponse="";
 	    throw new ApplicationException(500, 9999, "Jsp error", "", new Exception());
 	}
 	finally{
+	   if(pConnection != null){
 	    DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
+	   }
 	}
 	response.setHeader("content-type", "application/json");
 %>

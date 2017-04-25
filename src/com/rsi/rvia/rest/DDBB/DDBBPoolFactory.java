@@ -19,7 +19,6 @@ public class DDBBPoolFactory
     private static Logger     pLog         = LoggerFactory.getLogger(DDBBProvider.class);
     private static DataSource pOracleBanca = null;
     private static DataSource pOracleCIP   = null;
-    private static DataSource pMySql       = null;
 
     /**
      * Obtiene la clase que gestiona la conexión con base de datos
@@ -34,28 +33,11 @@ public class DDBBPoolFactory
         Connection pReturn = null;
         try
         {
-            switch (pDDBBProvider)
-            {
-                case OracleBanca:
-                    /* se obtiene de forma sincronizada el objeto datasource asociado */
-                    pOracleBanca = loadDDBBDataSource(pDDBBProvider, pOracleBanca);
-                    pReturn = pOracleBanca.getConnection();
-                    break;
-                case OracleCIP:
-                    /* se obtiene de forma sincronizada el objeto datasource asociado */
-                    pOracleCIP = loadDDBBDataSource(pDDBBProvider, pOracleCIP);
-                    pReturn = pOracleCIP.getConnection();
-                    break;
-                case MySql:
-                    /* se obtiene de forma sincronizada el objeto datasource asociado */
-                    pMySql = loadDDBBDataSource(pDDBBProvider, pMySql);
-                    pReturn = pMySql.getConnection();
-                    break;
-            }
+            pReturn = loadDDBBDataSource(pDDBBProvider).getConnection();
         }
         catch (Exception ex)
         {
-            pLog.error("Error al obtener la conexión con la base de datos", ex);
+            pLog.error("Error al obtener la conexión con la base de datos. ");
         }
         return pReturn;
     }
@@ -86,8 +68,8 @@ public class DDBBPoolFactory
         }
         catch (Exception ex)
         {
-            if (pLogger != null)
-                pLogger.error("Error al cerrar los objetos de base de datos", ex);
+            if (pLog != null)
+                pLog.error("Error al cerrar los objetos de base de datos", ex);
         }
     }
 
@@ -96,36 +78,31 @@ public class DDBBPoolFactory
      * 
      * @param pDDBBProvider
      *            Proveedor de BBDD a utilizar
-     * @param pDataSource
-     *            Variable que contiene el DataSource para asegurarse que solo s einstancia uno si no existe otro
-     *            anterior
      * @return Datasource asociado al proveedor de datos
      * @throws Exception
      */
-    private synchronized static DataSource loadDDBBDataSource(DDBBProvider pDDBBProvider, DataSource pDataSource)
-            throws Exception
+    private synchronized static DataSource loadDDBBDataSource(DDBBProvider pDDBBProvider) throws Exception
     {
-        if (pDataSource == null)
+        DataSource pReturn = null;
+        switch (pDDBBProvider)
         {
-            pLog.debug("Se procede a conectar con la base de datos de tipo " + pDDBBProvider.name());
-            switch (pDDBBProvider)
-            {
-                case OracleBanca:
-                    pDataSource = DDBBPool.getDatasourceFromBancaOracleServerPool();
-                    break;
-                case OracleCIP:
-                    pDataSource = DDBBPool.getDatasourceFromCIPOracleServerPool();
-                    break;
-                case MySql:
-                    pDataSource = DDBBPool.getDatasourceFromMySqlServerPool();
-                    break;
-                default:
-                    pLog.error("Proveedor de base de datos no encontrado, no existe configuración para este proveedor. Proveedor:"
-                            + pDDBBProvider.name());
-                    pDataSource = null;
-                    break;
-            }
+            case OracleBanca:
+                if (pOracleBanca == null)
+                {
+                    pOracleBanca = DDBBPool.getDatasourceFromBancaOracleServerPool();
+                }
+                pReturn = pOracleBanca;
+                break;
+            case OracleCIP:
+                if (pOracleCIP == null)
+                {
+                    pOracleCIP = DDBBPool.getDatasourceFromCIPOracleServerPool();
+                }
+                pReturn = pOracleCIP;
+                break;
+            default:
+                break;
         }
-        return pDataSource;
+        return pReturn;
     }
 }
