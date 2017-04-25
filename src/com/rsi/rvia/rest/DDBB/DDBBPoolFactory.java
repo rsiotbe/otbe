@@ -37,7 +37,7 @@ public class DDBBPoolFactory
         }
         catch (Exception ex)
         {
-            pLog.error("Error al obtener la conexión con la base de datos. ");
+            pLog.error("Error al obtener la conexión con la base de datos. ", ex);
         }
         return pReturn;
     }
@@ -84,6 +84,7 @@ public class DDBBPoolFactory
     private synchronized static DataSource loadDDBBDataSource(DDBBProvider pDDBBProvider) throws Exception
     {
         DataSource pReturn = null;
+        pLog.error("Se procede a conectar con la BD de tipo ", pDDBBProvider.name());
         switch (pDDBBProvider)
         {
             case OracleBanca:
