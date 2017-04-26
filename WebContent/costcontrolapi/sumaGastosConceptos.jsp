@@ -52,7 +52,7 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
           }   
           strDateIni = strDateIni + "-01";         
           strQuery = strQuery + " and t1.fecha_oprcn_dif >= round(to_date('" + strDateIni + "','yyyy-mm-dd'),'mm')";   
-          strQuery = strQuery + " and cod_cta = '01'" +       
+          strQuery = strQuery + " and cod_cta = '01' and ind_accion <> '3' " +       
           " group by nvl(trim(t1.concpt_apnte),trim(t3.txt_tipo_clop_brev)), t1.sgn  " ;
   pLog.info("Query al customizador: " + strQuery);            
   String strResponse = QueryCustomizer.process(request,strQuery);          

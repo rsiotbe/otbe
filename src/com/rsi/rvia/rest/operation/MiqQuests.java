@@ -289,29 +289,37 @@ public class MiqQuests
                 + " BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, " + " BEL.BDPTB225_MIQ_SESSION_PARAMS c "
                 + " where a.id_miq=b.id_miq " + " and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " + " and a.path_rest='"
                 + strPathRest + "' order by c.ID_MIQ_PARAM";
-        pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-        pPreparedStatement = pConnection.prepareStatement(strQuery);
-        pResultSet = pPreparedStatement.executeQuery();
-        while (pResultSet.next())
+        try
         {
-            String idMiq = pResultSet.getString("id_miq");
-            MiqQuestParam pMiqQuestParam = new MiqQuestParam(pResultSet.getInt("id_miq_param"), pResultSet.getString("paramname"), pResultSet.getString("paramvalue"), pResultSet.getString("paramdesc"), pResultSet.getString("paramtype"), pResultSet.getString("headername"), pResultSet.getString("aliasname"));
-            // if (pResultSet.getString("aliasname") != null)
-            // {
-            // if (!"".equals(pResultSet.getString("aliasname").trim()))
-            // {
-            String keyForHtParamsInput = idMiq + pResultSet.getString("aliasname");
-            if (!htParamsInput.containsKey(keyForHtParamsInput))
+            pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
+            pPreparedStatement = pConnection.prepareStatement(strQuery);
+            pResultSet = pPreparedStatement.executeQuery();
+            while (pResultSet.next())
             {
-                pLog.info("Añadiendo parametro: " + pResultSet.getString("aliasname"));
-                htParamsInput.put(keyForHtParamsInput, pMiqQuestParam);
+                String idMiq = pResultSet.getString("id_miq");
+                MiqQuestParam pMiqQuestParam = new MiqQuestParam(pResultSet.getInt("id_miq_param"), pResultSet.getString("paramname"), pResultSet.getString("paramvalue"), pResultSet.getString("paramdesc"), pResultSet.getString("paramtype"), pResultSet.getString("headername"), pResultSet.getString("aliasname"));
+                // if (pResultSet.getString("aliasname") != null)
+                // {
+                // if (!"".equals(pResultSet.getString("aliasname").trim()))
+                // {
+                String keyForHtParamsInput = idMiq + pResultSet.getString("aliasname");
+                if (!htParamsInput.containsKey(keyForHtParamsInput))
+                {
+                    pLog.info("Añadiendo parametro: " + pResultSet.getString("aliasname"));
+                    htParamsInput.put(keyForHtParamsInput, pMiqQuestParam);
+                }
+                // }
+                // }
             }
-            // }
-            // }
         }
-        pResultSet.close();
-        pPreparedStatement.close();
-        pConnection.close();
+        catch (Exception ex)
+        {
+            pLog.error("Error en el proceso de cargar los parámetros", ex);
+        }
+        finally
+        {
+            DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
+        }
     }
 
     /*

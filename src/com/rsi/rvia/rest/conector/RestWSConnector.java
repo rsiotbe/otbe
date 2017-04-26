@@ -262,9 +262,7 @@ public class RestWSConnector
         }
         finally
         {
-            pResultSet.close();
-            pPreparedStatement.close();
-            pConnection.close();
+            DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
         }
         return strReturn;
     }

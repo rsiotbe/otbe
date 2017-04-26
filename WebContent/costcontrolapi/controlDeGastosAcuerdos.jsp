@@ -63,7 +63,6 @@ String strResponse="";
 	PreparedStatement pPreparedStatement = null;
 	ResultSet pResultSet = null;
 	
-	
 	try{
 				pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 				pPreparedStatement = pConnection.prepareStatement(strQuery);
@@ -84,10 +83,11 @@ String strResponse="";
 			   if(coma.equals("")){
 			   	strFiltroAcuerdos="-1";
 			   }
-			   strFiltroAcuerdos = strFiltroAcuerdos + ") ";
-			   pResultSet.close();
-			   pPreparedStatement.close();
-			   pConnection.close();
+			   strFiltroAcuerdos = strFiltroAcuerdos + ") ";				
+			   DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
+				
+
+			  
 			/* END: Extracción de los acuerdos y sus alias de Banca */
 			
 			// FIXME: Eliminar en producción
@@ -148,7 +148,7 @@ String strResponse="";
 				   strFiltroAcuerdos = strFiltroAcuerdos + ") ";
 				   pResultSet.close();
 				   pPreparedStatement.close();
-				   pConnection.close();
+				   
 			    }
 			// ----------------------------------------
 			
@@ -210,24 +210,7 @@ String strResponse="";
 	    throw new ApplicationException(500, 9999, "Jsp error", "", new Exception());
 	}
 	finally{
-	    try {
-	        pResultSet.close();
-	    }
-        catch(Exception ex){
-            throw new ApplicationException(500, 9999, "Jsp error", " - ", new Exception());
-        }
-        try {
-            pPreparedStatement.close();
-        }
-        catch(Exception ex){
-            throw new ApplicationException(500, 9999, "Jsp error", " - ", new Exception());
-        }
-        try {
-            pConnection.close();
-        }
-        catch(Exception ex){
-            throw new ApplicationException(500, 9999, "Jsp error", " - ", new Exception());
-        }        
+	    DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 	}
 	response.setHeader("content-type", "application/json");
 %>

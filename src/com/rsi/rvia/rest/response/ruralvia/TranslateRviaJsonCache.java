@@ -22,7 +22,8 @@ import com.rsi.rvia.rest.tool.Utils;
 public class TranslateRviaJsonCache
 {
     /** The p log. */
-    private static Logger                                     pLog                 = LoggerFactory.getLogger(TranslateRviaJsonCache.class);
+    private static Logger                                     pLog                 = LoggerFactory.getLogger(
+            TranslateRviaJsonCache.class);
     /** The ht translate cache data. */
     private static Hashtable<String, TranslateRviaJsonObject> htTranslateCacheData = new Hashtable<String, TranslateRviaJsonObject>();
 
@@ -137,7 +138,9 @@ public class TranslateRviaJsonCache
             {
                 DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
                 if (fIsError)
-                    throw new ApplicationException(500, 999994, "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD", null);
+                    throw new ApplicationException(500, 999994,
+                            "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD",
+                            null);
             }
         }
         return pTRJO;
@@ -146,7 +149,7 @@ public class TranslateRviaJsonCache
     private static synchronized int putDataInDDBB(String strErrorCode, String strErrorText, int nIdMiq)
             throws ApplicationException, SQLException
     {
-        final int THREE_OK = 3; // Se corresponde con tres ejecuciones de query OK.
+        int OKS = 0; // Se corresponde con tres ejecuciones de query OK.
         final String DEFAULT_COMMENT = "Error generado automáticamente";
         final String DEFAULT_LEVEL = RviaRestResponse.Type.ERROR.name();
         final String DEFAULT_APP = "AUTO";
@@ -162,6 +165,7 @@ public class TranslateRviaJsonCache
         {
             try
             {
+                OKS++;
                 String code = DEFAULT_LEVEL + "_" + nIdMiq + "_" + strErrorCode; // Formato: ERROR_IDMIQ_CODERROR;
                 //
                 // Insertar en BDPTB282_ERR_RVIA
@@ -175,7 +179,7 @@ public class TranslateRviaJsonCache
                 pPreparedStatement1.setString(2, DEFAULT_LEVEL);
                 pPreparedStatement1.setString(3, strErrorText);
                 pPreparedStatement1.setLong(4, nIdMiq);
-                pPreparedStatement1.setString(5, "");
+                pPreparedStatement1.setString(5, DEFAULT_COMMENT);
                 pLog.trace("pPreparedStatement1:" + pPreparedStatement1);
                 pLog.trace("strErrorCode:" + strErrorCode);
                 pLog.trace("nIdMiq:" + nIdMiq);
@@ -187,6 +191,7 @@ public class TranslateRviaJsonCache
                 Language[] values = Language.values();
                 for (int i = 0; i < values.length; i++)
                 {
+                    OKS++;
                     strQuery2 += " INTO bel.BDPTB079_IDIOMA (IDIOMA, CODIGO, TRADUCCION, COMENTARIO) VALUES (?, ?, ?, ?)";
                 }
                 strQuery2 += " SELECT * FROM DUAL";
@@ -208,6 +213,7 @@ public class TranslateRviaJsonCache
                 // Insertar en BDPTB079_IDIOMA_APLICATIVO
                 // APLICATIVO='AUTO' (Autocensado)
                 //
+                OKS++;
                 String strQuery3 = "INSERT INTO bel.BDPTB079_IDIOMA_APLICATIVO (CODIGO, APLICATIVO, OPCIONES) VALUES (?, ?, ?)";
                 pConnection3 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection3.setAutoCommit(false);
@@ -218,7 +224,7 @@ public class TranslateRviaJsonCache
                 pPreparedStatement3.setString(3, String.valueOf(nIdMiq));
                 pLog.trace("pPreparedStatement3:" + pPreparedStatement3);
                 nResult += pPreparedStatement3.executeUpdate();
-                if (nResult == THREE_OK)
+                if (nResult == OKS)
                 {
                     pConnection1.commit();
                     pConnection2.commit();
@@ -242,21 +248,30 @@ public class TranslateRviaJsonCache
                 DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement2, pConnection2);
                 DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement3, pConnection3);
                 if (fIsError)
-                    throw new ApplicationException(500, 999993, "Error al procesar insertar respues ta de error de ruralvia", "Error al acceder a BBDD", null);
+                    throw new ApplicationException(500, 999993,
+                            "Error al procesar insertar respues ta de error de ruralvia", "Error al acceder a BBDD",
+                            null);
             }
         }
         return nResult;
     }
 
-    public static RviaRestResponse.Type isErrorCode(String strErrorCode, String strTextError, int nIdMiq,
+    public static RviaRestResponse.Type getRviaResponseType(String strErrorCode, String strTextError, int nIdMiq,
             Language pLanguage) throws ApplicationException, SQLException
     {
         RviaRestResponse.Type pReturn;
         TranslateRviaJsonObject pTRJO;
         // ver tabla BDPTB090_ERRORES y BELTS105
-        pReturn = RviaRestResponse.Type.OK;
+        pTRJO = getRviaTranslation(strErrorCode, strTextError, nIdMiq, pLanguage);
+        pReturn = pTRJO.getTipo();
+        return pReturn;
+    }
+
+    private static TranslateRviaJsonObject getRviaTranslation(String strErrorCode, String strTextError, int nIdMiq,
+            Language pLanguage) throws ApplicationException, SQLException
+    {
         // Se busca el error en la caché de errores por clave IDMIQ_ERRORCODE
-        pTRJO = getError(nIdMiq, strErrorCode);
+        TranslateRviaJsonObject pTRJO = getError(nIdMiq, strErrorCode);
         /* si no se encuentra se intenta cargar de bbdd */
         if (pTRJO == null)
         {
@@ -273,8 +288,7 @@ public class TranslateRviaJsonCache
             }
             putError(nIdMiq, strErrorCode, pTRJO);
         }
-        pReturn = pTRJO.getTipo();
-        return pReturn;
+        return pTRJO;
     }
 
     public static TranslateRviaJsonObject getError(int nIdMiq, String strErrorCode)
