@@ -115,7 +115,7 @@ public class TranslateCache
                     String strAppName = (String) pResultSet.getString("aplicativo");
                     String strCode = (String) pResultSet.getString("codigo");
                     String strLang = (String) pResultSet.getString("idioma");
-                    Language pLanguage = Language.valueOf(strLang);
+                    Language pLanguage = Language.getEnumValue(strLang);
                     String strTranslate = (String) pResultSet.getString("traduccion");
                     /* si el resultado pertenece a una aplicación aun no definida, se da de alta */
                     if (!htTranslateCacheData.containsKey(strAppName))
@@ -170,7 +170,7 @@ public class TranslateCache
             {
                 String strCode = (String) pResultSet.getString("codigo");
                 String strLang = (String) pResultSet.getString("idioma");
-                Language pLanguage = Language.valueOf(strLang);
+                Language pLanguage = Language.getEnumValue(strLang);
                 String strTranslate = (String) pResultSet.getString("traduccion");
                 /* si el resultado pertenece a una aplicación aun no definida, se da de alta */
                 if (!htTranslateCacheData.containsKey(strAppName))

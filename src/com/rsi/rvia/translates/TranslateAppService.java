@@ -35,7 +35,7 @@ public class TranslateAppService
                 else
                 {
                     pLog.info("Se recibe una petición para traducir la aplicación " + strApps + " a "
-                            + pLanguage.name());
+                            + pLanguage.getJavaCode());
                     htReturn = processOneAppOneLanguages(strApps, pLanguage);
                 }
             }
