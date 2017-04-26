@@ -104,13 +104,13 @@
         }
         else
         {
-            pLanguage = Language.valueOf(strLanguage);
+            pLanguage = Language.getEnumValue(strLanguage);
         }
         
 		pLog.info("Se recupera la configuración que le llega al jsp: \n" +
 				"SimulatorId:    " + nSimulatorId 		+"\n" +	
 				"NRBE:           " + strNRBE 			+"\n" +		
-				"Language:       " + pLanguage.name() 	+"\n" +	
+				"Language:       " + pLanguage.getJavaCode() 	+"\n" +	
 				"PdfConfig: 	 " + strPdfConfig 		+"\n" +
 				"EmailUserName:  " + strEmailUserName 	+"\n" +	
 				"EmailMail:      " + strEmailMail 		+"\n" +	

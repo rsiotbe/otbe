@@ -66,7 +66,7 @@ public class ErrorManager
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
             pPreparedStatement.setInt(1, Integer.parseInt(strErrorCode));
-            pPreparedStatement.setString(2, pSessionRviaData.getLanguage().name());
+            pPreparedStatement.setString(2, pSessionRviaData.getLanguage().getJavaCode());
             pPreparedStatement.setString(3, strClavepagina);
             pResultSet = pPreparedStatement.executeQuery();
             while (pResultSet.next())

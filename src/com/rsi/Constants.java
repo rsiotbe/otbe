@@ -9,7 +9,33 @@ public class Constants
 {
     public enum Language
     {
-        ca_ES, de_DE, en_UK, es_ES, eu_ES, fr_FR, gl_ES, it_IT, pt_PT, va_ES
+        ca_ES, de_DE, en_UK, es_ES, eu_ES, fr_FR, gl_ES, it_IT, pt_PT, va_ES;
+        public String getJavaCode()
+        {
+            return this.name();
+        }
+
+        public String getWindowsCode()
+        {
+            return this.name().replace("_", "-");
+        }
+
+        /**
+         * Devuelve el tipo de la enumeración independientemente el valor Java o Windows que se le pase
+         * 
+         * @param strValue
+         *            Varlo a evaluar
+         * @return Valor de la enumración encontrado
+         */
+        public static Language getEnumValue(String strValue)
+        {
+            for (Language v : values())
+            {
+                if (v.getJavaCode().equalsIgnoreCase(strValue) || v.getWindowsCode().equalsIgnoreCase(strValue))
+                    return v;
+            }
+            throw new IllegalArgumentException();
+        }
     }
 
     // /////////////////////////
@@ -107,5 +133,45 @@ public class Constants
     public enum Environment
     {
         DESA, TEST, PREP, PROD
+    }
+
+    /**
+     * Enumeración de canal aix recibido desde la parte front de ruralvia, en ruralvia se denomina canalAix
+     */
+    public enum CanalFront
+    {
+        WEB(1), TABLET(6), MOVIL(7);
+        private final int value;
+
+        CanalFront(int newValue)
+        {
+            value = newValue;
+        }
+
+        public int getValue()
+        {
+            return value;
+        }
+    }
+
+    /**
+     * Enumeración de canal host recibido desde ruralvia, en ruralvia se denomina canal
+     */
+    public enum CanalHost
+    {
+        VALORES_BANCA_INTERNET(1), VALORES_BANCA_TELEFONICA(2), BANCA_INTERNET(3), BANCA_TELEFONICA(4), ABOGADOS(5), ABOGADOS_TELEFONICA(
+                6), TPV_VIRTUAL(7), SEGUROS(8), OFICINA(9), TPV_VIRTUAL_TELEFONICA(10), BANCA_MOVIL(11), BANCA_TABLET(
+                13), BANCA_TABLET_CAU(14);
+        private final int value;
+
+        CanalHost(int newValue)
+        {
+            value = newValue;
+        }
+
+        public int getValue()
+        {
+            return value;
+        }
     }
 }

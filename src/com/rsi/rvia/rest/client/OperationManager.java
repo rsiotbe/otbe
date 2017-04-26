@@ -388,7 +388,7 @@ public class OperationManager
             if (strLanguage == null || strLanguage.trim().isEmpty())
                 pLanguage = pRequestConfig.getLanguage();
             else
-                pLanguage = Language.valueOf(strLanguage);
+                pLanguage = Language.getEnumValue(strLanguage);
             /* se obtienen los datos necesario para realizar la petición al proveedor */
             pMiqQuests = createMiqQuests(pUriInfo);
             if (pMiqQuests == null)
@@ -401,7 +401,7 @@ public class OperationManager
             pDataInput.put(Constants.SIMULADOR_NRBE_NAME, strNRBEName);
             pDataInput.put(Constants.SIMULADOR_SIMPLE_NAME, strLoanName);
             pDataInput.put(Constants.SIMULADOR_TYPE, pSimulatorType.name());
-            pDataInput.put(Constants.SIMULADOR_LANGUAGE, pLanguage.name());
+            pDataInput.put(Constants.SIMULADOR_LANGUAGE, pLanguage.getJavaCode());
             /* se instancia el conector y se solicitan los datos */
             pRviaRestResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, pDataInput.toString());
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + pRviaRestResponse.toJsonString());

@@ -98,7 +98,7 @@ public class RequestConfig
         }
         else
         {
-            this.pLanguage = Language.valueOf(strLang);
+            this.pLanguage = Language.getEnumValue(strLang);
         }
         if (strNRBE == null || strNRBE.trim().isEmpty())
         {
@@ -109,7 +109,7 @@ public class RequestConfig
         {
             this.strNRBE = strNRBE;
         }
-        pLog.info("Valores cargados. strLanguage: " + this.pLanguage.name() + " - strNRBE: " + this.strNRBE);
+        pLog.info("Valores cargados. strLanguage: " + this.pLanguage.getJavaCode() + " - strNRBE: " + this.strNRBE);
     }
 
     /*
@@ -119,7 +119,7 @@ public class RequestConfig
     public String toString()
     {
         StringBuilder pSb = new StringBuilder();
-        pSb.append("Language        :" + pLanguage.name() + "\n");
+        pSb.append("Language        :" + pLanguage.getJavaCode() + "\n");
         pSb.append("NRBE            :" + strNRBE + "\n");
         return pSb.toString();
     }

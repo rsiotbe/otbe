@@ -110,8 +110,8 @@ public class TranslateRviaJsonCache
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
                 pLog.trace("pPreparedStatement:" + pPreparedStatement);
                 pLog.trace("strErrorCode:" + strErrorCode);
-                pPreparedStatement.setString(1, pLanguage.name());
-                pPreparedStatement.setString(2, pLanguage.name());
+                pPreparedStatement.setString(1, pLanguage.getJavaCode());
+                pPreparedStatement.setString(2, pLanguage.getJavaCode());
                 pPreparedStatement.setString(3, strErrorCode);
                 pPreparedStatement.setInt(4, nIdMiq);
                 pResultSet = pPreparedStatement.executeQuery();
@@ -197,7 +197,7 @@ public class TranslateRviaJsonCache
                 int count = 1;
                 for (Language lang : Language.values())
                 {
-                    pPreparedStatement2.setString(count++, lang.name());
+                    pPreparedStatement2.setString(count++, lang.getJavaCode());
                     pPreparedStatement2.setString(count++, code);
                     pPreparedStatement2.setString(count++, strErrorText);
                     pPreparedStatement2.setString(count++, DEFAULT_COMMENT);

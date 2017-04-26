@@ -62,7 +62,7 @@
     }
     else
     {
-        pLanguage = Language.valueOf(strLanguage);
+        pLanguage = Language.getEnumValue(strLanguage);
     }
 	SimulatorConfigObjectArray paSimulators = SimulatorsManager.getSimulatorsData(strNRBE, strNRBEName, 
 	        strSimulatorType, strSimulatorName, pLanguage);

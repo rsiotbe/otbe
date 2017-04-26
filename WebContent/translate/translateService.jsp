@@ -46,7 +46,7 @@
 		if(strLanguage == null || strLanguage == "ALL")
 		    pLanguage = null;
 		else
-		    pLanguage = Language.valueOf(strLanguage);
+		    pLanguage = Language.getEnumValue(strLanguage);
 		
 		/* se llama a la clase que obtiene las traducciones */
 		strReturn = TranslateAppService.process(strAppName, pLanguage);
