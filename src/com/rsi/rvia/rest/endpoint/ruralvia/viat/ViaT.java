@@ -10,6 +10,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.DefaultValue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +55,72 @@ public class ViaT {
         pLog.info("Entro lopd");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
         pLog.info(" ---------> Lopd");
+        return pReturn;
+    }
+
+	@GET
+    @Path("/datostarjetas")
+    @Produces({ MediaType.TEXT_HTML })
+    public Response getDatosTarjetas(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Entro datos tarjetas");
+    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
+        pLog.info(" ---------> Datos tarjetas");
+        return pReturn;
+    }
+
+	@GET
+    @Path("/detalletarjetas")
+    @Produces({ MediaType.TEXT_HTML })
+    public Response getDetallesTarjetas(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Entro detalles tarjetas");
+    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
+        pLog.info(" ---------> Detalles tarjetas");
+        return pReturn;
+    }
+
+	@GET
+    @Path("/datospersonales")
+    @Produces({ MediaType.TEXT_HTML })
+    public Response getDatosPersonales(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Entro datos personales");
+    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
+        pLog.info(" ---------> Datos personales");
+        return pReturn;
+    }
+
+	@POST
+    @Path("/scoring")
+    @Produces({ MediaType.TEXT_HTML })
+    public Response getScoring(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Entro scoring");
+    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
+        pLog.info(" ---------> Scoring");
+        return pReturn;
+    }
+
+	@POST
+    @Path("/firma")
+    @Produces({ MediaType.TEXT_HTML })
+    public Response getFirma(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Entro firma");
+    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
+        pLog.info(" ---------> Firma");
+        return pReturn;
+    }
+
+	@POST
+    @Path("/errscoring")
+    @Produces({ MediaType.TEXT_HTML })
+    public Response getErrScoring(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Entro errscoring");
+    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
+        pLog.info(" ---------> Errscoring");
         return pReturn;
     }
 }
