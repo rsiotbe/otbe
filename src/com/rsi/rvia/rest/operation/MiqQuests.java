@@ -150,7 +150,7 @@ public class MiqQuests
         this.strTemplate = strTemplate;
     }
 
-    public JSONObject getJsonOpciones()
+    public JSONObject getOptions()
     {
         return jsonOpciones;
     }
