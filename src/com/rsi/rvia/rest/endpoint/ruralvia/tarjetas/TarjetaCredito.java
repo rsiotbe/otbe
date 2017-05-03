@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class TarjetaCredito.
  */
@@ -45,18 +44,18 @@ public class TarjetaCredito
     }
 
     /**
-     * Gets the dato prestamo.
+     * Obtiene los datos de la tarjeta de crédito que se va a solicitar.
      * 
      * @param pRequest
      *            the request
      * @param pUriInfo
      *            the uri info
-     * @return the dato prestamo
+     * @return the datos tarjetas credito
      */
     @GET
-    @Path("/datostarjetascredito")
+    @Path("/datos")
     @Produces({ MediaType.TEXT_HTML })
-    public Response getDatosTarjetasCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    public Response getDatosTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         pLog.info("Entro datos tarjetas credito");
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
@@ -65,7 +64,7 @@ public class TarjetaCredito
     }
 
     /**
-     * Gets the det tarifas.
+     * Obtiene el detalle de la tarjeta de crédito que se va a solicitar.
      * 
      * @param pRequest
      *            the request
@@ -74,38 +73,18 @@ public class TarjetaCredito
      * @return the det tarifas
      */
     @GET
-    @Path("/detalletarifas")
+    @Path("/detalle")
     @Produces({ MediaType.TEXT_HTML })
-    public Response getDetTarifas(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    public Response getDetalleTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro detalle tarifas");
+        pLog.info("Entro detalle tarjetas credito");
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Detalle tarifas");
+        pLog.info(" ---------> Detalle tarjetas credito");
         return pReturn;
     }
 
     /**
-     * Gets the lopd.
-     * 
-     * @param pRequest
-     *            the request
-     * @param pUriInfo
-     *            the uri info
-     * @return the lopd
-     */
-    @GET
-    @Path("/lopd")
-    @Produces({ MediaType.TEXT_HTML })
-    public Response getLopd(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
-    {
-        pLog.info("Entro lopd");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> LOPD");
-        return pReturn;
-    }
-
-    /**
-     * Gets the datos persona.
+     * Recupera los datos de la persona y los literales necesarios para los deplegables.
      * 
      * @param pRequest
      *            the request
@@ -116,16 +95,16 @@ public class TarjetaCredito
     @POST
     @Path("/datospersona")
     @Produces({ MediaType.TEXT_HTML })
-    public Response getDatosPersona(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    public Response getDatosPersonaTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro datos persona");
+        pLog.info("Entro datos persona Tarjeta de Crédito");
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Datos persona");
+        pLog.info(" ---------> datos persona Tarjeta de Crédito");
         return pReturn;
     }
 
     /**
-     * Gets the scoring.
+     * Rellena la entrada con los datos recogidos y hace la llamada al Scoring
      * 
      * @param pRequest
      *            the request
@@ -136,11 +115,72 @@ public class TarjetaCredito
     @POST
     @Path("/scoring")
     @Produces({ MediaType.TEXT_HTML })
-    public Response getScoring(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    public Response getScoringTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro scoring");
+        pLog.info("Entro scoring tarjeta credito");
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Scoring");
+        pLog.info(" ---------> Scoring tarjeta credito");
+        return pReturn;
+    }
+
+    /**
+     * Realiza el Scoring rechazado, error.
+     * 
+     * @param pRequest
+     *            the request
+     * @param pUriInfo
+     *            the uri info
+     * @return the scoring
+     */
+    @POST
+    @Path("/errorscoring")
+    @Produces({ MediaType.TEXT_HTML })
+    public Response getErrorScoringTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Entro error scoring");
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
+        pLog.info(" ---------> Error scoring");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene las Clausulas Tratamiento de datos de carácter personal de tarjetas de crédito.
+     * 
+     * @param pRequest
+     *            the request
+     * @param pUriInfo
+     *            the uri info
+     * @return the det tarifas
+     */
+    @GET
+    @Path("/clausulatratamientodatos")
+    @Produces({ MediaType.TEXT_HTML })
+    public Response getClausulaTratamientoDatosTarjetaCredito(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo)
+    {
+        pLog.info("Entro clausula tratamiento de datos tarjetas credito");
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
+        pLog.info(" --------->  clausula tratamiento de datos tarjetas credito");
+        return pReturn;
+    }
+
+    /**
+     * Consulta de los subgrupos del cnae, tarjetas de crédito.
+     * 
+     * @param pRequest
+     *            the request
+     * @param pUriInfo
+     *            the uri info
+     * @return the det tarifas
+     */
+    @GET
+    @Path("/subgrupocnae")
+    @Produces({ MediaType.TEXT_HTML })
+    public Response getSubGruposCNAETarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Entro subgrupos CNAE tarjetas credito");
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
+        pLog.info(" ---------> SubGrupos CNAE tarjetas credito");
         return pReturn;
     }
 }
