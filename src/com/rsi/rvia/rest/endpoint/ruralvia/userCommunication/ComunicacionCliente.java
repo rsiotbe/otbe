@@ -1,4 +1,4 @@
-package com.rsi.rvia.rest.endpoint.ruralvia.comunicacionCliente;
+package com.rsi.rvia.rest.endpoint.ruralvia.userCommunication;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -40,6 +40,24 @@ public class ComunicacionCliente
         return pReturn;
     }
 
+    /**
+     * Comprueba si el cliente tiene mensajes pendientes de leer
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se si el cliente tiene mensajes sin leer
+     * @throws Exception
+     */
+    @GET
+    @Path("/messageTypes")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    public Response messageTypes(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+            throws Exception
+    {
+    	Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Tipos de mensaje");
+        return pReturn;
+    }
+    
     /**
      * Obtiene el listado de mensajes de la bandeja de entrada del cliente.
      * 
@@ -152,14 +170,13 @@ public class ComunicacionCliente
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      * @throws Exception
      */
-    @POST
+    @GET
     @Path("/send")
-    @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
     public Response sendMessage(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception
     {
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
+    	Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Enviar mensaje");
         return pReturn;
     }
