@@ -185,6 +185,8 @@ public class SimulatorsManager
         String strCustomerDraftTemplate = null;
         String strCustomerDraftSubject = null;
         String strCustomerDraftFrom = null;
+        String strCustomerSupportTelephone = null;
+        String strCustomerSupportEmail = null;
         try
         {
             strQuery = "select s.*, o.NOM_ENT_TXT, e.clave, e.valor  "
@@ -208,6 +210,10 @@ public class SimulatorsManager
                     strComercialName = pResultSet.getString("NOMBRE_COMERCIAL");
                 if (strOfficeTo == null)
                     strOfficeTo = pResultSet.getString("entidad_email_contacto");
+                if (strCustomerSupportTelephone == null)
+                    strCustomerSupportTelephone = pResultSet.getString("atencion_cliente_telef");
+                if (strCustomerSupportEmail == null)
+                    strCustomerSupportEmail = pResultSet.getString("atencion_cliente_mail");
                 strClave = pResultSet.getString("CLAVE");
                 switch (strClave)
                 {
@@ -244,7 +250,7 @@ public class SimulatorsManager
                         break;
                 }
             }
-            pReturn = new SimulatorEmailConfig(nId, strNRBE, strNRBEName, strSimpleName, strComercialName, strOfficeTo, strOfficeClaimTemplate, strOfficeClaimSubject, strOfficeClaimFrom, strOfficeDraftTemplate, strOfficeDraftSubject, strOfficeDraftFrom, strCustomerDraftTemplate, strCustomerDraftSubject, strCustomerDraftFrom);
+            pReturn = new SimulatorEmailConfig(nId, strNRBE, strNRBEName, strSimpleName, strComercialName, strOfficeTo, strOfficeClaimTemplate, strOfficeClaimSubject, strOfficeClaimFrom, strOfficeDraftTemplate, strOfficeDraftSubject, strOfficeDraftFrom, strCustomerDraftTemplate, strCustomerDraftSubject, strCustomerDraftFrom, strCustomerSupportTelephone, strCustomerSupportEmail);
         }
         catch (Exception ex)
         {
