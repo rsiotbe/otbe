@@ -18,9 +18,9 @@ import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
 
 @Path("/messages/mobile")
-public class ComunicacionCliente
+public class UserCommunication
 {
-    private static Logger pLog = LoggerFactory.getLogger(ComunicacionCliente.class);
+    private static Logger pLog = LoggerFactory.getLogger(UserCommunication.class);
 
     /**
      * Comprueba si el cliente tiene mensajes pendientes de leer
