@@ -33,6 +33,7 @@ import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.tool.GettersRequestParams;
 import com.rsi.rvia.rest.tool.Utils;
+import com.rsi.rvia.rest.endpoint.simulators.*;
 
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
 public class RestWSConnector
@@ -91,6 +92,62 @@ public class RestWSConnector
         urlQueryString += "idMiq=" + pMiqQuests.getIdMiq() + "&" + pathQueryParams;
         String strUrlTotal = pMiqQuests.getBaseWSEndPoint(pRequest) + "?" + urlQueryString;
         WebTarget pTarget = pClient.target(strUrlTotal);
+        pLog.info("Url final de petición de datos: " + strUrlTotal);
+        Response pReturn = pTarget.request().header("Authorization", JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
+        // Evitar logueo de campos de login
+        logWithFilter(pReturn);
+        return pReturn;
+    }
+
+    /**
+     * Realiza una petición de tipo get restFull al proveedor de datos (Ruralvia o WS dependiendo de la configuración)
+     * 
+     * @param pRequest
+     *            petición del cliente
+     * @param strPathRest
+     *            path de la petición
+     * @param pMiqQuests
+     *            Objeto MiqQuests con la información de la operativa
+     * @param strJsonData
+     *            Datos a enviar
+     * @param strEndPoint
+     *            Endpoint del proveedor de datos
+     * @param pPathParams
+     *            Parámetros asociados al path
+     * @return Respuesta del proveedor de datos
+     * @throws Exception
+     */
+    public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests,
+            MultivaluedMap<String, String> pPathParams, WSObject wsObject) throws Exception
+    {
+        Client pClient = RviaRestHttpClient.getClient();
+        String JWT = pRequest.getHeader("Authorization");
+        /* se obtienen los header necesarios para realizar la petición al WS */
+        //CardObject cardObject = (CardObject)wsObject;
+        pLog.info("secent:" + wsObject.getStrCODSecEnt()  + ":secuser:" + wsObject.getStrCODSecUser() + ":sectrans:" + wsObject.getStrCODSecTrans() + ":terminal:" + wsObject.getStrCODTerminal() + ":apl:" +  wsObject.getStrCODApl() + ":canal:" + wsObject.getStrCODCanal() + ":secip:" + wsObject.getStrCODSecIp());
+        pLog.info("strjson:" + wsObject.toJSONString());
+        String strJsonData = wsObject.toJSONString();
+        String strCODSecEnt = wsObject.getStrCODSecEnt();
+        String strCODSecUser = wsObject.getStrCODSecUser();
+        String strCODSecTrans = wsObject.getStrCODSecTrans();
+        String strCODTerminal = wsObject.getStrCODTerminal();
+        String strCODApl = wsObject.getStrCODApl();
+        String strCODCanal = wsObject.getStrCODCanal();
+        String strCODSecIp = wsObject.getStrCODSecIp();
+        String pathQueryParams = "";
+        pathQueryParams = Utils.multiValuedMapToQueryString(pPathParams);
+        if (!pathQueryParams.isEmpty() && !pathQueryParams.endsWith("&"))
+            pathQueryParams += "&";
+        pathQueryParams += Utils.simpleJsonToQueryString(strJsonData);
+        /*String urlQueryString = strQueryParams;
+        if (!urlQueryString.isEmpty() && !urlQueryString.endsWith("&"))
+            urlQueryString += "&";*/
+        //urlQueryString += "idMiq=" + pMiqQuests.getIdMiq() + "&" + pathQueryParams;
+        //urlQueryString += "&" + pathQueryParams;
+        //String strUrlTotal = pMiqQuests.getBaseWSEndPoint(pRequest) + "?" + urlQueryString;
+        String strUrlTotal = pMiqQuests.getBaseWSEndPoint(pRequest) + "?" + pathQueryParams;
+        WebTarget pTarget = pClient.target(strUrlTotal);
+        pLog.info("Headers:secent:" + strCODSecEnt  + ":secuser:" + strCODSecUser + ":sectrans:" + strCODSecTrans + ":terminal:" + strCODTerminal + ":apl:" +  strCODApl + ":canal:" + strCODCanal + ":secip:" + strCODSecIp);
         pLog.info("Url final de petición de datos: " + strUrlTotal);
         Response pReturn = pTarget.request().header("Authorization", JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
         // Evitar logueo de campos de login
