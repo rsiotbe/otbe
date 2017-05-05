@@ -213,7 +213,7 @@ public class SimulatorsManager
                 if (strCustomerSupportTelephone == null)
                     strCustomerSupportTelephone = pResultSet.getString("atencion_cliente_telef");
                 if (strCustomerSupportEmail == null)
-                    strCustomerSupportEmail = pResultSet.getString("atencion_cliente_mail");
+                    strCustomerSupportEmail = pResultSet.getString("atencion_cliente_email");
                 strClave = pResultSet.getString("CLAVE");
                 switch (strClave)
                 {
@@ -325,8 +325,8 @@ public class SimulatorsManager
         {
             String strHtKey = (String) pEnumKeyValues.nextElement();
             String strHtValue = (String) htKeyValues.get(strHtKey);
-            String strReplaceText = "<replace_key value=\"" + strHtKey + "\" />";
-            strRetun = strRetun.replaceAll(strReplaceText, strHtValue);
+            String strReplaceText = "{{" + strHtKey + "}}";
+            strRetun = strRetun.replace(strReplaceText, strHtValue);
         }
         strRetun = strRetun.replaceAll("\n", "<br/>");
         return strRetun;
