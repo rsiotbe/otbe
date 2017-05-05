@@ -187,14 +187,13 @@ public class UserCommunication
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      * @throws Exception
      */
-    @PUT
+    @GET
     @Path("/delete")
-    @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
     public Response deleteMessage(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
             throws Exception
     {
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
+    	Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Borrar Mensaje");
         return pReturn;
     }

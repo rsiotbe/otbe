@@ -212,8 +212,6 @@ public class MiqQuests
     public MiqQuests(int nIdMiq, String strPathRest, String strComponentType, String strIdProvider, String strEndPoint,
             String strTemplate, String strOpciones)
     {
-    	if (strIdProvider == null)
-    		strIdProvider = "RVIA";
         this.nIdMiq = nIdMiq;
         this.strPathRest = strPathRest;
         this.pCompomentType = CompomentType.valueOf(strComponentType);
