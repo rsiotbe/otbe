@@ -259,10 +259,6 @@ public class MiqQuests
                             + " y se continua con el resto");
                     continue;
                 }
-                else
-                {
-                    pLog.debug("Tipo de proveedor de identidad " + pResultSet.getString("direccionador"));
-                }
                 MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("direccionador"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"), pResultSet.getString("opciones"));
                 if (!htCacheDataId.containsKey(pResultSet.getInt("id_miq")))
                     htCacheDataId.put(pResultSet.getInt("id_miq"), pMiqQuests);
@@ -277,7 +273,7 @@ public class MiqQuests
         }
         catch (Exception ex)
         {
-            pLog.error("Error al realizar la consulta a la BBDD. Trace: \n\n\t" + ex.getMessage());
+            pLog.error("Error al realizar la consulta a la BBDD. Error: " + ex);
         }
         finally
         {
