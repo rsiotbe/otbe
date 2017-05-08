@@ -6,8 +6,8 @@
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="java.util.Enumeration"%>
-<%@page import="java.util.Properties"%>
+<%@page import="java.util.*"%>
+<%@page import="java.text.*"%>
 <%@page import="java.io.ByteArrayOutputStream"%>
 <%@page import="java.io.BufferedReader"%>
 <%@page import="org.json.JSONObject"%>
@@ -153,6 +153,9 @@
 		htEmailTemplateDataCustomer.put("NRBEName",pSimulatorEmailConfig.getNRBEName());
 		htEmailTemplateDataCustomer.put("ComercialName",pSimulatorEmailConfig.getComercialName());
 		htEmailTemplateDataCustomer.put("EmailMail",strEmailMail);
+		htEmailTemplateDataCustomer.put("CustomerSupportTelephone",pSimulatorEmailConfig.getCustomerSupportTelephone());
+		htEmailTemplateDataCustomer.put("CustomerSupportEmail",pSimulatorEmailConfig.getCustomerSupportEmail());
+		htEmailTemplateDataCustomer.put("date",new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
 		String strFinalHtmlCustomer = SimulatorsManager.proccessEmailTemplate(strHtmlCustomerTemplate, htEmailTemplateDataCustomer);	 
 		pEmail.setBodyContent(strFinalHtmlCustomer);
 		pLog.info("Se procede a adjuntar el fichero pdf al email");
