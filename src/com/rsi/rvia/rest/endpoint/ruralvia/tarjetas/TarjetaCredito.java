@@ -16,14 +16,16 @@ import com.rsi.rvia.rest.client.OperationManager;
 /**
  * The Class TarjetaCredito.
  */
-@Path("/tarjetacredito")
+@Path("/cards/credit")
 public class TarjetaCredito
 {
     /** The p log. */
     private static Logger pLog = LoggerFactory.getLogger(TarjetaCredito.class);
 
     /**
-     * Obtiene el listado listado de las tarjetas de crédito disponibles.
+     * Muestra el listado de tarjetas (tarifas) comercializadas de ese tipo de producto. Ejemplo: Cuando el cliente ha
+     * seleccionado que desea contratar una tarjeta de crédito, este clave página recoge el listado total de tarjetas de
+     * crédito que comercializa la entidad.
      * 
      * @param pRequest
      *            the request
@@ -33,18 +35,19 @@ public class TarjetaCredito
      *         disponibles
      */
     @GET
-    @Path("/solicitud")
+    @Path("/rates")
     @Produces({ MediaType.TEXT_HTML })
-    public Response getSolicitud(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    public Response getListadoTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro Solicitud Tarjeta de Credito");
+        pLog.info("Entro Listado de tarjetas de crédito");
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Solicitud Tarjeta de Credito");
+        pLog.info(" ---------> Listado de tarjetas de crédito");
         return pReturn;
     }
 
     /**
-     * Obtiene los datos de la tarjeta de crédito que se va a solicitar.
+     * Además de mostrar la información relativa a la tarjeta (tarifa) seleccionada, permite seleccionar la forma de
+     * pago y la cuenta de domiciliación deseada.
      * 
      * @param pRequest
      *            the request
@@ -53,18 +56,18 @@ public class TarjetaCredito
      * @return the datos tarjetas credito
      */
     @GET
-    @Path("/datos")
+    @Path("/{ID_TRFA_PDV}/contract")
     @Produces({ MediaType.TEXT_HTML })
-    public Response getDatosTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    public Response getContratoTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro datos tarjetas credito");
+        pLog.info("Entro Datos de la tarjeta de crédito");
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Datos tarjetas credito");
+        pLog.info(" ---------> Datos  de la tarjeta de crédito");
         return pReturn;
     }
 
     /**
-     * Obtiene el detalle de la tarjeta de crédito que se va a solicitar.
+     * Recoge el detalle de la tarjeta (tarifa), como puede ser las comisiones, los gastos, tipo de tarjeta, etc.
      * 
      * @param pRequest
      *            the request
@@ -73,18 +76,19 @@ public class TarjetaCredito
      * @return the det tarifas
      */
     @GET
-    @Path("/detalle")
+    @Path("/{ID_TRFA_PDV}")
     @Produces({ MediaType.TEXT_HTML })
     public Response getDetalleTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro detalle tarjetas credito");
+        pLog.info("Entro Detalle de la tarjeta de crédito");
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Detalle tarjetas credito");
+        pLog.info(" ---------> Detalle de la tarjeta de crédito");
         return pReturn;
     }
 
     /**
-     * Recupera los datos de la persona y los literales necesarios para los deplegables.
+     * Recupera la información relativa a la persona (fecha de nacimiento, situación laboral, estado civil, nº de hijos,
+     * etc.), se trata de la página del scoring.
      * 
      * @param pRequest
      *            the request
@@ -93,18 +97,18 @@ public class TarjetaCredito
      * @return the datos persona
      */
     @POST
-    @Path("/datospersona")
+    @Path("/{ID_TRFA_PDV}/scoring/formdata")
     @Produces({ MediaType.TEXT_HTML })
     public Response getDatosPersonaTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro datos persona Tarjeta de Crédito");
+        pLog.info("Entro Datos persona tarjeta de crédito");
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> datos persona Tarjeta de Crédito");
+        pLog.info(" ---------> Datos persona tarjeta de crédito");
         return pReturn;
     }
 
     /**
-     * Rellena la entrada con los datos recogidos y hace la llamada al Scoring.
+     * Tras la selección del grupo CNAE, muestra la selección disponible de este grupo CNAE.
      * 
      * @param pRequest
      *            the request
@@ -113,38 +117,40 @@ public class TarjetaCredito
      * @return the scoring
      */
     @POST
-    @Path("/scoring")
+    @Path("/{ID_TRFA_PDV}/scoring/formdata/cnae/detail")
+    @Produces({ MediaType.TEXT_HTML })
+    public Response getListadoClausGrupCNAETarjetaCredito(@Context HttpServletRequest pRequest,
+            @Context UriInfo pUriInfo)
+    {
+        pLog.info("Entro Listado clausulas del grupo CNAE seleccionado.");
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
+        pLog.info(" ---------> Listado clausulas del grupo CNAE seleccionado.");
+        return pReturn;
+    }
+
+    /**
+     * Tras la introducción de los datos relativos a la persona, pasa el scoring y nos muestra el resultado de este.
+     * Cuando el resultado es positivo, el cliente introduce la firma.
+     * 
+     * @param pRequest
+     *            the request
+     * @param pUriInfo
+     *            the uri info
+     * @return the det tarifas
+     */
+    @GET
+    @Path("/{ID_TRFA_PDV}/scoring")
     @Produces({ MediaType.TEXT_HTML })
     public Response getScoringTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro scoring tarjeta credito");
+        pLog.info("Entro Scoring tarjeta de crédito");
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Scoring tarjeta credito");
+        pLog.info(" --------->  Scoring tarjeta de crédito");
         return pReturn;
     }
 
     /**
-     * Solicitud scoring rechazado para las tarjetas de credito.
-     * 
-     * @param pRequest
-     *            the request
-     * @param pUriInfo
-     *            the uri info
-     * @return the scoring
-     */
-    @POST
-    @Path("/errscoring")
-    @Produces({ MediaType.TEXT_HTML })
-    public Response getErrorScoringTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
-    {
-        pLog.info("Entro error scoring");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Error scoring");
-        return pReturn;
-    }
-
-    /**
-     * Obtiene las clausulas tratamiento de datos de carácter personal de tarjetas de crédito.
+     * Muestra la información relativa a los distintos Grupos de CNAE disponibles.
      * 
      * @param pRequest
      *            the request
@@ -153,38 +159,18 @@ public class TarjetaCredito
      * @return the det tarifas
      */
     @GET
-    @Path("/clausulatratamiento")
-    @Produces({ MediaType.TEXT_HTML })
-    public Response getClausulaTratamientoTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
-    {
-        pLog.info("Entro clausula tratamiento de datos tarjeta credito");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" --------->  clausula tratamiento de datos tarjeta credito");
-        return pReturn;
-    }
-
-    /**
-     * Consulta de los subgrupos del cnae, tarjetas de crédito.
-     * 
-     * @param pRequest
-     *            the request
-     * @param pUriInfo
-     *            the uri info
-     * @return the det tarifas
-     */
-    @GET
-    @Path("/subgrupocnae")
+    @Path("/{ID_TRFA_PDV}/scoring/formdata/cnae")
     @Produces({ MediaType.TEXT_HTML })
     public Response getSubGruposCNAETarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro subgrupos CNAE tarjeta credito");
+        pLog.info("Entro Listado grupos CNAE");
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> SubGrupos CNAE tarjeta credito");
+        pLog.info(" ---------> Listado grupos CNAE");
         return pReturn;
     }
 
     /**
-     * Da de alta la solicitud y envía un correo a la oficina con los datos de la solicitud de tarjeta de crédito.
+     * Tras la firma de la operativa, nos da el resultado de la solicitud (Procesado o Rechazado).
      * 
      * @param pRequest
      *            the request
@@ -192,14 +178,14 @@ public class TarjetaCredito
      *            the uri info
      * @return the det tarifas
      */
-    @GET
-    @Path("/firma")
+    @POST
+    @Path("/{ID_TRFA_PDV}/sign")
     @Produces({ MediaType.TEXT_HTML })
     public Response getFirmaTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro firma tarjeta credito");
+        pLog.info("Entro Resultado de firma tarjeta de credito");
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> firma tarjeta credito");
+        pLog.info(" ---------> Resultado de firma tarjeta de credito");
         return pReturn;
     }
 }
