@@ -245,7 +245,7 @@ public class MiqQuests
         ResultSet pResultSet = null;
         try
         {
-            String strQuery = "SELECT * from bel.bdptb222_miq_quests";
+            String strQuery = "SELECT * from bel.bdptb222_miq_quests order by 1 asc";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
             pResultSet = pPreparedStatement.executeQuery();
