@@ -39,25 +39,31 @@ String strResponse="";
 			  whereLineaEq=" AND trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) = '0151'";
 			  break;
 		  case 5:
-			  whereLineaEq=" AND trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0551','0151')";
+			  whereLineaEq=" AND trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0151','0551','0553')";
 			  break;
 	  }
     }
 	else{
-	    whereLineaEq=" AND trim(t1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0311','0321','0351','0352','0171','0551','0151')";
+	    whereLineaEq=" AND trim(t1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0311','0321','0351','0352','0171','0151','0551','0553')";
 	}
 	
 
 	
 	
 /* BEGIN: Extracción de los acuerdos y sus alias de Banca */
-    String strQuery = 
-   		 " select  substr(b.cta_aso,11,20) acuerdo, trim (b.descr_txt) txtproducto " +
-   		 " from bel.belts007 a, bel.belts009 b " +
-   				 " where a.tarjeta_cod = b.tarjeta_cod" +
-   				 " and a.estado='A'" +
-   				 " and a.nrbe='" + request.getParameter("codEntidad") + "'" +
-   				 " and a.tarjeta_cod='" + request.getParameter("codTarjeta") + "'" ;
+    String strQuery =
+            " select " +
+            "    substr(b.cta_aso,11,20) acuerdo, " +
+            "    trim (b.descr_txt) txtproducto " +
+            " from bel.belts009 b " +
+            " where b.tarjeta_cod='" + request.getParameter("codTarjeta") + "' " +
+            " union " +
+            " select " +
+            "    acuerdo, " +
+            "    trim (c.descr_txt) txtproducto " +
+            " from BEL.BDPTB083_TARJETAS_MP c " +
+            " where c.tarjeta_cod='" + request.getParameter("codTarjeta") + "' ";
+	
     pLog.info("Query a banca para extraer los alias: "+ strQuery);    
 	Connection pConnection = null;
 	PreparedStatement pPreparedStatement = null;
@@ -162,14 +168,14 @@ String strResponse="";
 					"  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0351','0352')  then 'DEPÓSITOS'" + 
 					"  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) =  '0171'  then 'PRÉSTAMOS'" + 
 					"  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) =  '0151'  then 'TARJETAS CRÉDITO'" + 
-					"  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0151','0551')  then 'TARJETAS CRÉDITO Y DÉBITO'" + 
+					"  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0151','0551','0553')  then 'TARJETAS CRÉDITO Y DÉBITO'" + 
 					" end \"nombreClasificacion\", " + 
 			        " case " + 
 			        "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0311','0321')  then '1'" + 
 			        "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0351','0352')  then '2'" + 
 			        "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) =  '0171'  then '3'" + 
 			        "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) =  '0151'  then '4'" + 
-			        "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0151','0551')  then '5'" + 
+			        "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0151','0551','0553')  then '5'" + 
 			        " end \"codClasificacion\", " + 
 					"   decode (t1.num_sec_ac," + strAliases + ") \"aliasBanca\", t1.COD_LINEA \"codLinea\"," +
 					"     trim(t1.ID_GRP_PD) \"codGrupo\"" +
@@ -197,7 +203,7 @@ String strResponse="";
 			      "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0351','0352')  then '2'" + 
 			      "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) =  '0171'  then '3'" + 
 			      "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) =  '0151'  then '4'" + 
-			      "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0151','0551')  then '5'" + 
+			      "  when trim(T1.COD_LINEA)||trim(t1.ID_GRP_PD) in  ('0151','0551','0553')  then '5'" + 
 			      " end	is not null" +	
 					" 	and t2.mi_fecha_fin = (select MI_FECHA_PROCESO from rdwc01.ce_carga_tabla" +
 					" 		where nomtabla='MI_LINEA_GRUPO')";
@@ -207,7 +213,7 @@ String strResponse="";
 	}
 	catch(Exception ex){
 	    //throw new Exception();
-	    throw new ApplicationException(500, 9999, "Jsp error", "", new Exception());
+	    throw new ApplicationException(500, 9999, "Jsp error", "", ex);
 	}
 	finally{
 	    DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);

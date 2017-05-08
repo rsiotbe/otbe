@@ -19,6 +19,10 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
     String strConceptoApunte = request.getParameter("concepto");
     String strDateFin = request.getParameter("mesFin");
     String strDateIni = request.getParameter("mesFin");
+ 
+    String strExcluClops = " and trim(t1.cod_origen) ";
+    
+    
     
     strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
     strDateIni= QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni); 
