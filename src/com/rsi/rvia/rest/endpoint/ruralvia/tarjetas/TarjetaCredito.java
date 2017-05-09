@@ -97,7 +97,7 @@ public class TarjetaCredito
      * @return the datos persona
      */
     @POST
-    @Path("/{ID_TRFA_PDV}/scoring/formdata")
+    @Path("/scoring/formdata")
     @Produces({ MediaType.TEXT_HTML })
     public Response getDatosPersonaTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
