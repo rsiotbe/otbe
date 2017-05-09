@@ -1,3 +1,4 @@
+<%@page import="com.rsi.rvia.rest.session.RequestConfigRvia"%>
 <%@page import="java.io.InputStreamReader"%>
 <%@page import="java.io.BufferedReader"%>
 <%@page import="org.json.JSONException"%>
@@ -15,12 +16,12 @@
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider"%>
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory"%>
 <%
-	pLog.info("Messages ::: MessageTypes ::: Start");
+	pLog.debug("Messages ::: MessageTypes ::: Start");
 	JSONObject pJsonResponse = new JSONObject();
 	response.setHeader("content-type", "application/json");
 
-	String strCodNrbe =  request.getParameter("codNrbe");
-	JSONArray pJsonResult = getMessageTypes(strCodNrbe);
+	RequestConfigRvia pConfigRvia = new RequestConfigRvia(request);
+	JSONArray pJsonResult = getMessageTypes(pConfigRvia.getNRBE());
 	pJsonResponse.put("messageTypes", pJsonResult);
 	%><%=Utils.generateWSResponseJsonOk("messageTypes", pJsonResponse.toString())%>
 <%!
@@ -34,20 +35,20 @@ Logger pLog = LoggerFactory.getLogger("MessageTypes.jsp");
  */
 public JSONArray getMessageTypes (String strCodNrbe) throws Exception
 {
-	pLog.info("Messages ::: getMessageTypes ::: Start ");
+	pLog.debug("Messages ::: getMessageTypes ::: Start ");
 	Connection pConnection = null;
 	JSONArray pJsongetNewsResponse = null;
 	String strQuery = "{call BEL.PK_CONSULTA_BUZON_MOVIL.getMessageTypes(?,?)}";
 	try
 	{
-		pLog.info("Messages ::: getMessageTypes ::: DDBBProvider ");
+		pLog.debug("Messages ::: getMessageTypes ::: DDBBProvider ");
 		pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 		
 		pConnection.setAutoCommit(false);
 	}
 	catch (Exception ex)
 	{
-		pLog.info("Messages ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
+		pLog.error("Messages ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
 	}
 	
 	CallableStatement pCallableStatement = null;
@@ -56,7 +57,7 @@ public JSONArray getMessageTypes (String strCodNrbe) throws Exception
 	{
 		int iResultCode = 0;
 		String strError;
-		pLog.info("Messages ::: getMessageTypes ::: pCallableStatement ");
+		pLog.debug("Messages ::: getMessageTypes ::: pCallableStatement ");
 	    pCallableStatement = pConnection.prepareCall(strQuery);
 		pCallableStatement.setString(1, strCodNrbe);
 		pCallableStatement.registerOutParameter(2, OracleTypes.CURSOR);
@@ -65,7 +66,7 @@ public JSONArray getMessageTypes (String strCodNrbe) throws Exception
 		ResultSet pResultSet = (ResultSet) pCallableStatement.getObject(2);
 		
 		pJsongetNewsResponse = Utils.convertResultSetToJSON(pResultSet);
-		pLog.info("Messages ::: getMessageTypes ::: pJsongetNewsResponse " + pJsongetNewsResponse);
+		pLog.debug("Messages ::: getMessageTypes ::: pJsongetNewsResponse " + pJsongetNewsResponse);
 	}
 	catch (Exception e)
 	{

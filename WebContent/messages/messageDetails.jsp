@@ -1,3 +1,4 @@
+<%@page import="com.rsi.rvia.rest.session.RequestConfigRvia"%>
 <%@page import="java.io.InputStreamReader"%>
 <%@page import="java.io.BufferedReader"%>
 <%@page import="org.json.JSONException"%>
@@ -15,12 +16,13 @@
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider"%>
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory"%>
 <%
-	pLog.info("Messages ::: MessageDetails ::: Start");
+	pLog.debug("Messages ::: MessageDetails ::: Start");
 	JSONObject pJsonResponse = new JSONObject();
 	response.setHeader("content-type", "application/json");
 
+	RequestConfigRvia pConfigRvia = new RequestConfigRvia(request);
 	String strMessage = request.getParameter("codMessage");
-	JSONObject pJsonResult = getMessageDetails(strMessage);
+	JSONObject pJsonResult = getMessageDetails(strMessage, pConfigRvia.getNRBE(), pConfigRvia.getRviaUserId());
 	%><%=Utils.generateWSResponseJsonOk("message", pJsonResult.toString())%>
 <%!
 
@@ -31,12 +33,12 @@ Logger pLog = LoggerFactory.getLogger("messageDetails.jsp");
 /*
  * Devuelve el listado de noticias para mostrar al usuario.
  */
-public JSONObject getMessageDetails (String strMessage) throws Exception
+public JSONObject getMessageDetails (String strMessage, String strCodNrbe, String strUser) throws Exception
 {
-	pLog.info("Messages ::: MessageDetails ::: Start ");
+	pLog.debug("Messages ::: MessageDetails ::: Start ");
 	Connection pConnection = null;
 	JSONObject pJsongetMessageResponse = null;
-	String strQuery = "{call BEL.PK_CONSULTA_BUZON_MOVIL.getMessageDetails(?,?)}";
+	String strQuery = "{call BEL.PK_CONSULTA_BUZON_MOVIL.getMessageDetails(?,?,?,?)}";
 	try
 	{
 		pLog.info("Messages ::: MessageDetails ::: DDBBProvider ");
@@ -46,7 +48,7 @@ public JSONObject getMessageDetails (String strMessage) throws Exception
 	}
 	catch (Exception ex)
 	{
-		pLog.info("Messages ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
+		pLog.error("Messages ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
 	}
 	
 	CallableStatement pCallableStatement = null;
@@ -55,13 +57,15 @@ public JSONObject getMessageDetails (String strMessage) throws Exception
 	{
 		int iResultCode = 0;
 		String strError;
-		pLog.info("Messages ::: MessageDetails ::: pCallableStatement ");
+		pLog.debug("Messages ::: MessageDetails ::: pCallableStatement ");
 	    pCallableStatement = pConnection.prepareCall(strQuery);
-		pCallableStatement.setString(1, strMessage);
-		pCallableStatement.registerOutParameter(2, OracleTypes.CURSOR);
+		pCallableStatement.setString(1, strCodNrbe);
+		pCallableStatement.setString(2, strMessage);
+		pCallableStatement.setString(3, strUser);
+		pCallableStatement.registerOutParameter(4, OracleTypes.CURSOR);
 		
 		pCallableStatement.executeUpdate();
-		ResultSet pResultSet = (ResultSet) pCallableStatement.getObject(2);
+		ResultSet pResultSet = (ResultSet) pCallableStatement.getObject(4);
 		JSONArray pJsonArraygetMessageResponse = Utils.convertResultSetToJSON(pResultSet);
 		if (pJsonArraygetMessageResponse.length()>0){
 			JSONObject pAuxJson = new JSONObject(pJsonArraygetMessageResponse.getJSONObject(0).toString());
@@ -75,7 +79,7 @@ public JSONObject getMessageDetails (String strMessage) throws Exception
 			}
 			pJsongetMessageResponse = pAuxJson.put("HISTORIA", strHistoria);
 		}
-		pLog.info("Messages ::: MessageDetails ::: pJsongetNewsResponse " + pJsongetMessageResponse);
+		pLog.debug("Messages ::: MessageDetails ::: pJsongetNewsResponse " + pJsongetMessageResponse);
 	}
 	catch (Exception e)
 	{
@@ -104,14 +108,14 @@ public int getHistoryNumber (String strHistoryCod, String strMailCod) throws Exc
 	int iHistoryNumber = 0;
 	try
 	{
-		pLog.info("Messages ::: MessageDetails ::: DDBBProvider ");
+		pLog.debug("Messages ::: MessageDetails ::: DDBBProvider ");
 		pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 		
 		pConnection.setAutoCommit(false);
 	}
 	catch (Exception ex)
 	{
-		pLog.info("Messages ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
+		pLog.error("Messages ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
 	}
 	
 	CallableStatement pCallableStatement = null;
@@ -129,7 +133,7 @@ public int getHistoryNumber (String strHistoryCod, String strMailCod) throws Exc
 		pCallableStatement.executeUpdate();
 		iHistoryNumber = pCallableStatement.getInt(1);
 		
-		pLog.info("Messages ::: MessageDetails ::: pJsongetNewsResponse " + pJsongetNewsResponse);
+		pLog.debug("Messages ::: MessageDetails ::: pJsongetNewsResponse " + pJsongetNewsResponse);
 	}
 	catch (Exception e)
 	{

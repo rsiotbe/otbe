@@ -1,3 +1,4 @@
+<%@page import="com.rsi.rvia.rest.session.RequestConfigRvia"%>
 <%@page import="java.io.InputStreamReader"%>
 <%@page import="java.io.BufferedReader"%>
 <%@page import="org.json.JSONException"%>
@@ -18,11 +19,9 @@
 	pLog.info("Messages ::: DeletedList ::: Start");
 	JSONObject pJsonResponse = new JSONObject();
 	response.setHeader("content-type", "application/json");
-
-	String strUser = request.getParameter("codUser");
-	String strLanguage = request.getParameter("idioma");
-	String strCodNrbe =  request.getParameter("codNrbe");
-	JSONArray pJsonResult = getDeletedList(strCodNrbe, strLanguage, strUser);
+	
+	RequestConfigRvia pConfigRvia = new RequestConfigRvia(request);
+	JSONArray pJsonResult = getDeletedList(pConfigRvia.getNRBE(), pConfigRvia.getLanguage().name(), pConfigRvia.getRviaUserId());
 	pJsonResponse.put("deletedMessages", pJsonResult);
 	%><%=Utils.generateWSResponseJsonOk("deletedMessages", pJsonResponse.toString())%>
 <%!
@@ -36,20 +35,20 @@ Logger pLog = LoggerFactory.getLogger("deletedList.jsp");
  */
 public JSONArray getDeletedList (String strCodNrbe, String strLanguage, String strUser) throws Exception
 {
-	pLog.info("Messages ::: getDeletedList ::: Start ");
+	pLog.debug("Messages ::: getDeletedList ::: Start ");
 	Connection pConnection = null;
 	JSONArray pJsongetNewsResponse = null;
 	String strQuery = "{call BEL.PK_CONSULTA_BUZON_MOVIL.getDeletedMessages(?,?,?,?)}";
 	try
 	{
-		pLog.info("Messages ::: getDeletedList ::: DDBBProvider ");
+		pLog.debug("Messages ::: getDeletedList ::: DDBBProvider ");
 		pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 		
 		pConnection.setAutoCommit(false);
 	}
 	catch (Exception ex)
 	{
-		pLog.info("Messages ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
+		pLog.error("Messages ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
 	}
 	
 	CallableStatement pCallableStatement = null;
@@ -58,7 +57,7 @@ public JSONArray getDeletedList (String strCodNrbe, String strLanguage, String s
 	{
 		int iResultCode = 0;
 		String strError;
-		pLog.info("Messages ::: getDeletedList ::: pCallableStatement ");
+		pLog.debug("Messages ::: getDeletedList ::: pCallableStatement ");
 	    pCallableStatement = pConnection.prepareCall(strQuery);
 		pCallableStatement.setString(1, strCodNrbe);
 	  	pCallableStatement.setString(2, strLanguage);
@@ -69,7 +68,7 @@ public JSONArray getDeletedList (String strCodNrbe, String strLanguage, String s
 		ResultSet pResultSet = (ResultSet) pCallableStatement.getObject(4);
 		
 		pJsongetNewsResponse = Utils.convertResultSetToJSON(pResultSet);
-		pLog.info("Messages ::: getDeletedList ::: pJsongetNewsResponse " + pJsongetNewsResponse);
+		pLog.debug("Messages ::: getDeletedList ::: pJsongetNewsResponse " + pJsongetNewsResponse);
 	}
 	catch (Exception e)
 	{

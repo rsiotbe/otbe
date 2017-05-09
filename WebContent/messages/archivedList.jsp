@@ -1,3 +1,4 @@
+<%@page import="com.rsi.rvia.rest.session.RequestConfigRvia"%>
 <%@page import="java.io.InputStreamReader"%>
 <%@page import="java.io.BufferedReader"%>
 <%@page import="org.json.JSONException"%>
@@ -19,10 +20,9 @@
 	JSONObject pJsonResponse = new JSONObject();
 	response.setHeader("content-type", "application/json");
 
-	String strUser = request.getParameter("codUser");
-	String strLanguage = request.getParameter("idioma");
-	String strCodNrbe =  request.getParameter("codNrbe");
-	JSONArray pJsonResult = getArchivedList(strCodNrbe, strLanguage, strUser);
+
+	RequestConfigRvia pConfigRvia = new RequestConfigRvia(request);
+	JSONArray pJsonResult = getArchivedList(pConfigRvia.getNRBE(), pConfigRvia.getLanguage().name(), pConfigRvia.getRviaUserId());
 	pJsonResponse.put("archivedMessages", pJsonResult);
 	%><%=Utils.generateWSResponseJsonOk("archivedMessages", pJsonResponse.toString())%>
 <%!
@@ -36,20 +36,20 @@ Logger pLog = LoggerFactory.getLogger("archivedList.jsp");
  */
 public JSONArray getArchivedList (String strCodNrbe, String strLanguage, String strUser) throws Exception
 {
-	pLog.info("Messages ::: getArchivedList ::: Start ");
+	pLog.debug("Messages ::: getArchivedList ::: Start ");
 	Connection pConnection = null;
 	JSONArray pJsongetNewsResponse = null;
 	String strQuery = "{call BEL.PK_CONSULTA_BUZON_MOVIL.getArchivedMessages(?,?,?,?)}";
 	try
 	{
-		pLog.info("Messages ::: getArchivedList ::: DDBBProvider ");
+		pLog.debug("Messages ::: getArchivedList ::: DDBBProvider ");
 		pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 		
 		pConnection.setAutoCommit(false);
 	}
 	catch (Exception ex)
 	{
-		pLog.info("Messages ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
+		pLog.error("Messages ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
 	}
 	
 	CallableStatement pCallableStatement = null;
@@ -58,7 +58,7 @@ public JSONArray getArchivedList (String strCodNrbe, String strLanguage, String 
 	{
 		int iResultCode = 0;
 		String strError;
-		pLog.info("Messages ::: getArchivedList ::: pCallableStatement ");
+		pLog.debug("Messages ::: getArchivedList ::: pCallableStatement ");
 	    pCallableStatement = pConnection.prepareCall(strQuery);
 		pCallableStatement.setString(1, strCodNrbe);
 	  	pCallableStatement.setString(2, strLanguage);
@@ -69,7 +69,7 @@ public JSONArray getArchivedList (String strCodNrbe, String strLanguage, String 
 		ResultSet pResultSet = (ResultSet) pCallableStatement.getObject(4);
 		
 		pJsongetNewsResponse = Utils.convertResultSetToJSON(pResultSet);
-		pLog.info("Messages ::: getArchivedList ::: pJsongetNewsResponse " + pJsongetNewsResponse);
+		pLog.debug("Messages ::: getArchivedList ::: pJsongetNewsResponse " + pJsongetNewsResponse);
 	}
 	catch (Exception e)
 	{

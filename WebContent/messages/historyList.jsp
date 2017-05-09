@@ -35,20 +35,20 @@ Logger pLog = LoggerFactory.getLogger("getHistory.jsp");
  */
 public JSONArray getHistoryList (String codHistory, String codMail) throws Exception
 {
-	pLog.info("Messages ::: getHistoryList ::: Start ");
+	pLog.debug("Messages ::: getHistoryList ::: Start ");
 	Connection pConnection = null;
 	JSONArray pJsongetNewsResponse = null;
 	String strQuery = "{call BEL.PK_CONSULTA_BUZON_MOVIL.getHistoryMessages(?,?,?)}";
 	try
 	{
-		pLog.info("Messages ::: getHistoryList ::: DDBBProvider ");
+		pLog.debug("Messages ::: getHistoryList ::: DDBBProvider ");
 		pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 		
 		pConnection.setAutoCommit(false);
 	}
 	catch (Exception ex)
 	{
-		pLog.info("Messages ::: getHistoryList ::: DDBBProvider Exception " + ex.getMessage());
+		pLog.debug("Messages ::: getHistoryList ::: DDBBProvider Exception " + ex.getMessage());
 	}
 	
 	CallableStatement pCallableStatement = null;
@@ -67,7 +67,7 @@ public JSONArray getHistoryList (String codHistory, String codMail) throws Excep
 		ResultSet pResultSet = (ResultSet) pCallableStatement.getObject(3);
 		
 		pJsongetNewsResponse = Utils.convertResultSetToJSON(pResultSet);
-		pLog.info("Messages ::: getHistoryList ::: pJsongetNewsResponse " + pJsongetNewsResponse);
+		pLog.debug("Messages ::: getHistoryList ::: pJsongetNewsResponse " + pJsongetNewsResponse);
 	}
 	catch (Exception e)
 	{

@@ -1,3 +1,4 @@
+<%@page import="com.rsi.rvia.rest.session.RequestConfigRvia"%>
 <%@page import="org.jsoup.select.Elements"%>
 <%@page import="org.jsoup.nodes.Element"%>
 <%@page import="org.jsoup.parser.Parser"%>
@@ -33,26 +34,39 @@
 		<%=Utils.generateWSResponseJsonError("deleteMessage", -1, strDefaultErrorMessage)%>
   <%}%>
 <%!
-//nombreRemitente=&checkboxers=44331&asunto=&paginaAction=BORRAR&carpetaId=&nLeido=&mensajeId=44331%2C&fechaMensajeHasta=&p_datagrid_datagrid1_order_index=-5&buzonId=&clMensajeId=&p_datagrid_datagrid1_page_index=0&recibidos=true&paginaVista=listarMensajesRecibidos&fechaMensajeDesde=
 private static final String strDefaultErrorMessage  = "Error no controlado";
 private static final String strErrorCode  			= "returnCode";
 private static final String strErrorMessage  		= "errorMessage";
 private static final String strAmper		  		= "&";
 private static final String strComa			  		= ",";
+// Datos necesarios para la petición pero que pueden ir vacios.
+private static final String strDatosSesion 			= "CODIGO_APP=GCO&PATH=&IP=&num_session=&CLIENTE_EMPRESA=&PERCON=&SELCON=&PRITAR=&servidor=&NUMTAR=&marca=";
 private Logger pLog = LoggerFactory.getLogger("deleteMessage.jsp");
 private final String strEndpoint = "eliminarMensaje.do";
 
 private JSONObject sendMessage(HttpServletRequest request) throws Exception {
 
+	RequestConfigRvia pConfigRvia = new RequestConfigRvia(request);
 	JSONObject pJsonResult = new JSONObject();
-	StringBuilder pUrlParameters = new StringBuilder("CODIGO_APP=GCO&ENTALT=198&OFIALT=900&USUARIO=03030300&TIPUSR=3&NUMTAR=198030300&idioma=es_ES&canal=000003&marca=0000&PATH=%2Fportal_rvia%2FServletDirectorPortal%3BRVIASESION%3DVcSqdOseUZ11oa1HZDa9XCkQ6O10UxrCnAid8T2vRHkouS9qj0V-%21-1324441015%21-1738423937&IP=10.1.243.186&num_session=21781507&CLIENTE_EMPRESA=P&PERCON=005&SELCON=00000000002021262692&PRITAR=198052445&servidor=Internet_el91teswls01_07");
+	StringBuilder pUrlParameters = new StringBuilder(strDatosSesion);
 
-	String mensajeId = request.getParameter("mensajeId");
+	String strMessage = request.getParameter("mensajeId");
+	String strOffice = "0000";// request.getParameter("OFIALT");
 	
-	pUrlParameters.append(strAmper).append("checkboxers=").append(mensajeId);
-	pUrlParameters.append(strAmper).append("mensajeId=").append(mensajeId).append(strComa);
+	pUrlParameters.append(strAmper).append("mensajeId=").append(strMessage);
+	pUrlParameters.append(strAmper).append("OFIALT=").append(strOffice);
+	// Datos de sessión necesarios para la conexión con Gestión Comunicados
+	pUrlParameters.append(strAmper).append("servidor=").append(pConfigRvia.getNodeRvia());
+	pUrlParameters.append(strAmper).append("num_session=").append(pConfigRvia.getRviaSessionId());
+	pUrlParameters.append(strAmper).append("USUARIO=").append(pConfigRvia.getRviaUserId());
+	pUrlParameters.append(strAmper).append("TIPUSR=").append(pConfigRvia.getIsumUserProfile());
+	pUrlParameters.append(strAmper).append("idioma=").append(pConfigRvia.getLanguage());
+	pUrlParameters.append(strAmper).append("ENTALT=").append(pConfigRvia.getNRBE());
+	pUrlParameters.append(strAmper).append("canal=").append(pConfigRvia.getCanalHost());
+	pUrlParameters.append(strAmper).append("IP=").append(pConfigRvia.getIp());
+	pUrlParameters.append(strAmper).append("PATH=").append(pConfigRvia.getUriRvia());
 	
-	pUrlParameters.append("&firmaRSI="+CommunicationUtils.getRsiSign("03030300", "198", "900", "3", "es_ES"));
+	pUrlParameters.append("&firmaRSI="+CommunicationUtils.getRsiSign(pConfigRvia.getRviaUserId(), pConfigRvia.getNRBE(), strOffice, pConfigRvia.getIsumUserProfile(), pConfigRvia.getLanguage().name()));
 	pUrlParameters.append("&fechaRSI="+CommunicationUtils.getRsiDate());
 	// Send post request 
 	HttpURLConnection pCon = CommunicationUtils.sendCommunication(strEndpoint, pUrlParameters.toString(), request.getHeader("User-Agent"));
@@ -68,16 +82,15 @@ private JSONObject sendMessage(HttpServletRequest request) throws Exception {
 			System.out.println(pDocument.text());
 			Element pResult = pDocument.select("input[name=paginaVista]").first();
 			System.out.println(pResult.toString());
-			if (!pResult.toString().contains("listarMensajesEnviados")) {
+			if (!pResult.toString().contains("listarMensajesBorrados")) {
 				pJsonResult.put(strErrorCode, -200);
 				pJsonResult.put(strErrorMessage, "Error no controlado");
 			} else {
 				pJsonResult.put(strErrorCode, 0);
 			}
 			break;
-		case 302:
-			pJsonResult.put(strErrorCode, -32);
-			pJsonResult.put(strErrorMessage, "Error ocurrido en la aplicación");
+		case 404:
+			pJsonResult.put(strErrorCode, 0);
 			break;
 		case 500:
 			try {
@@ -104,5 +117,6 @@ private JSONObject sendMessage(HttpServletRequest request) throws Exception {
 	}
 	return pJsonResult;
 }
+
 %>
 

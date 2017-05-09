@@ -10,11 +10,15 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.Properties;
 
 public class CommunicationUtils {
-	private static final String strServer = "http://lnxntf04:2035/gestionComunicados/";
 	public static HttpURLConnection sendCommunication(String strEndpoint, String urlParameters, String strUserAgent) throws IOException{
-		URL pUrl = new URL(strServer+strEndpoint);
+
+		Properties pProperties = new Properties();
+		pProperties.load(CommunicationUtils.class.getResourceAsStream("/communications.properties"));
+		String strServerUrl = (String)pProperties.get("COMMUNICATIONS_SERVICE_URL");
+		URL pUrl = new URL(strServerUrl+strEndpoint);
 		HttpURLConnection con = (HttpURLConnection) pUrl.openConnection();
 		
 		con.setRequestMethod("POST");

@@ -1,3 +1,4 @@
+<%@page import="com.rsi.rvia.rest.session.RequestConfigRvia"%>
 <%@page import="java.io.InputStreamReader"%>
 <%@page import="java.io.BufferedReader"%>
 <%@page import="org.json.JSONException"%>
@@ -15,14 +16,12 @@
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider"%>
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory"%>
 <%
-	pLog.info("Messages ::: ReceivedList ::: Start");
+	pLog.debug("Messages ::: ReceivedList ::: Start");
 	JSONObject pJsonResponse = new JSONObject();
 	response.setHeader("content-type", "application/json");
 
-	String strUser = request.getParameter("codUser");
-	String strLanguage = request.getParameter("idioma");
-	String strCodNrbe =  request.getParameter("codNrbe");
-	JSONArray pJsonResult = getReceivedList(strCodNrbe, strLanguage, strUser);
+	RequestConfigRvia pConfigRvia = new RequestConfigRvia(request);
+	JSONArray pJsonResult = getReceivedList(pConfigRvia.getNRBE(), pConfigRvia.getLanguage().name(), pConfigRvia.getRviaUserId());
 	pJsonResponse.put("receivedMessages", pJsonResult);
 	%><%=Utils.generateWSResponseJsonOk("receivedMessages", pJsonResponse.toString())%>
 <%!
@@ -36,7 +35,7 @@ Logger pLog = LoggerFactory.getLogger("receivedList.jsp");
  */
 public JSONArray getReceivedList (String strCodNrbe, String strLanguage, String strUser) throws Exception
 {
-	pLog.info("Messages ::: getReceivedList ::: Start ");
+	pLog.debug("Messages ::: getReceivedList ::: Start ");
 	Connection pConnection = null;
 	JSONArray pJsongetNewsResponse = null;
 	String strQuery = "{call BEL.PK_CONSULTA_BUZON_MOVIL.getReceivedMessages(?,?,?,?)}";
@@ -49,7 +48,7 @@ public JSONArray getReceivedList (String strCodNrbe, String strLanguage, String 
 	}
 	catch (Exception ex)
 	{
-		pLog.info("Messages ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
+		pLog.error("Messages ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
 	}
 	
 	CallableStatement pCallableStatement = null;
@@ -58,7 +57,7 @@ public JSONArray getReceivedList (String strCodNrbe, String strLanguage, String 
 	{
 		int iResultCode = 0;
 		String strError;
-		pLog.info("Messages ::: getReceivedList ::: pCallableStatement ");
+		pLog.debug("Messages ::: getReceivedList ::: pCallableStatement ");
 	    pCallableStatement = pConnection.prepareCall(strQuery);
 		pCallableStatement.setString(1, strCodNrbe);
 	  	pCallableStatement.setString(2, strLanguage);
@@ -69,7 +68,7 @@ public JSONArray getReceivedList (String strCodNrbe, String strLanguage, String 
 		ResultSet pResultSet = (ResultSet) pCallableStatement.getObject(4);
 		
 		pJsongetNewsResponse = Utils.convertResultSetToJSON(pResultSet);
-		pLog.info("Messages ::: getReceivedList ::: pJsongetNewsResponse " + pJsongetNewsResponse);
+		pLog.debug("Messages ::: getReceivedList ::: pJsongetNewsResponse " + pJsongetNewsResponse);
 	}
 	catch (Exception e)
 	{

@@ -1,3 +1,4 @@
+<%@page import="com.rsi.rvia.rest.session.RequestConfigRvia"%>
 <%@page import="java.io.InputStreamReader"%>
 <%@page import="java.io.BufferedReader"%>
 <%@page import="org.json.JSONException"%>
@@ -15,14 +16,12 @@
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider"%>
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory"%>
 <%
-	pLog.info("Messages ::: UnreadedList ::: Start");
+	pLog.debug("Messages ::: UnreadedList ::: Start");
 	JSONObject pJsonResponse = new JSONObject();
 	response.setHeader("content-type", "application/json");
 
-	String strUser = request.getParameter("codUser");
-	String strLanguage = request.getParameter("idioma");
-	String strCodNrbe =  request.getParameter("codNrbe");
-	JSONArray pJsonResult = getUnreadedList(strCodNrbe, strLanguage, strUser);
+	RequestConfigRvia pConfigRvia = new RequestConfigRvia(request);
+	JSONArray pJsonResult = getUnreadedList(pConfigRvia.getNRBE(), pConfigRvia.getLanguage().name(), pConfigRvia.getRviaUserId());
 	pJsonResponse.put("unreadedMessages", pJsonResult);
 	%><%=Utils.generateWSResponseJsonOk("unreadedMessages", pJsonResponse.toString())%>
 <%!
@@ -36,7 +35,7 @@ Logger pLog = LoggerFactory.getLogger("unreadedList.jsp");
  */
 public JSONArray getUnreadedList (String strCodNrbe, String strLanguage, String strUser) throws Exception
 {
-	pLog.info("Messages ::: getUnreadedMessages ::: Start ");
+	pLog.debug("Messages ::: getUnreadedMessages ::: Start ");
 	Connection pConnection = null;
 	JSONArray pJsongetNewsResponse = null;
 	String strQuery = "{call BEL.PK_CONSULTA_BUZON_MOVIL.getUnreadedMessages(?,?,?,?)}";
@@ -49,7 +48,7 @@ public JSONArray getUnreadedList (String strCodNrbe, String strLanguage, String 
 	}
 	catch (Exception ex)
 	{
-		pLog.info("Messages ::: getUnreadedMessages ::: DDBBProvider Exception " + ex.getMessage());
+		pLog.error("Messages ::: getUnreadedMessages ::: DDBBProvider Exception " + ex.getMessage());
 	}
 	
 	CallableStatement pCallableStatement = null;
@@ -58,7 +57,7 @@ public JSONArray getUnreadedList (String strCodNrbe, String strLanguage, String 
 	{
 		int iResultCode = 0;
 		String strError;
-		pLog.info("Messages ::: getUnreadedMessages ::: pCallableStatement ");
+		pLog.debug("Messages ::: getUnreadedMessages ::: pCallableStatement ");
 	    pCallableStatement = pConnection.prepareCall(strQuery);
 		pCallableStatement.setString(1, strCodNrbe);
 	  	pCallableStatement.setString(2, strLanguage);
@@ -69,7 +68,7 @@ public JSONArray getUnreadedList (String strCodNrbe, String strLanguage, String 
 		ResultSet pResultSet = (ResultSet) pCallableStatement.getObject(4);
 		
 		pJsongetNewsResponse = Utils.convertResultSetToJSON(pResultSet);
-		pLog.info("Messages ::: getUnreadedMessages ::: pJsongetNewsResponse " + pJsongetNewsResponse);
+		pLog.debug("Messages ::: getUnreadedMessages ::: pJsongetNewsResponse " + pJsongetNewsResponse);
 	}
 	catch (Exception e)
 	{
