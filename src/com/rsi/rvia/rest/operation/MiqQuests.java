@@ -245,7 +245,7 @@ public class MiqQuests
         ResultSet pResultSet = null;
         try
         {
-            String strQuery = "SELECT * from bel.bdptb222_miq_quests";
+            String strQuery = "SELECT * from bel.bdptb222_miq_quests order by 1 asc";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
             pResultSet = pPreparedStatement.executeQuery();
@@ -258,10 +258,6 @@ public class MiqQuests
                     pLog.warn("Se descarta la carga del del miqQuest " + pResultSet.getInt("id_miq")
                             + " y se continua con el resto");
                     continue;
-                }
-                else
-                {
-                    pLog.debug("Tipo de proveedor de identidad " + pResultSet.getString("direccionador"));
                 }
                 MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("direccionador"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"), pResultSet.getString("opciones"));
                 if (!htCacheDataId.containsKey(pResultSet.getInt("id_miq")))
@@ -277,7 +273,7 @@ public class MiqQuests
         }
         catch (Exception ex)
         {
-            pLog.error("Error al realizar la consulta a la BBDD. Trace: \n\n\t" + ex.getMessage());
+            pLog.error("Error al realizar la consulta a la BBDD. Error: " + ex);
         }
         finally
         {
