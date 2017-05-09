@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
  	import="
+ 	     com.rsi.rvia.rest.endpoint.rsiapi.AcuerdosRuralvia,
 		 com.rsi.rvia.rest.client.QueryCustomizer,
          com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
          com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider,
@@ -19,6 +20,7 @@
 String uri = request.getRequestURI();
 String pageName = uri.substring(uri.lastIndexOf("/")+1);
 Logger pLog  = LoggerFactory.getLogger(pageName);
+String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(request.getParameter("codTarjeta"));
 
 String strQuery =
 		" select " +
@@ -151,21 +153,27 @@ String strQuery =
 			" 	sum(mi_sdo_dispble_p) \"saldoDisponible\"," +
 			" 	sum(mi_sdo_acr_p) \"saldoAcreedor\"," +
 			" 	sum(mi_sdo_deu_p) \"saldoDeudor\"" +
-			" from rdwc01.mi_ac_eco_gen" +
+			" from rdwc01.mi_ac_eco_gen t1" +
 			" where cod_nrbe_en='" + request.getParameter("codEntidad") + "'" ;
-			
-	if(strContrato != null){
-		strQuery = strQuery + " and num_sec_ac =" + request.getParameter("idContract") ; 
-	}
-	else{
-	    strQuery = strQuery + " and num_sec_ac in (" +
-             " select num_sec_ac from rdwc01.mi_ac_cont_gen " +
-             " where cod_nrbe_en='" + strEntidad + "' " +
-             "    and id_interno_pe=" + strIdInternoPe +
-             "    and mi_fecha_fin=to_date('31.12.9999','dd.mm.yyyy') " + whereLineaEq +
-       ")";
-	}			
-	strQuery = strQuery + strFiltroAcuerdos;	
+
+    if(strContrato == null){
+        if(strRviaAcuerdos[1]==null){
+            strQuery = strQuery + " and t1.num_sec_ac in (" +
+                    " select t2.num_sec_ac from rdwc01.mi_ac_cont_gen t2" +
+                    " where t2.cod_nrbe_en='" + strEntidad + "' " +
+                    "    and t2.id_interno_pe=" + strIdInternoPe +
+                    "    and t2.mi_fecha_fin=to_date('31.12.9999','dd.mm.yyyy') " + 
+              ")";
+        }
+        else{
+            strQuery = strQuery + " and t1.num_sec_ac in (" + strRviaAcuerdos[1] + ") ";
+        }
+     }
+     else{
+        strQuery = strQuery + " and t1.num_sec_ac =" + strContrato; 
+     } 
+	
+	strQuery = strQuery + strFiltroAcuerdos + " " + whereLineaEq;	
 	strQuery = strQuery + " and mi_fecha_fin_mes > to_date('" + strDateIni + "','yyyy-mm-dd')" +
 			" and mi_fecha_fin_mes <= to_date('" + strDateFin + "','yyyy-mm-dd')" + 
 			" group by decode(to_char(mi_fecha_fin_mes,'yyyy-mm-dd'),'9999-12-31', '" + strLastChargeDate + "', to_char(mi_fecha_fin_mes,'yyyy-mm-dd')),";

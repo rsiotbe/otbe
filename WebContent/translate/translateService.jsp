@@ -23,6 +23,7 @@
 <%@page import="com.rsi.rvia.rest.tool.*"%>		 
 <%@page import="com.rsi.rvia.mail.*"%>		 
 <%@page import="com.rsi.Constants"%>
+<%@page import="com.rsi.Constants.Language"%>
 <%@page import="javax.ws.rs.core.*"%>
 <%@page import="javax.ws.rs.client.*"%>
 <%@ page language="java" pageEncoding="UTF-8"%>
@@ -35,15 +36,20 @@
     {
 		String strRequestContent = null;
 		String strAppName = null;
-		String strLanguage = null;   
+		String strLanguage = null; 
+		Language pLanguage = null;
    		strAppName = request.getParameter(Constants.TRANSLATE_APPNAME);
     	strLanguage = request.getParameter(Constants.TRANSLATE_LANG); 
 		pLog.info("Se recupera la configuración que le llega al jsp: \n" +
 				"AppName:  " + strAppName +"\n" +	
 				"Language: " + strLanguage +"");
-	
-		/* se llama a la classa que obtiene las traducciones */
-		strReturn = TranslateAppService.process(strAppName, strLanguage);
+		if(strLanguage == null || strLanguage == "ALL")
+		    pLanguage = null;
+		else
+		    pLanguage = Language.getEnumValue(strLanguage);
+		
+		/* se llama a la clase que obtiene las traducciones */
+		strReturn = TranslateAppService.process(strAppName, pLanguage);
 		strReturn = Utils.generateWSResponseJsonOk("translate", strReturn);		
     }
     catch (Exception ex)

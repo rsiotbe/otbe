@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     import="
+        com.rsi.rvia.rest.endpoint.rsiapi.AcuerdosRuralvia,
          com.rsi.rvia.rest.client.QueryCustomizer,
          org.slf4j.Logger,
         org.slf4j.LoggerFactory 
@@ -10,6 +11,7 @@
 String uri = request.getRequestURI();
 String pageName = uri.substring(uri.lastIndexOf("/")+1);
 Logger pLog  = LoggerFactory.getLogger(pageName);
+String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(request.getParameter("codTarjeta"));
     String strContrato = request.getParameter("idContract");  
     String strIdInternoPe = request.getParameter("idInternoPe");
     String strEntidad = request.getParameter("codEntidad").toString();
@@ -39,12 +41,19 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
                    " and e.codrespu = '000' " +
                    " and e.indcruce = 1 " +
                    " and f.mi_fecha_fin = to_date('9999-12-31', 'yyyy-mm-dd') " ;
+                                     
                    if(strContrato == null){
-                       strQuery = strQuery +  " and f.id_interno_pe = " + strIdInternoPe;
+                       if(strRviaAcuerdos[1] == null){
+                           strQuery = strQuery +  " and f.id_interno_pe = " + strIdInternoPe;
+                       }
+                       else{
+                           strQuery = strQuery + " and e.num_sec_ac in (" + strRviaAcuerdos[1] +  ") ";
+                       }
                     }
                     else{
                        strQuery = strQuery + " and e.num_sec_ac =" + strContrato; 
-                    }  
+                    }                     
+                                      
                    strQuery = strQuery + " group by to_char(e.fecha_oprcn,'YYYY-MM'), e.num_sec_ac";
    pLog.info("Query al customizador: " + strQuery);
    String strResponse = QueryCustomizer.process(request,strQuery);          

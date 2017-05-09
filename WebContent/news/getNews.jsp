@@ -65,25 +65,12 @@ public JSONArray getNews (String strCodNrbe, String strProfile, String strUser) 
 	Connection pConnection = null;
 	JSONArray pJsongetNewsResponse = null;
 	String strQuery = "{call BEL.PK_COMUNICACION_CLIENTE.getNews(?,?,?,?)}";
+	CallableStatement pCallableStatement = null;
 	try
 	{
 		pLog.info("GetNews ::: getNews ::: DDBBProvider ");
-		pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-		
+		pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);		
 		pConnection.setAutoCommit(false);
-	}
-	catch (Exception ex)
-	{
-		pLog.info("GetNews ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
-	}
-	finally{
-	    DDBBPoolFactory.closeDDBBObjects(pLog, null, null, pConnection);
-	}
-	
-	CallableStatement pCallableStatement = null;
-	
-	try
-	{
 		int iResultCode = 0;
 		String strError;
 		pLog.info("GetNews ::: getNews ::: pCallableStatement ");
@@ -162,24 +149,13 @@ public JSONObject callBBDD(int strCod, String strUser, String strQuery) throws E
 {
 	JSONObject pJsonUpdateResponse = new JSONObject();
 	Connection pConnection = null;
+	CallableStatement pCallableStatement = null;
+		
 	try
 	{
 		pLog.info("GetNews ::: callBBDD ::: Start");
-		pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-		
+		pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);		
 		pConnection.setAutoCommit(true);
-	}
-	catch (Exception ex)
-	{
-		pLog.info("GetNews ::: callBBDD ::: callBBDD Exception " + ex.getMessage());
-	}
-	finally{
-	    DDBBPoolFactory.closeDDBBObjects(pLog, null, null, pConnection);
-	}
-	
-	CallableStatement pCallableStatement = null;
-	try
-	{
 		int iResultCode = 0;
 		String strError;
 		pLog.info("GetNews ::: callBBDD ::: pCallableStatement ");

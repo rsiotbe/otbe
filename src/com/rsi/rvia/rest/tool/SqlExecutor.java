@@ -76,18 +76,19 @@ public class SqlExecutor
             throw new LogicalErrorException(500, 9999, "Database connection failure", "No se ha conseguido una instancia de conexión a base de datos válida.", ex);
         }
         String strReturn = "";
-        Statement pPreparedStatement = pConnection.createStatement();
-        for (String line : querys.split(";"))
-        {
-            line = " " + line + " ";
-            if ("".equals(line.trim()))
-                continue;
-            pPreparedStatement.addBatch(line);
-            cntOperaciones++;
-            pLog.info("Se añade al bloque de ejecución SQL la query: " + line);
-        }
+        Statement pPreparedStatement = null;
         try
         {
+            pPreparedStatement = pConnection.createStatement();
+            for (String line : querys.split(";"))
+            {
+                line = " " + line + " ";
+                if ("".equals(line.trim()))
+                    continue;
+                pPreparedStatement.addBatch(line);
+                cntOperaciones++;
+                pLog.info("Se añade al bloque de ejecución SQL la query: " + line);
+            }
             strReturn = strReturn + "Sentencias recibidas: " + cntOperaciones + "<br>";
             pLog.info("Se van a ejecutar " + cntOperaciones + " operaciones");
             pPreparedStatement.executeBatch();
@@ -119,9 +120,8 @@ public class SqlExecutor
         }
         finally
         {
-            pPreparedStatement.close();
-            pConnection.close();
             pLog.debug("Se cierra la conexión con la BBDD");
+            DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement, pConnection);
         }
         strReturn = strReturn + "Procesadas cosqln éxtito: " + cntExtito + "<br>";
         if (cntOperaciones > cntExtito)

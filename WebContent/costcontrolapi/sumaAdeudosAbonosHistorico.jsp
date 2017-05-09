@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     import="
+        com.rsi.rvia.rest.endpoint.rsiapi.AcuerdosRuralvia,
          com.rsi.rvia.rest.client.QueryCustomizer,
          org.slf4j.Logger,
         org.slf4j.LoggerFactory 
@@ -10,6 +11,7 @@
 String uri = request.getRequestURI();
 String pageName = uri.substring(uri.lastIndexOf("/")+1);
 Logger pLog  = LoggerFactory.getLogger(pageName);
+String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(request.getParameter("codTarjeta"));
     String strContrato = request.getParameter("idContract");  
     String strIdInternoPe = request.getParameter("idInternoPe");
     String strEntidad = request.getParameter("codEntidad").toString();
@@ -84,13 +86,18 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
    
    strQuery = strQuery + strRestrictorApuntes;
    if(strContrato == null){
- 	  //strQuery = strQuery + whereLineaEq; 
- 	  strQuery = strQuery + " and num_sec_ac in (" +
- 			  " select num_sec_ac from rdwc01.mi_ac_cont_gen " +
- 			  " where cod_nrbe_en='" + strEntidad + "' " +
- 			  "    and id_interno_pe=" + strIdInternoPe +
- 			  "    and mi_fecha_fin=to_date('31.12.9999','dd.mm.yyyy') " + //whereLineaEq +
- 		")";
+ 	  if(strRviaAcuerdos[1]==null){ 
+	 	  strQuery = strQuery + " and num_sec_ac in (" +
+	 			  " select num_sec_ac from rdwc01.mi_ac_cont_gen " +
+	 			  " where cod_nrbe_en='" + strEntidad + "' " +
+	 			  "    and id_interno_pe=" + strIdInternoPe +
+	 			  "    and mi_fecha_fin=to_date('31.12.9999','dd.mm.yyyy') " + 
+	 		")";
+ 	  }
+ 	  else{
+ 	     strQuery = strQuery + " and t1.num_sec_ac in (" + strRviaAcuerdos[1] +  ")";
+ 	  }
+ 	  
    }
    else{
  	  strQuery = strQuery + " and num_sec_ac =" + strContrato; 

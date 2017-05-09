@@ -1,8 +1,8 @@
 package com.rsi.rvia.rest.DDBB;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,20 +67,20 @@ public class DDBBPoolFactory
      *            Logger de la aplicación
      * @param pResultSet
      *            Objeto en caso de existir
-     * @param pPreparedStatement
+     * @param pStatement
      *            Objeto en caso de existir
      * @param pConnection
      *            Objeto en caso de existir
      */
-    public static void closeDDBBObjects(Logger pLogger, ResultSet pResultSet, PreparedStatement pPreparedStatement,
+    public static void closeDDBBObjects(Logger pLogger, ResultSet pResultSet, Statement pStatement,
             Connection pConnection)
     {
         try
         {
             if (pResultSet != null)
                 pResultSet.close();
-            if (pPreparedStatement != null)
-                pPreparedStatement.close();
+            if (pStatement != null)
+                pStatement.close();
             if (pConnection != null)
                 pConnection.close();
         }

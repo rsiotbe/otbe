@@ -56,12 +56,24 @@ public class Common
     }
 
     @POST
+    @Path("/pdfEmailToCustomer")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response sendEmailToCustomerWithPdf(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            String strJsonData)
+    {
+        pLog.info("Entra una petición para enviar correo con los datos de simulación al cliente.");
+        Response pResponse = OperationManager.processDataFromSimulators(pRequest, pUriInfo, strJsonData, MediaType.APPLICATION_JSON_TYPE);
+        return pResponse;
+    }
+
+    @POST
     @Path("/email")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response sendEmailToBank(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strJsonData)
     {
-        pLog.info("Entra una petición para enviar correo con los datos de simmulación.");
+        pLog.info("Entra una petición para enviar correo con los datos de simulación a la sucursal.");
         Response pResponse = OperationManager.processDataFromSimulators(pRequest, pUriInfo, strJsonData, MediaType.APPLICATION_JSON_TYPE);
         return pResponse;
     }

@@ -18,3 +18,4 @@ configurations/MySqlConfig{DESA}.properties
 configurations/simulator.email{DESA}.properties
 configurations/simulator.pdf{DESA}.properties
 WebContent/WEB-INF/web{DESA}.xml
+/bin

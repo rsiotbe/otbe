@@ -159,8 +159,8 @@ public class RestWSConnector
                 pJson.put(strKey, (String) pPathParams.get(strKey).toString());
             }
         }
-        JSONObject opciones = pMiqQuests.getJsonOpciones();
-        if (opciones == null || opciones.optBoolean(MiqQuests.OPTION_PARAM_PROPAGATE_ID_MIQ, true))
+        JSONObject pMiqOptions = pMiqQuests.getOptions();
+        if (pMiqOptions == null || pMiqOptions.optBoolean(MiqQuests.OPTION_PARAM_PROPAGATE_ID_MIQ, true))
         {
             pJson.put("idMiq", pMiqQuests.getIdMiq());
         }
@@ -262,9 +262,7 @@ public class RestWSConnector
         }
         finally
         {
-            pResultSet.close();
-            pPreparedStatement.close();
-            pConnection.close();
+            DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
         }
         return strReturn;
     }

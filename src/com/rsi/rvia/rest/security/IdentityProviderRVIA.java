@@ -171,7 +171,7 @@ public class IdentityProviderRVIA implements IdentityProvider
                 HashMap<String, String> fields = new HashMap<String, String>();
                 fields.put("codEntidad", "3076");
                 fields.put("idInternoPe", "1834908");
-                fields.put("codTarjeta", "307671667");
+                fields.put("codTarjeta", "3076000004");
                 return fields;
             }
             else
@@ -196,7 +196,7 @@ public class IdentityProviderRVIA implements IdentityProvider
             {
                 fields.put("codEntidad", "3076");
                 fields.put("idInternoPe", "1834908");
-                fields.put("codTarjeta", "307671667");
+                fields.put("codTarjeta", "3076000004");
             }
             else
             {

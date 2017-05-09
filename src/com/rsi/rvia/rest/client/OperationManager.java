@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.Constants;
+import com.rsi.Constants.Language;
 import com.rsi.Constants.SimulatorType;
 import com.rsi.isum.IsumValidation;
 import com.rsi.rvia.rest.conector.RestConnector;
@@ -70,6 +71,7 @@ public class OperationManager
         try
         {
             // Se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM.
+            // comentada para postman
             pRequestConfigRvia = getValidateSessionRvia(pRequest);
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             pMiqQuests = createMiqQuests(pUriInfo);
@@ -200,7 +202,6 @@ public class OperationManager
             // Si los servicios que se invocan son de rsiapi
             IdentityProvider pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests);
             pIdentityProvider.process();
-            // Cuando exista un login rest hay que cambiar todos esto.
             // Si estamos invocando a login tendremos los campos resueltos o el error
             JWT = pIdentityProvider.getJWT();
             HashMap<String, String> pParamsToInject = pIdentityProvider.getClaims();
@@ -208,9 +209,8 @@ public class OperationManager
             int nHttpCode = pResponseConnector.getStatus();
             if (nHttpCode != 200)
             {
-                throw new ApplicationException(nHttpCode, 99999, "Respuesta errónea de end point", "No se ha podido recuperar la información de la operación", new Exception());
+                throw new ApplicationException(nHttpCode, 99999, "Respuesta errónea desde end point", "No se ha podido recuperar la información de la operación", new Exception());
             }
-            pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
             strJsonData = pResponseConnector.readEntity(String.class);
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
             try
@@ -387,6 +387,7 @@ public class OperationManager
         MiqQuests pMiqQuests = null;
         ErrorResponse pErrorCaptured = null;
         String strNRBE;
+        Language pLanguage;
         RviaRestResponse pRviaRestResponse = null;
         Response pResponseConnector;
         RequestConfig pRequestConfig = null;
@@ -398,7 +399,9 @@ public class OperationManager
             pRequestConfig = new RequestConfig(strLanguage, strNRBE);
             /* si no viene idioma o definido se coge por defecto el de el objeto RequestConfig */
             if (strLanguage == null || strLanguage.trim().isEmpty())
-                strLanguage = pRequestConfig.getLanguage();
+                pLanguage = pRequestConfig.getLanguage();
+            else
+                pLanguage = Language.getEnumValue(strLanguage);
             /* se obtienen los datos necesario para realizar la petición al proveedor */
             pMiqQuests = createMiqQuests(pUriInfo);
             if (pMiqQuests == null)
@@ -411,7 +414,7 @@ public class OperationManager
             pDataInput.put(Constants.SIMULADOR_NRBE_NAME, strNRBEName);
             pDataInput.put(Constants.SIMULADOR_SIMPLE_NAME, strLoanName);
             pDataInput.put(Constants.SIMULADOR_TYPE, pSimulatorType.name());
-            pDataInput.put(Constants.SIMULADOR_LANGUAGE, strLanguage);
+            pDataInput.put(Constants.SIMULADOR_LANGUAGE, pLanguage.getJavaCode());
             /* se instancia el conector y se solicitan los datos */
             pRviaRestResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, pDataInput.toString());
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + pRviaRestResponse.toJsonString());

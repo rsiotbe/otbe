@@ -36,7 +36,7 @@ public class MiqAdminValidator
         String JWT = pRequest.getParameter("admTk");
         Cookie cookies[];
         String uri = pRequest.getRequestURI();
-        String validos = "u020885u020976u028879u020964";
+        String validos = "u020885u020976u020933u020964u020804";
         cookies = pRequest.getCookies();
         if (cookies != null)
         {

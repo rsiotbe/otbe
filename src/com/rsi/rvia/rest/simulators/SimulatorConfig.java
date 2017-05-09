@@ -28,6 +28,7 @@ public class SimulatorConfig
     private String                    strContractConditions;
     private String                    strDescription;
     private String                    strLOPD;
+    private boolean                   fDownloadByForm;
     private Hashtable<String, Object> pConfigParams;
     private LoanType                  pLoanType;
 
@@ -57,7 +58,7 @@ public class SimulatorConfig
      * @param strNRBEName
      *            Nombre de la entidad propietaria del simulador
      * @param strEntityName
-     *            NOmbre de la entidad
+     *            Nombre de la entidad
      * @param strCategory
      *            Tipo de prestamo
      * @param strSimpleName
@@ -79,7 +80,7 @@ public class SimulatorConfig
             String strComercialName, String strLoanType, boolean fIsActive, boolean fAllowBooking,
             boolean fAllowUserEmail, boolean fAllowUserTelephone, String strCustomerSupportEmail,
             String strCustomerSupportTelephone, String strReceivingOfficeEmail, String strLOPD, String strDisclaimer,
-            String strContractConditions, String strDescription)
+            String strContractConditions, String strDescription, boolean fDownloadByForm)
     {
         this.nId = nId;
         this.strNRBE = strNRBE;
@@ -99,6 +100,7 @@ public class SimulatorConfig
         this.strDisclaimer = strDisclaimer;
         this.strContractConditions = strContractConditions;
         this.strDescription = strDescription;
+        this.fDownloadByForm = fDownloadByForm;
         this.pConfigParams = new Hashtable<String, Object>();
     }
 
@@ -136,6 +138,7 @@ public class SimulatorConfig
         pReturn.put(Constants.SIMULADOR_DISCLAIMER, strDisclaimer);
         pReturn.put(Constants.SIMULADOR_CONTRACT_CONDITIONS, strContractConditions);
         pReturn.put(Constants.SIMULADOR_DESCRIPTION, strDescription);
+        pReturn.put(Constants.SIMULADOR_DOWNLOAD_BY_FORM, fDownloadByForm);
         /* se realiza la comprobación si tiene comisión de apertuyra para rellenar los datos */
         pConfig.put("amount", getAmountJson());
         pConfig.put("fee", getFees());
@@ -190,6 +193,7 @@ public class SimulatorConfig
         pSb.append("AllowBooking        : " + fAllowBooking + "\n");
         pSb.append("AllowUserEmail      : " + fAllowUserEmail + "\n");
         pSb.append("AllowUserTelephone  : " + fAllowUserTelephone + "\n");
+        pSb.append("DownloadByForm      : " + fDownloadByForm + "\n");
         pSb.append("Description         : " + strDescription + "\n");
         pSb.append("Disclaimer          : " + strDisclaimer + "\n");
         pSb.append("LOPD                : " + strLOPD + "\n");
