@@ -12,7 +12,7 @@
     String uri = request.getRequestURI();
     String pageName = uri.substring(uri.lastIndexOf("/")+1);
     Logger pLog  = LoggerFactory.getLogger(pageName);
-    String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(request.getParameter("codTarjeta"));
+    String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(request);
     String strContrato = request.getParameter("idContract");  
     String strIdInternoPe = request.getParameter("idInternoPe");
     String strEntidad = request.getParameter("codEntidad").toString();

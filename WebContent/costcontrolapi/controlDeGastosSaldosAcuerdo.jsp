@@ -3,12 +3,7 @@
  	import="
  	     com.rsi.rvia.rest.endpoint.rsiapi.AcuerdosRuralvia,
 		 com.rsi.rvia.rest.client.QueryCustomizer,
-         com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
-         com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider,
          com.rsi.rvia.rest.error.exceptions.ApplicationException,
-        java.sql.Connection,
-        java.sql.PreparedStatement,
-        java.sql.ResultSet,		 
 		 org.slf4j.Logger,
          org.slf4j.LoggerFactory,
          com.rsi.Constants,
@@ -20,52 +15,10 @@
 String uri = request.getRequestURI();
 String pageName = uri.substring(uri.lastIndexOf("/")+1);
 Logger pLog  = LoggerFactory.getLogger(pageName);
-String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(request.getParameter("codTarjeta"));
-
-String strQuery =
-		" select " +
-		"    substr(b.cta_aso,11,20) acuerdo " +
-		" from bel.belts009 b " +
-		" where b.tarjeta_cod='" + request.getParameter("codTarjeta") + "' " +
-		" union " +
-		" select " +
-		"    acuerdo " +
-		" from BEL.BDPTB083_TARJETAS_MP c " +
-		" where c.tarjeta_cod='" + request.getParameter("codTarjeta") + "' ";
-		
-		pLog.info("Query para extraer los acuerdos visibles en banca: "+ strQuery);  
+String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(request);
+String strQuery = "";
 		String strFiltroAcuerdos = " and num_sec_ac in (";
 		String coma="";		
-		Connection pConnection = null;
-		PreparedStatement pPreparedStatement = null;
-		ResultSet pResultSet = null;
-
-	    try{
-            pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-            pPreparedStatement = pConnection.prepareStatement(strQuery);
-            pResultSet = pPreparedStatement.executeQuery();
-            
-           while (pResultSet.next())
-           {      
-               String strAcuerdo = (String) pResultSet.getString("acuerdo");
-               strFiltroAcuerdos = strFiltroAcuerdos + coma + strAcuerdo;
-              coma=",";
-           }
-           if(coma.equals("")){
-            strFiltroAcuerdos="-1";
-           }
-           strFiltroAcuerdos = strFiltroAcuerdos + ") ";                
-           DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
-           
-	    }
-	    catch(Exception ex){
-	        //throw new Exception();
-	        throw new ApplicationException(500, 9999, "Jsp error", "", ex);
-	    }
-	    finally{
-	        DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
-	    }
-		
         String entorno = AppConfiguration.getInstance().getProperty(Constants.ENVIRONMENT);
         if (entorno.equals("TEST"))
         {
@@ -173,10 +126,18 @@ String strQuery =
         strQuery = strQuery + " and t1.num_sec_ac =" + strContrato; 
      } 
 	
-	strQuery = strQuery + strFiltroAcuerdos + " " + whereLineaEq;	
-	strQuery = strQuery + " and mi_fecha_fin_mes > to_date('" + strDateIni + "','yyyy-mm-dd')" +
-			" and mi_fecha_fin_mes <= to_date('" + strDateFin + "','yyyy-mm-dd')" + 
-			" group by decode(to_char(mi_fecha_fin_mes,'yyyy-mm-dd'),'9999-12-31', '" + strLastChargeDate + "', to_char(mi_fecha_fin_mes,'yyyy-mm-dd')),";
+	strQuery = strQuery  + " " + whereLineaEq;	
+	strQuery = strQuery + " and mi_fecha_fin_mes > to_date('" + strDateIni + "','yyyy-mm-dd')";
+    if("9999-12-31".equals("strDateFin")){
+        strQuery = strQuery + " and ( " +
+	    "   trunc(mi_fecha_fin_mes,'month') < trunc(to_date('" + strLastChargeDate + "','yyyy-mm-dd'),'month') " +
+	    "   or mi_fecha_fin_mes = to_date('9999-12-31','yyyy-mm-dd') " +
+	    " ) ";	
+    }
+    else{
+        strQuery = strQuery + " and mi_fecha_fin_mes <= to_date('" + strDateFin + "','yyyy-mm-dd')";
+    }
+    strQuery = strQuery + " group by decode(to_char(mi_fecha_fin_mes,'yyyy-mm-dd'),'9999-12-31', '" + strLastChargeDate + "', to_char(mi_fecha_fin_mes,'yyyy-mm-dd')),";
 	strQuery = strQuery + strCaseNum;
 			
 

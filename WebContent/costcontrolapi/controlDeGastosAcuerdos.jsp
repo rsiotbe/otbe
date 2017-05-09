@@ -18,7 +18,7 @@ com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider,
 String uri = request.getRequestURI();
 String pageName = uri.substring(uri.lastIndexOf("/")+1);
 Logger pLog  = LoggerFactory.getLogger(pageName);
-String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(request.getParameter("codTarjeta"));
+String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(request);
 
 String strResponse="";
 	String strLinea = request.getParameter("codLinea");
