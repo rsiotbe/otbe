@@ -114,6 +114,7 @@ public class AcuerdosRuralvia
             if (strFields.indexOf(_reserved[i]) != -1)
             {
                 strFields = null;
+                break;
             }
         }
         return strFields;
