@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.rsi.rvia.rest.client.OperationManager;
 
-@Path("/prestamopersonal")
+@Path("/personalloan")
 public class PrestamoPersonal {
 
     private static Logger pLog = LoggerFactory.getLogger(PrestamoPersonal.class);
@@ -28,7 +28,7 @@ public class PrestamoPersonal {
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarifas@
      */
     @GET
-    @Path("/tarifas")
+    @Path("/rates")
     @Produces({ MediaType.TEXT_HTML })
     public Response getTarifas(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
@@ -40,7 +40,7 @@ public class PrestamoPersonal {
     }
 
     @GET
-    @Path("/detalletarifas")
+    @Path("/ratedetail")
     @Produces({ MediaType.TEXT_HTML })
     public Response getDetTarifas(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
@@ -62,7 +62,7 @@ public class PrestamoPersonal {
     }
 
     @GET
-    @Path("/datosprestamo")
+    @Path("/loandata")
     @Produces({ MediaType.TEXT_HTML })
     public Response getDatoPrestamo(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
@@ -73,7 +73,7 @@ public class PrestamoPersonal {
     }
 
     @POST
-    @Path("/datospersona")
+    @Path("/personaldetails")
     @Produces({ MediaType.TEXT_HTML })
     public Response getDatosPersona(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
@@ -91,6 +91,17 @@ public class PrestamoPersonal {
         pLog.info("Entro scoring");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
         pLog.info(" ---------> Scoring");
+        return pReturn;
+    }
+
+    @POST
+    @Path("/signature")
+    @Produces({ MediaType.TEXT_HTML })
+    public Response getFirma(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Entro firma");
+    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
+        pLog.info(" ---------> Firma");
         return pReturn;
     }
 }
