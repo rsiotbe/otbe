@@ -69,8 +69,7 @@ public JSONArray getNews (String strCodNrbe, String strProfile, String strUser) 
 	try
 	{
 		pLog.info("GetNews ::: getNews ::: DDBBProvider ");
-		pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-		
+		pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);		
 		pConnection.setAutoCommit(false);
 		int iResultCode = 0;
 		String strError;

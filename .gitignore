@@ -9,6 +9,7 @@ reports/
 .gitignore
 WebContent/static
 local.properties
+configurations/application.properties
 configurations/application{DESA}.properties
 configurations/Banca.OracleConfig{DESA}.properties
 configurations/CIP.OracleConfig{DESA}.properties
