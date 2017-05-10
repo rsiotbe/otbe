@@ -151,7 +151,7 @@ public class IdentityProviderRVIA implements IdentityProvider
                 + "         <!--Optional:-->                         "
                 + "         <sec:CODApl>BDP</sec:CODApl>             "
                 + "         <!--Optional:-->                         "
-                + "         <sec:CODCanal>18</sec:CODCanal>          "
+                + "         <sec:CODCanal>11</sec:CODCanal>          "
                 + "      </se:RSI_Header>                            "
                 + "   </soapenv:Header>                              "
                 + "   <soapenv:Body>                                 "
@@ -165,7 +165,7 @@ public class IdentityProviderRVIA implements IdentityProvider
                 + "         <se:idExterno>"
                 + documento
                 + "</se:idExterno>   "
-                + "         <se:canal>18</se:canal>               "
+                + "         <se:canal>11</se:canal>               "
                 + "      </se:EE_I_LoginTarjeta>                     "
                 + "   </soapenv:Body>                                "
                 + "</soapenv:Envelope>                               ";
