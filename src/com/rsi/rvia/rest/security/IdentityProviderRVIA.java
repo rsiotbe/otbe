@@ -165,7 +165,7 @@ public class IdentityProviderRVIA implements IdentityProvider
                 + "         <se:idExterno>"
                 + documento
                 + "</se:idExterno>   "
-                + "         <se:canal>00003</se:canal>               "
+                + "         <se:canal>18</se:canal>               "
                 + "      </se:EE_I_LoginTarjeta>                     "
                 + "   </soapenv:Body>                                "
                 + "</soapenv:Envelope>                               ";
