@@ -67,7 +67,7 @@ String strResponse="";
 	    if(strRviaAcuerdos[1] != null){
 	        strFiltroAcuerdosTmp = " and t1.num_sec_ac in (" + strRviaAcuerdos[1] + ")";
 	    }
-	    if(strIdInterno != null || strRviaAcuerdos[1] == null){
+	    if(strRviaAcuerdos[1] == null){
 		    strQuery = 
 		          " SELECT" +   
 		                "   t1.NUM_SEC_AC \"acuerdo\", trim(t2.NOMB_GRP_PD) \"txtproducto\"" +
@@ -102,12 +102,12 @@ String strResponse="";
 		    strAliases = "";
 		    strFiltroAcuerdos = " and t1.num_sec_ac in (";
 		    coma="";
-	
+		    strRviaAcuerdos[0]="";
 		   while (pResultSet.next())
 		   {      
 		       String strAcuerdo = (String) pResultSet.getString("acuerdo");
 		       String strAlias = (String) pResultSet.getString("txtproducto");
-		       strAliases = strAliases + coma + "'" + strAcuerdo + "' , '" + strAlias + "'" ;
+		       strRviaAcuerdos[0] = strRviaAcuerdos[0] + coma + "'" + strAcuerdo + "' , '" + strAlias + "'" ;
 		       strFiltroAcuerdos = strFiltroAcuerdos + coma + strAcuerdo;
 		      coma=",";
 		   }
@@ -121,14 +121,12 @@ String strResponse="";
 		   pPreparedStatement.close();
 		   
 	    }
-	    else{
-	        
+	    else{	        
 	        strFiltroAcuerdos = " and t1.num_sec_ac in (" + strRviaAcuerdos[1] + ")";
 	    } 
 	        
 	// ----------------------------------------
-	
-	
+		
 		strQuery =
 			" SELECT" +   
 			" 	t1.NUM_SEC_AC \"acuerdo\", trim(t2.NOMB_GRP_PD) \"nombreGrupo\"," +
