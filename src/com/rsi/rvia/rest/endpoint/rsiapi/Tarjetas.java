@@ -260,7 +260,7 @@ public class Tarjetas
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas @
      */
     @GET
-    @Path("/cards/{idContract: [0-9]+}/sumbyconcept/{concepto}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
+    @Path("/cards/{idContract: [0-9][0-9][0-9]+}/sumbyconcept/{concepto}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/to/{mesFin: [0-9][0-9][0-9][0-9]-[0-9][0-9]}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response sumaMovimientosMesTarjetasGroupByConceptoEntreFechasUnAcuerdo(@Context HttpServletRequest pRequest,
             @Context UriInfo pUriInfo, String strData)
@@ -278,7 +278,7 @@ public class Tarjetas
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas @
      */
     @GET
-    @Path("/cards/{idContract: [0-9]+}/sumbyconcept/{concepto}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
+    @Path("/cards/{idContract: [0-9][0-9][0-9]+}/sumbyconcept/{concepto}/from/{mesInicio: [0-9][0-9][0-9][0-9]-[0-9][0-9]}/uptodate")
     @Produces(MediaType.APPLICATION_JSON)
     public Response sumaMovimientosMesTarjetasGroupByConceptoHastaHoyUnAcuerdo(@Context HttpServletRequest pRequest,
             @Context UriInfo pUriInfo, String strData)
