@@ -159,8 +159,8 @@ public class Utils
      * @throws SQLException
      * @throws JSONException
      */
-    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet) throws SQLException,
-            JSONException
+    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet)
+            throws SQLException, JSONException
     {
         JSONObject pJsonRetorno = new JSONObject();
         JSONArray pJson = new JSONArray();
@@ -451,8 +451,8 @@ public class Utils
      * @param strJsonData
      * @throws Exception
      */
-    public static void writeMock(HttpServletRequest pRequest, UriInfo pUriInfo, MiqQuests pMiqQuests, String strJsonData)
-            throws Exception
+    public static void writeMock(HttpServletRequest pRequest, UriInfo pUriInfo, MiqQuests pMiqQuests,
+            String strJsonData) throws Exception
     {
         int i;
         String strTargetMockRootDir = AppConfiguration.getInstance().getProperty(Constants.TARGET_MOCK_DIRECTORY);
@@ -471,8 +471,8 @@ public class Utils
             }
             catch (Exception e)
             {
-                throw new LogicalErrorException(500, 9999, "Error al intentar crear directorio", "Fallo al crear directorio para mocks: "
-                        + strTestPath, null);
+                throw new LogicalErrorException(500, 9999, "Error al intentar crear directorio",
+                        "Fallo al crear directorio para mocks: " + strTestPath, null);
             }
         }
         FileWriter fichero = null;
@@ -489,8 +489,8 @@ public class Utils
         }
         catch (Exception e)
         {
-            throw new LogicalErrorException(500, 9999, "Error manejo de ficheros", "Fallo al crear fichero para mocks: "
-                    + strTestPath + "/__" + strPartes[i], null);
+            throw new LogicalErrorException(500, 9999, "Error manejo de ficheros",
+                    "Fallo al crear fichero para mocks: " + strTestPath + "/__" + strPartes[i], null);
         }
         finally
         {
