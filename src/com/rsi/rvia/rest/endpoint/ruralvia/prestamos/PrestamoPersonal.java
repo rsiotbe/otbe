@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.rsi.rvia.rest.client.OperationManager;
 
-@Path("/personalloan")
+@Path("/loan/personal")
 public class PrestamoPersonal {
 
     private static Logger pLog = LoggerFactory.getLogger(PrestamoPersonal.class);
@@ -34,13 +34,12 @@ public class PrestamoPersonal {
     {
         pLog.info("Entro tarifas");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-    	//Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, id, MediaType.TEXT_PLAIN_TYPE);
         pLog.info(" ---------> Tarifas");
         return pReturn;
     }
 
     @GET
-    @Path("/ratedetail")
+    @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}")
     @Produces({ MediaType.TEXT_HTML })
     public Response getDetTarifas(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
@@ -51,7 +50,7 @@ public class PrestamoPersonal {
     }
 
     @GET
-    @Path("/lopd")
+    @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/lopd")
     @Produces({ MediaType.TEXT_HTML })
     public Response getLopd(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {

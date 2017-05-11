@@ -30,9 +30,9 @@ public class ViaT {
     @Produces({ MediaType.TEXT_HTML })
     public Response getOperaciones(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro operaciones");
+        pLog.info("Se obtienen las operaciones");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Operaciones");
+        pLog.info("Se finaliza la obtencion de las operaciones");
         return pReturn;
     }
 
@@ -42,9 +42,9 @@ public class ViaT {
     @Produces({ MediaType.TEXT_HTML })
     public Response getSolicitud(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro solicitud");
+        pLog.info("Se obtienen las tarjetas disponibles");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Solicitud");
+        pLog.info("Se finaliza la obtencion de las tarjetas disponibles");
         return pReturn;
     }
 
@@ -53,9 +53,9 @@ public class ViaT {
     @Produces({ MediaType.TEXT_HTML })
     public Response getLopd(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro lopd");
+        pLog.info("Se obtienen los datos lopd");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Lopd");
+        pLog.info("Se finaliza la obtencion de datos lopd");
         return pReturn;
     }
 
@@ -64,9 +64,9 @@ public class ViaT {
     @Produces({ MediaType.TEXT_HTML })
     public Response getDatosTarjetas(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro datos tarjetas");
+        pLog.info("Se obtienen los datos de la tarjeta");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Datos tarjetas");
+        pLog.info("Se finaliza la obtencion de datos de la tarjeta");
         return pReturn;
     }
 
@@ -75,9 +75,9 @@ public class ViaT {
     @Produces({ MediaType.TEXT_HTML })
     public Response getDetallesTarjetas(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro detalles tarjetas");
+        pLog.info("Se obtienen los detalles tarjetas");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Detalles tarjetas");
+        pLog.info("Se finaliza la obtencion de los detalles de las tarjetas");
         return pReturn;
     }
 
@@ -86,9 +86,9 @@ public class ViaT {
     @Produces({ MediaType.TEXT_HTML })
     public Response getDatosPersonales(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro datos personales");
+        pLog.info("Se obtienen los datos personales para scoring");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Datos personales");
+        pLog.info("Se finaliza la obtencion de los datos personales para scoring");
         return pReturn;
     }
 
@@ -97,31 +97,20 @@ public class ViaT {
     @Produces({ MediaType.TEXT_HTML })
     public Response getScoring(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro scoring");
+        pLog.info("Se realiza la llamada al scoring");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Scoring");
+        pLog.info("Se finaliza la llamada al scoring");
         return pReturn;
     }
 
 	@POST
-    @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/sign")
+    @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/signature")
     @Produces({ MediaType.TEXT_HTML })
     public Response getFirma(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro firma");
+        pLog.info("Se realiza la llamada a la firma");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Firma");
-        return pReturn;
-    }
-
-	@POST
-    @Path("/errscoring")
-    @Produces({ MediaType.TEXT_HTML })
-    public Response getErrScoring(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
-    {
-        pLog.info("Entro errscoring");
-    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Errscoring");
+        pLog.info("Se finaliza la llamada a la firma");
         return pReturn;
     }
 }
