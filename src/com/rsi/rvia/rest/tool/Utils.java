@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import org.apache.commons.collections4.MapUtils;
+import org.glassfish.jersey.server.ExtendedUriInfo;
+import org.glassfish.jersey.uri.UriTemplate;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,17 +54,16 @@ public class Utils
      */
     public static String getPrimaryPath(UriInfo pUriInfo)
     {
-        String strPath = pUriInfo.getPath();
-        MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
-        Iterator<String> pIterator = pListParameters.keySet().iterator();
-        while (pIterator.hasNext())
+        String strPath;
+        List<UriTemplate> matchedTemplates = ((ExtendedUriInfo) pUriInfo).getMatchedTemplates();
+        StringBuilder builder = new StringBuilder();
+        for (int i = matchedTemplates.size() - 1; i >= 0; i--)
         {
-            String strKeyName = (String) pIterator.next();
-            String strValue = pListParameters.get(strKeyName).get(0);
-            strPath = strPath.replaceFirst("/" + strValue + "/", "/{" + strKeyName + "}/");
+            builder.append("/" + matchedTemplates.get(i).getTemplate().substring(1));
         }
-        pLog.debug("StrPath: " + strPath);
-        return ("/" + strPath);
+        strPath = builder.toString().replaceAll(":[^\\}]*\\}", "}");
+        pLog.debug("Path a buscar en la BD: " + strPath);
+        return (strPath);
     }
 
     /**
