@@ -48,8 +48,13 @@
    String strQuery =          
            " select /" + "*" + "+ FULL(e) *" + "/  " +
                    strFieldDsiplay + 
-                   " sum(e.imptrn) \"importe\", " +
-                   " avg(e.imptrn) \"media\", " +
+                   
+                   "   sum(case " +
+                   "       when e.tipfac2 = '0033' then (e.imptrn * -1) else e.imptrn " +
+                   "   end) \"importe\", " +
+                   "   avg(case " +
+                   "       when e.tipfac2 = '0033' then (e.imptrn * -1) else e.imptrn " +
+                   "   end) \"media\", " +                           
                    " count(*) \"numero\" " +
                    " from " +
                    "   rdwc01.MI_MPA2_OPERAC_TARJETAS e " +
