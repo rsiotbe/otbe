@@ -183,7 +183,9 @@ String strResponse="";
 	    throw new ApplicationException(500, 9999, "Jsp error", "", ex);
 	}
 	finally{
+	   if(pConnection != null){
 	    DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
+	   }
 	}
 	response.setHeader("content-type", "application/json");
 %>
