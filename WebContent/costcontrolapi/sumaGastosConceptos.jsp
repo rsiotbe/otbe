@@ -17,6 +17,7 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
 	String strEntidad = request.getParameter("codEntidad");
 	String strDateFin = request.getParameter("mesFin");    
 	String strDateIni = request.getParameter("mesInicio"); 
+	String strExcluClops = " and trim(t1.cod_origen) not in ('070002', '070001', '410003', '410001' )";
     String strQuery =
           " select" +
           "    t1.sgn  \"tipoApunte\"" +
@@ -58,7 +59,7 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
           }   
           strDateIni = strDateIni + "-01";         
           strQuery = strQuery + " and t1.fecha_oprcn_dif >= round(to_date('" + strDateIni + "','yyyy-mm-dd'),'mm')";   
-          strQuery = strQuery + " and cod_cta = '01'  and ind_accion <> '3' " +       
+          strQuery = strQuery + " and cod_cta = '01'  and ind_accion <> '3' " +  strExcluClops +     
           " group by nvl(trim(t1.concpt_apnte),trim(t3.txt_tipo_clop_brev)), t1.sgn  " ;
   pLog.info("Query al customizador: " + strQuery);            
   String strResponse = QueryCustomizer.process(request,strQuery);          

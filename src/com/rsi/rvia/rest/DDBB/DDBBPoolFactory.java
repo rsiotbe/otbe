@@ -84,7 +84,8 @@ public class DDBBPoolFactory
     private synchronized static DataSource loadDDBBDataSource(DDBBProvider pDDBBProvider) throws Exception
     {
         DataSource pReturn = null;
-        pLog.error("Se procede a conectar con la BD de tipo ", pDDBBProvider.name());
+        String strNonbreBD = pDDBBProvider.name();
+        pLog.error("Se procede a conectar con la BD de tipo " + strNonbreBD);
         switch (pDDBBProvider)
         {
             case OracleBanca:
