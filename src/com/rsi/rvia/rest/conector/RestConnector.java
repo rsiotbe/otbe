@@ -125,6 +125,8 @@ public class RestConnector
      *            path original de la petición
      * @param pPathParams
      *            parámetros asociados al path
+     * @param wsObject
+     *            parametros asociados a llamada a ws
      * @return Respuesta del proveedor de datos
      * @throws Exception
      */

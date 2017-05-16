@@ -134,7 +134,7 @@ public class Constants
 
     public enum SimulatorType
     {
-        PERSONAL, MORTGAGE
+        PERSONAL, MORTGAGE, CARD
     }
 
     public enum Environment

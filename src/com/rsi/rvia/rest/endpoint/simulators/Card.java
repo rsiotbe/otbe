@@ -50,25 +50,24 @@ public class Card
     }
 
     @GET
-    @Path("/{idCard}/cards/simpublico")
+    @Path("/{idCard}/cards/pubsimulator")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getCardSimulator(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
-            @PathParam("idCard") String idCard) throws Exception
+    public Response getCardSimulator(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, @PathParam("idCard") String idCard) throws Exception
     {
     	pLog.info("Card.getCardSimulator");
-    	Response pResponse = OperationManager.processDataFromSimulators(pRequest, pUriInfo, null, SimulatorType.CARD, idCard, null, MediaType.APPLICATION_JSON_TYPE);
+    	Response pResponse = OperationManager.processDataFromSimulators(pRequest, pUriInfo, SimulatorType.CARD, idCard, null, MediaType.APPLICATION_JSON_TYPE);
     	pLog.info("Card.getCardSimulator -- > salgo");
     	return pResponse;
     }
 
     @GET
-    @Path("/{idCard}/cards/simpublico/{idioma}")
+    @Path("/{idCard}/cards/pubsimulator/{idioma}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getLanguageCardSimulator(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
             @PathParam("idCard") String idCard, @PathParam("idioma") String strLanguage) throws Exception
     {
     	pLog.info("Card.getCardSimulator");
-    	Response pResponse = OperationManager.processDataFromSimulators(pRequest, pUriInfo, null, SimulatorType.CARD, idCard, strLanguage, MediaType.APPLICATION_JSON_TYPE);
+    	Response pResponse = OperationManager.processDataFromSimulators(pRequest, pUriInfo, SimulatorType.CARD, idCard, strLanguage, MediaType.APPLICATION_JSON_TYPE);
     	pLog.info("Card.getCardSimulator -- > salgo");
     	return pResponse;
     }
