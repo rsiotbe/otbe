@@ -20,12 +20,9 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
     String strCategoria = request.getParameter("categoria"); 
     String strConceptoApunte = request.getParameter("concepto");
     String strDateFin = request.getParameter("mesFin");
-    String strDateIni = request.getParameter("mesFin");
- 
-    String strExcluClops = " and trim(t1.cod_origen) ";
-    
-    
-    
+    String strDateIni = request.getParameter("mesFin"); 
+    String strExcluClops = " and trim(t1.cod_origen) not in ('070002', '070001', '410003', '410001' )";
+       
     strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
     strDateIni= QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni); 
     String strQuery =
@@ -49,7 +46,7 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
              " where t1.cod_nrbe_en='" + strEntidad + "'" +
              " and t1.fecha_oprcn_dif > to_date('" + strDateIni + "','yyyy-mm-dd') " +             
              " and t1.fecha_oprcn_dif < to_date('" + strDateFin + "','yyyy-mm-dd') " +              
-             " and t1.cod_cta = '01'" +
+             " and t1.cod_cta = '01'" + strExcluClops +            
              " and t1.ind_accion <> '3' ";
  
       if(strContrato == null){

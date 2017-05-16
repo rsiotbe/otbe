@@ -18,6 +18,7 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
     String strDateIni = request.getParameter("mesInicio").toString();
     String strDateFin = request.getParameter("mesFin");   
     String strCodCta = "";
+    String strExcluClops = " and trim(t1.cod_origen) not in ('070002', '070001', '410003', '410001' )";
     
     /*
     // TODO: Parece que el código de clasificación no aplica para cod_cta <> 1.
@@ -101,7 +102,8 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
    }
    else{
  	  strQuery = strQuery + " and num_sec_ac =" + strContrato; 
-   }      
+   }         
+   strQuery = strQuery +  strExcluClops;
    strQuery = strQuery + " group by to_char(fecha_oprcn_dif,'YYYY-MM'), "+
    /*
          " case " + 
