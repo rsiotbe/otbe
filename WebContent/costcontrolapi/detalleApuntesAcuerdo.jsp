@@ -21,7 +21,7 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
     String strConceptoApunte = request.getParameter("concepto");
     String strDateFin = request.getParameter("mesFin");
     String strDateIni = request.getParameter("mesFin"); 
-    String strExcluClops = " and trim(t1.cod_origen) not in ('070002', '070001', '410003', '410001' )";
+    String strExcluClops = " and trim(t1.cod_origen) not in (" + AcuerdosRuralvia.getExcludedClops() + ")";
        
     strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
     strDateIni= QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni); 
