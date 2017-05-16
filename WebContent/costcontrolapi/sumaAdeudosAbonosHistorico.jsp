@@ -18,7 +18,7 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
     String strDateIni = request.getParameter("mesInicio").toString();
     String strDateFin = request.getParameter("mesFin");   
     String strCodCta = "";
-    String strExcluClops = " and trim(t1.cod_origen) not in ('070002', '070001', '410003', '410001' )";
+    String strExcluClops = " and trim(t1.cod_origen) not in (" + AcuerdosRuralvia.getExcludedClops() + ")";
     
     /*
     // TODO: Parece que el código de clasificación no aplica para cod_cta <> 1.
