@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     import="
+        com.rsi.rvia.rest.endpoint.rsiapi.AcuerdosRuralvia,
          com.rsi.rvia.rest.client.QueryCustomizer,
          org.slf4j.Logger,
         org.slf4j.LoggerFactory 
@@ -11,6 +12,7 @@
     String uri = request.getRequestURI();
     String pageName = uri.substring(uri.lastIndexOf("/")+1);
     Logger pLog  = LoggerFactory.getLogger(pageName);
+    String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(request);
     String strContrato = request.getParameter("idContract");  
     String strIdInternoPe = request.getParameter("idInternoPe");
     String strEntidad = request.getParameter("codEntidad").toString();
@@ -46,8 +48,13 @@
    String strQuery =          
            " select /" + "*" + "+ FULL(e) *" + "/  " +
                    strFieldDsiplay + 
-                   " sum(e.imptrn) \"importe\", " +
-                   " avg(e.imptrn) \"media\", " +
+                   
+                   "   sum(case " +
+                   "       when e.tipfac2 = '0033' then (e.imptrn * -1) else e.imptrn " +
+                   "   end) \"importe\", " +
+                   "   avg(case " +
+                   "       when e.tipfac2 = '0033' then (e.imptrn * -1) else e.imptrn " +
+                   "   end) \"media\", " +                           
                    " count(*) \"numero\" " +
                    " from " +
                    "   rdwc01.MI_MPA2_OPERAC_TARJETAS e " +
@@ -64,12 +71,19 @@
                    " and e.FECHA_OPRCN < to_date('" + strDateFin + "', 'yyyy-mm-dd')" +
                    " and e.FECHA_OPRCN > to_date('" + strDateIni + "', 'yyyy-mm-dd')" +
                    " and f.mi_fecha_fin = to_date('9999-12-31', 'yyyy-mm-dd') " ;
+
                    if(strContrato == null){
-                       strQuery = strQuery +  " and f.id_interno_pe = " + strIdInternoPe;
+                       if(strRviaAcuerdos[1] == null){
+                           strQuery = strQuery +  " and f.id_interno_pe = " + strIdInternoPe;
+                       }
+                       else{
+                           strQuery = strQuery + " and e.num_sec_ac in (" + strRviaAcuerdos[1] +  ") ";
+                       }
                     }
                     else{
                        strQuery = strQuery + " and e.num_sec_ac =" + strContrato; 
-                    }  
+                    }                     
+                   
                    strQuery = strQuery + strGroupBy;
    pLog.info("Query al customizador: " + strQuery);
    String strResponse = QueryCustomizer.process(request,strQuery);          

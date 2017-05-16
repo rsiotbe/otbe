@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     import="
+        com.rsi.rvia.rest.endpoint.rsiapi.AcuerdosRuralvia,
         com.rsi.rvia.rest.client.QueryCustomizer,
         org.slf4j.Logger,
         org.slf4j.LoggerFactory 
@@ -10,6 +11,7 @@
 String uri = request.getRequestURI();
 String pageName = uri.substring(uri.lastIndexOf("/")+1);
 Logger pLog  = LoggerFactory.getLogger(pageName);
+String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(request);
     String strIdInternoPe = request.getParameter("idInternoPe");
     String strContrato = request.getParameter("idContract");  
     String strLinea = request.getParameter("codLinea");
@@ -18,8 +20,9 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
     String strCategoria = request.getParameter("categoria"); 
     String strConceptoApunte = request.getParameter("concepto");
     String strDateFin = request.getParameter("mesFin");
-    String strDateIni = request.getParameter("mesFin");
-    
+    String strDateIni = request.getParameter("mesFin"); 
+    String strExcluClops = " and trim(t1.cod_origen) not in ('070002', '070001', '410003', '410001' )";
+       
     strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
     strDateIni= QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni); 
     String strQuery =
@@ -43,16 +46,21 @@ Logger pLog  = LoggerFactory.getLogger(pageName);
              " where t1.cod_nrbe_en='" + strEntidad + "'" +
              " and t1.fecha_oprcn_dif > to_date('" + strDateIni + "','yyyy-mm-dd') " +             
              " and t1.fecha_oprcn_dif < to_date('" + strDateFin + "','yyyy-mm-dd') " +              
-             " and t1.cod_cta = '01'" +
+             " and t1.cod_cta = '01'" + strExcluClops +            
              " and t1.ind_accion <> '3' ";
-             
+ 
       if(strContrato == null){
-          strQuery = strQuery + " and t1.num_sec_ac in (" +
-                  " select t2.num_sec_ac from rdwc01.mi_ac_cont_gen t2" +
-                  " where t2.cod_nrbe_en='" + strEntidad + "' " +
-                  "    and t2.id_interno_pe=" + strIdInternoPe +
-                  "    and t2.mi_fecha_fin=to_date('31.12.9999','dd.mm.yyyy') " + 
-            ")";
+          if(strRviaAcuerdos[1]==null){
+	          strQuery = strQuery + " and t1.num_sec_ac in (" +
+	                  " select t2.num_sec_ac from rdwc01.mi_ac_cont_gen t2" +
+	                  " where t2.cod_nrbe_en='" + strEntidad + "' " +
+	                  "    and t2.id_interno_pe=" + strIdInternoPe +
+	                  "    and t2.mi_fecha_fin=to_date('31.12.9999','dd.mm.yyyy') " + 
+	            ")";
+          }
+          else{
+              strQuery = strQuery + " and t1.num_sec_ac in (" + strRviaAcuerdos[1] +  ") ";
+          }
        }
        else{
           strQuery = strQuery + " and t1.num_sec_ac =" + strContrato; 
