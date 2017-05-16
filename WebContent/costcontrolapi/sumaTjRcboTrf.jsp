@@ -13,11 +13,12 @@ String pageName = uri.substring(uri.lastIndexOf("/")+1);
 Logger pLog  = LoggerFactory.getLogger(pageName);
 String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(request);
     String strIdInternoPe = request.getParameter("idInternoPe");
-    String strContrato = request.getParameter("idContract");  
+    String strContrato = request.getParameter("idContract");
     String strEntidad = request.getParameter("codEntidad");
-    String strDateIni = request.getParameter("mesInicio");      
-    String strDateFin = request.getParameter("mesFin");    
+    String strDateIni = request.getParameter("mesInicio");
+    String strDateFin = request.getParameter("mesFin");
     String strTipoApunte = request.getParameter("tipoApunte"); 
+    String strExcluClops = " and trim(cod_origen) not in (" + AcuerdosRuralvia.getExcludedClops() + ")";
     String filtroTipoApunte = "";
     if(strTipoApunte != null){
    	 filtroTipoApunte = " and sgn='"+strTipoApunte+"'"; 
@@ -37,7 +38,7 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
    				 "   else 'OTROS'" +
    				 "  end \"categoria\"" +
    				 " FROM  rdwc01.MI_DO_APTE_CTA" +
-   				 " where cod_nrbe_en='" + strEntidad + "'" ;
+   				 " where cod_nrbe_en='" + strEntidad + "'" + strExcluClops;
    			          
     if(strDateFin == null){
        strQuery = strQuery + " and fecha_oprcn_dif <= (select max(fecha_oprcn_dif) from rdwc01.mi_do_apte_cta where cod_nrbe_en='" + 
