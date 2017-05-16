@@ -11,18 +11,12 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.jose4j.lang.JoseException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.Constants;
+import com.rsi.Constants.Language;
 import com.rsi.Constants.SimulatorType;
 import com.rsi.isum.IsumValidation;
 import com.rsi.rvia.rest.conector.RestConnector;
@@ -30,9 +24,10 @@ import com.rsi.rvia.rest.error.ErrorManager;
 import com.rsi.rvia.rest.error.ErrorResponse;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 import com.rsi.rvia.rest.error.exceptions.ISUMException;
-import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.response.RviaRestResponse;
+import com.rsi.rvia.rest.security.IdentityProvider;
+import com.rsi.rvia.rest.security.IdentityProviderFactory;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.simulators.SimulatorsManager;
@@ -76,6 +71,7 @@ public class OperationManager
         try
         {
             // Se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM.
+            // comentada para postman
             pRequestConfigRvia = getValidateSessionRvia(pRequest);
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             pMiqQuests = createMiqQuests(pUriInfo);
@@ -167,6 +163,7 @@ public class OperationManager
      * @param pMediaType
      *            Tipo de mediatype que debe cumplir la petición
      * @return Objeto respuesta de Jersey
+     * @throws Exception
      * @throws JoseException
      * @throws IOException
      * @throws InvalidKeySpecException
@@ -177,7 +174,7 @@ public class OperationManager
     {
         ErrorResponse pErrorCaptured = null;
         RestConnector pRestConnector;
-        RviaRestResponse pRviaRestResponse = null;
+        // RviaRestResponse pRviaRestResponse = null;
         String strJsonData = "";
         int nReturnHttpCode = 200;
         String strTemplate = "";
@@ -202,38 +199,13 @@ public class OperationManager
             // Se instancia el conector y se solicitan los datos.
             pRestConnector = new RestConnector();
             // BEGIN: Gestión de login y token.
-            // Cuando exista un login rest hay que cambiar todos esto.
+            // Si los servicios que se invocan son de rsiapi
+            IdentityProvider pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests);
+            pIdentityProvider.process();
             // Si estamos invocando a login tendremos los campos resueltos o el error
-            if (strPrimaryPath.indexOf("/login") != -1)
-            {
-                // Si es login generamos JWT
-                HashMap<String, String> claims;
-                claims = doLogin(pRequest);
-                if (pRequest.getParameter("idInternoPe") != null)
-                {
-                    claims.remove("idInternoPe");
-                    claims.put("idInternoPe", pRequest.getParameter("idInternoPe"));
-                }
-                if (claims != null)
-                    JWT = ManageJWToken.generateJWT(claims, "tk1");
-                else
-                {
-                    // Login fallido
-                    throw new LogicalErrorException(403, 9999, "Login failed", "Suministre credenciales válidas para iniciar sesión", new Exception());
-                }
-            }
-            else
-            {
-                // Else verificamos JWT
-                JWT = pRequest.getHeader("Authorization");
-            }
-            HashMap<String, String> pParamsToInject = ManageJWToken.validateJWT(JWT, "tk1");
-            if (pParamsToInject == null)
-            {
-                throw new LogicalErrorException(401, 9999, "Unauthorized", "Sesión no válida", new Exception());
-            }
+            JWT = pIdentityProvider.getJWT();
+            HashMap<String, String> pParamsToInject = pIdentityProvider.getClaims();
             pResponseConnector = pRestConnector.getData(pRequest, strData, null, pMiqQuests, pListParams, pParamsToInject);
-            pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
             int nHttpCode = pResponseConnector.getStatus();
             if (nHttpCode != 200)
             {
@@ -241,6 +213,14 @@ public class OperationManager
             }
             strJsonData = pResponseConnector.readEntity(String.class);
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
+            try
+            {
+                SaveExitHierarchy.process(strJsonData, pMiqQuests.getIdMiq(), pRestConnector.getMethod());
+            }
+            catch (Exception ex)
+            {
+                pLog.error("Error al grabar la jerarquía de salida.");
+            }
         }
         catch (Exception ex)
         {
@@ -275,100 +255,6 @@ public class OperationManager
         }
         // Insertar siempre JWT en el response
         return pResponseConnector;
-    }
-
-    private static HashMap<String, String> doLogin(HttpServletRequest pRequest) throws Exception
-    {
-        String usuario = pRequest.getParameter("usuario");
-        String documento = pRequest.getParameter("documento");
-        String password = pRequest.getParameter("password");
-        String SOAPEndPoint = "http://soa.risa";
-        String entorno = AppConfiguration.getInstance().getProperty(Constants.ENVIRONMENT);
-        if (entorno.equals("TEST"))
-        {
-            usuario = "03052445";
-            documento = "33334444S";
-            password = "03052445";
-            SOAPEndPoint = "http://soa02.risa";
-        }
-        String strBody = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">"
-                + "   <soapenv:Header/>                                     "
-                + "   <soapenv:Body>                                        "
-                + "      <ee:EE_I_AutenticarUsuario>                        "
-                + "         <ee:usuario>"
-                + usuario
-                + "</ee:usuario>        "
-                + "         <ee:password>"
-                + password
-                + "</ee:password>     "
-                + "         <ee:documento>"
-                + documento
-                + "</ee:documento>  "
-                + "      </ee:EE_I_AutenticarUsuario>                       "
-                + "   </soapenv:Body>                                       "
-                + "</soapenv:Envelope>                                      ";
-        StringEntity stringEntity = new StringEntity(strBody, "UTF-8");
-        stringEntity.setChunked(true);
-        // Request parameters and other properties.
-        HttpPost httpPost = new HttpPost(SOAPEndPoint + "/SOA_Wallet/Empresa/PS/SE_WAL_AutenticarUsuario");
-        httpPost.setEntity(stringEntity);
-        httpPost.addHeader("Accept", "text/xml");
-        httpPost.addHeader("SOAPAction", "");
-        // Execute and get the response.
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        // HttpClient httpClient = new HttpClient();
-        HttpResponse response = httpClient.execute(httpPost);
-        HttpEntity entity = response.getEntity();
-        String strResponse = null;
-        if (entity != null)
-        {
-            strResponse = EntityUtils.toString(entity);
-        }
-        pLog.info("Respuesta del servicio de login: " + strResponse);
-        strResponse = strResponse.replace("\n", "");
-        String codRetorno = strResponse.replaceAll("^.*<ee:codigoRetorno>([^<]*)</ee:codigoRetorno>.*$", "$1");
-        if (Integer.parseInt(codRetorno) == 0)
-        {
-            if (entorno.equals("TEST"))
-            {
-                HashMap<String, String> fields = new HashMap<String, String>();
-                fields.put("codEntidad", "3076");
-                fields.put("idInternoPe", "1834908");
-                fields.put("codTarjeta", "307671667");
-                return fields;
-            }
-            else
-            {
-                return null;
-            }
-        }
-        else
-        {
-            HashMap<String, String> fields = new HashMap<String, String>();
-            String codEntidad = strResponse.replaceAll("^.*<ee:entidad>([^<]*)</ee:entidad>.*$", "$1");
-            String idInternoPe = strResponse.replaceAll("^.*<ee:idInternoPe>([^<]*)</ee:idInternoPe>.*$", "$1");
-            String nTarjeta = strResponse.replaceAll("^.*<ee:numeroTarjeta>([^<]*)</ee:numeroTarjeta>.*$", "$1");
-            codEntidad = codEntidad.trim();
-            idInternoPe = idInternoPe.trim();
-            while (codEntidad.length() < 4)
-            {
-                codEntidad = "0" + codEntidad;
-            }
-            nTarjeta = nTarjeta.trim();
-            if (entorno.equals("TEST"))
-            {
-                fields.put("codEntidad", "3076");
-                fields.put("idInternoPe", "1834908");
-                fields.put("codTarjeta", "307671667");
-            }
-            else
-            {
-                fields.put("codEntidad", codEntidad.replace(" ", ""));
-                fields.put("idInternoPe", idInternoPe.replace(" ", ""));
-                fields.put("codTarjeta", nTarjeta.replace(" ", ""));
-            }
-            return fields;
-        }
     }
 
     /**
@@ -501,6 +387,7 @@ public class OperationManager
         MiqQuests pMiqQuests = null;
         ErrorResponse pErrorCaptured = null;
         String strNRBE;
+        Language pLanguage;
         RviaRestResponse pRviaRestResponse = null;
         Response pResponseConnector;
         RequestConfig pRequestConfig = null;
@@ -512,7 +399,9 @@ public class OperationManager
             pRequestConfig = new RequestConfig(strLanguage, strNRBE);
             /* si no viene idioma o definido se coge por defecto el de el objeto RequestConfig */
             if (strLanguage == null || strLanguage.trim().isEmpty())
-                strLanguage = pRequestConfig.getLanguage();
+                pLanguage = pRequestConfig.getLanguage();
+            else
+                pLanguage = Language.getEnumValue(strLanguage);
             /* se obtienen los datos necesario para realizar la petición al proveedor */
             pMiqQuests = createMiqQuests(pUriInfo);
             if (pMiqQuests == null)
@@ -525,7 +414,7 @@ public class OperationManager
             pDataInput.put(Constants.SIMULADOR_NRBE_NAME, strNRBEName);
             pDataInput.put(Constants.SIMULADOR_SIMPLE_NAME, strLoanName);
             pDataInput.put(Constants.SIMULADOR_TYPE, pSimulatorType.name());
-            pDataInput.put(Constants.SIMULADOR_LANGUAGE, strLanguage);
+            pDataInput.put(Constants.SIMULADOR_LANGUAGE, pLanguage.getJavaCode());
             /* se instancia el conector y se solicitan los datos */
             pRviaRestResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, pDataInput.toString());
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + pRviaRestResponse.toJsonString());

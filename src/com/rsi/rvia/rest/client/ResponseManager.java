@@ -4,6 +4,7 @@ import javax.ws.rs.core.Response;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constants.Language;
 import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.conector.RestRviaConnector;
 import com.rsi.rvia.rest.conector.RestWSConnector;
@@ -50,22 +51,20 @@ public class ResponseManager
             if (RestRviaConnector.isRuralviaWebError(strResponseData))
             {
                 /* se evalua el html para construir un error JSOn con los datos obtenidos */
-                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999",
-                        "Error no controlado de ruralvia");
-                pRviaRestResponse = new RviaRestResponse(RviaRestResponse.Type.ERROR, "{}", pRviaRestResponseErrorItem);
+                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Error no controlado de ruralvia");
+                pRviaRestResponse = new RviaRestResponse(RviaRestResponse.Type.ERROR, null, pRviaRestResponseErrorItem);
             }
             else if (RestRviaConnector.isRuralviaSessionTimeoutError(strResponseData))
             {
-                /* se evalua el html para construir un error JSOn con los datos obtenidos */
-                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999",
-                        "Error de timeout");
-                pRviaRestResponse = new RviaRestResponse(Type.ERROR, "{}", pRviaRestResponseErrorItem);
+                // se evalua el html para construir un error JSOn con los datos obtenidos
+                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Error de timeout");
+                pRviaRestResponse = new RviaRestResponse(Type.ERROR, null, pRviaRestResponseErrorItem);
             }
             else if (pMiqQuests.getComponentType() == CompomentType.COORD)
             {
-                /* se evalua el html para construir un error JSOn con los datos obtenidos */
-                strResponseData = SignExtractor.extraerCoordenada(strResponseData);
-                pRviaRestResponse = new RviaRestResponse(Type.OK, strResponseData, null);
+                // Se evalua el html para construir un error JSON con los datos obtenidos
+                JSONObject pJsonResponseData = SignExtractor.extraerCoordenada(strResponseData);
+                pRviaRestResponse = new RviaRestResponse(Type.OK, pJsonResponseData, null);
             }
             else
             {
@@ -73,10 +72,9 @@ public class ResponseManager
                  * se procede a generar un error generico ya que si el valor no es un JSON y no es de ruralvia no
                  * debería producirse
                  */
-                /* se evalua el html para construir un error JSOn con los datos obtenidos */
-                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999",
-                        "Error no controlado al procesar la petición");
-                pRviaRestResponse = new RviaRestResponse(Type.ERROR, "{}", pRviaRestResponseErrorItem);
+                // Se evalua el html para construir un error JSOn con los datos obtenidos
+                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Error no controlado al procesar la petición");
+                pRviaRestResponse = new RviaRestResponse(Type.ERROR, null, pRviaRestResponseErrorItem);
             }
         }
         else
@@ -85,8 +83,7 @@ public class ResponseManager
             pJsonData = new JSONObject(strResponseData);
             /* se comprueba si el json contiene un error, si es así se genera una excepción lógica */
             /* se formatea la respuesta para estandarizarla y eliminar información que el usuario final no necesita */
-            pRviaRestResponse = formatResponse(pJsonData, pMiqQuests, pRestConnector, pResponseConnector,
-                    pRequestConfig.getLanguage());
+            pRviaRestResponse = formatResponse(pJsonData, pMiqQuests, pRestConnector, pResponseConnector, pRequestConfig.getLanguage());
         }
         return pRviaRestResponse;
     }
@@ -101,7 +98,7 @@ public class ResponseManager
      * @throws Exception
      */
     private static RviaRestResponse formatResponse(JSONObject pJsonData, MiqQuests pMiqQuests,
-            RestConnector pRestConnector, Response pResponseConnector, String strLanguaje) throws Exception
+            RestConnector pRestConnector, Response pResponseConnector, Language pLanguage) throws Exception
     {
         RviaRestResponse pRviaRestResponse;
         /* se comprueba si el mensaje pertenece as un WS */
@@ -114,7 +111,7 @@ public class ResponseManager
                 if (nHttpCode != Response.Status.OK.getStatusCode())
                     pRviaRestResponse = new RviaRestResponse(Type.ERROR, nHttpCode, "{}", pErrorItem);
                 else
-                    pRviaRestResponse = new RviaRestResponse(Type.ERROR, "{}", pErrorItem);
+                    pRviaRestResponse = new RviaRestResponse(Type.ERROR, null, pErrorItem);
             }
             else
             {
@@ -125,22 +122,20 @@ public class ResponseManager
         }
         else if (RestRviaConnector.isRviaJson(pJsonData))
         {
-            RviaRestResponse.Type pType = RestRviaConnector.getResponseType(pJsonData, pMiqQuests.getIdMiq(), strLanguaje);
+            RviaRestResponse.Type pType = RestRviaConnector.getResponseType(pJsonData, pMiqQuests.getIdMiq(), pLanguage);
+            JSONObject respuesta = RestRviaConnector.getRespuesta(pJsonData);
             switch (pType)
             {
                 case ERROR:
-                    RviaRestResponseErrorItem pErrorItem = RestRviaConnector.generateRviaRestErrorItem(pJsonData,
-                            pMiqQuests.getIdMiq());
-                    pRviaRestResponse = new RviaRestResponse(Type.ERROR, "{}", pErrorItem);
+                    RviaRestResponseErrorItem pErrorItem = RestRviaConnector.generateRviaRestErrorItem(pJsonData, pMiqQuests.getIdMiq());
+                    pRviaRestResponse = new RviaRestResponse(Type.ERROR, respuesta, pErrorItem);
                     break;
                 case WARNING:
-                    RviaRestResponseErrorItem pWarningItem = RestRviaConnector.generateRviaRestErrorItem(pJsonData,
-                            pMiqQuests.getIdMiq());
-                    pRviaRestResponse = new RviaRestResponse(Type.WARNING, RestRviaConnector.getRespuesta(pJsonData),
-                            pWarningItem);
+                    RviaRestResponseErrorItem pWarningItem = RestRviaConnector.generateRviaRestErrorItem(pJsonData, pMiqQuests.getIdMiq());
+                    pRviaRestResponse = new RviaRestResponse(Type.WARNING, respuesta, pWarningItem);
                     break;
                 default:
-                    pRviaRestResponse = new RviaRestResponse(Type.OK, RestRviaConnector.getRespuesta(pJsonData));
+                    pRviaRestResponse = new RviaRestResponse(Type.OK, respuesta);
                     break;
             }
         }
@@ -180,8 +175,7 @@ public class ResponseManager
             {
                 pResponseObjectData = new JSONObject();
                 pResponseObject = new JSONObject();
-                pResponseObjectData.put("data",
-                        pJsonData.getJSONObject(strPrimaryKey).getJSONObject(RestWSConnector.RAMA_RESPUESTA));
+                pResponseObjectData.put("data", pJsonData.getJSONObject(strPrimaryKey).getJSONObject(RestWSConnector.RAMA_RESPUESTA));
                 pResponseObject.put("response", pResponseObjectData);
             }
             else

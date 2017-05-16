@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.rvia.rest.security.IdentityProviderFactory;
 import com.rsi.rvia.rest.tool.Utils;
 
 /**
@@ -29,6 +30,7 @@ public class MiqQuests
     private CompomentType                          pCompomentType;
     private String                                 strEndPoint;
     private String                                 strTemplate;
+    private IdentityProviderFactory.IdProvider     pIdProvider;
     private JSONObject                             jsonOpciones;
     public static Hashtable<String, MiqQuestParam> htParamsInput                 = new Hashtable<String, MiqQuestParam>();
     public static Hashtable<Integer, MiqQuests>    htCacheDataId                 = new Hashtable<Integer, MiqQuests>();
@@ -118,6 +120,16 @@ public class MiqQuests
         this.pCompomentType = pCompomentType;
     }
 
+    public IdentityProviderFactory.IdProvider getIdProvider()
+    {
+        return pIdProvider;
+    }
+
+    public void setIdProvider(IdentityProviderFactory.IdProvider pIdProvider)
+    {
+        this.pIdProvider = pIdProvider;
+    }
+
     public String getEndPoint()
     {
         return strEndPoint;
@@ -138,7 +150,7 @@ public class MiqQuests
         this.strTemplate = strTemplate;
     }
 
-    public JSONObject getJsonOpciones()
+    public JSONObject getOptions()
     {
         return jsonOpciones;
     }
@@ -197,12 +209,13 @@ public class MiqQuests
      *            Plantilla asociada
      * @param opciones
      */
-    public MiqQuests(int nIdMiq, String strPathRest, String strComponentType, String strEndPoint, String strTemplate,
-            String strOpciones)
+    public MiqQuests(int nIdMiq, String strPathRest, String strComponentType, String strIdProvider, String strEndPoint,
+            String strTemplate, String strOpciones)
     {
         this.nIdMiq = nIdMiq;
         this.strPathRest = strPathRest;
         this.pCompomentType = CompomentType.valueOf(strComponentType);
+        this.pIdProvider = IdentityProviderFactory.IdProvider.valueOf(strIdProvider);
         this.strEndPoint = strEndPoint;
         this.strTemplate = strTemplate;
         JSONObject opciones = null;
@@ -232,13 +245,21 @@ public class MiqQuests
         ResultSet pResultSet = null;
         try
         {
-            String strQuery = "SELECT * from bel.bdptb222_miq_quests";
+            String strQuery = "SELECT * from bel.bdptb222_miq_quests order by 1 asc";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
             pResultSet = pPreparedStatement.executeQuery();
             while (pResultSet.next())
             {
-                MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"), pResultSet.getString("opciones"));
+                if (pResultSet.getString("direccionador") == null)
+                {
+                    pLog.error("Tipo de proveedor de identidad del miqQuest " + pResultSet.getInt("id_miq")
+                            + " no esta informado. Es necesario definir uno en el campo 'Direccionador' de la tabla");
+                    pLog.warn("Se descarta la carga del del miqQuest " + pResultSet.getInt("id_miq")
+                            + " y se continua con el resto");
+                    continue;
+                }
+                MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("direccionador"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"), pResultSet.getString("opciones"));
                 if (!htCacheDataId.containsKey(pResultSet.getInt("id_miq")))
                     htCacheDataId.put(pResultSet.getInt("id_miq"), pMiqQuests);
                 if (!htCacheDataPath.containsKey(pResultSet.getString("path_rest")))
@@ -252,7 +273,7 @@ public class MiqQuests
         }
         catch (Exception ex)
         {
-            pLog.error("Error al realizar la consulta a la BBDD. Trace: \n\n\t" + ex.getMessage());
+            pLog.error("Error al realizar la consulta a la BBDD. Error: " + ex);
         }
         finally
         {
@@ -271,10 +292,10 @@ public class MiqQuests
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         // String idMiq = pResultSet.getString("id_miq");
-        String strQuery = "select a.id_miq, c.* from " + " BEL.BDPTB222_MIQ_QUESTS a, "
-                + " BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, " + " BEL.BDPTB225_MIQ_SESSION_PARAMS c "
-                + " where a.id_miq=b.id_miq " + " and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " + " and a.path_rest='"
-                + strPathRest + "' order by c.ID_MIQ_PARAM";
+        String strQuery = "select a.id_miq, c.* from  BEL.BDPTB222_MIQ_QUESTS a, "
+                + " BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, BEL.BDPTB225_MIQ_SESSION_PARAMS c "
+                + " where a.id_miq=b.id_miq  and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM  and a.path_rest='" + strPathRest
+                + "' order by c.ID_MIQ_PARAM";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -318,6 +339,7 @@ public class MiqQuests
         pSb.append("IdMiq         :" + nIdMiq + "\n");
         pSb.append("PathRest      :" + strPathRest + "\n");
         pSb.append("ComponentType :" + pCompomentType.name() + "\n");
+        pSb.append("IdProvider    :" + pIdProvider.name() + "\n");
         pSb.append("EndPoint      :" + strEndPoint + "\n");
         pSb.append("Template      :" + strTemplate + "\n");
         if (jsonOpciones != null)

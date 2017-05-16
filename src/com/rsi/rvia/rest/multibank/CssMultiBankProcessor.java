@@ -162,7 +162,7 @@ public class CssMultiBankProcessor
         {
             if (pItem != null)
             {
-                String strOldLink = pItem.attr("abs:href");
+                String strOldLink = pItem.attr("href");
                 /* se comprueba si el link es de tipo css */
                 if ("stylesheet".equals(pItem.attr("rel")))
                 {

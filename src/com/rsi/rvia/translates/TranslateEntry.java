@@ -5,90 +5,91 @@
 package com.rsi.rvia.translates;
 
 import java.util.Hashtable;
+import com.rsi.Constants.Language;
 
 /** Clase para guardar las diferentes traducciones en funcion del código de la traducción. */
 public class TranslateEntry
 {
-	private final String				strAppName;
-	private final String				strCode;
-	private Hashtable<String, String>	htTranslations;
+    private final String                strAppName;
+    private final String                strCode;
+    private Hashtable<Language, String> htTranslations;
 
-	/**
-	 * Constructor de la clase
-	 * 
-	 * @param strCode
-	 *            Codigo de la traducción.
-	 */
-	public TranslateEntry(String strCode, String strAppName)
-	{
-		this.strAppName = strCode;
-		this.strCode = strCode;
-		this.htTranslations = new Hashtable<String, String>();
-	}
+    /**
+     * Constructor de la clase
+     * 
+     * @param strCode
+     *            Codigo de la traducción.
+     */
+    public TranslateEntry(String strCode, String strAppName)
+    {
+        this.strAppName = strCode;
+        this.strCode = strCode;
+        this.htTranslations = new Hashtable<Language, String>();
+    }
 
-	/** @return Codigo de la traducción. */
-	public String getCode()
-	{
-		return strCode;
-	}
+    /** @return Codigo de la traducción. */
+    public String getCode()
+    {
+        return strCode;
+    }
 
-	/** @return Codigo de la traducción. */
-	public String getAppName()
-	{
-		return strAppName;
-	}
+    /** @return Codigo de la traducción. */
+    public String getAppName()
+    {
+        return strAppName;
+    }
 
-	/** @return Hashtable con las traducciones por idioma. */
-	public Hashtable<String, String> getAllTranslations()
-	{
-		return htTranslations;
-	}
+    /** @return Hashtable con las traducciones por idioma. */
+    public Hashtable<Language, String> getAllTranslations()
+    {
+        return htTranslations;
+    }
 
-	/**
-	 * Devuelve una traducción concreta dado un idioma.
-	 * 
-	 * @param strLanguage
-	 *            Idioma del que se quiere la traducción.
-	 * @return String con la traducción en el idioma dado.
-	 */
-	public String getTranslation(String strLanguage)
-	{
-		if (this.htTranslations.containsKey(strLanguage))
-			return htTranslations.get(strLanguage);
-		else
-			return null;
-	}
+    /**
+     * Devuelve una traducción concreta dado un idioma.
+     * 
+     * @param pLanguage
+     *            Idioma del que se quiere la traducción.
+     * @return String con la traducción en el idioma dado.
+     */
+    public String getTranslation(Language pLanguage)
+    {
+        if (this.htTranslations.containsKey(pLanguage))
+            return htTranslations.get(pLanguage);
+        else
+            return null;
+    }
 
-	/**
-	 * Añade una nueva traducción al Hashtable de traducciones.
-	 * 
-	 * @param strIdioma
-	 *            Idioma de la nueva traducción.
-	 * @param strTraduccion
-	 *            Traducción nueva.
-	 */
-	public void addTranslation(String strLanguage, String strTranslate)
-	{
-		if (!htTranslations.containsKey(strLanguage))
-			this.htTranslations.put(strLanguage, strTranslate);
-		else
-		{
-			this.htTranslations.remove(strLanguage);
-			this.htTranslations.put(strLanguage, strTranslate);
-		}
-	}
+    /**
+     * Añade una nueva traducción al Hashtable de traducciones.
+     * 
+     * @param pLanguage
+     *            Idioma de la nueva traducción.
+     * @param strTraduccion
+     *            Traducción nueva.
+     */
+    public void addTranslation(Language pLanguage, String strTranslate)
+    {
+        if (!htTranslations.containsKey(pLanguage))
+            this.htTranslations.put(pLanguage, strTranslate);
+        else
+        {
+            this.htTranslations.remove(pLanguage);
+            this.htTranslations.put(pLanguage, strTranslate);
+        }
+    }
 
-	public int getCountTanslations()
-	{
-		return htTranslations.size();
-	}
+    public int getCountTanslations()
+    {
+        return htTranslations.size();
+    }
 
-	public String toString()
-	{
-		StringBuilder pSb = new StringBuilder();
-		pSb.append("AppName      :" + strAppName + "\n");
-		pSb.append("Code         :" + strCode + "\n");
-		pSb.append("Translations :" + htTranslations + "\n");
-		return pSb.toString();
-	}
+    public String toString()
+    {
+        StringBuilder pSb = new StringBuilder();
+        pSb.append("AppName      :" + strAppName + "\n");
+        pSb.append("Code         :" + strCode + "\n");
+        pSb.append("Translations :" + htTranslations + "\n");
+        return pSb.toString();
+    }
 }
