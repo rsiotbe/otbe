@@ -32,64 +32,75 @@ public class PrestamoPersonal {
     @Produces({ MediaType.TEXT_HTML })
     public Response getTarifas(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro tarifas");
+        pLog.info("Se obtiene tarifas disponibles");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Tarifas");
+        pLog.info("Finaliza la obtencion de las tarifas disponibles");
         return pReturn;
     }
 
     @GET
-    @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}")
+    @Path("/{idLinea}/{idGrupo}/{idProducto}/{idTarifa}")
     @Produces({ MediaType.TEXT_HTML })
     public Response getDetTarifas(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro detalle tarifas");
+        pLog.info("Se obtiene el detalle de la tarifa");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Detalle tarifas");
+        pLog.info("Finaliza la obtencion del detalle de la tarifa");
         return pReturn;
     }
 
     @GET
-    @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/lopd")
+    @Path("/{idLinea}/{idGrupo}/{idProducto}/{idTarifa}/lopd")
     @Produces({ MediaType.TEXT_HTML })
     public Response getLopd(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro lopd");
+        pLog.info("Se obtienen los datos lopd");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> LOPD");
+        pLog.info("Finaliza la obtencion de los datos lopd");
         return pReturn;
     }
 
     @GET
-    @Path("/loandata")
+    @Path("/accounts")
     @Produces({ MediaType.TEXT_HTML })
     public Response getDatoPrestamo(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro datos prestamo");
+        pLog.info("Se obtienen los datos de usuario para contratacion");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Datos prestamo");
+        pLog.info("Finaliza la obtencion de datos del usuario para contratacion");
+        return pReturn;
+    }
+
+    @GET
+    @Path("/idtype")
+    @Produces({ MediaType.TEXT_HTML })
+    public Response getTiposDocumento(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Se obtienen los tipos de documentos identificativos");
+    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
+        pLog.info("Finaliza la obtencion de los tipos de documentos identificativos");
         return pReturn;
     }
 
     @POST
-    @Path("/personaldetails")
+    @Path("/scoring/formdata")
     @Produces({ MediaType.TEXT_HTML })
     public Response getDatosPersona(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro datos persona");
+        pLog.info("Se obtienen datos personales");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Datos persona");
+        pLog.info("Finaliza la obtencion de los datos personales");
         return pReturn;
     }
 
     @POST
-    @Path("/scoring")
+    @Path("/{idLinea}/{idGrupo}/{idProducto}/{idTarifa}/scoring")
     @Produces({ MediaType.TEXT_HTML })
     public Response getScoring(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro scoring");
+        pLog.info("Se realiza la llamada al scoring");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Scoring");
+        pLog.info("Finaliza la llamada al scoring");
         return pReturn;
     }
 
@@ -98,9 +109,9 @@ public class PrestamoPersonal {
     @Produces({ MediaType.TEXT_HTML })
     public Response getFirma(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro firma");
+        pLog.info("Se realiza la llamada a la firma");
     	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Firma");
+        pLog.info("Finaliza la llamada a la firma");
         return pReturn;
     }
 }
