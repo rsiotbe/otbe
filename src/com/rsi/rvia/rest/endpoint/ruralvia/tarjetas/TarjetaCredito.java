@@ -116,7 +116,7 @@ public class TarjetaCredito
      * @return the scoring
      */
     @POST
-    @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/lopd")
+    @Path("/lopd")
     @Produces({ MediaType.TEXT_HTML })
     public Response getLopdTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
@@ -157,7 +157,7 @@ public class TarjetaCredito
      * @return the det tarifas
      */
     @GET
-    @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/scoring/formdata/cnae")
+    @Path("/scoring/formdata/cnae")
     @Produces({ MediaType.TEXT_HTML })
     public Response getSubGruposCNAETarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
