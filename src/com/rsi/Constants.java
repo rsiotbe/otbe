@@ -121,6 +121,20 @@ public class Constants
     public static final String   KEY_ERROR_CODE                                 = "CODERR";
     public static final String   KEY_ERROR_TEXT                                 = "TXTERR";
     public static final String   KEY_LIST_NAME                                  = "NOMBRELISTACUENTA";
+    // //////////////////////////
+    // Parámetros cabeceras de llamadas al bus
+    // /////////////////////////
+    public static final String   BUS_HEADER_COD_SEC_ENT                         = "CODSecEnt";
+    public static final String   BUS_HEADER_COD_SEC_TRANS                       = "CODSecTrans";
+    public static final String   BUS_HEADER_COD_SEC_USER                        = "CODSecUser";
+    public static final String   BUS_HEADER_COD_APL                             = "CODApl";
+    public static final String   BUS_HEADER_COD_TERMINAL                        = "CODTerminal";
+    public static final String   BUS_HEADER_COD_CANAL                           = "CODCanal";
+    public static final String   BUS_HEADER_COD_SEC_IP                          = "CODSecIp";
+    // //////////////////////////
+    // Cabeceras http
+    // /////////////////////////
+    public static final String   HTTP_HEADER_AUTORIZATION                       = "Authorization";
 
     public enum SimulatorLoanCategory
     {
