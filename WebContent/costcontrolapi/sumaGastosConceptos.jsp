@@ -17,7 +17,14 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
 	String strEntidad = request.getParameter("codEntidad");
 	String strDateFin = request.getParameter("mesFin");    
 	String strDateIni = request.getParameter("mesInicio"); 
-	String strExcluClops = " and trim(t1.cod_origen) not in (" + AcuerdosRuralvia.getExcludedClops() + ")";
+	String strExcluClops = " and trim(t1.cod_origen) not in (";
+    if(strContrato != null){
+        strExcluClops = strExcluClops + AcuerdosRuralvia.getExcludedClops() + ")";
+    }
+    else{
+        strExcluClops = strExcluClops + AcuerdosRuralvia.getExcludedClops() + AcuerdosRuralvia.getExcludedClopsAlDebe() + AcuerdosRuralvia.getExcludedClopsAlHaber() + ")";
+    }	
+	
     String strQuery =
           " select" +
           "    t1.sgn  \"tipoApunte\"" +
@@ -43,22 +50,17 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
 		    }
 		    else{
 		       strQuery = strQuery + " and t1.num_sec_ac =" + strContrato; 
-		    } 
-		    
+		    } 		    
           if(strDateFin == null){
-             strQuery = strQuery + " and t1.fecha_oprcn_dif <= (select max(t9.fecha_oprcn_dif) from rdwc01.mi_do_apte_cta t9 where t9.cod_nrbe_en='" + 
+             strQuery = strQuery + " and t1.fecha_oprcn <= (select max(t9.fecha_oprcn) from rdwc01.mi_do_apte_cta t9 where t9.cod_nrbe_en='" + 
                    strEntidad + "')";
           }
           else{
              strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
-             strQuery = strQuery + " and t1.fecha_oprcn_dif <= " +             
-	             " ( select max(tm.fecha_oprcn_dif) " +
-	             " from rdwc01.mi_do_apte_cta tm where cod_nrbe_en='" + strEntidad + "' " +
-	             " and tm.fecha_oprcn_dif < to_date('" + strDateFin + "','yyyy-mm-dd') " + 
-	             " )";
+             strQuery = strQuery + " and t1.fecha_oprcn < to_date('" + strDateFin + "','yyyy-mm-dd') ";
           }   
-          strDateIni = strDateIni + "-01";         
-          strQuery = strQuery + " and t1.fecha_oprcn_dif >= round(to_date('" + strDateIni + "','yyyy-mm-dd'),'mm')";   
+          strDateIni = QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni);
+          strQuery = strQuery + " and t1.fecha_oprcn > to_date('" + strDateIni + "','yyyy-mm-dd') ";
           strQuery = strQuery + " and cod_cta = '01'  and ind_accion <> '3' " +  strExcluClops +     
           " group by nvl(trim(t1.concpt_apnte),trim(t3.txt_tipo_clop_brev)), t1.sgn  " ;
   pLog.info("Query al customizador: " + strQuery);            

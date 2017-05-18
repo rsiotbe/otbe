@@ -18,14 +18,20 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
     String strDateIni = request.getParameter("mesInicio");
     String strDateFin = request.getParameter("mesFin");
     String strTipoApunte = request.getParameter("tipoApunte"); 
-    String strExcluClops = " and trim(cod_origen) not in (" + AcuerdosRuralvia.getExcludedClops() + ")";
+    String strExcluClops = " and trim(t1.cod_origen) not in (";
+    if(strContrato != null){
+        strExcluClops = strExcluClops + AcuerdosRuralvia.getExcludedClops() + ")";
+    }
+    else{
+        strExcluClops = strExcluClops + AcuerdosRuralvia.getExcludedClops() + AcuerdosRuralvia.getExcludedClopsAlDebe() + AcuerdosRuralvia.getExcludedClopsAlHaber() + ")";
+    }    
     String filtroTipoApunte = "";
     if(strTipoApunte != null){
    	 filtroTipoApunte = " and sgn='"+strTipoApunte+"'"; 
     }
     String strQuery =
    		 " SELECT" +
-   		         "  to_char(fecha_oprcn_dif,'YYYY-MM')  \"mes\"," +
+   		         "  to_char(fecha_oprcn,'YYYY-MM')  \"mes\"," +
    				 "  sum(imp_apnte) \"importe\"," +
    				 "  count(*) \"numero\"," +
    				 "  sgn \"tipoApunte\"," +
@@ -37,24 +43,20 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
    				 "   when trim(CONCPT_APNTE) like 'RCBO%' then 'RECIBOS'" +
    				 "   else 'OTROS'" +
    				 "  end \"categoria\"" +
-   				 " FROM  rdwc01.MI_DO_APTE_CTA" +
+   				 " FROM  rdwc01.MI_DO_APTE_CTA t1" +
    				 " where cod_nrbe_en='" + strEntidad + "'" + strExcluClops;
    			          
     if(strDateFin == null){
-       strQuery = strQuery + " and fecha_oprcn_dif <= (select max(fecha_oprcn_dif) from rdwc01.mi_do_apte_cta where cod_nrbe_en='" + 
+       strQuery = strQuery + " and fecha_oprcn <= (select max(fecha_oprcn) from rdwc01.mi_do_apte_cta where cod_nrbe_en='" + 
              strEntidad + "')";
     }
     else{
            strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);  
-           strQuery = strQuery + " and fecha_oprcn_dif <= " +             
-                 " ( select max(tm.fecha_oprcn_dif) " +
-                 " from rdwc01.mi_do_apte_cta tm where cod_nrbe_en='" + strEntidad + "' " +
-                 " and tm.fecha_oprcn_dif < to_date('" + strDateFin + "','yyyy-mm-dd') " + 
-                 " )";
+           strQuery = strQuery + " and fecha_oprcn < to_date('" + strDateFin + "','yyyy-mm-dd') ";
     }   
-    strDateIni = strDateIni + "-01";         
-    strQuery = strQuery + " and fecha_oprcn_dif >= round(to_date('" + strDateIni + "','yyyy-mm-dd'),'mm')";
-        
+    strDateIni = QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni);
+    strQuery = strQuery + " and t1.fecha_oprcn > to_date('" + strDateIni + "','yyyy-mm-dd') ";    
+    
     if(strContrato == null){
         if(strRviaAcuerdos[1] == null){
 	        strQuery = strQuery + " and num_sec_ac in (" +
@@ -74,7 +76,7 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
     
    strQuery = strQuery + " and cod_cta = '01' and ind_accion <> '3' " + 
       	 filtroTipoApunte +
-   				 " group by to_char(fecha_oprcn_dif,'YYYY-MM'), case" +
+   				 " group by to_char(fecha_oprcn,'YYYY-MM'), case" +
    				 "   when trim(CONCPT_APNTE) like 'TRF.%' then 'TRANSFERENCIAS'" +
    				 "   when trim(COD_ORGN_APNTE) in ('TF','TR') then 'TRANSFERENCIAS'" +
    				 "   when trim(CONCPT_APNTE) like 'TJ-%' then 'TARJETAS'" +
