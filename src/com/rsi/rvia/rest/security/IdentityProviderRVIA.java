@@ -186,7 +186,7 @@ public class IdentityProviderRVIA implements IdentityProvider
                 HashMap<String, String> fields = new HashMap<String, String>();
                 fields.put("codEntidad", "3076");
                 fields.put("idInternoPe", "1834908");
-                fields.put("codTarjeta", "3076215863");
+                // fields.put("codTarjeta", "3076215863");
                 return fields;
             }
             else
@@ -212,7 +212,7 @@ public class IdentityProviderRVIA implements IdentityProvider
                 pLog.debug("En entornos de producción esta traza no debe aparecer ");
                 fields.put("codEntidad", "3076");
                 fields.put("idInternoPe", "1834908");
-                fields.put("codTarjeta", "3076215863");
+                // fields.put("codTarjeta", "3076215863");
             }
             else
             {
