@@ -15,7 +15,9 @@ public class AcuerdosRuralvia
 {
     private static Logger   pLog               = LoggerFactory.getLogger(QueryCustomizer.class);
     private static String[] _reserved          = { "select", "update", "delete", "insert", "alter", "drop", "create" };
-    private static String   _strClopsExcluidos = "'070002', '070001', '410003', '410001','060011'";
+    private static String   _strClopsExcluidos = "'070002', '070001', '410003', '410001'";
+    private static String   _strClopsAlDebe    = ",'060011'";
+    private static String   _strClopsAlHaber   = ",'060001'";
 
     public static String[] getRviaContractsDecodeAliases(HttpServletRequest request) throws ApplicationException
     {
@@ -159,5 +161,15 @@ public class AcuerdosRuralvia
     public static String getExcludedClops()
     {
         return _strClopsExcluidos;
+    }
+
+    public static String getExcludedClopsAlDebe()
+    {
+        return _strClopsAlDebe;
+    }
+
+    public static String getExcludedClopsAlHaber()
+    {
+        return _strClopsAlHaber;
     }
 }

@@ -128,18 +128,6 @@ public class IdentityProviderRVIA implements IdentityProvider
             password = "03052445";
             SOAPEndPoint = "http://soa02.risa";
         }
-        /*
-         * String strBody =
-         * "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">"
-         * + "   <soapenv:Header/>                                     " +
-         * "   <soapenv:Body>                                        " +
-         * "      <ee:EE_I_AutenticarUsuario>                        " + "         <ee:usuario>" + usuario +
-         * "</ee:usuario>        " + "         <ee:password>" + password + "</ee:password>     " +
-         * "         <ee:documento>" + documento + "</ee:documento>  " +
-         * "      </ee:EE_I_AutenticarUsuario>                       " +
-         * "   </soapenv:Body>                                       " +
-         * "</soapenv:Envelope>                                      ";
-         */
         String strBody = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:se=\"http://www.ruralserviciosinformaticos.com/empresa/SE_RVA_LoginTarjeta/\" xmlns:sec=\"http://www.ruralserviciosinformaticos.com/XSD/SecurityHeader/\">"
                 + "   <soapenv:Header>                               "
                 + "      <se:RSI_Header>                             "
@@ -194,10 +182,11 @@ public class IdentityProviderRVIA implements IdentityProvider
         {
             if (entorno.equals("TEST"))
             {
+                pLog.debug("En entornos de producción esta traza no debe aparecer ");
                 HashMap<String, String> fields = new HashMap<String, String>();
                 fields.put("codEntidad", "3076");
                 fields.put("idInternoPe", "1834908");
-                fields.put("codTarjeta", "3076000004");
+                fields.put("codTarjeta", "3076215863");
                 return fields;
             }
             else
@@ -220,9 +209,10 @@ public class IdentityProviderRVIA implements IdentityProvider
             }
             if (entorno.equals("TEST"))
             {
+                pLog.debug("En entornos de producción esta traza no debe aparecer ");
                 fields.put("codEntidad", "3076");
                 fields.put("idInternoPe", "1834908");
-                fields.put("codTarjeta", "3076000004");
+                fields.put("codTarjeta", "3076215863");
             }
             else
             {
