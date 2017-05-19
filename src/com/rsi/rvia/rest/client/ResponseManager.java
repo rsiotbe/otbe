@@ -50,6 +50,7 @@ public class ResponseManager
         /* se comprueba si el contenido de la respuesta es un JSON u otra cosa */
         if (!Utils.isDataAJson(strResponseData))
         {
+            pLog.trace("la respuesta no es un JSON, se comprueba si son errores de ruralvia");
             /* no es un JSON, viene html, se evalua por si es un error web de ruralvia */
             if (RestRviaConnector.isRuralviaWebError(strResponseData))
             {
