@@ -1,7 +1,6 @@
 package com.rsi.rvia.rest.endpoint.ruralvia.tarjetas;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -36,33 +35,10 @@ public class TarjetaRegalo
     @GET
     @Path("/rates")
     @Produces({ MediaType.TEXT_HTML })
-    @Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
-            "application/x-ms-application" })
-    public Response getPrepaidCardListHtml(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
-    {
-        pLog.info("Se obtienen el listado de tarjetas regalo disponibles HTML.");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
-        pLog.info("Se finaliza la obtencion de el listado de tarjetas regalo disponibles HTML.");
-        return pReturn;
-    }
-
-    /**
-     * Muestra el listado de tarjetas (Tarifas) que comercializa la entidad para este producto.
-     * 
-     * @param pRequest
-     *            the request
-     * @param pUriInfo
-     *            the uri info
-     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado las tarjetas de crédito
-     *         disponibles
-     */
-    @GET
-    @Path("/rates")
-    @Produces({ MediaType.TEXT_HTML })
     public Response getPrepaidCardList(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         pLog.info("Se obtienen el listado de tarjetas regalo disponibles.");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
         pLog.info("Se finaliza la obtencion de el listado de tarjetas regalo disponibles.");
         return pReturn;
     }
@@ -79,12 +55,11 @@ public class TarjetaRegalo
      */
     @GET
     @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}")
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.TEXT_HTML })
     public Response getPrepaidCardDetail(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         pLog.info("Se obtienen el detalle la tarjeta regalo.");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
         pLog.info("Se finaliza la obtencion de el detalle la tarjeta regalo.");
         return pReturn;
     }
@@ -103,12 +78,11 @@ public class TarjetaRegalo
      */
     @GET
     @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/contract")
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.TEXT_HTML })
     public Response getPrepaidCardContract(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         pLog.info("Se obtienen los datos relativos a la cuenta domiciliacion, LOPD, imagen tarjeta y también los datos de introducción de la firma de tarjeta regalo.");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
         pLog.info("Se finaliza la obtencion de los datos relativos a la cuenta domiciliacion, LOPD, imagen tarjeta y también los datos de introducción de la firma de tarjeta regalo.");
         return pReturn;
     }
@@ -125,12 +99,11 @@ public class TarjetaRegalo
      */
     @POST
     @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/signature")
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.TEXT_HTML })
     public Response getPrepaidCardSignature(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         pLog.info("Se llama a la operativa de firma tarjeta regalo.");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
         pLog.info("Se finaliza la llamada a la operativa de firma tarjeta regalo.");
         return pReturn;
     }
