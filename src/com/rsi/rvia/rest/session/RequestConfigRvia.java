@@ -131,6 +131,8 @@ public class RequestConfigRvia extends RequestConfig
             pLog.debug("Se procede a cargar la configuración de la conexión con ruralvia");
             /* se comprueba si el contenido viene encriptado enel parámetro token */
             strToken = request.getParameter("token");
+            /* se reemplazan los caracteres espacios por mses, por si al viahar como url se han transformado */
+            strToken = strToken.replace(" ", "+");
             if (strToken == null)
             {
                 /* se comprueba si el token esta inicializado en la sesión de la aplicación */
