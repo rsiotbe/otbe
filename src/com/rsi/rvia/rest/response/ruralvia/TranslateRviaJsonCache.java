@@ -22,8 +22,7 @@ import com.rsi.rvia.rest.tool.Utils;
 public class TranslateRviaJsonCache
 {
     /** The p log. */
-    private static Logger                                     pLog                 = LoggerFactory.getLogger(
-            TranslateRviaJsonCache.class);
+    private static Logger                                     pLog                 = LoggerFactory.getLogger(TranslateRviaJsonCache.class);
     /** The ht translate cache data. */
     private static Hashtable<String, TranslateRviaJsonObject> htTranslateCacheData = new Hashtable<String, TranslateRviaJsonObject>();
 
@@ -102,15 +101,13 @@ public class TranslateRviaJsonCache
             ResultSet pResultSet = null;
             try
             {
+                pLog.trace("Codigo de error a comprobar:" + strErrorCode);
                 String strQuery = "select s.tiporesp, "
                         + "(select i.traduccion from BEL.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as error, "
                         + "(select i.comentario from BEL.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as descripcion "
                         + "from BEL.BDPTB282_ERR_RVIA s where s.CODERR = ? AND s.ID_MIQ = ?";
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
-                pLog.trace("pConnection:" + pConnection);
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
-                pLog.trace("pPreparedStatement:" + pPreparedStatement);
-                pLog.trace("strErrorCode:" + strErrorCode);
                 pPreparedStatement.setString(1, pLanguage.getJavaCode());
                 pPreparedStatement.setString(2, pLanguage.getJavaCode());
                 pPreparedStatement.setString(3, strErrorCode);
@@ -138,9 +135,9 @@ public class TranslateRviaJsonCache
             {
                 DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
                 if (fIsError)
-                    throw new ApplicationException(500, 999994,
-                            "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD",
-                            null);
+                {
+                    throw new ApplicationException(500, 999994, "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD", null);
+                }
             }
         }
         return pTRJO;
@@ -170,19 +167,16 @@ public class TranslateRviaJsonCache
                 //
                 // Insertar en BDPTB282_ERR_RVIA
                 //
+                pLog.trace("Se procede a insertar el codigo de error " + strErrorCode + " para el idMiq " + nIdMiq);
                 String strQuery1 = "INSERT INTO bel.BDPTB282_ERR_RVIA (CODERR, TIPORESP, TEXTERROR, ID_MIQ, DESCRIPCION) VALUES (?, ?, ?, ?, ?)";
                 pConnection1 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection1.setAutoCommit(false);
-                pLog.trace("pConnection1:" + pConnection1);
                 pPreparedStatement1 = pConnection1.prepareStatement(strQuery1);
                 pPreparedStatement1.setString(1, code);
                 pPreparedStatement1.setString(2, DEFAULT_LEVEL);
                 pPreparedStatement1.setString(3, strErrorText);
                 pPreparedStatement1.setLong(4, nIdMiq);
                 pPreparedStatement1.setString(5, DEFAULT_COMMENT);
-                pLog.trace("pPreparedStatement1:" + pPreparedStatement1);
-                pLog.trace("strErrorCode:" + strErrorCode);
-                pLog.trace("nIdMiq:" + nIdMiq);
                 nResult += pPreparedStatement1.executeUpdate();
                 //
                 // Insertar en BDPTB079_IDIOMA
@@ -195,9 +189,9 @@ public class TranslateRviaJsonCache
                     strQuery2 += " INTO bel.BDPTB079_IDIOMA (IDIOMA, CODIGO, TRADUCCION, COMENTARIO) VALUES (?, ?, ?, ?)";
                 }
                 strQuery2 += " SELECT * FROM DUAL";
+                pLog.trace("Se realiza la insercción en la tabla BDPTB282_ERR_RVIA");
                 pConnection2 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection2.setAutoCommit(false);
-                pLog.trace("pConnection2:" + pConnection2);
                 pPreparedStatement2 = pConnection2.prepareStatement(strQuery2);
                 int count = 1;
                 for (Language lang : Language.values())
@@ -214,22 +208,24 @@ public class TranslateRviaJsonCache
                 // APLICATIVO='AUTO' (Autocensado)
                 //
                 OKS++;
+                pLog.trace("Se realiza la insercción en la tabla BDPTB079_IDIOMA");
                 String strQuery3 = "INSERT INTO bel.BDPTB079_IDIOMA_APLICATIVO (CODIGO, APLICATIVO, OPCIONES) VALUES (?, ?, ?)";
                 pConnection3 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection3.setAutoCommit(false);
-                pLog.trace("pConnection3:" + pConnection3);
                 pPreparedStatement3 = pConnection3.prepareStatement(strQuery3);
                 pPreparedStatement3.setString(1, code);
                 pPreparedStatement3.setString(2, DEFAULT_APP);
                 pPreparedStatement3.setString(3, String.valueOf(nIdMiq));
                 pLog.trace("pPreparedStatement3:" + pPreparedStatement3);
                 nResult += pPreparedStatement3.executeUpdate();
+                pLog.trace("Se realiza la insercción en la tabla BDPTB079_IDIOMA_APLICATIVO");
                 if (nResult == OKS)
                 {
                     pConnection1.commit();
                     pConnection2.commit();
                     pConnection3.commit();
                 }
+                pLog.trace("Se realiza el commit de las tres inserciones");
             }
             catch (Exception ex)
             {
@@ -248,9 +244,9 @@ public class TranslateRviaJsonCache
                 DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement2, pConnection2);
                 DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement3, pConnection3);
                 if (fIsError)
-                    throw new ApplicationException(500, 999993,
-                            "Error al procesar insertar respues ta de error de ruralvia", "Error al acceder a BBDD",
-                            null);
+                {
+                    throw new ApplicationException(500, 999993, "Error al procesar insertar respues ta de error de ruralvia", "Error al acceder a BBDD", null);
+                }
             }
         }
         return nResult;

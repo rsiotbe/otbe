@@ -303,7 +303,7 @@ public class RestWSConnector
         }
         catch (JSONException e)
         {
-            pLog.error("RestWSConnector.getRespuesta:No tiene el componente Respuesta");
+            pLog.error("No existe el nodo '" + RAMA_RESPUESTA + "' en el objeto json");
             pJson = null;
         }
         return pJson;
@@ -325,7 +325,7 @@ public class RestWSConnector
         }
         catch (JSONException e)
         {
-            pLog.error("RestWSConnector.getRespuesta:No tiene el componente Respuesta");
+            pLog.error("No existe el nodo '" + RAMA_ERROR + "' en el objeto json");
             pJson = null;
         }
         return pJson;

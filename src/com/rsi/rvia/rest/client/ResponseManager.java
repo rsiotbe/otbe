@@ -44,6 +44,9 @@ public class ResponseManager
         JSONObject pJsonData;
         RviaRestResponse pRviaRestResponse;
         String strResponseData = pResponseConnector.readEntity(String.class);
+        String strStartOfResponse = (strResponseData.length() > 300) ? strResponseData.substring(0, 300)
+                + "...(la respuesta tiene más contenido que no se muestra)" : strResponseData;
+        pLog.trace("Contenido de la respuesta (max 300 caracteres): " + strStartOfResponse);
         /* se comprueba si el contenido de la respuesta es un JSON u otra cosa */
         if (!Utils.isDataAJson(strResponseData))
         {
