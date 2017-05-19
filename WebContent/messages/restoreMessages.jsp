@@ -15,7 +15,7 @@
 <%@page import="org.slf4j.LoggerFactory"%>
 <%@page import="org.slf4j.Logger"%>
 <%
-	pLog.info("Messages ::: restaurarMensaje ::: Start");
+	pLog.info("Messages ::: restoreMessage ::: Start");
 	JSONObject pJsonResponse = new JSONObject();
 	response.setHeader("content-type", "application/json");
 
@@ -26,12 +26,13 @@
 		pJsonResult = sendMessage(request);
 		if (pJsonResult.getInt(strErrorCode) == 0) {
 			pJsonResponse.put("data", pJsonResult);
-			%><%=Utils.generateWSResponseJsonOk("restaurarMensaje", pJsonResponse.toString())%><%
+			%><%=Utils.generateWSResponseJsonOk("restoreMessage", pJsonResponse.toString())%><%
 		} else {
-			%><%=Utils.generateWSResponseJsonError("restaurarMensaje", pJsonResult.getInt(strErrorCode), pJsonResult.getString(strErrorMessage))%><%
+			%><%=Utils.generateWSResponseJsonError("restoreMessage", pJsonResult.getInt(strErrorCode), pJsonResult.getString(strErrorMessage))%><%
 		}
-    } catch (Exception e){%>
-		<%=Utils.generateWSResponseJsonError("restaurarMensaje", -1, strDefaultErrorMessage)%>
+    } catch (Exception e){
+		pLog.error("Messages ::: restoreMessage ::: Exception", e);%>
+		<%=Utils.generateWSResponseJsonError("restoreMessage", -1, strDefaultErrorMessage)%>
   <%}%>
 <%!
 private static final String strDefaultErrorMessage  = "Error no controlado";
@@ -41,12 +42,13 @@ private static final String strAmper		  		= "&";
 private static final String strComa			  		= ",";
 // Datos necesarios para la petición pero que pueden ir vacios.
 private static final String strDatosSesion 			= "CODIGO_APP=GCO&PATH=&IP=&num_session=&CLIENTE_EMPRESA=&PERCON=&SELCON=&PRITAR=&servidor=&NUMTAR=&marca=";
-private Logger pLog = LoggerFactory.getLogger("restaurarMensaje.jsp");
+private Logger pLog = LoggerFactory.getLogger("restoreMessage.jsp");
 private final String strEndpoint = "restaurarMensaje.do";
 
 private JSONObject sendMessage(HttpServletRequest request) throws Exception {
 
 	RequestConfigRvia pConfigRvia = new RequestConfigRvia(request);
+	pLog.info("Messages ::: restoreMessage ::: sendMessage ::: Hay parametros de sesión");
 	JSONObject pJsonResult = new JSONObject();
 	StringBuilder pUrlParameters = new StringBuilder(strDatosSesion);
 
@@ -69,27 +71,13 @@ private JSONObject sendMessage(HttpServletRequest request) throws Exception {
 	pUrlParameters.append("&firmaRSI="+CommunicationUtils.getRsiSign(pConfigRvia.getRviaUserId(), pConfigRvia.getNRBE(), strOffice, pConfigRvia.getIsumUserProfile(), pConfigRvia.getLanguage().name()));
 	pUrlParameters.append("&fechaRSI="+CommunicationUtils.getRsiDate());
 	// Send post request 
-	HttpURLConnection pCon = CommunicationUtils.sendCommunication(strEndpoint, pUrlParameters.toString(), request.getHeader("User-Agent"));
+	HttpURLConnection pCon = CommunicationUtils.sendCommunication(strEndpoint, pUrlParameters.toString(), request.getHeader("User-Agent"),pConfigRvia.getNodeRvia());
 
-	int responseCode = pCon.getResponseCode();
-	
-	switch (responseCode) {
+	int iResponseCode = pCon.getResponseCode();
+
+	pLog.info("Messages ::: restoreMessage ::: sendMessage ::: respuesta del servidor " + iResponseCode);
+	switch (iResponseCode) {
 		case 200:
-
-			String strResponse = CommunicationUtils.convertInputStream(pCon.getInputStream());
-			
-			Document pDocument = Jsoup.parse(strResponse, "", Parser.htmlParser());
-			System.out.println(pDocument.text());
-			Element pResult = pDocument.select("input[name=paginaVista]").first();
-			System.out.println(pResult.toString());
-			if (!pResult.toString().contains("listarMensajesRecibidos")) {
-				pJsonResult.put(strErrorCode, -200);
-				pJsonResult.put(strErrorMessage, "Error no controlado");
-			} else {
-				pJsonResult.put(strErrorCode, 0);
-			}
-			break;
-		case 404:
 			pJsonResult.put(strErrorCode, 0);
 			break;
 		case 500:
@@ -98,20 +86,20 @@ private JSONObject sendMessage(HttpServletRequest request) throws Exception {
 				
 				Document pDocumentError = Jsoup.parse(strErrorResponse, "", Parser.htmlParser());
 				Element pErrorCode = pDocumentError.getElementById("HD_ERROR");
-				System.out.println(pErrorCode.text());
 				pJsonResult.put(strErrorCode, Integer.parseInt((pErrorCode.text().split(":"))[1].replace(" ", "")));
 				
 				Element pErrorMessage = pDocumentError.getElementsByClass("txtaviso").first();
-				System.out.println(pErrorMessage.text());
 				pJsonResult.put(strErrorMessage, pErrorMessage.text());
 				
 			} catch (Exception e){
+				pLog.error("Messages ::: restoreMessage ::: sendMessage ::: Exception tratando Error de servidor", e);
 				pJsonResult.put(strErrorCode, -505);
 				pJsonResult.put(strErrorMessage, "Error no controlador ocurrido en la aplicación");
 			}
 			break;
 		default:
-			pJsonResult.put(strErrorCode, responseCode);
+			pLog.error("Messages ::: restoreMessage ::: sendMessage ::: Código de respuesta no contemplado");
+			pJsonResult.put(strErrorCode, iResponseCode);
 			pJsonResult.put(strErrorMessage, "Error ocurrido en la aplicación");
 			break;
 	}

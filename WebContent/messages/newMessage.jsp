@@ -18,8 +18,6 @@
 	pLog.info("Messages ::: newMessage ::: Start");
 	JSONObject pJsonResponse = new JSONObject();
 	response.setHeader("content-type", "application/json");
-
-	String strCodNrbe =  request.getParameter("codNrbe");
 	
 	JSONObject pJsonResult = null;
 	try {
@@ -30,7 +28,8 @@
 		} else {
 			%><%=Utils.generateWSResponseJsonError("newMessage", pJsonResult.getInt(strErrorCode), pJsonResult.getString(strErrorMessage))%><%
 		}
-    } catch (Exception e){%>
+    } catch (Exception e){
+		pLog.error("Messages ::: newMessage ::: Exception", e);%>
 		<%=Utils.generateWSResponseJsonError("newMessage", -1, strDefaultErrorMessage)%>
   <%}%>
 <%!
@@ -79,19 +78,19 @@ private JSONObject sendMessage(HttpServletRequest request) throws Exception {
 	pUrlParameters.append("&firmaRSI="+CommunicationUtils.getRsiSign(pConfigRvia.getRviaUserId(), pConfigRvia.getNRBE(), strOffice, pConfigRvia.getIsumUserProfile(), pConfigRvia.getLanguage().name()));
 	pUrlParameters.append("&fechaRSI="+CommunicationUtils.getRsiDate());
 	// Send post request 
-	HttpURLConnection pCon = CommunicationUtils.sendCommunication(strEndpoint, pUrlParameters.toString(), request.getHeader("User-Agent"));
+	HttpURLConnection pCon = CommunicationUtils.sendCommunication(strEndpoint, pUrlParameters.toString(), request.getHeader("User-Agent"),pConfigRvia.getNodeRvia());
 
-	int responseCode = pCon.getResponseCode();
+	int iResponseCode = pCon.getResponseCode();
+	pLog.info("Messages ::: restoreMessage ::: newMessage ::: respuesta del servidor " + iResponseCode);
 	
-	switch (responseCode) {
+	switch (iResponseCode) {
 		case 200:
 
 			String strResponse = CommunicationUtils.convertInputStream(pCon.getInputStream());
 			
 			Document pDocument = Jsoup.parse(strResponse, "", Parser.htmlParser());
-			System.out.println(pDocument.text());
 			Element pResult = pDocument.select("input[name=paginaVista]").first();
-			System.out.println(pResult.toString());
+			pLog.info("Messages ::: newMessage ::: newMessage ::: pResult " + pResult.toString());
 			if (!pResult.toString().contains("listarMensajesEnviados")) {
 				pJsonResult.put(strErrorCode, -200);
 				pJsonResult.put(strErrorMessage, "Error no controlado");
@@ -105,20 +104,20 @@ private JSONObject sendMessage(HttpServletRequest request) throws Exception {
 				
 				Document pDocumentError = Jsoup.parse(strErrorResponse, "", Parser.htmlParser());
 				Element pErrorCode = pDocumentError.getElementById("HD_ERROR");
-				System.out.println(pErrorCode.text());
 				pJsonResult.put(strErrorCode, Integer.parseInt((pErrorCode.text().split(":"))[1].replace(" ", "")));
 				
 				Element pErrorMessage = pDocumentError.getElementsByClass("txtaviso").first();
-				System.out.println(pErrorMessage.text());
 				pJsonResult.put(strErrorMessage, pErrorMessage.text());
 				
 			} catch (Exception e){
+				pLog.error("Messages ::: newMessage ::: sendMessage ::: Exception tratando Error de servidor", e);
 				pJsonResult.put(strErrorCode, -505);
 				pJsonResult.put(strErrorMessage, "Error no controlador ocurrido en la aplicación");
 			}
 			break;
 		default:
-			pJsonResult.put(strErrorCode, responseCode);
+			pLog.error("Messages ::: newMessage ::: sendMessage ::: Código de respuesta no contemplado");
+			pJsonResult.put(strErrorCode, iResponseCode);
 			pJsonResult.put(strErrorMessage, "Error ocurrido en la aplicación");
 			break;
 	}

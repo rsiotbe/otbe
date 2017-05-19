@@ -2,6 +2,7 @@ package com.rsi.rvia.rest.endpoint.ruralvia.userCommunication;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -153,7 +154,7 @@ public class UserCommunication
      * @throws Exception
      */
     @GET
-    @Path("/detail")
+    @Path("/{codMessage}")
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
     public Response messageDetails(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
@@ -170,8 +171,8 @@ public class UserCommunication
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      * @throws Exception
      */
-    @GET
-    @Path("/send")
+    @POST
+    @Path("/newMessage")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public Response sendMessage(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
@@ -188,8 +189,8 @@ public class UserCommunication
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      * @throws Exception
      */
-    @GET
-    @Path("/delete")
+    @POST
+    @Path("/{codMessage}/delete")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public Response deleteMessage(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
@@ -207,8 +208,8 @@ public class UserCommunication
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas
      * @throws Exception
      */
-    @GET
-    @Path("/restore")
+    @PUT
+    @Path("/{codMessage}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public Response restoreMessage(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)

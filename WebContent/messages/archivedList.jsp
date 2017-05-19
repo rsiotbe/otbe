@@ -1,3 +1,4 @@
+<%@page import="com.rsi.rvia.rest.userCommunication.CommunicationUtils"%>
 <%@page import="com.rsi.rvia.rest.session.RequestConfigRvia"%>
 <%@page import="java.io.InputStreamReader"%>
 <%@page import="java.io.BufferedReader"%>
@@ -69,6 +70,20 @@ public JSONArray getArchivedList (String strCodNrbe, String strLanguage, String 
 		ResultSet pResultSet = (ResultSet) pCallableStatement.getObject(4);
 		
 		pJsongetNewsResponse = Utils.convertResultSetToJSON(pResultSet);
+		if (pJsongetNewsResponse.length()>0){
+			JSONArray pAuxResponse = new JSONArray();
+			JSONObject pAuxJson = null;
+			for (int i = 0; i < pJsongetNewsResponse.length(); i++) {
+				pAuxJson = new JSONObject(pJsongetNewsResponse.getJSONObject(i).toString());
+				String strHistoryCod = String.valueOf(pAuxJson.getInt("HISTORIA_ID"));
+				String strMailCod = String.valueOf(pAuxJson.getInt("BUZON_ID"));
+				
+				int iHistoryNumber = CommunicationUtils.getHistoryNumber(strHistoryCod, strMailCod);
+				pAuxJson.put("N_HISTORIA", iHistoryNumber);
+				pAuxResponse.put(pAuxJson);
+			}
+			pJsongetNewsResponse = pAuxResponse;
+		}
 		pLog.debug("Messages ::: getArchivedList ::: pJsongetNewsResponse " + pJsongetNewsResponse);
 	}
 	catch (Exception e)

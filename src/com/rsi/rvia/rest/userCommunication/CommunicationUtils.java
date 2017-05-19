@@ -9,15 +9,28 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.Types;
 import java.util.Date;
 import java.util.Properties;
 
+import org.json.JSONArray;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
+import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
+import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+
+
+
 public class CommunicationUtils {
-	public static HttpURLConnection sendCommunication(String strEndpoint, String urlParameters, String strUserAgent) throws IOException{
+	
+	public static HttpURLConnection sendCommunication(String strEndpoint, String urlParameters, String strUserAgent, String strRviaServer) throws IOException{
 
 		Properties pProperties = new Properties();
 		pProperties.load(CommunicationUtils.class.getResourceAsStream("/communications.properties"));
-		String strServerUrl = (String)pProperties.get("COMMUNICATIONS_SERVICE_URL");
+		String strServerUrl = (String)pProperties.get(strRviaServer);
 		URL pUrl = new URL(strServerUrl+strEndpoint);
 		HttpURLConnection con = (HttpURLConnection) pUrl.openConnection();
 		
@@ -98,5 +111,58 @@ public class CommunicationUtils {
 			}
 		}
 		return pResult.toString();
+	}
+
+	public static int getHistoryNumber (String strHistoryCod, String strMailCod) throws Exception
+	{
+		Logger pLog = LoggerFactory.getLogger("CommunicationUtils");
+		pLog.info("Messages ::: MessageDetails ::: Start ");
+		Connection pConnection = null;
+		JSONArray pJsongetNewsResponse = null;
+		String strQuery = "{? = call BEL.PK_CONSULTA_BUZON_MOVIL.getHistoryNumber(?,?)}";
+		int iHistoryNumber = 0;
+		try
+		{
+			pLog.debug("Messages ::: MessageDetails ::: DDBBProvider ");
+			pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
+			
+			pConnection.setAutoCommit(false);
+		}
+		catch (Exception ex)
+		{
+			pLog.error("Messages ::: getNews ::: DDBBProvider Exception " + ex.getMessage());
+		}
+		
+		CallableStatement pCallableStatement = null;
+		
+		try
+		{
+			pLog.info("Messages ::: MessageDetails ::: pCallableStatement ");
+		    pCallableStatement = pConnection.prepareCall(strQuery);
+			pCallableStatement.registerOutParameter(1, Types.INTEGER);
+			pCallableStatement.setString(2, strHistoryCod);
+			pCallableStatement.setString(3, strMailCod);
+			
+			pCallableStatement.executeUpdate();
+			iHistoryNumber = pCallableStatement.getInt(1);
+			
+			pLog.debug("Messages ::: MessageDetails ::: pJsongetNewsResponse " + pJsongetNewsResponse);
+		}
+		catch (Exception e)
+		{
+			pLog.error("Messages ::: MessageDetails ::: pCallableStatement Exception " + e.getMessage());		
+		}
+		finally
+		{
+			try{
+				pCallableStatement.close();
+				pConnection.close();
+			}
+			catch (Exception e)
+			{
+				pLog.error("Messages ::: MessageDetails ::: pCallableStatement Close Exception " + e.getMessage());				
+			}
+		}  
+		return iHistoryNumber;
 	}
 }

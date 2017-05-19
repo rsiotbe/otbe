@@ -1,3 +1,4 @@
+<%@page import="com.rsi.rvia.rest.session.RequestConfigRvia"%>
 <%@page import="java.io.InputStreamReader"%>
 <%@page import="java.io.BufferedReader"%>
 <%@page import="org.json.JSONException"%>
@@ -20,7 +21,8 @@
 	response.setHeader("content-type", "application/json");
 
 	String codHistory = request.getParameter("codHistory");
-	String codMail =  request.getParameter("codMail");
+	String codMail =  request.getParameter("codMailBox");
+	RequestConfigRvia pConfigRvia = new RequestConfigRvia(request);
 	JSONArray pJsonResult = getHistoryList(codHistory, codMail);
 	pJsonResponse.put("historyMessages", pJsonResult);
 	%><%=Utils.generateWSResponseJsonOk("historyMessages", pJsonResponse.toString())%>
@@ -28,27 +30,27 @@
 
 String strErrorCode = "errorCode";
 String strErrorMessage = "errorMessage";
-Logger pLog = LoggerFactory.getLogger("getHistory.jsp");
+Logger pLog = LoggerFactory.getLogger("historyList.jsp");
 
 /*
  * Devuelve el listado de noticias para mostrar al usuario.
  */
 public JSONArray getHistoryList (String codHistory, String codMail) throws Exception
 {
-	pLog.debug("Messages ::: getHistoryList ::: Start ");
+	pLog.debug("Messages ::: historyList ::: getHistoryList ::: Start ");
 	Connection pConnection = null;
 	JSONArray pJsongetNewsResponse = null;
 	String strQuery = "{call BEL.PK_CONSULTA_BUZON_MOVIL.getHistoryMessages(?,?,?)}";
 	try
 	{
-		pLog.debug("Messages ::: getHistoryList ::: DDBBProvider ");
+		pLog.debug("Messages ::: historyList ::: getHistoryList ::: DDBBProvider ");
 		pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
 		
 		pConnection.setAutoCommit(false);
 	}
 	catch (Exception ex)
 	{
-		pLog.debug("Messages ::: getHistoryList ::: DDBBProvider Exception " + ex.getMessage());
+		pLog.debug("Messages ::: historyList ::: getHistoryList ::: DDBBProvider Exception " + ex.getMessage());
 	}
 	
 	CallableStatement pCallableStatement = null;
@@ -57,7 +59,7 @@ public JSONArray getHistoryList (String codHistory, String codMail) throws Excep
 	{
 		int iResultCode = 0;
 		String strError;
-		pLog.info("Messages ::: getHistoryList ::: pCallableStatement ");
+		pLog.info("Messages ::: historyList ::: getHistoryList ::: pCallableStatement ");
 	    pCallableStatement = pConnection.prepareCall(strQuery);
 		pCallableStatement.setString(1, codHistory);
 	  	pCallableStatement.setString(2, codMail);
@@ -67,11 +69,11 @@ public JSONArray getHistoryList (String codHistory, String codMail) throws Excep
 		ResultSet pResultSet = (ResultSet) pCallableStatement.getObject(3);
 		
 		pJsongetNewsResponse = Utils.convertResultSetToJSON(pResultSet);
-		pLog.debug("Messages ::: getHistoryList ::: pJsongetNewsResponse " + pJsongetNewsResponse);
+		pLog.debug("Messages ::: historyList ::: getHistoryList ::: pJsongetNewsResponse " + pJsongetNewsResponse);
 	}
 	catch (Exception e)
 	{
-		pLog.error("Messages ::: getHistoryList ::: pCallableStatement Exception " + e.getMessage());		
+		pLog.error("Messages ::: historyList ::: getHistoryList ::: pCallableStatement Exception " + e.getMessage());		
 	}
 	finally
 	{
@@ -81,7 +83,7 @@ public JSONArray getHistoryList (String codHistory, String codMail) throws Excep
 		}
 		catch (Exception e)
 		{
-			pLog.error("Messages ::: getHistoryList ::: pCallableStatement Close Exception " + e.getMessage());				
+			pLog.error("Messages ::: historyList ::: getHistoryList ::: pCallableStatement Close Exception " + e.getMessage());				
 		}
 	}  
 	return pJsongetNewsResponse;

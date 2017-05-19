@@ -30,7 +30,8 @@
 		} else {
 			%><%=Utils.generateWSResponseJsonError("deleteMessage", pJsonResult.getInt(strErrorCode), pJsonResult.getString(strErrorMessage))%><%
 		}
-    } catch (Exception e){%>
+    } catch (Exception e){
+		pLog.error("Messages ::: deleteMessage ::: Exception", e);%>
 		<%=Utils.generateWSResponseJsonError("deleteMessage", -1, strDefaultErrorMessage)%>
   <%}%>
 <%!
@@ -47,6 +48,7 @@ private final String strEndpoint = "eliminarMensaje.do";
 private JSONObject sendMessage(HttpServletRequest request) throws Exception {
 
 	RequestConfigRvia pConfigRvia = new RequestConfigRvia(request);
+	pLog.info("Messages ::: deleteMessage ::: sendMessage ::: Hay parametros de sesión");
 	JSONObject pJsonResult = new JSONObject();
 	StringBuilder pUrlParameters = new StringBuilder(strDatosSesion);
 
@@ -69,27 +71,13 @@ private JSONObject sendMessage(HttpServletRequest request) throws Exception {
 	pUrlParameters.append("&firmaRSI="+CommunicationUtils.getRsiSign(pConfigRvia.getRviaUserId(), pConfigRvia.getNRBE(), strOffice, pConfigRvia.getIsumUserProfile(), pConfigRvia.getLanguage().name()));
 	pUrlParameters.append("&fechaRSI="+CommunicationUtils.getRsiDate());
 	// Send post request 
-	HttpURLConnection pCon = CommunicationUtils.sendCommunication(strEndpoint, pUrlParameters.toString(), request.getHeader("User-Agent"));
+	HttpURLConnection pCon = CommunicationUtils.sendCommunication(strEndpoint, pUrlParameters.toString(), request.getHeader("User-Agent"),pConfigRvia.getNodeRvia());
 
-	int responseCode = pCon.getResponseCode();
+	int iResponseCode = pCon.getResponseCode();
+	pLog.info("Messages ::: deleteMessage ::: sendMessage ::: Respuesta del servidor " + iResponseCode);
 	
-	switch (responseCode) {
+	switch (iResponseCode) {
 		case 200:
-
-			String strResponse = CommunicationUtils.convertInputStream(pCon.getInputStream());
-			
-			Document pDocument = Jsoup.parse(strResponse, "", Parser.htmlParser());
-			System.out.println(pDocument.text());
-			Element pResult = pDocument.select("input[name=paginaVista]").first();
-			System.out.println(pResult.toString());
-			if (!pResult.toString().contains("listarMensajesBorrados")) {
-				pJsonResult.put(strErrorCode, -200);
-				pJsonResult.put(strErrorMessage, "Error no controlado");
-			} else {
-				pJsonResult.put(strErrorCode, 0);
-			}
-			break;
-		case 404:
 			pJsonResult.put(strErrorCode, 0);
 			break;
 		case 500:
@@ -98,20 +86,20 @@ private JSONObject sendMessage(HttpServletRequest request) throws Exception {
 				
 				Document pDocumentError = Jsoup.parse(strErrorResponse, "", Parser.htmlParser());
 				Element pErrorCode = pDocumentError.getElementById("HD_ERROR");
-				System.out.println(pErrorCode.text());
 				pJsonResult.put(strErrorCode, Integer.parseInt((pErrorCode.text().split(":"))[1].replace(" ", "")));
 				
 				Element pErrorMessage = pDocumentError.getElementsByClass("txtaviso").first();
-				System.out.println(pErrorMessage.text());
 				pJsonResult.put(strErrorMessage, pErrorMessage.text());
 				
 			} catch (Exception e){
+				pLog.error("Messages ::: deleteMessage ::: sendMessage ::: Exception tratando Error de servidor", e);
 				pJsonResult.put(strErrorCode, -505);
 				pJsonResult.put(strErrorMessage, "Error no controlador ocurrido en la aplicación");
 			}
 			break;
 		default:
-			pJsonResult.put(strErrorCode, responseCode);
+			pLog.error("Messages ::: deleteMessage ::: sendMessage ::: Código de respuesta no contemplado");
+			pJsonResult.put(strErrorCode, iResponseCode);
 			pJsonResult.put(strErrorMessage, "Error ocurrido en la aplicación");
 			break;
 	}
