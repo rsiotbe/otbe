@@ -52,17 +52,17 @@ public class ResponseManager
         {
             pLog.trace("la respuesta no es un JSON, se comprueba si son errores de ruralvia");
             /* no es un JSON, viene html, se evalua por si es un error web de ruralvia */
-            if (RestRviaConnector.isRuralviaWebError(strResponseData))
-            {
-                /* se evalua el html para construir un error JSOn con los datos obtenidos */
-                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Error no controlado de ruralvia");
-                pRviaRestResponse = new RviaRestResponse(RviaRestResponse.Type.ERROR, null, pRviaRestResponseErrorItem);
-            }
-            else if (RestRviaConnector.isRuralviaSessionTimeoutError(strResponseData))
+            if (RestRviaConnector.isRuralviaSessionTimeoutError(strResponseData))
             {
                 // se evalua el html para construir un error JSOn con los datos obtenidos
                 RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Error de timeout");
                 pRviaRestResponse = new RviaRestResponse(Type.ERROR, null, pRviaRestResponseErrorItem);
+            }
+            else if (RestRviaConnector.isRuralviaWebError(strResponseData))
+            {
+                /* se evalua el html para construir un error JSOn con los datos obtenidos */
+                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Error no controlado de ruralvia");
+                pRviaRestResponse = new RviaRestResponse(RviaRestResponse.Type.ERROR, null, pRviaRestResponseErrorItem);
             }
             else if (pMiqQuests.getComponentType() == CompomentType.COORD)
             {
