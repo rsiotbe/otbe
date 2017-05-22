@@ -41,7 +41,7 @@
 	String strInputs = "";
 	boolean fToLocalhost = false;
 	boolean fLocalhostHttps = false;
-	String strLocalhostPort = "8080";
+	String strLocalhostPort = "443";
 	String strFinalUrl;
 
 	strIdMiq = request.getParameter("idMiq");

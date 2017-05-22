@@ -499,7 +499,11 @@ public class RestRviaConnector
             pHtmlDoc = Jsoup.parse(strHtml);
             if ((pHtmlDoc.getElementsByClass("txtaviso") != null)
                     && (pHtmlDoc.getElementsByClass("txtaviso").size() > 0))
-                fReturn = true;
+            {
+                String strText = pHtmlDoc.getElementsByClass("txtaviso").first().text();
+                if (strText.contains("La sesión ha caducado"))
+                    fReturn = true;
+            }
         }
         catch (Exception ex)
         {
