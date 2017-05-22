@@ -74,6 +74,7 @@ public class RestRviaConnector
             String strSesId = pRequestConfigRvia.getRviaSessionId();
             String strHost = pRequestConfigRvia.getUriRvia().toString();
             String strClavePagina = pMiqQuests.getEndPoint();
+            String strQueryStringParams = ((pRequest.getQueryString() == null) ? "" : pRequest.getQueryString());
             String strUrl = strHost + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + strSesId + "?clavePagina="
                     + strClavePagina;
             pLog.trace("Se compone la url a invocar a ruralvia: " + strUrl + ":" + pRequestConfigRvia.getToken());
@@ -82,7 +83,7 @@ public class RestRviaConnector
             pLog.trace("Se obtiene el xml de configuración desde ruralvia y se procede a evaluar su contenido");
             proccessInformationFromRviaXML(pXmlDoc, pMiqQuests, pSessionFields);
             pLog.trace("Se añade la información recibida en la propia petición");
-            addDataToSessionFields(strClavePagina, strData, pSessionFields);
+            addDataToSessionFields(strClavePagina, strQueryStringParams, pSessionFields);
             pSessionFields.putAll(pPathParams);
             /*
              * se comprueba si existe algúna opción en la configuración de miqQuest para enviarla como parámetro en la
@@ -230,13 +231,13 @@ public class RestRviaConnector
         saveDDBBSenssionVarNames(pMiqQuests.getIdMiq(), pSessionParamNames, pSessionParamInSession);
     }
 
-    private static void addDataToSessionFields(String strClavePagina, String strData,
+    private static void addDataToSessionFields(String strClavePagina, String strQueryStringData,
             MultivaluedMap<String, String> pSessionFields)
     {
         pSessionFields.add("clavePagina", strClavePagina);
         // Se evaluan los datos que llegan en la parte de datos.
-        String[] pArr = strData.split("&");
-        if (!strData.trim().isEmpty())
+        String[] pArr = strQueryStringData.split("&");
+        if (!strQueryStringData.trim().isEmpty())
         {
             for (int i = 0; i < pArr.length; i++)
             {
