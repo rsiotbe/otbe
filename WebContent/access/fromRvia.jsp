@@ -51,6 +51,7 @@
 	alParamToNotForwarding.add("toLocalhost");
 	alParamToNotForwarding.add("localhostHttps");
 	alParamToNotForwarding.add("localhostPort");
+	alParamToNotForwarding.add("idMiq");
 
 	strIdMiq = request.getParameter("idMiq");
 	pLog.info("Se recibe una petición para acceder a la operativa con idMiq " + strIdMiq);
@@ -105,7 +106,7 @@
 		        continue;
 		    }
 			out.println("<!-- " + strParamName + " = " + strValue + "-->" );
-			strInputs += "<input type=\"hidden\" name=\"" + strParamName + "\" value=\"" + strValue + ">\"\n";
+			strInputs += "<input type=\"hidden\" name=\"" + strParamName + "\" value=\"" + strValue + "\">\n";
 		}
 		else
 		{

@@ -106,7 +106,7 @@ public class DDBBPoolFactory
             default:
                 break;
         }
-        pLog.error("Se recupera la conexión con " + strNonbreBD);
+        pLog.info("Se obtiene una conexión con " + strNonbreBD);
         return pReturn;
     }
 }
