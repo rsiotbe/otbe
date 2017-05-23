@@ -22,7 +22,8 @@ import com.rsi.rvia.rest.tool.Utils;
 public class TranslateRviaJsonCache
 {
     /** The p log. */
-    private static Logger                                     pLog                 = LoggerFactory.getLogger(TranslateRviaJsonCache.class);
+    private static Logger                                     pLog                 = LoggerFactory.getLogger(
+            TranslateRviaJsonCache.class);
     /** The ht translate cache data. */
     private static Hashtable<String, TranslateRviaJsonObject> htTranslateCacheData = new Hashtable<String, TranslateRviaJsonObject>();
 
@@ -136,7 +137,9 @@ public class TranslateRviaJsonCache
                 DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
                 if (fIsError)
                 {
-                    throw new ApplicationException(500, 999994, "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD", null);
+                    throw new ApplicationException(500, 999994,
+                            "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD",
+                            null);
                 }
             }
         }
@@ -201,7 +204,6 @@ public class TranslateRviaJsonCache
                     pPreparedStatement2.setString(count++, strErrorText);
                     pPreparedStatement2.setString(count++, DEFAULT_COMMENT);
                 }
-                pLog.trace("pPreparedStatement2:" + pPreparedStatement2);
                 nResult += pPreparedStatement2.executeUpdate();
                 //
                 // Insertar en BDPTB079_IDIOMA_APLICATIVO
@@ -237,15 +239,26 @@ public class TranslateRviaJsonCache
             }
             finally
             {
-                pConnection1.setAutoCommit(true);
-                pConnection2.setAutoCommit(true);
-                pConnection3.setAutoCommit(true);
-                DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement1, pConnection1);
-                DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement2, pConnection2);
-                DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement3, pConnection3);
+                if (pConnection1 != null)
+                {
+                    pConnection1.setAutoCommit(true);
+                    DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement1, pConnection1);
+                }
+                if (pConnection2 != null)
+                {
+                    pConnection2.setAutoCommit(true);
+                    DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement2, pConnection2);
+                }
+                if (pConnection3 != null)
+                {
+                    pConnection3.setAutoCommit(true);
+                    DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement3, pConnection3);
+                }
                 if (fIsError)
                 {
-                    throw new ApplicationException(500, 999993, "Error al procesar insertar respues ta de error de ruralvia", "Error al acceder a BBDD", null);
+                    throw new ApplicationException(500, 999993,
+                            "Error al procesar insertar respues ta de error de ruralvia", "Error al acceder a BBDD",
+                            null);
                 }
             }
         }
