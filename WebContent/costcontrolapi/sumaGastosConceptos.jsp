@@ -52,19 +52,19 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
 		       strQuery = strQuery + " and t1.num_sec_ac =" + strContrato; 
 		    } 		    
           if(strDateFin == null){
-             strQuery = strQuery + " and t1.fecha_oprcn <= (select max(t9.fecha_oprcn) from rdwc01.mi_do_apte_cta t9 where t9.cod_nrbe_en='" + 
-                   strEntidad + "')";
+             strDateFin =  AcuerdosRuralvia.getLastProcessDateMasUno("MI_DO_APTE_CTA");
           }
           else{
              strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
-             strQuery = strQuery + " and t1.fecha_oprcn < to_date('" + strDateFin + "','yyyy-mm-dd') ";
-          }   
+          } 
+          strQuery = strQuery + " and t1.fecha_oprcn < to_date('" + strDateFin + "','yyyy-mm-dd') ";
+          
           strDateIni = QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni);
           strQuery = strQuery + " and t1.fecha_oprcn > to_date('" + strDateIni + "','yyyy-mm-dd') ";
           strQuery = strQuery + " and cod_cta = '01'  and ind_accion <> '3' " +  strExcluClops +     
           " group by nvl(trim(t1.concpt_apnte),trim(t3.txt_tipo_clop_brev)), t1.sgn  " ;
   pLog.info("Query al customizador: " + strQuery);            
-  String strResponse = QueryCustomizer.process(request,strQuery);          
+  String strResponse = QueryCustomizer.process(request,strQuery);         
   response.setHeader("content-type", "application/json");
 %>
 <%=strResponse %>
