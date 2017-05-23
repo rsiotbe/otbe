@@ -1,5 +1,6 @@
 package com.rsi.rvia.rest.conector;
 
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -74,7 +75,8 @@ public class RestRviaConnector
             String strSesId = pRequestConfigRvia.getRviaSessionId();
             String strHost = pRequestConfigRvia.getUriRvia().toString();
             String strClavePagina = pMiqQuests.getEndPoint();
-            String strQueryStringParams = ((pRequest.getQueryString() == null) ? "" : pRequest.getQueryString());
+            String strQueryStringParams = ((pRequest.getQueryString() == null) ? ""
+                    : URLDecoder.decode(pRequest.getQueryString(), "UTF-8"));
             String strUrl = strHost + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + strSesId + "?clavePagina="
                     + strClavePagina;
             pLog.trace("Se compone la url a invocar a ruralvia: " + strUrl + ":" + pRequestConfigRvia.getToken());
