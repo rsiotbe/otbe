@@ -74,19 +74,15 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
 */           
         strQuery = strQuery + " from rdwc01.mi_do_apte_cta t1" +
            " where cod_nrbe_en='" + strEntidad + "'" ;
-           
-   if(strDateFin == null){
-      strQuery = strQuery + " and fecha_oprcn <= (select max(fecha_oprcn) from rdwc01.mi_do_apte_cta where cod_nrbe_en='" + 
-            strEntidad + "')";
-   }
-   else{
-      strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
-      strQuery = strQuery + " and t1.fecha_oprcn <= " +             
-            " ( select max(tm.fecha_oprcn) " +
-            " from rdwc01.mi_do_apte_cta tm where cod_nrbe_en='" + strEntidad + "' " +
-            " and tm.fecha_oprcn < to_date('" + strDateFin + "','yyyy-mm-dd') " + 
-            " )";
-   }   
+
+	 if(strDateFin == null){
+	    strDateFin =  AcuerdosRuralvia.getLastProcessDateMasUno("MI_DO_APTE_CTA");
+	 }
+	 else{
+	    strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
+	 } 
+	 strQuery = strQuery + " and t1.fecha_oprcn < to_date('" + strDateFin + "','yyyy-mm-dd') ";
+ 
    strDateIni = QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni);
    strQuery = strQuery + " and fecha_oprcn > to_date('" + strDateIni + "','yyyy-mm-dd') ";      
    String strRestrictorApuntes = " and cod_cta = '01' and ind_accion <> '3' ";
