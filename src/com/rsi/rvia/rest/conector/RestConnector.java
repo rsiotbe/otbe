@@ -85,7 +85,7 @@ public class RestConnector
                 switch (strMethod)
                 {
                     case "GET":
-                        pReturn = RestWSConnector.get(pRequest, pMiqQuests, strData, pPathParams, pParamsToInject);
+                        pReturn = RestWSConnector.get(pRequest, pMiqQuests, pRequestConfig, strData, pPathParams, pParamsToInject);
                         break;
                     case "POST":
                         pReturn = RestWSConnector.post(pRequest, pMiqQuests, pRequestConfig, strData, pPathParams, pParamsToInject);

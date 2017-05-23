@@ -757,11 +757,8 @@ public class OperationManager
         RestConnector pRestConnector = null;
         Response pResponseConnector = null;
         MultivaluedMap<String, String> pListParams = Utils.getParamByPath(pUriInfo);
-        MultivaluedMap<String, String> pQueryParams = Utils.queryStringToMultivaluedMap(pUriInfo);
         MultivaluedMap<String, String> pAllParams = new MultivaluedHashMap<String, String>();
         pAllParams.putAll(pListParams);
-        pAllParams.putAll(pQueryParams);
-        // MultivaluedMap<String, String> paramsToRvia = pMiqQuests.testInputParams(pAllParams);
         // Se instancia el conector y se solicitan los datos.
         pRestConnector = new RestConnector();
         pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pAllParams, null);

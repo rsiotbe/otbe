@@ -139,6 +139,8 @@ public class RequestConfigRvia extends RequestConfig
             }
             if (strToken != null)
             {
+                /* se reemplazan los caracteres espacios por mases, por si al viahar como url se han transformado */
+                strToken = strToken.replace(" ", "+");
                 pLog.debug("La información viene cifrada, se procede a descifrarla");
                 /* se desencipta la información */
                 strDesToken = RviaConnectCipher.symmetricDecrypt(strToken, RviaConnectCipher.RVIA_CONNECT_KEY);
