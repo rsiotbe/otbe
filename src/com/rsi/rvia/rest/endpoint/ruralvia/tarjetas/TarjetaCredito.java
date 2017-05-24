@@ -144,7 +144,7 @@ public class TarjetaCredito
      *            the uri info
      * @return the scoring
      */
-    @POST
+    @GET
     @Path("/lopd")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
