@@ -63,7 +63,7 @@ public class Common
             String strJsonData)
     {
         pLog.info("Entra una petición para enviar correo con los datos de simulación al cliente.");
-        Response pResponse = OperationManager.processDataFromSimulators(pRequest, pUriInfo, strJsonData, MediaType.APPLICATION_JSON_TYPE);
+        Response pResponse = OperationManager.processGenericAPP(pRequest, pUriInfo, strJsonData, MediaType.APPLICATION_JSON_TYPE);
         return pResponse;
     }
 
@@ -74,7 +74,7 @@ public class Common
     public Response sendEmailToBank(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strJsonData)
     {
         pLog.info("Entra una petición para enviar correo con los datos de simulación a la sucursal.");
-        Response pResponse = OperationManager.processDataFromSimulators(pRequest, pUriInfo, strJsonData, MediaType.APPLICATION_JSON_TYPE);
+        Response pResponse = OperationManager.processGenericAPP(pRequest, pUriInfo, strJsonData, MediaType.APPLICATION_JSON_TYPE);
         return pResponse;
     }
 }

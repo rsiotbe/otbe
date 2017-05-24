@@ -38,45 +38,30 @@ public class RequestConfig
     }
 
     /**
-     * Constructor pasando parámetros
-     * 
-     * @param strLanguage
-     *            Lenguaje, por defecto si viene vacio o a null se pondra es_ES
-     * @param strNRBE
-     *            String con el NRBE, por defecto si viene vacio o a null se pondre 0198
-     */
-    public RequestConfig(String strLanguage, String strNRBE)
-    {
-        pLog.debug("Se procede a cargar la configuración de la petición leyendo parámetros");
-        setValues(strLanguage, strNRBE);
-    }
-
-    /**
      * Constructor pasando objeto request
      * 
      * @param pRequest
      *            Objeto request recibido
      * @throws Exception
      */
-    public RequestConfig(HttpServletRequest pRequest) throws Exception
+    public RequestConfig(HttpServletRequest pRequest, JSONObject pJSONObject) throws Exception
     {
-        pLog.debug("Se procede a cargar la configuración de la petición leyendo objeto request");
-        String strLangValue = pRequest.getParameter(Constants.PARAM_LANG);
-        setValues(strLangValue, pRequest.getParameter(Constants.PARAM_NRBE));
-    }
-
-    /**
-     * Constructor pasando objeto JSOn
-     * 
-     * @param request
-     *            Objeto JSON recibido
-     * @throws Exception
-     */
-    public RequestConfig(JSONObject pJSONObject) throws Exception
-    {
-        pLog.debug("Se procede a cargar la configuración de la petición leyendo objeto JSON");
-        String strLangValue = pJSONObject.optString(Constants.PARAM_LANG);
-        setValues(strLangValue, pJSONObject.optString(Constants.PARAM_NRBE));
+        String strLangValue;
+        String strNRBE;
+        pLog.debug("Se procede a cargar la configuración de la petición leyendo objeto request y datos json asociados");
+        strLangValue = pRequest.getParameter(Constants.PARAM_LANG);
+        /* si el parámetro está vacio se intenta leer del contedio json */
+        if (strLangValue == null && pJSONObject != null)
+        {
+            strLangValue = pJSONObject.optString(Constants.PARAM_LANG);
+        }
+        strNRBE = pRequest.getParameter(Constants.PARAM_NRBE);
+        /* si el parámetro está vacio se intenta leer del contedio json */
+        if (strNRBE == null && pJSONObject != null)
+        {
+            strNRBE = pJSONObject.optString(Constants.PARAM_NRBE);
+        }
+        setValues(strLangValue, strNRBE);
     }
 
     /**
