@@ -16,8 +16,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.Constants;
-import com.rsi.Constants.Language;
-import com.rsi.Constants.SimulatorType;
 import com.rsi.isum.IsumValidation;
 import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.error.ErrorManager;
@@ -30,7 +28,6 @@ import com.rsi.rvia.rest.security.IdentityProvider;
 import com.rsi.rvia.rest.security.IdentityProviderFactory;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
-import com.rsi.rvia.rest.simulators.SimulatorsManager;
 import com.rsi.rvia.rest.template.TemplateManager;
 import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.ServiceHelper;
@@ -43,7 +40,6 @@ public class OperationManager
     private static final String ENCODING_UTF8      = "UTF-8";
     private static final int    ISUM_ERROR_CODE_EX = 401;
     private static final int    HTTP_CODE_OK       = 200;
-    private static HttpSession  pSession;
     private static Logger       pLog               = LoggerFactory.getLogger(OperationManager.class);
 
     /**
@@ -67,7 +63,6 @@ public class OperationManager
         Response pResponseConnector;
         RviaRestResponse pRviaRestResponse = null;
         RequestConfigRvia pRequestConfigRvia = null;
-        pSession = pRequest.getSession(true);
         try
         {
             // Se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM.
@@ -129,7 +124,6 @@ public class OperationManager
         String strPrimaryPath = "";
         String JWT = "";
         MiqQuests pMiqQuests = null;
-        pSession = pRequest.getSession(true);
         try
         {
             strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
@@ -225,92 +219,16 @@ public class OperationManager
         Response pResponseConnector;
         RequestConfig pRequestConfig = null;
         RviaRestResponse pRviaRestResponse = null;
-        pSession = pRequest.getSession(true);
         try
         {
             /*
              * Se crea el objeto RequestConfig con los solo con los datos del lang y css para aplicarlos en el template
              */
-            pRequestConfig = new RequestConfig(pRequest, null);
+            pRequestConfig = new RequestConfig(pRequest, new JSONObject(strJsonData));
             /* se obtienen los datos necesario para realizar la petición al proveedor */
             pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
             /* se procesa el resultado del conector paa evaluar y adaptar su contenido */
             pRviaRestResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, strJsonData);
-            pLog.info("Respuesta correcta. Datos finales obtenidos: " + pRviaRestResponse.toJsonString());
-        }
-        catch (Exception ex)
-        {
-            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
-            pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-        }
-        try
-        {
-            /* Se construye la respuesta ya sea error, o correcta, json o template */
-            pResponseConnector = buildResponse(pErrorCaptured, pMediaType, pMiqQuests, pRviaRestResponse, pRequestConfig);
-        }
-        catch (Exception ex)
-        {
-            pLog.error("Se ha generado un error al procesar la respuesta final", ex);
-            pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).build();
-        }
-        pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
-        return pResponseConnector;
-    }
-
-    /**
-     * Se procesa una petición que llega desde la antigua apliación de ruralvia
-     * 
-     * @param pRequest
-     *            Objeto petición original
-     * @param pUriInfo
-     *            Uri asociada a la petición
-     * @param strNRBEName
-     *            Nombre de la entidad
-     * @param strLoanName
-     *            Nombre del simulador del prestamo
-     * @param strLanguage
-     *            Idioma en el que se debe pintar la página si es necesario
-     * @param pMediaType
-     *            Tipo de mediatype que debe cumplir la petición
-     * @return Objeto respuesta de Jersey
-     */
-    public static Response processDataFromSimulators(HttpServletRequest pRequest, UriInfo pUriInfo, String strNRBEName,
-            SimulatorType pSimulatorType, String strLoanName, String strLanguage, MediaType pMediaType)
-    {
-        MiqQuests pMiqQuests = null;
-        ErrorResponse pErrorCaptured = null;
-        String strNRBE;
-        Language pLanguage;
-        RviaRestResponse pRviaRestResponse = null;
-        Response pResponseConnector;
-        RequestConfig pRequestConfig = null;
-        pSession = pRequest.getSession(true);
-        try
-        {
-            strNRBE = SimulatorsManager.getNRBEFromName(strNRBEName);
-            /* se obtiene el objeto petición */
-            pRequestConfig = new RequestConfig(strLanguage, strNRBE);
-            /* si no viene idioma o definido se coge por defecto el de el objeto RequestConfig */
-            if (strLanguage == null || strLanguage.trim().isEmpty())
-                pLanguage = pRequestConfig.getLanguage();
-            else
-                pLanguage = Language.getEnumValue(strLanguage);
-            /* se obtienen los datos necesario para realizar la petición al proveedor */
-            pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
-            if (pMiqQuests == null)
-            {
-                throw new ApplicationException(500, 99999, "No se ha podido recuperar la información de la operación", "El path no corresponde con ninguna entrada de MiqQuest", null);
-            }
-            /* se obtiene el codigo de entidad de donde procede la llamada */
-            JSONObject pDataInput = new JSONObject();
-            pDataInput.put(Constants.SIMULADOR_NRBE, strNRBE);
-            pDataInput.put(Constants.SIMULADOR_NRBE_NAME, strNRBEName);
-            pDataInput.put(Constants.SIMULADOR_SIMPLE_NAME, strLoanName);
-            pDataInput.put(Constants.SIMULADOR_TYPE, pSimulatorType.name());
-            pDataInput.put(Constants.SIMULADOR_LANGUAGE, pLanguage.getJavaCode());
-            /* se instancia el conector y se solicitan los datos */
-            pRviaRestResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, pDataInput.toString());
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + pRviaRestResponse.toJsonString());
         }
         catch (Exception ex)
@@ -466,6 +384,7 @@ public class OperationManager
         // Se obtiene los datos asociados a la petición de ruralvia.
         pRequestConfigRvia = new RequestConfigRvia(pRequest);
         // Se establece el token de datos recibido desde ruralvia como dato de sesión.
+        HttpSession pSession = pRequest.getSession(true);
         pSession.setAttribute("token", pRequestConfigRvia.getToken());
         // Se comprueba si el servicio de isum está permitido.
         if (!IsumValidation.IsValidService(pRequestConfigRvia))
