@@ -761,4 +761,33 @@ public class Utils
         strReturn += strParams;
         return strReturn;
     }
+    
+    private static String clobToString(java.sql.Clob data)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        try
+        {
+            final Reader         reader = data.getCharacterStream();
+            final BufferedReader br     = new BufferedReader(reader);
+
+            int b;
+            while(-1 != (b = br.read()))
+            {
+                sb.append((char)b);
+            }
+
+            br.close();
+        }
+        catch (SQLException e)
+        {
+            return e.toString();
+        }
+        catch (IOException e)
+        {
+            return e.toString();
+        }
+
+        return sb.toString();
+    }
 }
