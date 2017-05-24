@@ -185,6 +185,8 @@ public class SimulatorsManager
         String strCustomerDraftTemplate = null;
         String strCustomerDraftSubject = null;
         String strCustomerDraftFrom = null;
+        String strCustomerSupportTelephone = null;
+        String strCustomerSupportEmail = null;
         try
         {
             strQuery = "select s.*, o.NOM_ENT_TXT, e.clave, e.valor  "
@@ -208,6 +210,10 @@ public class SimulatorsManager
                     strComercialName = pResultSet.getString("NOMBRE_COMERCIAL");
                 if (strOfficeTo == null)
                     strOfficeTo = pResultSet.getString("entidad_email_contacto");
+                if (strCustomerSupportTelephone == null)
+                    strCustomerSupportTelephone = pResultSet.getString("atencion_cliente_telef");
+                if (strCustomerSupportEmail == null)
+                    strCustomerSupportEmail = pResultSet.getString("atencion_cliente_email");
                 strClave = pResultSet.getString("CLAVE");
                 switch (strClave)
                 {
@@ -244,7 +250,7 @@ public class SimulatorsManager
                         break;
                 }
             }
-            pReturn = new SimulatorEmailConfig(nId, strNRBE, strNRBEName, strSimpleName, strComercialName, strOfficeTo, strOfficeClaimTemplate, strOfficeClaimSubject, strOfficeClaimFrom, strOfficeDraftTemplate, strOfficeDraftSubject, strOfficeDraftFrom, strCustomerDraftTemplate, strCustomerDraftSubject, strCustomerDraftFrom);
+            pReturn = new SimulatorEmailConfig(nId, strNRBE, strNRBEName, strSimpleName, strComercialName, strOfficeTo, strOfficeClaimTemplate, strOfficeClaimSubject, strOfficeClaimFrom, strOfficeDraftTemplate, strOfficeDraftSubject, strOfficeDraftFrom, strCustomerDraftTemplate, strCustomerDraftSubject, strCustomerDraftFrom, strCustomerSupportTelephone, strCustomerSupportEmail);
         }
         catch (Exception ex)
         {
@@ -319,8 +325,8 @@ public class SimulatorsManager
         {
             String strHtKey = (String) pEnumKeyValues.nextElement();
             String strHtValue = (String) htKeyValues.get(strHtKey);
-            String strReplaceText = "<replace_key value=\"" + strHtKey + "\" />";
-            strRetun = strRetun.replaceAll(strReplaceText, strHtValue);
+            String strReplaceText = "{{" + strHtKey + "}}";
+            strRetun = strRetun.replace(strReplaceText, strHtValue);
         }
         strRetun = strRetun.replaceAll("\n", "<br/>");
         return strRetun;

@@ -128,26 +128,52 @@ public class IdentityProviderRVIA implements IdentityProvider
             password = "03052445";
             SOAPEndPoint = "http://soa02.risa";
         }
-        String strBody = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">"
-                + "   <soapenv:Header/>                                     "
-                + "   <soapenv:Body>                                        "
-                + "      <ee:EE_I_AutenticarUsuario>                        "
-                + "         <ee:usuario>"
+        /*
+         * String strBody =
+         * "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ee=\"http://www.ruralserviciosinformaticos.com/empresa/EE_AutenticarUsuario/\">"
+         * + "   <soapenv:Header/>                                     " +
+         * "   <soapenv:Body>                                        " +
+         * "      <ee:EE_I_AutenticarUsuario>                        " + "         <ee:usuario>" + usuario +
+         * "</ee:usuario>        " + "         <ee:password>" + password + "</ee:password>     " +
+         * "         <ee:documento>" + documento + "</ee:documento>  " +
+         * "      </ee:EE_I_AutenticarUsuario>                       " +
+         * "   </soapenv:Body>                                       " +
+         * "</soapenv:Envelope>                                      ";
+         */
+        String strBody = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:se=\"http://www.ruralserviciosinformaticos.com/empresa/SE_RVA_LoginTarjeta/\" xmlns:sec=\"http://www.ruralserviciosinformaticos.com/XSD/SecurityHeader/\">"
+                + "   <soapenv:Header>                               "
+                + "      <se:RSI_Header>                             "
+                + "         <sec:CODSecUser></sec:CODSecUser>        "
+                + "         <sec:CODSecTrans></sec:CODSecTrans>      "
+                + "         <sec:CODSecEnt>0239</sec:CODSecEnt>      "
+                + "         <sec:CODTerminal></sec:CODTerminal>      "
+                + "         <sec:CODSecIp>10.245.1.5</sec:CODSecIp>  "
+                + "         <!--Optional:-->                         "
+                + "         <sec:CODApl>BDP</sec:CODApl>             "
+                + "         <!--Optional:-->                         "
+                + "         <sec:CODCanal>11</sec:CODCanal>          "
+                + "      </se:RSI_Header>                            "
+                + "   </soapenv:Header>                              "
+                + "   <soapenv:Body>                                 "
+                + "      <se:EE_I_LoginTarjeta>                      "
+                + "         <se:usuarioBE>"
                 + usuario
-                + "</ee:usuario>        "
-                + "         <ee:password>"
+                + "</se:usuarioBE>    "
+                + "         <se:password>"
                 + password
-                + "</ee:password>     "
-                + "         <ee:documento>"
+                + "</se:password>      "
+                + "         <se:idExterno>"
                 + documento
-                + "</ee:documento>  "
-                + "      </ee:EE_I_AutenticarUsuario>                       "
-                + "   </soapenv:Body>                                       "
-                + "</soapenv:Envelope>                                      ";
+                + "</se:idExterno>   "
+                + "         <se:canal>11</se:canal>               "
+                + "      </se:EE_I_LoginTarjeta>                     "
+                + "   </soapenv:Body>                                "
+                + "</soapenv:Envelope>                               ";
         StringEntity stringEntity = new StringEntity(strBody, "UTF-8");
         stringEntity.setChunked(true);
         // Request parameters and other properties.
-        HttpPost httpPost = new HttpPost(SOAPEndPoint + "/SOA_Wallet/Empresa/PS/SE_WAL_AutenticarUsuario");
+        // HttpPost httpPost = new HttpPost(SOAPEndPoint + "/SOA_Wallet/Empresa/PS/SE_WAL_AutenticarUsuario");
+        HttpPost httpPost = new HttpPost(SOAPEndPoint + "/SOA_RVIA/Empresa/PS/soap/v1/SE_RVA_LoginTarjeta");
         httpPost.setEntity(stringEntity);
         httpPost.addHeader("Accept", "text/xml");
         httpPost.addHeader("SOAPAction", "");
@@ -163,7 +189,7 @@ public class IdentityProviderRVIA implements IdentityProvider
         }
         pLog.info("Respuesta del servicio de login: " + strResponse);
         strResponse = strResponse.replace("\n", "");
-        String codRetorno = strResponse.replaceAll("^.*<ee:codigoRetorno>([^<]*)</ee:codigoRetorno>.*$", "$1");
+        String codRetorno = strResponse.replaceAll("^.*<se:codigoRetorno>([^<]*)</se:codigoRetorno>.*$", "$1");
         if (Integer.parseInt(codRetorno) == 0)
         {
             if (entorno.equals("TEST"))
@@ -171,7 +197,7 @@ public class IdentityProviderRVIA implements IdentityProvider
                 HashMap<String, String> fields = new HashMap<String, String>();
                 fields.put("codEntidad", "3076");
                 fields.put("idInternoPe", "1834908");
-                fields.put("codTarjeta", "307671667");
+                fields.put("codTarjeta", "3076000004");
                 return fields;
             }
             else
@@ -182,17 +208,21 @@ public class IdentityProviderRVIA implements IdentityProvider
         else
         {
             HashMap<String, String> fields = new HashMap<String, String>();
-            String codEntidad = strResponse.replaceAll("^.*<ee:entidad>([^<]*)</ee:entidad>.*$", "$1");
-            String idInternoPe = strResponse.replaceAll("^.*<ee:idInternoPe>([^<]*)</ee:idInternoPe>.*$", "$1");
-            String nTarjeta = strResponse.replaceAll("^.*<ee:numeroTarjeta>([^<]*)</ee:numeroTarjeta>.*$", "$1");
+            String codEntidad = strResponse.replaceAll("^.*<se:codigoEntidad>([^<]*)</se:codigoEntidad>.*$", "$1");
+            String idInternoPe = strResponse.replaceAll("^.*<se:idInternoPe>([^<]*)</se:idInternoPe>.*$", "$1");
+            String nTarjeta = strResponse.replaceAll("^.*<se:numeroTarjeta>([^<]*)</se:numeroTarjeta>.*$", "$1");
             codEntidad = codEntidad.trim();
             idInternoPe = idInternoPe.trim();
             nTarjeta = nTarjeta.trim();
+            while (codEntidad.length() < 4)
+            {
+                codEntidad = "0" + codEntidad;
+            }
             if (entorno.equals("TEST"))
             {
                 fields.put("codEntidad", "3076");
                 fields.put("idInternoPe", "1834908");
-                fields.put("codTarjeta", "307671667");
+                fields.put("codTarjeta", "3076000004");
             }
             else
             {

@@ -1,5 +1,6 @@
 package com.rsi.rvia.rest.conector;
 
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -41,16 +42,15 @@ import com.rsi.rvia.rest.response.ruralvia.TranslateRviaJsonObject;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.tool.Utils;
 
-/** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
+/** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos Ruralvia */
 public class RestRviaConnector
 {
-    private static Logger pLog                       = LoggerFactory.getLogger(RestRviaConnector.class);
-    private static String PRIMARY_KEY_JSON_RESPONSE  = "ruralvia";
-    private static String CLAVE_PAGINA_JSON_RESPONSE = "clavePagina";
-    private static String DATA_JSON_RESPONSE         = "data";
+    private static Logger pLog                      = LoggerFactory.getLogger(RestRviaConnector.class);
+    private static String PRIMARY_KEY_JSON_RESPONSE = "ruralvia";
+    private static String DATA_JSON_RESPONSE        = "data";
 
     /**
-     * Realiza la comunicación con RUralvia para obtener los datos necesarios de la operación
+     * Realiza la comunicación con Ruralvia para obtener los datos necesarios de la operación
      * 
      * @param pRequest
      *            petición del cliente
@@ -75,6 +75,8 @@ public class RestRviaConnector
             String strSesId = pRequestConfigRvia.getRviaSessionId();
             String strHost = pRequestConfigRvia.getUriRvia().toString();
             String strClavePagina = pMiqQuests.getEndPoint();
+            String strQueryStringParams = ((pRequest.getQueryString() == null) ? ""
+                    : URLDecoder.decode(pRequest.getQueryString(), "UTF-8"));
             String strUrl = strHost + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + strSesId + "?clavePagina="
                     + strClavePagina;
             pLog.trace("Se compone la url a invocar a ruralvia: " + strUrl + ":" + pRequestConfigRvia.getToken());
@@ -83,30 +85,44 @@ public class RestRviaConnector
             pLog.trace("Se obtiene el xml de configuración desde ruralvia y se procede a evaluar su contenido");
             proccessInformationFromRviaXML(pXmlDoc, pMiqQuests, pSessionFields);
             pLog.trace("Se añade la información recibida en la propia petición");
-            addDataToSessionFields(strClavePagina, strData, pSessionFields);
+            addDataToSessionFields(strClavePagina, strQueryStringParams, pSessionFields);
             pSessionFields.putAll(pPathParams);
-            // pSessionFields.putAll(pParamsToInject);
-            pLog.info(
-                    "Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
+            /*
+             * se comprueba si existe algúna opción en la configuración de miqQuest para enviarla como parámetro en la
+             * petición
+             */
+            JSONObject pMiqOptions = pMiqQuests.getOptions();
+            if (pMiqOptions != null)
+            {
+                for (String strKey : JSONObject.getNames(pMiqOptions))
+                {
+                    String strValue = String.valueOf(pMiqOptions.get(strKey));
+                    pSessionFields.add(strKey, strValue);
+                    pLog.trace("Se añade desde la configuración de opciones del miqQuest el campo " + strKey + "="
+                            + strValue + " a la lista de parámetros a enviar ");
+                }
+            }
             MultivaluedMap<String, String> pRviaFields = pMiqQuests.testInputParams(pSessionFields);
             pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
             /* TODO: Revisar la necesidad de enviar los parámetros de sesión. Diríase que no es necesario. */
+            pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
+            pLog.info("Url: " + strUrl);
+            pLog.info("Params: " + pRviaFields);
             pReturn = pTarget.request().post(Entity.form(pRviaFields));
             // pReturn = pTarget.request().post(Entity.form(pPathParams));
-            pLog.trace("Respuesra obtenida desde ruralvia: " + pReturn);
+            pLog.trace("Respuesta obtenida desde ruralvia: " + pReturn);
         }
         catch (Exception ex)
         {
-            pLog.error("Se detecta un error en la ejecucón general de obtener datos desde ruralvia. Error:" + ex);
-            pLog.info("Se genera la exceción adecuada para ser tratada en la respuesta al cliente");
-            throw new RestConnectorException(500, 999999, "Error al conectar con RVIA",
-                    "Se ha producido un error en la conexión con ruralvia", ex);
+            pLog.error("Se detecta un error en la ejecución general de obtener datos desde ruralvia. Error:" + ex);
+            pLog.info("Se genera la excepción adecuada para ser tratada en la respuesta al cliente");
+            throw new RestConnectorException(500, 999999, "Error al conectar con RVIA", "Se ha producido un error en la conexión con ruralvia", ex);
         }
         return pReturn;
     }
 
     /**
-     * Realiza la comunicación con RUralvia para lanzar directamente un jsp
+     * Realiza la comunicación con Ruralvia para lanzar directamente un jsp
      * 
      * @param pRequest
      *            petición del cliente
@@ -142,10 +158,24 @@ public class RestRviaConnector
             // pLog.trace("Se añade la información recibida en la propia petición");
             // addDataToSessionFields(strClavePagina, strData, pSessionFields);
             pSessionFields.putAll(pPathParams);
+            /*
+             * se comprueba si existe algúna opción en la configuración de miqQuest para enviarla como parámetro en la
+             * petición
+             */
+            JSONObject pMiqOptions = pMiqQuests.getOptions();
+            if (pMiqOptions != null)
+            {
+                for (String strKey : JSONObject.getNames(pMiqOptions))
+                {
+                    String strValue = String.valueOf(pMiqOptions.get(strKey));
+                    pSessionFields.add(strKey, strValue);
+                    pLog.trace("Se añade desde la configuración de opciones del miqQuest el campo " + strKey + "="
+                            + strValue + " a la lista de parámetros a enviar ");
+                }
+            }
             MultivaluedMap<String, String> pRviaFields = pMiqQuests.testInputParams(pSessionFields);
             // pSessionFields.putAll(pParamsToInject);
-            pLog.info(
-                    "Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
+            pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
             pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
             /* TODO: Revisar la necesidad de enviar los parámetros de sesión. Diríase que no es necesario. */
             pReturn = pTarget.request().post(Entity.form(pRviaFields));
@@ -156,18 +186,28 @@ public class RestRviaConnector
         {
             pLog.error("Se detecta un error en la ejecucón general de obtener datos desde ruralvia. Error:" + ex);
             pLog.info("Se genera la exceción adecuada para ser tratada en la respuesta al cliente");
-            throw new RestConnectorException(500, 999999, "Error al conectar con RVIA",
-                    "Se ha producido un error en la conexión con ruralvia", ex);
+            throw new RestConnectorException(500, 999999, "Error al conectar con RVIA", "Se ha producido un error en la conexión con ruralvia", ex);
         }
         return pReturn;
     }
 
+    /**
+     * Evalua la respueta que devuelve ruralvia cuando se le ha preguntado por la datos asociados al clavepagina
+     * 
+     * @param pXmlDoc
+     *            Xml de la respuesta recibida
+     * @param pMiqQuests
+     *            Operación involucrada
+     * @param pSessionFields
+     *            Campos de sesión a rellenar
+     * @throws Exception
+     */
     private static void proccessInformationFromRviaXML(org.w3c.dom.Document pXmlDoc, MiqQuests pMiqQuests,
             MultivaluedMap<String, String> pSessionFields) throws Exception
     {
         NodeList pNodos = pXmlDoc.getElementsByTagName("field");
         Vector<String> pSessionParamNames = new Vector<String>();
-        Vector<String> pSessionParamInSession = new Vector<String>();
+        Vector<Boolean> pSessionParamInSession = new Vector<Boolean>();
         /* Se leen los datos de sesión recibidos en la configuración de la operativa de ruralvia para este usuario */
         for (int i = 0; i < pNodos.getLength(); i++)
         {
@@ -179,29 +219,29 @@ public class RestRviaConnector
                 pLog.info("campo CENSADO " + pElement.getAttribute("name").toString() + "\t:\t" + strValue.toString());
                 pSessionFields.add(pElement.getAttribute("name"), strValue.toString());
                 pSessionParamNames.add(pElement.getAttribute("name"));
-                String strPropagate = "1";
+                boolean fPropagate = true;
                 if (!strFromRviaSession.isEmpty())
                 {
-                    strPropagate = "0";
+                    fPropagate = false;
                 }
-                pSessionParamInSession.add(strPropagate);
+                pSessionParamInSession.add(fPropagate);
             }
             else
             {
                 pLog.info("campo NO CENSADO " + pElement.getAttribute("name").toString() + "\t:\t<<NO INFORMADO>>");
             }
         }
-        pLog.trace("Se procede a censar los nombres de los campos de la opereativa");
+        pLog.trace("Se procede a censar los nombres de los campos de la operativa");
         saveDDBBSenssionVarNames(pMiqQuests.getIdMiq(), pSessionParamNames, pSessionParamInSession);
     }
 
-    private static void addDataToSessionFields(String strClavePagina, String strData,
+    private static void addDataToSessionFields(String strClavePagina, String strQueryStringData,
             MultivaluedMap<String, String> pSessionFields)
     {
         pSessionFields.add("clavePagina", strClavePagina);
         // Se evaluan los datos que llegan en la parte de datos.
-        String[] pArr = strData.split("&");
-        if (!strData.trim().isEmpty())
+        String[] pArr = strQueryStringData.split("&");
+        if (!strQueryStringData.trim().isEmpty())
         {
             for (int i = 0; i < pArr.length; i++)
             {
@@ -229,12 +269,12 @@ public class RestRviaConnector
      * @throws Exception
      */
     private static synchronized void saveDDBBSenssionVarNames(int nIdMiq, Vector<String> aParamNames,
-            Vector<String> pSessionParamInSession) throws Exception
+            Vector<Boolean> pSessionParamInSession) throws Exception
     {
         for (int i = 0; i < aParamNames.size(); i++)
         {
             String strParamName = aParamNames.get(i);
-            String strPropagate = pSessionParamInSession.get(i);
+            Boolean fPropagate = pSessionParamInSession.get(i);
             if (!strParamName.trim().isEmpty())
             {
                 pLog.trace("Se evalua el campo " + strParamName + " para su censo en la operativa con id " + nIdMiq);
@@ -251,10 +291,10 @@ public class RestRviaConnector
                     {
                         /* el parámetro no está definido en DDBB, se procede a darlo de alta */
                         nIdMiqParam = getNextParamId();
-                        insertNewParam(nIdMiqParam, strParamName, strPropagate);
+                        insertNewParam(nIdMiqParam, strParamName, fPropagate);
                     }
                     /* se añade la realación entre el parámetro y la operación */
-                    createRelationParamAndOperation(nIdMiq, nIdMiqParam, strPropagate);
+                    createRelationParamAndOperation(nIdMiq, nIdMiqParam, fPropagate);
                 }
             }
         }
@@ -367,9 +407,7 @@ public class RestRviaConnector
         }
         catch (Exception ex)
         {
-            pLog.error(
-                    "No se ha podido generar un id de secuencia para el campo ID_MIQ_PARAM de la tabla BEL.BDPTB225_MIQ_SESSION_PARAMS",
-                    ex);
+            pLog.error("No se ha podido generar un id de secuencia para el campo ID_MIQ_PARAM de la tabla BEL.BDPTB225_MIQ_SESSION_PARAMS", ex);
         }
         finally
         {
@@ -384,12 +422,12 @@ public class RestRviaConnector
      * @param nIdMiqParam
      * @param strParamName
      */
-    private static void insertNewParam(int nIdMiqParam, String strParamName, String pPropagate)
+    private static void insertNewParam(int nIdMiqParam, String strParamName, boolean fPropagate)
     {
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
         String strTipoParam = "INPUT_PARAM";
-        if ("0".equals(pPropagate))
+        if (!fPropagate)
         {
             strTipoParam = "RVIASESSION";
         }
@@ -421,12 +459,12 @@ public class RestRviaConnector
      * @param strParamName
      *            Nombre del parámetro
      */
-    private static void createRelationParamAndOperation(int nIdMiq, int nIdMiqParam, String pPropagate)
+    private static void createRelationParamAndOperation(int nIdMiq, int nIdMiqParam, boolean fPropagate)
     {
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
         String strPropagate = " ";
-        if ("0".equals(pPropagate))
+        if (!fPropagate)
         {
             strPropagate = "propagate=false";
         }
@@ -441,9 +479,8 @@ public class RestRviaConnector
         }
         catch (Exception ex)
         {
-            pLog.error(
-                    "No se ha podido insertar la relación del parámetro " + nIdMiqParam + " con la operativa " + nIdMiq,
-                    ex);
+            pLog.error("No se ha podido insertar la relación del parámetro " + nIdMiqParam + " con la operativa "
+                    + nIdMiq, ex);
         }
         finally
         {
@@ -467,7 +504,9 @@ public class RestRviaConnector
             pHtmlDoc = Jsoup.parse(strHtml);
             if ((pHtmlDoc.getElementsByClass("txtaviso") != null)
                     && (pHtmlDoc.getElementsByClass("txtaviso").size() > 0))
+            {
                 fReturn = true;
+            }
         }
         catch (Exception ex)
         {
@@ -492,7 +531,13 @@ public class RestRviaConnector
             pHtmlDoc = Jsoup.parse(strHtml);
             if ((pHtmlDoc.getElementsByClass("txtaviso") != null)
                     && (pHtmlDoc.getElementsByClass("txtaviso").size() > 0))
-                fReturn = true;
+            {
+                String strText = pHtmlDoc.getElementsByClass("txtaviso").first().text();
+                if (strText.contains("La sesión ha caducado"))
+                {
+                    fReturn = true;
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -579,8 +624,7 @@ public class RestRviaConnector
         // Comprobación de LISCUEN vacío.
         else if (isEmptyList(pJsonInnerData))
         {
-            pReturn = TranslateRviaJsonCache.getRviaResponseType(Constants.ERROR_EMPTY_LIST, strInnerTxt, nIdMiq,
-                    pLanguaje);
+            pReturn = TranslateRviaJsonCache.getRviaResponseType(Constants.ERROR_EMPTY_LIST, strInnerTxt, nIdMiq, pLanguaje);
             setErrorCode(pJsonInnerData, Constants.ERROR_EMPTY_LIST);
         }
         return pReturn;

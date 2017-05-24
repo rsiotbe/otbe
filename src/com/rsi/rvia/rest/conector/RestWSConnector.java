@@ -22,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constants;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.RviaRestHttpClient;
@@ -31,7 +32,7 @@ import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 import com.rsi.rvia.rest.response.RviaRestResponseErrorItem;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
-import com.rsi.rvia.rest.tool.GettersRequestParams;
+import com.rsi.rvia.rest.tool.BUSHeader;
 import com.rsi.rvia.rest.tool.Utils;
 
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos (Ruralvia o WS) */
@@ -63,36 +64,26 @@ public class RestWSConnector
      * @return Respuesta del proveedor de datos
      * @throws Exception
      */
-    public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests, String strJsonData,
-            MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject) throws Exception
+    public static Response get(HttpServletRequest pRequest, MiqQuests pMiqQuests, RequestConfig pRequestConfig,
+            String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject)
+            throws Exception
     {
+        String strFinalQueryParams = "";
         Client pClient = RviaRestHttpClient.getClient();
-        String strQueryParams = ((pRequest.getQueryString() == null) ? "" : pRequest.getQueryString());
-        String JWT = pRequest.getHeader("Authorization");
-        /* se obtienen lso header necesarios para realizar la petición al WS */
-        String strCODSecEnt = GettersRequestParams.getCODSecEnt(pRequest);
-        String strCODSecUser = GettersRequestParams.getCODSecUser(pRequest);
-        String strCODSecTrans = GettersRequestParams.getCODSecTrans(pRequest);
-        String strCODTerminal = GettersRequestParams.getCODTerminal(pRequest);
-        String strCODApl = GettersRequestParams.getCODApl(pRequest);
-        String strCODCanal = GettersRequestParams.getCODCanal(pRequest);
-        String strCODSecIp = GettersRequestParams.getCODSecIp(pRequest);
-        String pathQueryParams = "";
-        pathQueryParams = Utils.multiValuedMapToQueryString(pPathParams);
-        if (!pathQueryParams.isEmpty() && !pathQueryParams.endsWith("&"))
-            pathQueryParams += "&";
-        pathQueryParams += Utils.hashMapToQueryString(pParamsToInject);
-        if (!pathQueryParams.isEmpty() && !pathQueryParams.endsWith("&"))
-            pathQueryParams += "&";
-        pathQueryParams += Utils.simpleJsonToQueryString(strJsonData);
-        String urlQueryString = strQueryParams;
-        if (!urlQueryString.isEmpty() && !urlQueryString.endsWith("&"))
-            urlQueryString += "&";
-        urlQueryString += "idMiq=" + pMiqQuests.getIdMiq() + "&" + pathQueryParams;
-        String strUrlTotal = pMiqQuests.getBaseWSEndPoint(pRequest) + "?" + urlQueryString;
+        String strQueryStringParams = ((pRequest.getQueryString() == null) ? "" : pRequest.getQueryString());
+        String strPathParams = Utils.multiValuedMapToQueryString(pPathParams);
+        String strInjectParams = Utils.hashMapToQueryString(pParamsToInject);
+        String strJsonDataParams = Utils.simpleJsonToQueryString(strJsonData);
+        strFinalQueryParams = Utils.addParametersToQueryString(strFinalQueryParams, strQueryStringParams);
+        strFinalQueryParams = Utils.addParametersToQueryString(strFinalQueryParams, strPathParams);
+        strFinalQueryParams = Utils.addParametersToQueryString(strFinalQueryParams, strInjectParams);
+        strFinalQueryParams = Utils.addParametersToQueryString(strFinalQueryParams, strJsonDataParams);
+        strFinalQueryParams = Utils.addParameterToQueryString(strFinalQueryParams, "idMiq", String.valueOf(pMiqQuests.getIdMiq()));
+        String strUrlTotal = pMiqQuests.getBaseWSEndPoint(pRequest) + "?" + strFinalQueryParams;
         WebTarget pTarget = pClient.target(strUrlTotal);
         pLog.info("Url final de petición de datos: " + strUrlTotal);
-        Response pReturn = pTarget.request().header("Authorization", JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).get();
+        String JWT = pRequest.getHeader(Constants.HTTP_HEADER_AUTORIZATION);
+        Response pReturn = pTarget.request().header(Constants.HTTP_HEADER_AUTORIZATION, JWT).headers(BUSHeader.getHeaders(pRequest, pRequestConfig)).accept(MediaType.APPLICATION_JSON).get();
         // Evitar logueo de campos de login
         logWithFilter(pReturn);
         return pReturn;
@@ -122,13 +113,6 @@ public class RestWSConnector
         Client pClient = RviaRestHttpClient.getClient();
         // Headers
         String JWT = pRequest.getHeader("Authorization");
-        String strCODSecEnt = GettersRequestParams.getCODSecEnt(pRequest);
-        String strCODSecUser = GettersRequestParams.getCODSecUser(pRequest);
-        String strCODSecTrans = GettersRequestParams.getCODSecTrans(pRequest);
-        String strCODTerminal = GettersRequestParams.getCODTerminal(pRequest);
-        String strCODApl = GettersRequestParams.getCODApl(pRequest);
-        String strCODCanal = GettersRequestParams.getCODCanal(pRequest);
-        String strCODSecIp = GettersRequestParams.getCODSecIp(pRequest);
         String strParameters = getDDBBOperationParameters(pMiqQuests.getPathRest(), "paramname");
         pLog.info("Query Params: " + strParameters);
         if (!strParameters.isEmpty())
@@ -159,15 +143,15 @@ public class RestWSConnector
                 pJson.put(strKey, (String) pPathParams.get(strKey).toString());
             }
         }
-        JSONObject opciones = pMiqQuests.getJsonOpciones();
-        if (opciones == null || opciones.optBoolean(MiqQuests.OPTION_PARAM_PROPAGATE_ID_MIQ, true))
+        JSONObject pMiqOptions = pMiqQuests.getOptions();
+        if (pMiqOptions == null || pMiqOptions.optBoolean(MiqQuests.OPTION_PARAM_PROPAGATE_ID_MIQ, true))
         {
             pJson.put("idMiq", pMiqQuests.getIdMiq());
         }
         strJsonData = pJson.toString();
         pLog.info("Url final de petición de datos: " + pMiqQuests.getBaseWSEndPoint(pRequest));
         WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint(pRequest));
-        Response pReturn = pTarget.request().header("Authorization", JWT).header("CODSecEnt", strCODSecEnt).header("CODSecUser", strCODSecUser).header("CODSecTrans", strCODSecTrans).header("CODTerminal", strCODTerminal).header("CODApl", strCODApl).header("CODCanal", strCODCanal).header("CODSecIp", strCODSecIp).accept(MediaType.APPLICATION_JSON).post(Entity.json(strJsonData));
+        Response pReturn = pTarget.request().header("Authorization", JWT).headers(BUSHeader.getHeaders(pRequest, pRequestConfig)).accept(MediaType.APPLICATION_JSON).post(Entity.json(strJsonData));
         logWithFilter(pReturn);
         return pReturn;
     }
@@ -319,7 +303,7 @@ public class RestWSConnector
         }
         catch (JSONException e)
         {
-            pLog.error("RestWSConnector.getRespuesta:No tiene el componente Respuesta");
+            pLog.error("No existe el nodo '" + RAMA_RESPUESTA + "' en el objeto json");
             pJson = null;
         }
         return pJson;
@@ -341,7 +325,7 @@ public class RestWSConnector
         }
         catch (JSONException e)
         {
-            pLog.error("RestWSConnector.getRespuesta:No tiene el componente Respuesta");
+            pLog.error("No existe el nodo '" + RAMA_ERROR + "' en el objeto json");
             pJson = null;
         }
         return pJson;

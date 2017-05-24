@@ -150,7 +150,7 @@ public class MiqQuests
         this.strTemplate = strTemplate;
     }
 
-    public JSONObject getJsonOpciones()
+    public JSONObject getOptions()
     {
         return jsonOpciones;
     }
@@ -245,13 +245,20 @@ public class MiqQuests
         ResultSet pResultSet = null;
         try
         {
-            String strQuery = "SELECT * from bel.bdptb222_miq_quests";
+            String strQuery = "SELECT * from bel.bdptb222_miq_quests order by 1 asc";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
             pResultSet = pPreparedStatement.executeQuery();
             while (pResultSet.next())
             {
-                pLog.debug("Tipo de proveedor de identidad " + pResultSet.getString("direccionador"));
+                if (pResultSet.getString("direccionador") == null)
+                {
+                    pLog.error("Tipo de proveedor de identidad del miqQuest " + pResultSet.getInt("id_miq")
+                            + " no esta informado. Es necesario definir uno en el campo 'Direccionador' de la tabla");
+                    pLog.warn("Se descarta la carga del del miqQuest " + pResultSet.getInt("id_miq")
+                            + " y se continua con el resto");
+                    continue;
+                }
                 MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("direccionador"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"), pResultSet.getString("opciones"));
                 if (!htCacheDataId.containsKey(pResultSet.getInt("id_miq")))
                     htCacheDataId.put(pResultSet.getInt("id_miq"), pMiqQuests);
@@ -266,7 +273,7 @@ public class MiqQuests
         }
         catch (Exception ex)
         {
-            pLog.error("Error al realizar la consulta a la BBDD. Trace: \n\n\t" + ex.getMessage());
+            pLog.error("Error al realizar la consulta a la BBDD. Error: " + ex);
         }
         finally
         {
@@ -285,10 +292,10 @@ public class MiqQuests
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         // String idMiq = pResultSet.getString("id_miq");
-        String strQuery = "select a.id_miq, c.* from " + " BEL.BDPTB222_MIQ_QUESTS a, "
-                + " BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, " + " BEL.BDPTB225_MIQ_SESSION_PARAMS c "
-                + " where a.id_miq=b.id_miq " + " and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " + " and a.path_rest='"
-                + strPathRest + "' order by c.ID_MIQ_PARAM";
+        String strQuery = "select a.id_miq, c.* from  BEL.BDPTB222_MIQ_QUESTS a, "
+                + " BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, BEL.BDPTB225_MIQ_SESSION_PARAMS c "
+                + " where a.id_miq=b.id_miq  and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM  and a.path_rest='" + strPathRest
+                + "' order by c.ID_MIQ_PARAM";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);

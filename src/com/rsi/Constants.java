@@ -9,7 +9,33 @@ public class Constants
 {
     public enum Language
     {
-        ca_ES, de_DE, en_UK, es_ES, eu_ES, fr_FR, gl_ES, it_IT, pt_PT, va_ES
+        ca_ES, de_DE, en_UK, es_ES, eu_ES, fr_FR, gl_ES, it_IT, pt_PT, va_ES;
+        public String getJavaCode()
+        {
+            return this.name();
+        }
+
+        public String getWindowsCode()
+        {
+            return this.name().replace("_", "-");
+        }
+
+        /**
+         * Devuelve el tipo de la enumeración independientemente el valor Java o Windows que se le pase
+         * 
+         * @param strValue
+         *            Varlo a evaluar
+         * @return Valor de la enumración encontrado
+         */
+        public static Language getEnumValue(String strValue)
+        {
+            for (Language v : values())
+            {
+                if (v.getJavaCode().equalsIgnoreCase(strValue) || v.getWindowsCode().equalsIgnoreCase(strValue))
+                    return v;
+            }
+            throw new IllegalArgumentException();
+        }
     }
 
     // /////////////////////////
@@ -87,14 +113,28 @@ public class Constants
     // /////////////////////////
     // Errors
     // /////////////////////////
-    public static final String ERROR_SIGN_BLOCKED                       = "808";
-    public static final String ERROR_EMPTY_LIST                         = "779";
+    public static final String   ERROR_SIGN_BLOCKED                             = "808";
+    public static final String   ERROR_EMPTY_LIST                               = "779";
     // /////////////////////////
     // JSON keys
     // /////////////////////////
-    public static final String KEY_ERROR_CODE                           = "CODERR";
-    public static final String KEY_ERROR_TEXT                           = "TXTERR";
-    public static final String KEY_LIST_NAME                            = "NOMBRELISTACUENTA";
+    public static final String   KEY_ERROR_CODE                                 = "CODERR";
+    public static final String   KEY_ERROR_TEXT                                 = "TXTERR";
+    public static final String   KEY_LIST_NAME                                  = "NOMBRELISTACUENTA";
+    // //////////////////////////
+    // Parámetros cabeceras de llamadas al bus
+    // /////////////////////////
+    public static final String   BUS_HEADER_COD_SEC_ENT                         = "CODSecEnt";
+    public static final String   BUS_HEADER_COD_SEC_TRANS                       = "CODSecTrans";
+    public static final String   BUS_HEADER_COD_SEC_USER                        = "CODSecUser";
+    public static final String   BUS_HEADER_COD_APL                             = "CODApl";
+    public static final String   BUS_HEADER_COD_TERMINAL                        = "CODTerminal";
+    public static final String   BUS_HEADER_COD_CANAL                           = "CODCanal";
+    public static final String   BUS_HEADER_COD_SEC_IP                          = "CODSecIp";
+    // //////////////////////////
+    // Cabeceras http
+    // /////////////////////////
+    public static final String   HTTP_HEADER_AUTORIZATION                       = "Authorization";
 
     public enum SimulatorLoanCategory
     {
@@ -114,5 +154,45 @@ public class Constants
     public enum Environment
     {
         DESA, TEST, PREP, PROD
+    }
+
+    /**
+     * Enumeración de canal aix recibido desde la parte front de ruralvia, en ruralvia se denomina canalAix
+     */
+    public enum CanalFront
+    {
+        WEB(1), TABLET(6), MOVIL(7);
+        private final int value;
+
+        CanalFront(int newValue)
+        {
+            value = newValue;
+        }
+
+        public int getValue()
+        {
+            return value;
+        }
+    }
+
+    /**
+     * Enumeración de canal host recibido desde ruralvia, en ruralvia se denomina canal
+     */
+    public enum CanalHost
+    {
+        VALORES_BANCA_INTERNET(1), VALORES_BANCA_TELEFONICA(2), BANCA_INTERNET(3), BANCA_TELEFONICA(4), ABOGADOS(5), ABOGADOS_TELEFONICA(
+                6), TPV_VIRTUAL(7), SEGUROS(8), OFICINA(9), TPV_VIRTUAL_TELEFONICA(10), BANCA_MOVIL(11), BANCA_TABLET(
+                13), BANCA_TABLET_CAU(14);
+        private final int value;
+
+        CanalHost(int newValue)
+        {
+            value = newValue;
+        }
+
+        public int getValue()
+        {
+            return value;
+        }
     }
 }

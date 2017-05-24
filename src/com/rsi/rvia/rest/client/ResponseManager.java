@@ -44,21 +44,25 @@ public class ResponseManager
         JSONObject pJsonData;
         RviaRestResponse pRviaRestResponse;
         String strResponseData = pResponseConnector.readEntity(String.class);
+        String strStartOfResponse = (strResponseData.length() > 300) ? strResponseData.substring(0, 300)
+                + "...(la respuesta tiene más contenido que no se muestra)" : strResponseData;
+        pLog.trace("Contenido de la respuesta (max 300 caracteres): " + strStartOfResponse);
         /* se comprueba si el contenido de la respuesta es un JSON u otra cosa */
         if (!Utils.isDataAJson(strResponseData))
         {
+            pLog.trace("la respuesta no es un JSON, se comprueba si son errores de ruralvia");
             /* no es un JSON, viene html, se evalua por si es un error web de ruralvia */
-            if (RestRviaConnector.isRuralviaWebError(strResponseData))
-            {
-                /* se evalua el html para construir un error JSOn con los datos obtenidos */
-                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Error no controlado de ruralvia");
-                pRviaRestResponse = new RviaRestResponse(RviaRestResponse.Type.ERROR, null, pRviaRestResponseErrorItem);
-            }
-            else if (RestRviaConnector.isRuralviaSessionTimeoutError(strResponseData))
+            if (RestRviaConnector.isRuralviaSessionTimeoutError(strResponseData))
             {
                 // se evalua el html para construir un error JSOn con los datos obtenidos
-                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Error de timeout");
+                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Su sesión ha caducado");
                 pRviaRestResponse = new RviaRestResponse(Type.ERROR, null, pRviaRestResponseErrorItem);
+            }
+            else if (RestRviaConnector.isRuralviaWebError(strResponseData))
+            {
+                /* se evalua el html para construir un error JSOn con los datos obtenidos */
+                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Error no controlado de la aplicaciónroir");
+                pRviaRestResponse = new RviaRestResponse(RviaRestResponse.Type.ERROR, null, pRviaRestResponseErrorItem);
             }
             else if (pMiqQuests.getComponentType() == CompomentType.COORD)
             {

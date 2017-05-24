@@ -6,6 +6,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constants.CanalFront;
+import com.rsi.Constants.CanalHost;
 import com.rsi.Constants.Language;
 import com.rsi.rvia.rest.error.exceptions.SessionException;
 import com.rsi.rvia.rest.tool.RviaConnectCipher;
@@ -52,46 +54,6 @@ public class RequestConfigRvia extends RequestConfig
         }
 
         public String getValue()
-        {
-            return value;
-        }
-    }
-
-    /**
-     * Enumeración de canal aix recibido desde la parte front de ruralvia, en ruralvia se denomina canalAix
-     */
-    public enum CanalFront
-    {
-        WEB(1), TABLET(6), MOVIL(7);
-        private final int value;
-
-        CanalFront(int newValue)
-        {
-            value = newValue;
-        }
-
-        public int getValue()
-        {
-            return value;
-        }
-    }
-
-    /**
-     * Enumeración de canal host recibido desde ruralvia, en ruralvia se denomina canal
-     */
-    public enum CanalHost
-    {
-        VALORES_BANCA_INTERNET(1), VALORES_BANCA_TELEFONICA(2), BANCA_INTERNET(3), BANCA_TELEFONICA(4), ABOGADOS(5), ABOGADOS_TELEFONICA(
-                6), TPV_VIRTUAL(7), SEGUROS(8), OFICINA(9), TPV_VIRTUAL_TELEFONICA(10), BANCA_MOVIL(11), BANCA_TABLET(
-                13), BANCA_TABLET_CAU(14);
-        private final int value;
-
-        CanalHost(int newValue)
-        {
-            value = newValue;
-        }
-
-        public int getValue()
         {
             return value;
         }
@@ -178,6 +140,8 @@ public class RequestConfigRvia extends RequestConfig
             }
             if (strToken != null)
             {
+                /* se reemplazan los caracteres espacios por mases, por si al viahar como url se han transformado */
+                strToken = strToken.replace(" ", "+");
                 pLog.debug("La información viene cifrada, se procede a descifrarla");
                 /* se desencipta la información */
                 strDesToken = RviaConnectCipher.symmetricDecrypt(strToken, RviaConnectCipher.RVIA_CONNECT_KEY);
@@ -211,7 +175,7 @@ public class RequestConfigRvia extends RequestConfig
                                 strIsumServiceId = strValue;
                                 break;
                             case LANG:
-                                pLanguage = Language.valueOf(strValue);
+                                pLanguage = Language.getEnumValue(strValue);
                                 break;
                             case NRBE:
                                 strNRBE = strValue;
@@ -244,7 +208,7 @@ public class RequestConfigRvia extends RequestConfig
                 strRviaUserId = request.getParameter(TokenKey.RVIAUSERID.getValue());
                 strIsumUserProfile = request.getParameter(TokenKey.ISUMUSERPROFILE.getValue());
                 strIsumServiceId = request.getParameter(TokenKey.ISUMSERVICEID.getValue());
-                pLanguage = Language.valueOf(request.getParameter(TokenKey.LANG.getValue()));
+                pLanguage = Language.getEnumValue(request.getParameter(TokenKey.LANG.getValue()));
                 strNRBE = request.getParameter(TokenKey.NRBE.getValue());
                 strIp = request.getParameter(TokenKey.IP.getValue());
                 pCanalFront = obtainCanalWebFromStringValue(request.getParameter(TokenKey.CANALAIX.getValue()));
@@ -363,7 +327,7 @@ public class RequestConfigRvia extends RequestConfig
         pSb.append("RviaSessionId         :" + strRviaSessionId + "\n");
         pSb.append("RviaUserId            :" + strRviaUserId + "\n");
         pSb.append("IsumUserProfile       :" + strIsumUserProfile + "\n");
-        pSb.append("Language              :" + pLanguage.name() + "\n");
+        pSb.append("Language              :" + pLanguage.getJavaCode() + "\n");
         pSb.append("NRBE                  :" + strNRBE + "\n");
         pSb.append("Token                 :" + strToken + "\n");
         pSb.append("Ip                    :" + strIp + "\n");

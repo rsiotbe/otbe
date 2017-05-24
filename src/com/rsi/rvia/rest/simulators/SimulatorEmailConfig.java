@@ -20,6 +20,8 @@ public class SimulatorEmailConfig
     private String strCustomerDraftTemplate;
     private String strCustomerDraftSubject;
     private String strCustomerDraftFrom;
+    private String strCustomerSupportTelephone;
+    private String strCustomerSupportEmail;
 
     public String getStrNRBE()
     {
@@ -96,6 +98,16 @@ public class SimulatorEmailConfig
         return strCustomerDraftFrom;
     }
 
+    public String getCustomerSupportTelephone()
+    {
+        return strCustomerSupportTelephone;
+    }
+
+    public String getCustomerSupportEmail()
+    {
+        return strCustomerSupportEmail;
+    }
+
     /**
      * @param nId
      *            Id del simulador
@@ -132,7 +144,7 @@ public class SimulatorEmailConfig
             String strComercialName, String strOfficeTo, String strOfficeClaimTemplate, String strOfficeClaimSubject,
             String strOfficeClaimFrom, String strOfficeDraftTemplate, String strOfficeDraftSubject,
             String strOfficeDraftFrom, String strCustomerDraftTemplate, String strCustomerDraftSubject,
-            String strCustomerDraftFrom)
+            String strCustomerDraftFrom, String strCustomerSupportTelephone, String strCustomerSupportEmail)
     {
         this.nId = nId;
         this.strNRBE = strNRBE;
@@ -149,6 +161,8 @@ public class SimulatorEmailConfig
         this.strCustomerDraftTemplate = strCustomerDraftTemplate;
         this.strCustomerDraftSubject = strCustomerDraftSubject;
         this.strCustomerDraftFrom = strCustomerDraftFrom;
+        this.strCustomerSupportTelephone = strCustomerSupportTelephone;
+        this.strCustomerSupportEmail = strCustomerSupportEmail;
     }
 
     /*
@@ -163,15 +177,17 @@ public class SimulatorEmailConfig
         pSb.append("NrbeName        : " + strNrbeName + "\n");
         pSb.append("ComercialName   : " + strComercialName + "\n");
         pSb.append("OfficeTo        : " + strOfficeTo + "\n");
-        pSb.append("strOfficeClaimTemplate  : " + strOfficeClaimTemplate + "\n");
-        pSb.append("strOfficeClaimSubject   : " + strOfficeClaimSubject + "\n");
-        pSb.append("strOfficeClaimFrom      : " + strOfficeClaimFrom + "\n");
-        pSb.append("strOfficeDraftTemplate  : " + strOfficeDraftTemplate + "\n");
-        pSb.append("strOfficeDraftSubject   : " + strOfficeDraftSubject + "\n");
-        pSb.append("strOfficeDraftFrom      : " + strOfficeDraftFrom + "\n");
-        pSb.append("strCustomerDraftTemplate: " + strCustomerDraftTemplate + "\n");
-        pSb.append("strCustomerDraftSubject : " + strCustomerDraftSubject + "\n");
-        pSb.append("strCustomerDraftFrom    : " + strCustomerDraftFrom + "\n");
+        pSb.append("strOfficeClaimTemplate     : " + strOfficeClaimTemplate + "\n");
+        pSb.append("strOfficeClaimSubject      : " + strOfficeClaimSubject + "\n");
+        pSb.append("strOfficeClaimFrom         : " + strOfficeClaimFrom + "\n");
+        pSb.append("strOfficeDraftTemplate     : " + strOfficeDraftTemplate + "\n");
+        pSb.append("strOfficeDraftSubject      : " + strOfficeDraftSubject + "\n");
+        pSb.append("strOfficeDraftFrom         : " + strOfficeDraftFrom + "\n");
+        pSb.append("strCustomerDraftTemplate   : " + strCustomerDraftTemplate + "\n");
+        pSb.append("strCustomerDraftSubject    : " + strCustomerDraftSubject + "\n");
+        pSb.append("strCustomerDraftFrom       : " + strCustomerDraftFrom + "\n");
+        pSb.append("strCustomerSupportTelephone: " + strCustomerSupportTelephone + "\n");
+        pSb.append("strCustomerSupportEmail    : " + strCustomerSupportEmail + "\n");
         return pSb.toString();
     }
 }

@@ -43,7 +43,9 @@ public class AppConfiguration
 
     public String getProperty(String strKey)
     {
-        pLog.info("Se obtiene la propiedad las propiedades generales de la aplicación");
-        return pProperties.getProperty(strKey);
+        String strValue;
+        strValue = pProperties.getProperty(strKey);
+        pLog.info("Se lee una propiedad la configuración general de la aplicación. " + strKey + ": " + strValue);
+        return strValue;
     }
 }

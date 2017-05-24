@@ -71,6 +71,7 @@ public class OperationManager
         try
         {
             // Se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM.
+            // comentada para postman
             pRequestConfigRvia = getValidateSessionRvia(pRequest);
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             pMiqQuests = createMiqQuests(pUriInfo);
@@ -162,6 +163,7 @@ public class OperationManager
      * @param pMediaType
      *            Tipo de mediatype que debe cumplir la petición
      * @return Objeto respuesta de Jersey
+     * @throws Exception
      * @throws JoseException
      * @throws IOException
      * @throws InvalidKeySpecException
@@ -200,12 +202,10 @@ public class OperationManager
             // Si los servicios que se invocan son de rsiapi
             IdentityProvider pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests);
             pIdentityProvider.process();
-            // Cuando exista un login rest hay que cambiar todos esto.
             // Si estamos invocando a login tendremos los campos resueltos o el error
             JWT = pIdentityProvider.getJWT();
             HashMap<String, String> pParamsToInject = pIdentityProvider.getClaims();
             pResponseConnector = pRestConnector.getData(pRequest, strData, null, pMiqQuests, pListParams, pParamsToInject);
-            pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
             int nHttpCode = pResponseConnector.getStatus();
             if (nHttpCode != 200)
             {
@@ -213,6 +213,14 @@ public class OperationManager
             }
             strJsonData = pResponseConnector.readEntity(String.class);
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
+            try
+            {
+                SaveExitHierarchy.process(strJsonData, pMiqQuests.getIdMiq(), pRestConnector.getMethod());
+            }
+            catch (Exception ex)
+            {
+                pLog.error("Error al grabar la jerarquía de salida.");
+            }
         }
         catch (Exception ex)
         {
@@ -393,7 +401,7 @@ public class OperationManager
             if (strLanguage == null || strLanguage.trim().isEmpty())
                 pLanguage = pRequestConfig.getLanguage();
             else
-                pLanguage = Language.valueOf(strLanguage);
+                pLanguage = Language.getEnumValue(strLanguage);
             /* se obtienen los datos necesario para realizar la petición al proveedor */
             pMiqQuests = createMiqQuests(pUriInfo);
             if (pMiqQuests == null)
@@ -406,7 +414,7 @@ public class OperationManager
             pDataInput.put(Constants.SIMULADOR_NRBE_NAME, strNRBEName);
             pDataInput.put(Constants.SIMULADOR_SIMPLE_NAME, strLoanName);
             pDataInput.put(Constants.SIMULADOR_TYPE, pSimulatorType.name());
-            pDataInput.put(Constants.SIMULADOR_LANGUAGE, pLanguage.name());
+            pDataInput.put(Constants.SIMULADOR_LANGUAGE, pLanguage.getJavaCode());
             /* se instancia el conector y se solicitan los datos */
             pRviaRestResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, pDataInput.toString());
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + pRviaRestResponse.toJsonString());
@@ -603,11 +611,8 @@ public class OperationManager
         RestConnector pRestConnector = null;
         Response pResponseConnector = null;
         MultivaluedMap<String, String> pListParams = Utils.getParamByPath(pUriInfo);
-        MultivaluedMap<String, String> pQueryParams = Utils.queryStringToMultivaluedMap(pUriInfo);
         MultivaluedMap<String, String> pAllParams = new MultivaluedHashMap<String, String>();
         pAllParams.putAll(pListParams);
-        pAllParams.putAll(pQueryParams);
-        // MultivaluedMap<String, String> paramsToRvia = pMiqQuests.testInputParams(pAllParams);
         // Se instancia el conector y se solicitan los datos.
         pRestConnector = new RestConnector();
         pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pAllParams, null);

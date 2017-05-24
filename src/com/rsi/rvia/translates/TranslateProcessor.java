@@ -148,7 +148,7 @@ public class TranslateProcessor
             }
         }
         /* se añade el atributo lang a la etiqueta html para poder manejar el idioma dentro de la página */
-        pDoc.getElementsByTag("html").attr("lang", pLanguage.name().replace("_", "-"));
+        pDoc.getElementsByTag("html").attr("lang", pLanguage.getWindowsCode());
         return pDoc;
     }
 }

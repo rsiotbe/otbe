@@ -33,6 +33,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.collections4.MapUtils;
+import org.glassfish.jersey.server.ExtendedUriInfo;
+import org.glassfish.jersey.uri.UriTemplate;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,17 +58,16 @@ public class Utils
      */
     public static String getPrimaryPath(UriInfo pUriInfo)
     {
-        String strPath = pUriInfo.getPath();
-        MultivaluedMap<String, String> pListParameters = pUriInfo.getPathParameters();
-        Iterator<String> pIterator = pListParameters.keySet().iterator();
-        while (pIterator.hasNext())
+        String strPath;
+        List<UriTemplate> matchedTemplates = ((ExtendedUriInfo) pUriInfo).getMatchedTemplates();
+        StringBuilder builder = new StringBuilder();
+        for (int i = matchedTemplates.size() - 1; i >= 0; i--)
         {
-            String strKeyName = (String) pIterator.next();
-            String strValue = pListParameters.get(strKeyName).get(0);
-            strPath = strPath.replaceFirst(strValue, "{" + strKeyName + "}");
+            builder.append("/" + matchedTemplates.get(i).getTemplate().substring(1));
         }
-        pLog.debug("StrPath: " + strPath);
-        return ("/" + strPath);
+        strPath = builder.toString().replaceAll(":[^\\}]*\\}", "}");
+        pLog.debug("Path a buscar en la BD: " + strPath);
+        return (strPath);
     }
 
     /**
@@ -166,8 +167,8 @@ public class Utils
      * @throws SQLException
      * @throws JSONException
      */
-    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet)
-            throws SQLException, JSONException
+    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet) throws SQLException,
+            JSONException
     {
         JSONObject pJsonRetorno = new JSONObject();
         JSONArray pJson = new JSONArray();
@@ -296,9 +297,7 @@ public class Utils
             String strKey = (String) pIterator.next();
             if (pMap.get(strKey) != null)
             {
-                if (!strReturn.isEmpty())
-                    strReturn += "&";
-                strReturn += strKey + "=" + URLEncoder.encode(pMap.getFirst(strKey), "ISO-8859-1");
+                strReturn = addParameterToQueryString(strReturn, strKey, URLEncoder.encode(pMap.getFirst(strKey), "ISO-8859-1"));
             }
         }
         return strReturn;
@@ -315,9 +314,7 @@ public class Utils
                 String strKey = (String) pIterator.next();
                 if (pMap.get(strKey) != null)
                 {
-                    if (!strReturn.isEmpty())
-                        strReturn += "&";
-                    strReturn += strKey + "=" + URLEncoder.encode(pMap.get(strKey), "ISO-8859-1");
+                    strReturn = addParameterToQueryString(strReturn, strKey, URLEncoder.encode(pMap.get(strKey), "ISO-8859-1"));
                 }
             }
         }
@@ -334,9 +331,7 @@ public class Utils
             while (pKeys.hasNext())
             {
                 String strKey = (String) pKeys.next();
-                if (!strReturn.isEmpty())
-                    strReturn += "&";
-                strReturn += strKey + "=" + URLEncoder.encode(pJSONObject.get(strKey).toString(), "ISO-8859-1");
+                strReturn = addParameterToQueryString(strReturn, strKey, URLEncoder.encode(pJSONObject.get(strKey).toString(), "ISO-8859-1"));
             }
         }
         return strReturn;
@@ -458,8 +453,8 @@ public class Utils
      * @param strJsonData
      * @throws Exception
      */
-    public static void writeMock(HttpServletRequest pRequest, UriInfo pUriInfo, MiqQuests pMiqQuests,
-            String strJsonData) throws Exception
+    public static void writeMock(HttpServletRequest pRequest, UriInfo pUriInfo, MiqQuests pMiqQuests, String strJsonData)
+            throws Exception
     {
         int i;
         String strTargetMockRootDir = AppConfiguration.getInstance().getProperty(Constants.TARGET_MOCK_DIRECTORY);
@@ -478,8 +473,8 @@ public class Utils
             }
             catch (Exception e)
             {
-                throw new LogicalErrorException(500, 9999, "Error al intentar crear directorio",
-                        "Fallo al crear directorio para mocks: " + strTestPath, null);
+                throw new LogicalErrorException(500, 9999, "Error al intentar crear directorio", "Fallo al crear directorio para mocks: "
+                        + strTestPath, null);
             }
         }
         FileWriter fichero = null;
@@ -496,8 +491,8 @@ public class Utils
         }
         catch (Exception e)
         {
-            throw new LogicalErrorException(500, 9999, "Error manejo de ficheros",
-                    "Fallo al crear fichero para mocks: " + strTestPath + "/__" + strPartes[i], null);
+            throw new LogicalErrorException(500, 9999, "Error manejo de ficheros", "Fallo al crear fichero para mocks: "
+                    + strTestPath + "/__" + strPartes[i], null);
         }
         finally
         {
@@ -736,34 +731,34 @@ public class Utils
             return "";
         }
     }
-    
 
-    private static String clobToString(java.sql.Clob data)
+    public static String addParameterToQueryString(String strQueryString, String strParamName, String strValueName)
     {
-        final StringBuilder sb = new StringBuilder();
-
-        try
+        String strReturn = strQueryString;
+        if (strReturn == null)
         {
-            final Reader         reader = data.getCharacterStream();
-            final BufferedReader br     = new BufferedReader(reader);
-
-            int b;
-            while(-1 != (b = br.read()))
-            {
-                sb.append((char)b);
-            }
-
-            br.close();
+            strReturn = "";
         }
-        catch (SQLException e)
+        if ((!strReturn.isEmpty()) && (!strReturn.endsWith("&")) && !strParamName.trim().isEmpty())
         {
-            return e.toString();
+            strReturn += "&";
         }
-        catch (IOException e)
-        {
-            return e.toString();
-        }
+        strReturn += strParamName + "=" + strValueName;
+        return strReturn;
+    }
 
-        return sb.toString();
+    public static String addParametersToQueryString(String strQueryString, String strParams)
+    {
+        String strReturn = strQueryString;
+        if (strReturn == null)
+        {
+            strReturn = "";
+        }
+        if ((!strReturn.isEmpty()) && (!strReturn.endsWith("&")) && !strParams.trim().isEmpty())
+        {
+            strReturn += "&";
+        }
+        strReturn += strParams;
+        return strReturn;
     }
 }
