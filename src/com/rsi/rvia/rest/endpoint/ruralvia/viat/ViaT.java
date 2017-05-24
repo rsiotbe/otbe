@@ -45,7 +45,7 @@ public class ViaT
     }
 
     @GET
-    @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/lopd")
+    @Path("/lopd")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes({ MediaType.APPLICATION_JSON })
     public Response getLopd(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
