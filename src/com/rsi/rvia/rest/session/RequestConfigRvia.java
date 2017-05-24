@@ -123,7 +123,7 @@ public class RequestConfigRvia extends RequestConfig
      */
     public RequestConfigRvia(HttpServletRequest request) throws Exception
     {
-        super(request);
+        super(request, null);
         try
         {
             String[] strParameters;

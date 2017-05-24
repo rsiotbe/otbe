@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -347,6 +348,21 @@ public class MiqQuests
             pSb.append("Opciones      :" + jsonOpciones.toString());
         }
         return pSb.toString();
+    }
+
+    /**
+     * Realiza una conexión a la BBDD para obtener los datos necesarios para crear un objeto MiqQuests y darlo como
+     * respuesta.
+     * 
+     * @param pUriInfo
+     *            Objeto uriinfo recogido de la request
+     * @return MiqQuests con el id:miq, el component_type, el end_point y el template.
+     * @throws Exception
+     */
+    public static MiqQuests getMiqQuests(UriInfo pUriInfo) throws Exception
+    {
+        String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
+        return getMiqQuests(strPrimaryPath);
     }
 
     /**

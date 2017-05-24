@@ -58,25 +58,24 @@ public class RequestConfig
      *            Objeto request recibido
      * @throws Exception
      */
-    public RequestConfig(HttpServletRequest pRequest) throws Exception
+    public RequestConfig(HttpServletRequest pRequest, JSONObject pJSONObject) throws Exception
     {
+        String strLangValue;
+        String strNRBE;
         pLog.debug("Se procede a cargar la configuración de la petición leyendo objeto request");
-        String strLangValue = pRequest.getParameter(Constants.PARAM_LANG);
-        setValues(strLangValue, pRequest.getParameter(Constants.PARAM_NRBE));
-    }
-
-    /**
-     * Constructor pasando objeto JSOn
-     * 
-     * @param request
-     *            Objeto JSON recibido
-     * @throws Exception
-     */
-    public RequestConfig(JSONObject pJSONObject) throws Exception
-    {
-        pLog.debug("Se procede a cargar la configuración de la petición leyendo objeto JSON");
-        String strLangValue = pJSONObject.optString(Constants.PARAM_LANG);
-        setValues(strLangValue, pJSONObject.optString(Constants.PARAM_NRBE));
+        strLangValue = pRequest.getParameter(Constants.PARAM_LANG);
+        /* si el parámetro está vacio se intenta leer del contedio json */
+        if (strLangValue == null && pJSONObject != null)
+        {
+            strLangValue = pJSONObject.optString(Constants.PARAM_LANG);
+        }
+        strNRBE = pRequest.getParameter(Constants.PARAM_NRBE);
+        /* si el parámetro está vacio se intenta leer del contedio json */
+        if (strNRBE == null && pJSONObject != null)
+        {
+            strNRBE = pJSONObject.optString(Constants.PARAM_NRBE);
+        }
+        setValues(strLangValue, strNRBE);
     }
 
     /**

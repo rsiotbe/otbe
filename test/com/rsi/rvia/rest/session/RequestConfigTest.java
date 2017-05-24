@@ -47,7 +47,7 @@ public class RequestConfigTest extends TestBase
     @Test
     public void testRequestConfigFromStringsDefault() throws Exception
     {
-        RequestConfig sessionRviaStrs = new RequestConfig(null, null);
+        RequestConfig sessionRviaStrs = new RequestConfig((String) null, (String) null);
         assertNotNull("testRequestConfigFromStringsDefault: session es null", sessionRviaStrs);
         assertTrue("testRequestConfigFromStringsDefault: sessionRviaStrs no es instancia de RequestConfig", sessionRviaStrs instanceof RequestConfig);
     }
@@ -65,7 +65,7 @@ public class RequestConfigTest extends TestBase
         when(request.getParameter("NRBE")).thenReturn("FOO");
         when(request.getParameter("canalAix")).thenReturn(CanalFront.WEB.getValue() + "");
         when(request.getParameter("canal")).thenReturn(CanalHost.BANCA_INTERNET.getValue() + "");
-        RequestConfig clearSession = new RequestConfig(request);
+        RequestConfig clearSession = new RequestConfig(request, null);
         assertNotNull("testClearSession: clearSession es null", clearSession);
         assertTrue("testClearSession: clearSession no es instancia de RequestConfig", clearSession instanceof RequestConfig);
     }

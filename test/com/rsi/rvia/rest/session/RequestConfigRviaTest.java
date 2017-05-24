@@ -48,7 +48,7 @@ public class RequestConfigRviaTest extends TestBase
     @Test
     public void testRequestConfigFromStringsDefault() throws Exception
     {
-        RequestConfig sessionRviaStrs = new RequestConfig(null, null);
+        RequestConfig sessionRviaStrs = new RequestConfig((String) null, null);
         assertNotNull("testRequestConfigFromStringsDefault: session es null", sessionRviaStrs);
         assertTrue("testRequestConfigFromStringsDefault: sessionRviaStrs no es instancia de RequestConfig", sessionRviaStrs instanceof RequestConfig);
     }
@@ -58,7 +58,7 @@ public class RequestConfigRviaTest extends TestBase
     {
         when(request.getParameter("lang")).thenReturn("FOO");
         when(request.getParameter("NRBE")).thenReturn("FOO");
-        RequestConfig clearSession = new RequestConfig(request);
+        RequestConfig clearSession = new RequestConfig(request, null);
         assertNotNull("testClearSession: clearSession es null", clearSession);
         assertTrue("testClearSession: clearSession no es instancia de RequestConfig", clearSession instanceof RequestConfig);
     }
