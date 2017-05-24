@@ -38,20 +38,6 @@ public class RequestConfig
     }
 
     /**
-     * Constructor pasando parámetros
-     * 
-     * @param strLanguage
-     *            Lenguaje, por defecto si viene vacio o a null se pondra es_ES
-     * @param strNRBE
-     *            String con el NRBE, por defecto si viene vacio o a null se pondre 0198
-     */
-    public RequestConfig(String strLanguage, String strNRBE)
-    {
-        pLog.debug("Se procede a cargar la configuración de la petición leyendo parámetros");
-        setValues(strLanguage, strNRBE);
-    }
-
-    /**
      * Constructor pasando objeto request
      * 
      * @param pRequest
@@ -62,7 +48,7 @@ public class RequestConfig
     {
         String strLangValue;
         String strNRBE;
-        pLog.debug("Se procede a cargar la configuración de la petición leyendo objeto request");
+        pLog.debug("Se procede a cargar la configuración de la petición leyendo objeto request y datos json asociados");
         strLangValue = pRequest.getParameter(Constants.PARAM_LANG);
         /* si el parámetro está vacio se intenta leer del contedio json */
         if (strLangValue == null && pJSONObject != null)

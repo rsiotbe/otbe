@@ -7,7 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
-import com.rsi.Constants;
 import com.rsi.Constants.CanalFront;
 import com.rsi.Constants.CanalHost;
 import com.rsi.Constants.Language;
@@ -34,22 +33,6 @@ public class RequestConfigTest extends TestBase
     {
         assertNotNull("testRequestConfigFromRequest: session es null", pRequestConfig);
         assertTrue("testRequestConfigFromRequest: session no es instancia de RequestConfig", pRequestConfig instanceof RequestConfig);
-    }
-
-    @Test
-    public void testRequestConfigFromStrings() throws Exception
-    {
-        RequestConfig sessionRviaStrs = new RequestConfig(Constants.DEFAULT_LANGUAGE.getJavaCode(), "MOCKED NRBE");
-        assertNotNull("testRequestConfigFromStrings: session es null", sessionRviaStrs);
-        assertTrue("testRequestConfigFromStrings: RequestConfigStrs no es instancia de RequestConfig", sessionRviaStrs instanceof RequestConfig);
-    }
-
-    @Test
-    public void testRequestConfigFromStringsDefault() throws Exception
-    {
-        RequestConfig sessionRviaStrs = new RequestConfig((String) null, (String) null);
-        assertNotNull("testRequestConfigFromStringsDefault: session es null", sessionRviaStrs);
-        assertTrue("testRequestConfigFromStringsDefault: sessionRviaStrs no es instancia de RequestConfig", sessionRviaStrs instanceof RequestConfig);
     }
 
     @Test
