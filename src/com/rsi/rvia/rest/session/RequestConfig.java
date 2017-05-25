@@ -44,11 +44,16 @@ public class RequestConfig
      *            Objeto request recibido
      * @throws Exception
      */
-    public RequestConfig(HttpServletRequest pRequest, JSONObject pJSONObject) throws Exception
+    public RequestConfig(HttpServletRequest pRequest, String strJsonData) throws Exception
     {
         String strLangValue;
         String strNRBE;
+        JSONObject pJSONObject = null;
         pLog.debug("Se procede a cargar la configuración de la petición leyendo objeto request y datos json asociados");
+        if (strJsonData != null && !strJsonData.isEmpty())
+        {
+            pJSONObject = new JSONObject(strJsonData);
+        }
         strLangValue = pRequest.getParameter(Constants.PARAM_LANG);
         /* si el parámetro está vacio se intenta leer del contedio json */
         if (strLangValue == null && pJSONObject != null)

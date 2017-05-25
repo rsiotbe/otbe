@@ -12,7 +12,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.jose4j.lang.JoseException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.Constants;
@@ -224,7 +223,7 @@ public class OperationManager
             /*
              * Se crea el objeto RequestConfig con los solo con los datos del lang y css para aplicarlos en el template
              */
-            pRequestConfig = new RequestConfig(pRequest, new JSONObject(strJsonData));
+            pRequestConfig = new RequestConfig(pRequest, strJsonData);
             /* se obtienen los datos necesario para realizar la petición al proveedor */
             pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
             /* se procesa el resultado del conector paa evaluar y adaptar su contenido */
