@@ -67,7 +67,7 @@ public class PrestamoPersonal
     }
 
     @GET
-    @Path("/{idLinea}/{idGrupo}/{idProducto}/{idTarifa}/lopd")
+    @Path("/lopd")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public Response getLopd(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
