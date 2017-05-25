@@ -35,18 +35,19 @@ public class TarjetaCredito
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado las tarjetas de crédito
      *         disponibles
      */
-    // @GET
-    // @Path("/rates")
-    // @Produces({ MediaType.TEXT_HTML })
-    // @Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
-    // "application/x-ms-application" })
-    // public Response getListadoTarjetaCreditoHtml(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
-    // {
-    // pLog.info("Se obtienen las tarjetas de crédito disponibles HTML");
-    // Response pReturn = OperationManager.processTemplateFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
-    // pLog.info("Se finaliza la obtencion de las tarjetas de crédito disponibles HTML");
-    // return pReturn;
-    // }
+    @GET
+    @Path("/rates")
+    @Produces({ MediaType.TEXT_HTML })
+    @Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
+            "application/x-ms-application" })
+    public Response getListadoTarjetaCreditoHtml(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Se finaliza la solicitud del template HTML para Tarjeta de Crédito");
+        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, true);
+        pLog.info("Se finaliza la solicitud del template HTML para Tarjeta de Crédito");
+        return pReturn;
+    }
+
     /**
      * Muestra el listado de tarjetas (tarifas) comercializadas de ese tipo de producto. Ejemplo: Cuando el cliente ha
      * seleccionado que desea contratar una tarjeta de crédito, este clave página recoge el listado total de tarjetas de
@@ -151,7 +152,7 @@ public class TarjetaCredito
     public Response getLopdTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         pLog.info("Se llama al método de LOPD de tarjetas de crédito");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, true);
         pLog.info("Se finaliza el método de LOPD de tarjetas de crédito.");
         return pReturn;
     }

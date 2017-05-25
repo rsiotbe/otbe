@@ -20,18 +20,19 @@ public class ViaT
 {
     private static Logger pLog = LoggerFactory.getLogger(PrestamoPersonal.class);
 
-    // @GET
-    // @Path("/rates")
-    // @Produces({ MediaType.TEXT_HTML })
-    // @Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
-    // "application/x-ms-application" })
-    // public Response getSolicitudHtml(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
-    // {
-    // pLog.info("Se obtienen las tarjetas disponibles HTML");
-    // Response pReturn = OperationManager.processTemplateFromRvia(pRequest, pUriInfo, MediaType.TEXT_HTML_TYPE);
-    // pLog.info("Se finaliza la obtencion de las tarjetas disponibles HTML");
-    // return pReturn;
-    // }
+    @GET
+    @Path("/rates")
+    @Produces({ MediaType.TEXT_HTML })
+    @Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
+            "application/x-ms-application" })
+    public Response getSolicitudHtml(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Se solicita el template HTML para ViaT");
+        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, true);
+        pLog.info("Se finaliza la solicitud del template HTML para ViaT");
+        return pReturn;
+    }
+
     @GET
     @Path("/rates")
     @Produces({ MediaType.APPLICATION_JSON })

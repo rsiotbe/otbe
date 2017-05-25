@@ -24,18 +24,19 @@ public class PrestamoPersonal
      * 
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarifas@
      */
-    // @GET
-    // @Path("/rates")
-    // @Produces({ MediaType.TEXT_HTML })
-    // @Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
-    // "application/x-ms-application" })
-    // public Response getTarifasHtml(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
-    // {
-    // pLog.info("Se obtiene tarifas disponibles HTML");
-    // Response pReturn = OperationManager.processTemplateFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
-    // pLog.info("Finaliza la obtencion de las tarifas disponibles HTML");
-    // return pReturn;
-    // }
+    @GET
+    @Path("/rates")
+    @Produces({ MediaType.TEXT_HTML })
+    @Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
+            "application/x-ms-application" })
+    public Response getTarifasHtml(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Se solicita el template HTML para Prestamo Personal");
+        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, true);
+        pLog.info("Se finaliza la solicitud del template HTML para Prestamo Personal");
+        return pReturn;
+    }
+
     /**
      * Obtiene el listado completo de las tarifas disponibles de un usuario
      * 
