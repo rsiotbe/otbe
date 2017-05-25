@@ -165,14 +165,7 @@
 <body>
 	<form id="formRedirect" action="<%=strFinalUrl%>" method="<%=strMethod%>" enctype="multipart/form-data">
 		<%=strInputs%> 
-<%
-	if(!strError.trim().isEmpty())
-	{
-%>
-		<input type="hidden" name="errorCode" value="<%=strError%>">
-<%
-	}
-%>		
+<%if(!strError.trim().isEmpty()){%><input type="hidden" name="errorCode" value="<%=strError%>"><%}%>		
 	</form>
 	<script type="text/javascript">	
 		document.getElementById('formRedirect').submit();
