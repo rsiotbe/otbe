@@ -5,6 +5,7 @@ com.rsi.rvia.rest.DDBB.DDBBPoolFactory,
 com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider, 	
 		 com.rsi.rvia.rest.client.QueryCustomizer,
 		 com.rsi.rvia.rest.endpoint.rsiapi.AcuerdosRuralvia,
+		 com.rsi.rvia.rest.error.exceptions.ApplicationException,
         java.sql.Connection,
         java.sql.PreparedStatement,
         java.sql.ResultSet,
@@ -53,7 +54,6 @@ String strResponse="";
 	Connection pConnection = null;
 	PreparedStatement pPreparedStatement = null;
 	ResultSet pResultSet = null;
-	
 	
 	try{
 	    String strIdInterno=request.getParameter("idInternoPe");
@@ -184,23 +184,8 @@ String strResponse="";
 	}
 	finally{
 	   if(pConnection != null){
-	        pResultSet.close();
+	    DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
 	   }
-        catch(Exception ex){
-            throw new LogicalErrorException(500, 9999, "Jsp error", " - ", new Exception());
-        }
-        try {
-            pPreparedStatement.close();
-        }
-        catch(Exception ex){
-            throw new LogicalErrorException(500, 9999, "Jsp error", " - ", new Exception());
-        }
-        try {
-            pConnection.close();
-        }
-        catch(Exception ex){
-            throw new LogicalErrorException(500, 9999, "Jsp error", " - ", new Exception());
-        }        
 	}
 	response.setHeader("content-type", "application/json");
 %>
