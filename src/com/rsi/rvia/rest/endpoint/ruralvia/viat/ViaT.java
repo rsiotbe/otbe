@@ -40,7 +40,7 @@ public class ViaT
     public Response getSolicitud(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         pLog.info("Se obtienen las tarjetas disponibles");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Se finaliza la obtencion de las tarjetas disponibles");
         return pReturn;
     }
