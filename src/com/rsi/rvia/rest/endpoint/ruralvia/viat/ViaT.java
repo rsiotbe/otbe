@@ -132,9 +132,9 @@ public class ViaT
     @Produces({ MediaType.APPLICATION_JSON })
     public Response getSubGruposCNAETarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Se obtienen los datos relativos al listado de grupos CNAE");
+        pLog.info("Se obtienen los datos relativos al listado de grupos CNAE para ViaT");
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
-        pLog.info("Se finaliza la obtencion de los datos relativos  al listado de grupos CNAE");
+        pLog.info("Se finaliza la obtencion de los datos relativos  al listado de grupos CNAE para ViaT");
         return pReturn;
     }
 }
