@@ -116,4 +116,25 @@ public class ViaT
         pLog.info("Se finaliza la llamada a la firma");
         return pReturn;
     }
+
+    /**
+     * Muestra la información relativa a los distintos Grupos de CNAE disponibles.
+     * 
+     * @param pRequest
+     *            the request
+     * @param pUriInfo
+     *            the uri info
+     * @return the det tarifas
+     */
+    @GET
+    @Path("/scoring/formdata/cnae")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Response getSubGruposCNAETarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Se obtienen los datos relativos al listado de grupos CNAE");
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Se finaliza la obtencion de los datos relativos  al listado de grupos CNAE");
+        return pReturn;
+    }
 }
