@@ -235,6 +235,19 @@ public class MiqQuests
     }
 
     /**
+     * Sincroniza el acceso a la carga de la cache de miqquest
+     * 
+     * @throws Exception
+     */
+    private static synchronized void synchronizeLoadCache() throws Exception
+    {
+        if (getCacheSize() == 0)
+        {
+            loadDDBBCache();
+        }
+    }
+
+    /**
      * Funcion que carga la cache desde base de datos
      * 
      * @throws Exception
@@ -379,7 +392,7 @@ public class MiqQuests
         MiqQuests pMiqQuests = null;
         /* si la caché no está cargada se carga */
         if (getCacheSize() == 0)
-            loadDDBBCache();
+            synchronizeLoadCache();
         pMiqQuests = htCacheDataPath.get(strPath);
         return pMiqQuests;
     }
@@ -399,7 +412,7 @@ public class MiqQuests
         /* si la caché no está cargada se carga */
         if (getCacheSize() == 0)
         {
-            loadDDBBCache();
+            synchronizeLoadCache();
         }
         pMiqQuests = htCacheDataId.get(nMiqQuestId);
         return pMiqQuests;
