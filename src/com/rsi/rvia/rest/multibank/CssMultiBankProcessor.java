@@ -139,6 +139,19 @@ public class CssMultiBankProcessor
     }
 
     /**
+     * Sincroniza el acceso a la carga de la cache de miqquest
+     * 
+     * @throws Exception
+     */
+    private static synchronized void synchronizeLoadCache() throws Exception
+    {
+        if (getCacheSize() == 0)
+        {
+            loadDDBBCache();
+        }
+    }
+
+    /**
      * Función que modifica los links css de un documento JSOUP.
      * 
      * @param doc
@@ -156,7 +169,7 @@ public class CssMultiBankProcessor
         if (htCacheData == null || getCacheSize() < 1)
         {
             pLog.debug("La caché no está inicializada se procede a inicializarla");
-            loadDDBBCache();
+            synchronizeLoadCache();
         }
         for (Element pItem : pLinksCss)
         {

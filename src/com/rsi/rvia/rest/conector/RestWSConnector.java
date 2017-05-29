@@ -1,5 +1,6 @@
 package com.rsi.rvia.rest.conector;
 
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -71,7 +72,8 @@ public class RestWSConnector
     {
         String strFinalQueryParams = "";
         Client pClient = RviaRestHttpClient.getClient();
-        String strQueryStringParams = ((pRequest.getQueryString() == null) ? "" : pRequest.getQueryString());
+        String strQueryStringParams = ((pRequest.getQueryString() == null) ? ""
+                : URLDecoder.decode(pRequest.getQueryString(), "UTF-8"));
         String strPathParams = Utils.multiValuedMapToQueryString(pPathParams);
         String strInjectParams = Utils.hashMapToQueryString(pParamsToInject);
         String strJsonDataParams = Utils.simpleJsonToQueryString(strJsonData);

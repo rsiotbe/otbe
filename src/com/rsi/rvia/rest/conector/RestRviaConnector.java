@@ -1,5 +1,6 @@
 package com.rsi.rvia.rest.conector;
 
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -74,7 +75,8 @@ public class RestRviaConnector
             String strSesId = pRequestConfigRvia.getRviaSessionId();
             String strHost = pRequestConfigRvia.getUriRvia().toString();
             String strClavePagina = pMiqQuests.getEndPoint();
-            String strQueryStringParams = ((pRequest.getQueryString() == null) ? "" : pRequest.getQueryString());
+            String strQueryStringParams = ((pRequest.getQueryString() == null) ? ""
+                    : URLDecoder.decode(pRequest.getQueryString(), "UTF-8"));
             String strUrl = strHost + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + strSesId + "?clavePagina="
                     + strClavePagina;
             pLog.trace("Se compone la url a invocar a ruralvia: " + strUrl + ":" + pRequestConfigRvia.getToken());
@@ -100,10 +102,12 @@ public class RestRviaConnector
                             + strValue + " a la lista de parámetros a enviar ");
                 }
             }
-            pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
             MultivaluedMap<String, String> pRviaFields = pMiqQuests.testInputParams(pSessionFields);
             pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
             /* TODO: Revisar la necesidad de enviar los parámetros de sesión. Diríase que no es necesario. */
+            pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
+            pLog.info("Url: " + strUrl);
+            pLog.info("Params: " + pRviaFields);
             pReturn = pTarget.request().post(Entity.form(pRviaFields));
             // pReturn = pTarget.request().post(Entity.form(pPathParams));
             pLog.trace("Respuesta obtenida desde ruralvia: " + pReturn);

@@ -76,8 +76,7 @@ public class TestManager
     {
         pLog.info("Se recibe una peticion de simuladores de tipo " + MediaType.MULTIPART_FORM_DATA + " que genera "
                 + MediaType.TEXT_HTML);
-        RviaRestResponse pRviaRestResponse = null;
-        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, pRviaRestResponse);
+        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, false);
         pLog.info("Se devuelve la respuesta final al usuario");
         return pReturn;
     }
@@ -147,7 +146,7 @@ public class TestManager
             strData = "{" + "\"code\":999999," + "\"httpCode\":500," + "\"message\":\"Error interno del servidor.\","
                     + "\"description\":\"Se ha producido un error interno en el servidor.\"" + "}";
         }
-        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, pRviaRestResponse);
+        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, false);
         return pReturn;
     }
 }
