@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import com.rsi.Constants;
 import com.rsi.isum.IsumValidation;
-import com.rsi.rvia.rest.client.DDBB.CardsDDBB;
 import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.error.ErrorManager;
 import com.rsi.rvia.rest.error.ErrorResponse;
@@ -31,6 +30,7 @@ import com.rsi.rvia.rest.security.IdentityProvider;
 import com.rsi.rvia.rest.security.IdentityProviderFactory;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
+import com.rsi.rvia.rest.simulators.CardsDDBB;
 import com.rsi.rvia.rest.template.TemplateManager;
 import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.ServiceHelper;
