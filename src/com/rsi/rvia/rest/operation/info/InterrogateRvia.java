@@ -86,15 +86,13 @@ public class InterrogateRvia
         // if (pResponseService == null || pResponseService.getStatus() != 200)
         if (pResponseService == null)
         {
-            if (pResponseService == null)
-            {
-                pLog.error("No se ha podido procesar el objeto ResponseService que devuelve la invocación, el elemento es nulo");
-            }
-            else
-            {
-                pLog.error("El servidor ha respondido un codigo http " + pResponseService.getStatus()
-                        + " al realizar la petición al servicio de intearrogar ruralvia");
-            }
+            pLog.error("No se ha podido procesar el objeto ResponseService que devuelve la invocación, el elemento es nulo");
+            throw new Exception("No se ha podido obtener la información del xml.dat y la información del usuario de ruralvia");
+        }
+        else if (pResponseService.getStatus() != 200)
+        {
+            pLog.error("El servidor ha respondido un codigo http " + pResponseService.getStatus()
+                    + " al realizar la petición al servicio de intearrogar ruralvia");
             throw new Exception("No se ha podido obtener la información del xml.dat y la información del usuario de ruralvia");
         }
         try
@@ -127,43 +125,48 @@ public class InterrogateRvia
      */
     public static Hashtable<String, String> getParameterFromSession(String strParameters, RequestConfigRvia pSessionRvia)
     {
-        String strSesId;
-        String strHost;
+        Hashtable<String, String> htReturn = new Hashtable<String, String>();
+        /* se obtienen los parametros de la petición a ruralvia */
+        if (pSessionRvia != null && pSessionRvia.getRviaSessionId() != null && pSessionRvia.getUriRvia() != null)
+        {
+            htReturn = getParameterFromSession(strParameters, pSessionRvia.getRviaSessionId(), pSessionRvia.getNodeRvia());
+        }
+        return htReturn;
+    }
+
+    public static Hashtable<String, String> getParameterFromSession(String strParameters, String strSesId,
+            String strHost)
+    {
         String url;
         String strHTML = "";
         String[] strDatosParam = null;
         Hashtable<String, String> htReturn = new Hashtable<String, String>();
         org.jsoup.nodes.Document pDocResp;
         /* se obtienen los parametros de la petición a ruralvia */
-        if (pSessionRvia != null && pSessionRvia.getRviaSessionId() != null && pSessionRvia.getUriRvia() != null)
+        htReturn = new Hashtable<String, String>();
+        url = strHost + "/portal_rvia/RviaRestInfo;RVIASESION=" + strSesId + "?listAttributes=" + strParameters;
+        try
         {
-            strSesId = pSessionRvia.getRviaSessionId();
-            strHost = pSessionRvia.getUriRvia().toString();
-            htReturn = new Hashtable<String, String>();
-            url = strHost + "/portal_rvia/RviaRestInfo;RVIASESION=" + strSesId + "?listAttributes=" + strParameters;
-            try
+            /* Se fuerza que sea Document el tipo: org.jsoup.nodes.Document */
+            pDocResp = Jsoup.connect(url).get();
+            strHTML = pDocResp.html();
+            strDatosParam = strHTML.split(";");
+            if (strDatosParam != null)
             {
-                /* Se fuerza que sea Document el tipo: org.jsoup.nodes.Document */
-                pDocResp = Jsoup.connect(url).get();
-                strHTML = pDocResp.html();
-                strDatosParam = strHTML.split(";");
-                if (strDatosParam != null)
+                for (String strParam : strDatosParam)
                 {
-                    for (String strParam : strDatosParam)
+                    String[] strPartesParam = strParam.split("#-#");
+                    if ((strPartesParam != null) && (strPartesParam.length >= 2))
                     {
-                        String[] strPartesParam = strParam.split("#-#");
-                        if ((strPartesParam != null) && (strPartesParam.length >= 2))
-                        {
-                            htReturn.put(strPartesParam[0], strPartesParam[1]);
-                        }
+                        htReturn.put(strPartesParam[0], strPartesParam[1]);
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                pLog.error("Error al recuperar parametros de la sesion de Rvia: " + ex);
-                htReturn = new Hashtable<String, String>();
-            }
+        }
+        catch (Exception ex)
+        {
+            pLog.error("Error al recuperar parametros de la sesion de Rvia: " + ex);
+            htReturn = new Hashtable<String, String>();
         }
         return htReturn;
     }
