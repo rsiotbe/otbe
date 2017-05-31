@@ -16,7 +16,7 @@ public class IdentityProviderFactory
 
     public enum IdProvider
     {
-        RSI, RVIA, RVIATOKEN, TRUSTED;
+        RSI, RVIA, RVIASESSION, TRUSTED;
     }
 
     /**
@@ -39,7 +39,7 @@ public class IdentityProviderFactory
             case RVIA:
                 rIdentityProvider = new IdentityProviderRVIALogin(pRequest, pMiqQuests);
                 break;
-            case RVIATOKEN:
+            case RVIASESSION:
                 rIdentityProvider = new IdentityProviderRVIASession(pRequest, pMiqQuests);
                 break;
             case TRUSTED:

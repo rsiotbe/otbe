@@ -50,4 +50,20 @@ public class MiqQuestAdminServices
         pLog.info("Movimientos de un contrato");
         return pReturn;
     }
+
+    /**
+     * Genera un token de cominuunicación entre rviarest y ruralviavia
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarjetas @
+     */
+    @GET
+    @Path("/rviasession")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response rviatoken(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
+    {
+        pLog.info("Se solciita un token de rvia-rviarest");
+        Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Se retorna el resultaod al cliente");
+        return pReturn;
+    }
 }
