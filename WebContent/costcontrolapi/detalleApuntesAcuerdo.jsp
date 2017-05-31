@@ -27,7 +27,7 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
     strDateIni= QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni); 
     String strQuery =
             " select" +
-             "   t1.fecha_oprcn_dif \"fecha\"" +
+             "   t1.fecha_oprcn \"fecha\"" +
              "   ,t1.num_sec_ac \"acuerdo\"" +
              "   ,t1.sgn \"tipoApunte\"" +          
              "   ,case" +
@@ -44,8 +44,8 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
              " left outer join proc01.tp_clop h3" +
              " on trim(t1.cod_origen) = trim(h3.cod_clop_sist||h3.tipo_sbclop) " +           
              " where t1.cod_nrbe_en='" + strEntidad + "'" +
-             " and t1.fecha_oprcn_dif > to_date('" + strDateIni + "','yyyy-mm-dd') " +             
-             " and t1.fecha_oprcn_dif < to_date('" + strDateFin + "','yyyy-mm-dd') " +              
+             " and t1.fecha_oprcn > to_date('" + strDateIni + "','yyyy-mm-dd') " +             
+             " and t1.fecha_oprcn < to_date('" + strDateFin + "','yyyy-mm-dd') " +              
              " and t1.cod_cta = '01'" + strExcluClops +            
              " and t1.ind_accion <> '3' ";
  
@@ -82,7 +82,7 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
        if(strTipoApunte != null)    
           strQuery = strQuery + " and trim(t1.sgn) = '" + strTipoApunte + "'" ; 
        strQuery = strQuery + " group by" +
-           "   t1.fecha_oprcn_dif," +
+           "   t1.fecha_oprcn," +
            "   t1.num_sec_ac," +
            "   t1.sgn," +
            "   case" +

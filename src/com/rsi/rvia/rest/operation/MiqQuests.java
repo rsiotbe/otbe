@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -234,6 +235,19 @@ public class MiqQuests
     }
 
     /**
+     * Sincroniza el acceso a la carga de la cache de miqquest
+     * 
+     * @throws Exception
+     */
+    private static synchronized void synchronizeLoadCache() throws Exception
+    {
+        if (getCacheSize() == 0)
+        {
+            loadDDBBCache();
+        }
+    }
+
+    /**
      * Funcion que carga la cache desde base de datos
      * 
      * @throws Exception
@@ -353,6 +367,21 @@ public class MiqQuests
      * Realiza una conexión a la BBDD para obtener los datos necesarios para crear un objeto MiqQuests y darlo como
      * respuesta.
      * 
+     * @param pUriInfo
+     *            Objeto uriinfo recogido de la request
+     * @return MiqQuests con el id:miq, el component_type, el end_point y el template.
+     * @throws Exception
+     */
+    public static MiqQuests getMiqQuests(UriInfo pUriInfo) throws Exception
+    {
+        String strPrimaryPath = Utils.getPrimaryPath(pUriInfo);
+        return getMiqQuests(strPrimaryPath);
+    }
+
+    /**
+     * Realiza una conexión a la BBDD para obtener los datos necesarios para crear un objeto MiqQuests y darlo como
+     * respuesta.
+     * 
      * @param strPath
      *            String path primario para la clausula where de la consulta
      * @return MiqQuests con el id:miq, el component_type, el end_point y el template.
@@ -363,7 +392,7 @@ public class MiqQuests
         MiqQuests pMiqQuests = null;
         /* si la caché no está cargada se carga */
         if (getCacheSize() == 0)
-            loadDDBBCache();
+            synchronizeLoadCache();
         pMiqQuests = htCacheDataPath.get(strPath);
         return pMiqQuests;
     }
@@ -383,7 +412,7 @@ public class MiqQuests
         /* si la caché no está cargada se carga */
         if (getCacheSize() == 0)
         {
-            loadDDBBCache();
+            synchronizeLoadCache();
         }
         pMiqQuests = htCacheDataId.get(nMiqQuestId);
         return pMiqQuests;

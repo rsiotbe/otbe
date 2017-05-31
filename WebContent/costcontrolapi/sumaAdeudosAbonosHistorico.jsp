@@ -18,8 +18,14 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
     String strDateIni = request.getParameter("mesInicio").toString();
     String strDateFin = request.getParameter("mesFin");   
     String strCodCta = "";
-    String strExcluClops = " and trim(t1.cod_origen) not in (" + AcuerdosRuralvia.getExcludedClops() + ")";
     
+    String strExcluClops = " and trim(t1.cod_origen) not in (";
+    if(strContrato != null){
+        strExcluClops = strExcluClops + AcuerdosRuralvia.getExcludedClops() + ")";
+    }
+    else{
+        strExcluClops = strExcluClops + AcuerdosRuralvia.getExcludedClops() + AcuerdosRuralvia.getExcludedClopsAlDebe() + AcuerdosRuralvia.getExcludedClopsAlHaber() + ")";
+    }
     /*
     // TODO: Parece que el código de clasificación no aplica para cod_cta <> 1.
     String strCodClasificacion = request.getParameter("codClasificacion");
@@ -47,7 +53,7 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
     String strResponse = "{}";
    String strQuery =
            " select" +
-           "    to_char(fecha_oprcn_dif,'YYYY-MM')  \"mes\"" +
+           "    to_char(fecha_oprcn,'YYYY-MM')  \"mes\"" +
            "   ,sgn  \"tipoApunte\"" +
            "   ,sum(imp_apnte) \"importe\"" ;
 /*
@@ -68,21 +74,17 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
 */           
         strQuery = strQuery + " from rdwc01.mi_do_apte_cta t1" +
            " where cod_nrbe_en='" + strEntidad + "'" ;
-           
-   if(strDateFin == null){
-      strQuery = strQuery + " and fecha_oprcn_dif <= (select max(fecha_oprcn_dif) from rdwc01.mi_do_apte_cta where cod_nrbe_en='" + 
-            strEntidad + "')";
-   }
-   else{
-      strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
-      strQuery = strQuery + " and t1.fecha_oprcn_dif <= " +             
-            " ( select max(tm.fecha_oprcn_dif) " +
-            " from rdwc01.mi_do_apte_cta tm where cod_nrbe_en='" + strEntidad + "' " +
-            " and tm.fecha_oprcn_dif < to_date('" + strDateFin + "','yyyy-mm-dd') " + 
-            " )";
-   }   
-   strDateIni = strDateIni + "-01";         
-   strQuery = strQuery + " and fecha_oprcn_dif >= to_date('" + strDateIni + "','yyyy-mm-dd')";
+
+	 if(strDateFin == null){
+	    strDateFin =  AcuerdosRuralvia.getLastProcessDateMasUno("MI_DO_APTE_CTA");
+	 }
+	 else{
+	    strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
+	 } 
+	 strQuery = strQuery + " and t1.fecha_oprcn < to_date('" + strDateFin + "','yyyy-mm-dd') ";
+ 
+   strDateIni = QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni);
+   strQuery = strQuery + " and fecha_oprcn > to_date('" + strDateIni + "','yyyy-mm-dd') ";      
    String strRestrictorApuntes = " and cod_cta = '01' and ind_accion <> '3' ";
    
    strQuery = strQuery + strRestrictorApuntes;
@@ -104,7 +106,7 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
  	  strQuery = strQuery + " and num_sec_ac =" + strContrato; 
    }         
    strQuery = strQuery +  strExcluClops;
-   strQuery = strQuery + " group by to_char(fecha_oprcn_dif,'YYYY-MM'), "+
+   strQuery = strQuery + " group by to_char(fecha_oprcn,'YYYY-MM'), "+
    /*
          " case " + 
          "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0311','0321')  then 'PASIVO A LA VISTA'" + 

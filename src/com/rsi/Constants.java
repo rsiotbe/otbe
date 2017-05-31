@@ -135,6 +135,7 @@ public class Constants
     // Cabeceras http
     // /////////////////////////
     public static final String   HTTP_HEADER_AUTORIZATION                       = "Authorization";
+    public static final String   HTTP_HEADER_MEDIATYPE_PDF                      = "application/pdf";
 
     public enum SimulatorLoanCategory
     {

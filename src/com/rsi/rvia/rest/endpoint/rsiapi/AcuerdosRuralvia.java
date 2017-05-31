@@ -15,7 +15,9 @@ public class AcuerdosRuralvia
 {
     private static Logger   pLog               = LoggerFactory.getLogger(QueryCustomizer.class);
     private static String[] _reserved          = { "select", "update", "delete", "insert", "alter", "drop", "create" };
-    private static String   _strClopsExcluidos = "'070002', '070001', '410003', '410001','060011'";
+    private static String   _strClopsExcluidos = "'070002', '070001', '410003', '410001'";
+    private static String   _strClopsAlDebe    = ",'060011'";
+    private static String   _strClopsAlHaber   = ",'060001'";
 
     public static String[] getRviaContractsDecodeAliases(HttpServletRequest request) throws ApplicationException
     {
@@ -140,6 +142,41 @@ public class AcuerdosRuralvia
         return strRetorno;
     }
 
+    public static String getLastProcessDateMasUno(String pTabla) throws ApplicationException
+    {
+        if (pTabla == null)
+        {
+            throw new ApplicationException(500, 99999, "No permitido", "Palabra reservada ha entrado como parámetro", new Exception());
+        }
+        String strRetorno = null;
+        Connection pConnection = null;
+        PreparedStatement pPreparedStatement = null;
+        ResultSet pResultSet = null;
+        String strQuery = null;
+        try
+        {
+            strQuery = " select to_char(mi_fecha_oprcn + 1,'yyyy-mm-dd') \"fecha\" from rdwc01.ce_carga_tabla"
+                    + " where nomtabla = upper('" + pTabla + "') " + " and mi_periodicidad='D' ";
+            pLog.info("Query para extracción de fecha de cargam para tabla recibida como parámetro: " + strQuery);
+            pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleCIP);
+            pPreparedStatement = pConnection.prepareStatement(strQuery);
+            pResultSet = pPreparedStatement.executeQuery();
+            while (pResultSet.next())
+            {
+                strRetorno = (String) pResultSet.getString("fecha");
+            }
+        }
+        catch (Exception ex)
+        {
+            pLog.error("Error al intentar extraer los acuerdos de tarjeta de empresa", ex);
+        }
+        finally
+        {
+            DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
+        }
+        return strRetorno;
+    }
+
     private static String protectInject(String strFields)
     {
         if (strFields == null)
@@ -159,5 +196,15 @@ public class AcuerdosRuralvia
     public static String getExcludedClops()
     {
         return _strClopsExcluidos;
+    }
+
+    public static String getExcludedClopsAlDebe()
+    {
+        return _strClopsAlDebe;
+    }
+
+    public static String getExcludedClopsAlHaber()
+    {
+        return _strClopsAlHaber;
     }
 }

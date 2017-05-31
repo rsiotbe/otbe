@@ -42,6 +42,7 @@ public class News
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response updateNews(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
     {
         Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
