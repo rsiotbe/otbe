@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.security.IdentityProviderFactory;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.Utils;
 
 /**
@@ -179,7 +180,8 @@ public class MiqQuests
                 strRealEndPoint = "https://localhost";
             }
             else
-                strRealEndPoint = "http://localhost:" + pRequest.getLocalPort();
+                strRealEndPoint = "http://localhost:"
+                        + AppConfiguration.getInstance().getProperty("catalinaServicePort").trim();
             strRealEndPoint += this.strEndPoint;
             pUriReturn = UriBuilder.fromUri(strRealEndPoint).build();
         }
