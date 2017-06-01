@@ -180,8 +180,14 @@ public class MiqQuests
                 strRealEndPoint = "https://localhost";
             }
             else
-                strRealEndPoint = "http://localhost:"
-                        + AppConfiguration.getInstance().getProperty("catalinaServicePort").trim();
+            {
+                String servicePort = "9082";
+                if (AppConfiguration.getInstance().getProperty("catalinaServicePort") != null)
+                {
+                    servicePort = AppConfiguration.getInstance().getProperty("catalinaServicePort").trim();
+                }
+                strRealEndPoint = "http://localhost:" + servicePort;
+            }
             strRealEndPoint += this.strEndPoint;
             pUriReturn = UriBuilder.fromUri(strRealEndPoint).build();
         }
