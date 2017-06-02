@@ -26,7 +26,8 @@ import com.rsi.rvia.rest.tool.Utils;
  */
 public class MiqQuests
 {
-    private static Logger                          pLog                          = LoggerFactory.getLogger(MiqQuests.class);
+    private static Logger                          pLog                          = LoggerFactory.getLogger(
+            MiqQuests.class);
     private int                                    nIdMiq;
     private String                                 strPathRest;
     private CompomentType                          pCompomentType;
@@ -72,8 +73,8 @@ public class MiqQuests
     public static void resetCache()
     {
         htCacheDataId.clear();
-        htCacheDataId = new Hashtable<Integer, MiqQuests>();
         htCacheDataPath.clear();
+        htCacheDataId = new Hashtable<Integer, MiqQuests>();
         htCacheDataPath = new Hashtable<String, MiqQuests>();
     }
 
@@ -85,11 +86,7 @@ public class MiqQuests
      */
     public static String cacheToString() throws Exception
     {
-        String strReturn;
-        strReturn = Utils.hastablePrettyPrintHtml(htCacheDataId);
-        strReturn += "\n";
-        strReturn = Utils.hastablePrettyPrintHtml(htCacheDataPath);
-        return strReturn;
+        return Utils.hastablePrettyPrintHtml(htCacheDataPath);
     }
 
     public int getIdMiq()
@@ -194,7 +191,7 @@ public class MiqQuests
         return pUriReturn;
     }
 
-    /** Contructor generico */
+    /** Contructor genérico */
     public MiqQuests()
     {
     }
@@ -275,7 +272,10 @@ public class MiqQuests
                             + " y se continua con el resto");
                     continue;
                 }
-                MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("direccionador"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"), pResultSet.getString("opciones"));
+                MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"),
+                        pResultSet.getString("component_type"), pResultSet.getString("direccionador"),
+                        pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"),
+                        pResultSet.getString("opciones"));
                 if (!htCacheDataId.containsKey(pResultSet.getInt("id_miq")))
                     htCacheDataId.put(pResultSet.getInt("id_miq"), pMiqQuests);
                 if (!htCacheDataPath.containsKey(pResultSet.getString("path_rest")))
@@ -320,19 +320,16 @@ public class MiqQuests
             while (pResultSet.next())
             {
                 String idMiq = pResultSet.getString("id_miq");
-                MiqQuestParam pMiqQuestParam = new MiqQuestParam(pResultSet.getInt("id_miq_param"), pResultSet.getString("paramname"), pResultSet.getString("paramvalue"), pResultSet.getString("paramdesc"), pResultSet.getString("paramtype"), pResultSet.getString("headername"), pResultSet.getString("aliasname"));
-                // if (pResultSet.getString("aliasname") != null)
-                // {
-                // if (!"".equals(pResultSet.getString("aliasname").trim()))
-                // {
+                MiqQuestParam pMiqQuestParam = new MiqQuestParam(pResultSet.getInt("id_miq_param"),
+                        pResultSet.getString("paramname"), pResultSet.getString("paramvalue"),
+                        pResultSet.getString("paramdesc"), pResultSet.getString("paramtype"),
+                        pResultSet.getString("headername"), pResultSet.getString("aliasname"));
                 String keyForHtParamsInput = idMiq + pResultSet.getString("aliasname");
                 if (!htParamsInput.containsKey(keyForHtParamsInput))
                 {
                     pLog.info("Añadiendo parametro: " + pResultSet.getString("aliasname"));
                     htParamsInput.put(keyForHtParamsInput, pMiqQuestParam);
                 }
-                // }
-                // }
             }
         }
         catch (Exception ex)
@@ -394,7 +391,9 @@ public class MiqQuests
         MiqQuests pMiqQuests = null;
         /* si la caché no está cargada se carga */
         if (getCacheSize() == 0)
+        {
             synchronizeLoadCache();
+        }
         pMiqQuests = htCacheDataPath.get(strPath);
         return pMiqQuests;
     }
@@ -432,9 +431,13 @@ public class MiqQuests
     public MultivaluedMap<String, String> testInputParams(MultivaluedMap<String, String> pAllInputs) throws Exception
     {
         if (pAllInputs == null)
+        {
             return pAllInputs;
+        }
         if (htParamsInput == null)
+        {
             return pAllInputs;
+        }
         MultivaluedMap<String, String> paramsToRvia = new MultivaluedHashMap<String, String>();
         Iterator<String> pIterator = pAllInputs.keySet().iterator();
         int nIdMiq = getIdMiq();

@@ -23,7 +23,8 @@ import com.rsi.rvia.rest.tool.Utils;
 public class TranslateRviaJsonCache
 {
     /** The p log. */
-    private static Logger                                     pLog                 = LoggerFactory.getLogger(TranslateRviaJsonCache.class);
+    private static Logger                                     pLog                 = LoggerFactory.getLogger(
+            TranslateRviaJsonCache.class);
     /** The ht translate cache data. */
     private static Hashtable<String, TranslateRviaJsonObject> htTranslateCacheData = new Hashtable<String, TranslateRviaJsonObject>();
 
@@ -109,13 +110,12 @@ public class TranslateRviaJsonCache
                         + "(select i.comentario from " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
                         + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as descripcion " + "from "
                         + AppConfiguration.getInstance().getProperty("BELScheme").trim()
-                        + ".BDPTB282_ERR_RVIA s where s.CODERR = ? AND s.ID_MIQ = ?";
+                        + ".BDPTB282_ERR_RVIA s where s.CODERR = ?";
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
                 pPreparedStatement.setString(1, pLanguage.getJavaCode());
                 pPreparedStatement.setString(2, pLanguage.getJavaCode());
                 pPreparedStatement.setString(3, strErrorCode);
-                pPreparedStatement.setInt(4, nIdMiq);
                 pResultSet = pPreparedStatement.executeQuery();
                 while (pResultSet.next())
                 {
@@ -140,7 +140,9 @@ public class TranslateRviaJsonCache
                 DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
                 if (fIsError)
                 {
-                    throw new ApplicationException(500, 999994, "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD", null);
+                    throw new ApplicationException(500, 999994,
+                            "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD",
+                            null);
                 }
             }
         }
@@ -172,15 +174,14 @@ public class TranslateRviaJsonCache
                 // Insertar en BDPTB282_ERR_RVIA
                 //
                 pLog.trace("Se procede a insertar el codigo de error " + strErrorCode + " para el idMiq " + nIdMiq);
-                String strQuery1 = "INSERT INTO "
-                        + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                String strQuery1 = "INSERT INTO " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
                         + ".BDPTB282_ERR_RVIA (CODERR, TIPORESP, TEXTERROR, ID_MIQ, DESCRIPCION) VALUES (?, ?, ?, ?, ?)";
                 pConnection1 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection1.setAutoCommit(false);
                 pPreparedStatement1 = pConnection1.prepareStatement(strQuery1);
-                pPreparedStatement1.setString(1, code);
+                pPreparedStatement1.setString(1, strErrorCode);
                 pPreparedStatement1.setString(2, DEFAULT_LEVEL);
-                pPreparedStatement1.setString(3, strErrorText);
+                pPreparedStatement1.setString(3, code);
                 pPreparedStatement1.setLong(4, nIdMiq);
                 pPreparedStatement1.setString(5, DEFAULT_COMMENT);
                 nResult += pPreparedStatement1.executeUpdate();
@@ -208,7 +209,6 @@ public class TranslateRviaJsonCache
                     pPreparedStatement2.setString(count++, strErrorText);
                     pPreparedStatement2.setString(count++, DEFAULT_COMMENT);
                 }
-                pLog.trace("pPreparedStatement2:" + pPreparedStatement2);
                 nResult += pPreparedStatement2.executeUpdate();
                 //
                 // Insertar en BDPTB079_IDIOMA_APLICATIVO
@@ -237,23 +237,33 @@ public class TranslateRviaJsonCache
             }
             catch (Exception ex)
             {
+                fIsError = true;
                 pConnection1.rollback();
                 pConnection2.rollback();
                 pConnection3.rollback();
                 pLog.error("Error al realizar la consulta a la BBDD", ex);
-                fIsError = true;
             }
             finally
             {
-                pConnection1.setAutoCommit(true);
-                pConnection2.setAutoCommit(true);
-                pConnection3.setAutoCommit(true);
-                DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement1, pConnection1);
-                DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement2, pConnection2);
-                DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement3, pConnection3);
+                if (pConnection1 != null)
+                {
+                    pConnection1.setAutoCommit(true);
+                    DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement1, pConnection1);
+                }
+                if (pConnection2 != null)
+                {
+                    pConnection2.setAutoCommit(true);
+                    DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement2, pConnection2);
+                }
+                if (pConnection3 != null)
+                {
+                    pConnection3.setAutoCommit(true);
+                    DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement3, pConnection3);
+                }
                 if (fIsError)
                 {
-                    throw new ApplicationException(500, 999993, "Error al procesar insertar respues ta de error de ruralvia", "Error al acceder a BBDD", null);
+                    throw new ApplicationException(500, 999993, "Error al insertar de error de ruralvia",
+                            "Error al acceder a BBDD", null);
                 }
             }
         }

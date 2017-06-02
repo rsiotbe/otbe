@@ -5,8 +5,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.CallableStatement;
@@ -17,6 +19,7 @@ import java.util.Properties;
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constants;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.tool.AppConfiguration;
@@ -43,10 +46,10 @@ public class CommunicationUtils
     }
 
     public static String getRsiSign(String strUser, String strNrbe, String strOffice, String strUsrType,
-            String strLanguage)
+            String strLanguage) throws UnsupportedEncodingException
     {
         String digest = strUser.concat(strNrbe).concat(strOffice).concat(strUsrType).concat(strLanguage);
-        return java.net.URLEncoder.encode(digiereSHA1(digest));
+        return URLEncoder.encode(digiereSHA1(digest), Constants.UTF8);
     }
 
     public static String digiereSHA1(String cadena)

@@ -157,7 +157,11 @@ public class SimulatorsManager
                     strLOPD = pResultSet.getString("TEXTO_LOPD");
                     strDescription = pResultSet.getString("TEXTO_DESC");
                     fDownloadByForm = pResultSet.getBoolean("PDF_CON_FORMUALARIO");
-                    pSimulatorObject = new SimulatorConfig(nSimulatorId, strNRBE, strNRBEName, strCategory, strSimpleName, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail, fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone, strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions, strDescription, fDownloadByForm);
+                    pSimulatorObject = new SimulatorConfig(nSimulatorId, strNRBE, strNRBEName, strCategory,
+                            strSimpleName, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail,
+                            fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone,
+                            strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions, strDescription,
+                            fDownloadByForm);
                 }
                 pSimulatorObject.addConfigParam(pResultSet.getString("CLAVE"), pResultSet.getString("VALOR"));
             }
@@ -313,19 +317,22 @@ public class SimulatorsManager
             }
             catch (Exception ex)
             {
-                throw new ApplicationException(500, 9999, "Se ha producido un error interno de la aplicación", "No ha sido posible recuperar la información necesaria para la entidad", ex);
+                throw new ApplicationException(500, 9999, "Se ha producido un error interno de la aplicación",
+                        "No ha sido posible recuperar la información necesaria para la entidad", ex);
             }
         }
         /* se obtiene el codigo de entidad para el nombre dado */
         JSONObject pDataObject = pPropNRBENames.getJSONObject(strNRBEName);
         if (pDataObject == null)
         {
-            throw new LogicalErrorException(400, 9998, "No se ha encontrado información para esta entidad", "No ha sido posible recuperar la información necesaria para esta entidad", null);
+            throw new LogicalErrorException(400, 9998, "No se ha encontrado información para esta entidad",
+                    "No ha sido posible recuperar la información necesaria para esta entidad", null);
         }
         strReturn = pDataObject.getString("NRBE");
         if (strReturn == null || strReturn.trim().isEmpty())
         {
-            throw new LogicalErrorException(400, 9997, "No se ha encontrado información para esta entidad", "No ha sido posible recuperar la información necesaria para esta entidad", null);
+            throw new LogicalErrorException(400, 9997, "No se ha encontrado información para esta entidad",
+                    "No ha sido posible recuperar la información necesaria para esta entidad", null);
         }
         while (strReturn.length() < 4)
             strReturn = "0" + strReturn;

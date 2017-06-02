@@ -27,11 +27,9 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.MissingResourceException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
-
 import org.apache.commons.collections4.MapUtils;
 import org.glassfish.jersey.server.ExtendedUriInfo;
 import org.glassfish.jersey.uri.UriTemplate;
@@ -40,7 +38,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.rsi.Constants;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
@@ -167,8 +164,8 @@ public class Utils
      * @throws SQLException
      * @throws JSONException
      */
-    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet) throws SQLException,
-            JSONException
+    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet)
+            throws SQLException, JSONException
     {
         JSONObject pJsonRetorno = new JSONObject();
         JSONArray pJson = new JSONArray();
@@ -291,13 +288,17 @@ public class Utils
             throws UnsupportedEncodingException
     {
         String strReturn = "";
-        Iterator<String> pIterator = pMap.keySet().iterator();
-        while (pIterator.hasNext())
+        if (pMap != null)
         {
-            String strKey = (String) pIterator.next();
-            if (pMap.get(strKey) != null)
+            Iterator<String> pIterator = pMap.keySet().iterator();
+            while (pIterator.hasNext())
             {
-                strReturn = addParameterToQueryString(strReturn, strKey, URLEncoder.encode(pMap.getFirst(strKey), "ISO-8859-1"));
+                String strKey = (String) pIterator.next();
+                if (pMap.get(strKey) != null)
+                {
+                    strReturn = addParameterToQueryString(strReturn, strKey,
+                            URLEncoder.encode(pMap.getFirst(strKey), "ISO-8859-1"));
+                }
             }
         }
         return strReturn;
@@ -314,7 +315,8 @@ public class Utils
                 String strKey = (String) pIterator.next();
                 if (pMap.get(strKey) != null)
                 {
-                    strReturn = addParameterToQueryString(strReturn, strKey, URLEncoder.encode(pMap.get(strKey), "ISO-8859-1"));
+                    strReturn = addParameterToQueryString(strReturn, strKey,
+                            URLEncoder.encode(pMap.get(strKey), "ISO-8859-1"));
                 }
             }
         }
@@ -331,7 +333,8 @@ public class Utils
             while (pKeys.hasNext())
             {
                 String strKey = (String) pKeys.next();
-                strReturn = addParameterToQueryString(strReturn, strKey, URLEncoder.encode(pJSONObject.get(strKey).toString(), "ISO-8859-1"));
+                strReturn = addParameterToQueryString(strReturn, strKey,
+                        URLEncoder.encode(pJSONObject.get(strKey).toString(), "ISO-8859-1"));
             }
         }
         return strReturn;
@@ -453,8 +456,8 @@ public class Utils
      * @param strJsonData
      * @throws Exception
      */
-    public static void writeMock(HttpServletRequest pRequest, UriInfo pUriInfo, MiqQuests pMiqQuests, String strJsonData)
-            throws Exception
+    public static void writeMock(HttpServletRequest pRequest, UriInfo pUriInfo, MiqQuests pMiqQuests,
+            String strJsonData) throws Exception
     {
         int i;
         String strTargetMockRootDir = AppConfiguration.getInstance().getProperty(Constants.TARGET_MOCK_DIRECTORY);
@@ -473,8 +476,8 @@ public class Utils
             }
             catch (Exception e)
             {
-                throw new LogicalErrorException(500, 9999, "Error al intentar crear directorio", "Fallo al crear directorio para mocks: "
-                        + strTestPath, null);
+                throw new LogicalErrorException(500, 9999, "Error al intentar crear directorio",
+                        "Fallo al crear directorio para mocks: " + strTestPath, null);
             }
         }
         FileWriter fichero = null;
@@ -491,8 +494,8 @@ public class Utils
         }
         catch (Exception e)
         {
-            throw new LogicalErrorException(500, 9999, "Error manejo de ficheros", "Fallo al crear fichero para mocks: "
-                    + strTestPath + "/__" + strPartes[i], null);
+            throw new LogicalErrorException(500, 9999, "Error manejo de ficheros",
+                    "Fallo al crear fichero para mocks: " + strTestPath + "/__" + strPartes[i], null);
         }
         finally
         {
@@ -761,22 +764,19 @@ public class Utils
         strReturn += strParams;
         return strReturn;
     }
-    
+
     private static String clobToString(java.sql.Clob data)
     {
         final StringBuilder sb = new StringBuilder();
-
         try
         {
-            final Reader         reader = data.getCharacterStream();
-            final BufferedReader br     = new BufferedReader(reader);
-
+            final Reader reader = data.getCharacterStream();
+            final BufferedReader br = new BufferedReader(reader);
             int b;
-            while(-1 != (b = br.read()))
+            while (-1 != (b = br.read()))
             {
-                sb.append((char)b);
+                sb.append((char) b);
             }
-
             br.close();
         }
         catch (SQLException e)
@@ -787,7 +787,6 @@ public class Utils
         {
             return e.toString();
         }
-
         return sb.toString();
     }
 }
