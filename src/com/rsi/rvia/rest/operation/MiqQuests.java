@@ -172,22 +172,22 @@ public class MiqQuests
     {
         String strRealEndPoint = "";
         URI pUriReturn = null;
+        /* si la ruta es una pagina de la propia aplaición s emonta una redireccón a si misma utilizando el balanceador */
         if (this.strEndPoint != null && this.strEndPoint.startsWith("/api/"))
         {
-            if (pRequest.isSecure())
-            {
-                strRealEndPoint = "https://localhost";
-            }
-            else
-                strRealEndPoint = "http://localhost:" + pRequest.getLocalPort();
+            strRealEndPoint = pRequest.getScheme()
+                    + "://"
+                    + pRequest.getServerName()
+                    + (("http".equals(pRequest.getScheme()) && pRequest.getServerPort() == 80)
+                            || ("https".equals(pRequest.getScheme()) && pRequest.getServerPort() == 443) ? "" : ":"
+                            + pRequest.getServerPort());
             strRealEndPoint += this.strEndPoint;
-            pUriReturn = UriBuilder.fromUri(strRealEndPoint).build();
         }
         else
         {
-            pUriReturn = UriBuilder.fromUri(this.strEndPoint).build();
             strRealEndPoint = this.strEndPoint;
         }
+        pUriReturn = UriBuilder.fromUri(strRealEndPoint).build();
         pLog.debug("Uri final: " + strRealEndPoint);
         return pUriReturn;
     }

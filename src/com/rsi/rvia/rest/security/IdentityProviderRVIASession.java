@@ -95,7 +95,8 @@ public class IdentityProviderRVIASession implements IdentityProvider
      * @throws ClientProtocolException
      * @throws IOException
      */
-    private HashMap<String, String> getUserInfo(HttpServletRequest pRequest) throws ClientProtocolException, IOException
+    private HashMap<String, String> getUserInfo(HttpServletRequest pRequest) throws ClientProtocolException,
+            IOException
     {
         String strNode = pRequest.getParameter(RURALVIA_NODE);
         String strRviaCookie = pRequest.getParameter(RURALVIA_COOKIE);
@@ -122,4 +123,11 @@ public class IdentityProviderRVIASession implements IdentityProvider
     {
         return _JWT;
     };
+
+    public getRequestConfigRvia()
+    {
+        _claims
+        
+        pRequestConfigRvia
+    }
 }

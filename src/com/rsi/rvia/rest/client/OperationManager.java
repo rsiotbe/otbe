@@ -64,11 +64,14 @@ public class OperationManager
         RequestConfigRvia pRequestConfigRvia = null;
         try
         {
+            // Se obtienen los datos necesario para realizar la petición al proveedor.
+            pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
+            /* se comprueba la validaez de la petición */
+            IdentityProvider pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests);
+            pIdentityProvider.process();
             // Se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM.
             // comentada para postman
             pRequestConfigRvia = getValidateSessionRvia(pRequest);
-            // Se obtienen los datos necesario para realizar la petición al proveedor.
-            pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
             // Se instancia el conector y se solicitan los datos.
             pRviaRestResponse = doRestConector(pUriInfo, pRequest, pRequestConfigRvia, pMiqQuests, strData);
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + pRviaRestResponse.toJsonString());

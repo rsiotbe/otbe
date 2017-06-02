@@ -138,80 +138,63 @@ public class RequestConfigRvia extends RequestConfig
                 strToken = (String) request.getSession(false).getAttribute("token");
                 pLog.info("Se lee el token de la sesión del usuario. Token: " + strToken);
             }
-            if (strToken != null)
+            /* se reemplazan los caracteres espacios por mases, por si al viahar como url se han transformado */
+            strToken = strToken.replace(" ", "+");
+            pLog.debug("La información viene cifrada, se procede a descifrarla");
+            /* se desencipta la información */
+            strDesToken = RviaConnectCipher.symmetricDecrypt(strToken, RviaConnectCipher.RVIA_CONNECT_KEY);
+            pLog.debug("Contenido descifrado. Token: " + strDesToken);
+            /* se obtienen las variables recibidas */
+            strParameters = strDesToken.split("&");
+            for (int i = 0; i < strParameters.length; i++)
             {
-                /* se reemplazan los caracteres espacios por mases, por si al viahar como url se han transformado */
-                strToken = strToken.replace(" ", "+");
-                pLog.debug("La información viene cifrada, se procede a descifrarla");
-                /* se desencipta la información */
-                strDesToken = RviaConnectCipher.symmetricDecrypt(strToken, RviaConnectCipher.RVIA_CONNECT_KEY);
-                pLog.debug("Contenido descifrado. Token: " + strDesToken);
-                /* se obtienen las variables recibidas */
-                strParameters = strDesToken.split("&");
-                for (int i = 0; i < strParameters.length; i++)
+                String[] strAux = strParameters[i].split("=");
+                TokenKey strName = TokenKey.getFromValue(strAux[0]);
+                String strValue = null;
+                if (strAux.length > 1)
+                    strValue = strAux[1];
+                if (strValue != null)
                 {
-                    String[] strAux = strParameters[i].split("=");
-                    TokenKey strName = TokenKey.getFromValue(strAux[0]);
-                    String strValue = null;
-                    if (strAux.length > 1)
-                        strValue = strAux[1];
-                    if (strValue != null)
+                    switch (strName)
                     {
-                        switch (strName)
-                        {
-                            case NODE:
-                                strNodeRvia = strValue;
-                                break;
-                            case RVIASESION:
-                                strRviaSessionId = strValue;
-                                break;
-                            case RVIAUSERID:
-                                strRviaUserId = strValue;
-                                break;
-                            case ISUMUSERPROFILE:
-                                strIsumUserProfile = new String(strValue);
-                                break;
-                            case ISUMSERVICEID:
-                                strIsumServiceId = strValue;
-                                break;
-                            case LANG:
-                                pLanguage = Language.getEnumValue(strValue);
-                                break;
-                            case NRBE:
-                                strNRBE = strValue;
-                                break;
-                            case CANALAIX:
-                                // Se buscan en todas los posibles valores de la enumeración
-                                pCanalFront = obtainCanalWebFromStringValue(strValue);
-                                break;
-                            case CANAL:
-                                // Se buscan en todas los posibles valores de la enumeración
-                                pCanalHost = obtainCanalHostFromStringValue(strValue);
-                                break;
-                            case IP:
-                                // Se buscan en todas los posibles valores de la enumeración
-                                strIp = strValue;
-                                break;
-                            default:
-                                // No hace nada.
-                                break;
-                        }
+                        case NODE:
+                            strNodeRvia = strValue;
+                            break;
+                        case RVIASESION:
+                            strRviaSessionId = strValue;
+                            break;
+                        case RVIAUSERID:
+                            strRviaUserId = strValue;
+                            break;
+                        case ISUMUSERPROFILE:
+                            strIsumUserProfile = new String(strValue);
+                            break;
+                        case ISUMSERVICEID:
+                            strIsumServiceId = strValue;
+                            break;
+                        case LANG:
+                            pLanguage = Language.getEnumValue(strValue);
+                            break;
+                        case NRBE:
+                            strNRBE = strValue;
+                            break;
+                        case CANALAIX:
+                            // Se buscan en todas los posibles valores de la enumeración
+                            pCanalFront = obtainCanalWebFromStringValue(strValue);
+                            break;
+                        case CANAL:
+                            // Se buscan en todas los posibles valores de la enumeración
+                            pCanalHost = obtainCanalHostFromStringValue(strValue);
+                            break;
+                        case IP:
+                            // Se buscan en todas los posibles valores de la enumeración
+                            strIp = strValue;
+                            break;
+                        default:
+                            // No hace nada.
+                            break;
                     }
                 }
-            }
-            else
-            {
-                /* se intenta leer la información sin cifrar */
-                pLog.debug("La información no viene cifrada, se procede a leerla directamente de parámetros");
-                strNodeRvia = request.getParameter(TokenKey.NODE.getValue());
-                strRviaSessionId = request.getParameter(TokenKey.RVIASESION.getValue());
-                strRviaUserId = request.getParameter(TokenKey.RVIAUSERID.getValue());
-                strIsumUserProfile = request.getParameter(TokenKey.ISUMUSERPROFILE.getValue());
-                strIsumServiceId = request.getParameter(TokenKey.ISUMSERVICEID.getValue());
-                pLanguage = Language.getEnumValue(request.getParameter(TokenKey.LANG.getValue()));
-                strNRBE = request.getParameter(TokenKey.NRBE.getValue());
-                strIp = request.getParameter(TokenKey.IP.getValue());
-                pCanalFront = obtainCanalWebFromStringValue(request.getParameter(TokenKey.CANALAIX.getValue()));
             }
             pCookiesRviaData = request.getCookies();
             /* se precargan las propiedades de comunicación con RVIA */
