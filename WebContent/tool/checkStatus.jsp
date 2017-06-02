@@ -116,7 +116,7 @@ private String checkDB() throws Exception
 	}
 	catch(Exception ex)
 	{
-		strResponse = Utils.generateWSResponseJsonError("checkStatus", 999999, "ERROR");
+		strResponse = Utils.generateWSResponseJsonError("checkStatus", 999999, "ERROR: " + ex);
 	}
 	
 	/* se imprime la salida en la respuesta */
