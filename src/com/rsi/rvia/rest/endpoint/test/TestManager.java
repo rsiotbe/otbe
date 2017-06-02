@@ -28,7 +28,7 @@ public class TestManager
     @Path("/cashierLocatior")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response cashierLocatiorJson(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    public Response cashierLocatorJson(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         JSONObject pJson = new JSONObject();
         Iterator<String> pIt = pUriInfo.getQueryParameters().keySet().iterator();
@@ -45,9 +45,10 @@ public class TestManager
                 e.printStackTrace();
             }
         }
-        pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.APPLICATION_JSON + " que genera "
+        pLog.info("Se recibe una peticion de cashierLocator de tipo " + MediaType.APPLICATION_JSON + " que genera "
                 + MediaType.APPLICATION_JSON);
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, pJson.toString(), MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, pJson.toString(),
+                MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Se devuelve la respuesta final al usuario");
         return pReturn;
     }
@@ -57,10 +58,10 @@ public class TestManager
     @Produces({ MediaType.TEXT_HTML })
     @Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
             "application/x-ms-application" })
-    public Response cashierLocatior(@Context HttpServletRequest pRequest, @Context HttpServletResponse pResponse,
+    public Response cashierLocator(@Context HttpServletRequest pRequest, @Context HttpServletResponse pResponse,
             @Context UriInfo pUriInfo)
     {
-        pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.MULTIPART_FORM_DATA + " que genera "
+        pLog.info("Se recibe una peticion de cashierLocator de tipo " + MediaType.MULTIPART_FORM_DATA + " que genera "
                 + MediaType.TEXT_HTML);
         Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, "", MediaType.TEXT_HTML_TYPE);
         pLog.info("Se devuelve la respuesta final al usuario");
@@ -90,7 +91,8 @@ public class TestManager
         pLog.info("Se recibe una peticion de cashierLocatior de tipo " + MediaType.APPLICATION_JSON + " que genera "
                 + MediaType.APPLICATION_JSON);
         String strData = "";
-        Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, strData,
+                MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Se devuelve la respuesta final al usuario");
         return pReturn;
     }
@@ -101,7 +103,8 @@ public class TestManager
     public Response getAllUserCards(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
     {
         pLog.info("Se recibe una peticion de cards");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_XHTML_XML_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData,
+                MediaType.APPLICATION_XHTML_XML_TYPE);
         return pReturn;
     }
 
@@ -111,7 +114,8 @@ public class TestManager
     public Response getCard(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strData)
     {
         pLog.info("Se recibe una peticion de cards/{card}");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData, MediaType.APPLICATION_JSON_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, strData,
+                MediaType.APPLICATION_JSON_TYPE);
         return pReturn;
     }
 

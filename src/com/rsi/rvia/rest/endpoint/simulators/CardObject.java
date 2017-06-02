@@ -1,93 +1,100 @@
 package com.rsi.rvia.rest.endpoint.simulators;
 
-import org.json.JSONObject;
 import org.json.JSONException;
+import org.json.JSONObject;
 
-public class CardObject extends WSObject {
-		
-	//private String strNRBE;
-	
-	private String strLinea;
-	
-	private String strGrProducto;
-	
-	private String strProducto;
-	
-	private String strTarifa;
-	
-	private String strTarjeta;
-	
-	//private String strSecIP;
+public class CardObject
+{
+    public static final String ATTR_CODIGO_ENTIDAD = "codigoEntidad";
+    public static final String ATTR_CODIGO_LINEA   = "codigoLinea";
+    public static final String ATTR_GRUPO_PRODUCTO = "grupoProductos";
+    public static final String ATTR_PRODUCTO       = "producto";
+    public static final String ATTR_TARIFA         = "tarifa";
+    private String             strLinea;
+    private String             strGrProducto;
+    private String             strProducto;
+    private String             strTarifa;
+    private String             strTarjeta;
+    private String             strCodEntidad;
 
-	/*public String getStrNRBE() {
-		return strNRBE;
-	}
+    public String getStrLinea()
+    {
+        return strLinea;
+    }
 
-	public void setStrNRBE(String strNRBE) {
-		this.strNRBE = strNRBE;
-	}*/
+    public void setStrLinea(String strLinea)
+    {
+        this.strLinea = strLinea;
+    }
 
-	public String getStrLinea() {
-		return strLinea;
-	}
+    public String getStrGrProducto()
+    {
+        return strGrProducto;
+    }
 
-	public void setStrLinea(String strLinea) {
-		this.strLinea = strLinea;
-	}
+    public void setStrGrProducto(String strGrProducto)
+    {
+        this.strGrProducto = strGrProducto;
+    }
 
-	public String getStrGrProducto() {
-		return strGrProducto;
-	}
+    public String getStrProducto()
+    {
+        return strProducto;
+    }
 
-	public void setStrGrProducto(String strGrProducto) {
-		this.strGrProducto = strGrProducto;
-	}
+    public void setStrProducto(String strProducto)
+    {
+        this.strProducto = strProducto;
+    }
 
-	public String getStrProducto() {
-		return strProducto;
-	}
+    public String getStrTarifa()
+    {
+        return strTarifa;
+    }
 
-	public void setStrProducto(String strProducto) {
-		this.strProducto = strProducto;
-	}
+    public void setStrTarifa(String strTarifa)
+    {
+        this.strTarifa = strTarifa;
+    }
 
-	public String getStrTarifa() {
-		return strTarifa;
-	}
+    public String getStrTarjeta()
+    {
+        return strTarjeta;
+    }
 
-	public void setStrTarifa(String strTarifa) {
-		this.strTarifa = strTarifa;
-	}
+    public void setStrTarjeta(String strTarjeta)
+    {
+        this.strTarjeta = strTarjeta;
+    }
 
-	public String getStrTarjeta() {
-		return strTarjeta;
-	}
+    public String getStrCodEntidad()
+    {
+        return strCodEntidad;
+    }
 
-	public void setStrTarjeta(String strTarjeta) {
-		this.strTarjeta = strTarjeta;
-	}
+    public void setStrCodEntidad(String strCodEntidad)
+    {
+        this.strCodEntidad = strCodEntidad;
+    }
 
-	/*public String getStrSecIP() {
-		return strSecIP;
-	}
+    public JSONObject toJSON()
+    {
+        try
+        {
+            String strJSON = this.toJSONString();
+            return new JSONObject(strJSON);
+        }
+        catch (JSONException ex)
+        {
+            return null;
+        }
+    }
 
-	public void setStrSecIP(String strSecIP) {
-		this.strSecIP = strSecIP;
-	}*/
-
-	public JSONObject toJSON() {
-		try 
-		{
-			String strJSON = this.toJSONString();  
-			return new JSONObject(strJSON);
-		}
-		catch (JSONException ex)
-		{
-			return null;
-		}
-	}
-	
-	public String toJSONString() {
-		return "{ \"codigoEntidad\" : \"" + this.getStrCODSecEnt() + "\",\"codigoLinea\" : \"" + this.strLinea + "\",\"grupoProductos\" : \"" + this.strGrProducto + "\",\"producto\" : \"" + this.strProducto + "\",\"tarifa\" : \""+ this.strTarifa + "\" }"; 
-	}
+    public String toJSONString()
+    {
+        return "{ \"" + ATTR_CODIGO_ENTIDAD + "\" : \"" + this.strCodEntidad + "\",\"" + ATTR_CODIGO_LINEA + "\" : \""
+                + this.strLinea + "\",\"" + ATTR_GRUPO_PRODUCTO + "\" : \"" + this.strGrProducto + "\",\""
+                + ATTR_PRODUCTO + "\" : \"" + this.strProducto + "\",\"" + ATTR_TARIFA + "\" : \"" + this.strTarifa
+                + "\" }";
+    }
 }

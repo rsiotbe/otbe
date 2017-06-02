@@ -102,6 +102,10 @@ public class Constants
     // /////////////////////////
     public static final String   PARAM_LANG                                     = "lang";
     public static final String   PARAM_NRBE                                     = "NRBE";
+    public static final String   PARAM_CARD_ID                                  = "cardId";
+    public static final String   PARAM_OPTIONS                                  = "options";
+    public static final String   PARAM_SERVICE                                  = "service";
+    public static final String   PARAM_ID_MIQ                                   = "idMiq";
     // /////////////////////////
     // General
     // /////////////////////////
@@ -135,6 +139,7 @@ public class Constants
     // Cabeceras http
     // /////////////////////////
     public static final String   HTTP_HEADER_AUTORIZATION                       = "Authorization";
+    public static final String   UTF8                                           = "UTF-8";
 
     public enum SimulatorLoanCategory
     {
@@ -180,9 +185,19 @@ public class Constants
      */
     public enum CanalHost
     {
-        VALORES_BANCA_INTERNET(1), VALORES_BANCA_TELEFONICA(2), BANCA_INTERNET(3), BANCA_TELEFONICA(4), ABOGADOS(5), ABOGADOS_TELEFONICA(
-                6), TPV_VIRTUAL(7), SEGUROS(8), OFICINA(9), TPV_VIRTUAL_TELEFONICA(10), BANCA_MOVIL(11), BANCA_TABLET(
-                13), BANCA_TABLET_CAU(14);
+        VALORES_BANCA_INTERNET(1),
+        VALORES_BANCA_TELEFONICA(2),
+        BANCA_INTERNET(3),
+        BANCA_TELEFONICA(4),
+        ABOGADOS(5),
+        ABOGADOS_TELEFONICA(6),
+        TPV_VIRTUAL(7),
+        SEGUROS(8),
+        OFICINA(9),
+        TPV_VIRTUAL_TELEFONICA(10),
+        BANCA_MOVIL(11),
+        BANCA_TABLET(13),
+        BANCA_TABLET_CAU(14);
         private final int value;
 
         CanalHost(int newValue)
