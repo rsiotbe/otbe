@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Entities.EscapeMode;
@@ -176,6 +177,7 @@ public class SimulatorsManager
         int nId = -1;
         String strNRBEName = null;
         String strSimpleName = null;
+        String strNRBEComercialName = null;
         String strComercialName = null;
         String strOfficeTo = null;
         String strOfficeClaimTemplate = null;
@@ -252,10 +254,10 @@ public class SimulatorsManager
                         break;
                 }
             }
-            pReturn = new SimulatorEmailConfig(nId, strNRBE, strNRBEName, strSimpleName, strComercialName, strOfficeTo,
-                    strOfficeClaimTemplate, strOfficeClaimSubject, strOfficeClaimFrom, strOfficeDraftTemplate,
-                    strOfficeDraftSubject, strOfficeDraftFrom, strCustomerDraftTemplate, strCustomerDraftSubject,
-                    strCustomerDraftFrom, strCustomerSupportTelephone, strCustomerSupportEmail);
+            /* se obtiene el nombre comercial (de dmominio) de la entidad a apritr de su coodigo NRBE */
+            strNRBEComercialName = getDomainNameFromNRBE(strNRBE);
+            /* se construye el objeto de configuración */
+            pReturn = new SimulatorEmailConfig(nId, strNRBE, strNRBEName, strNRBEComercialName, strSimpleName, strComercialName, strOfficeTo, strOfficeClaimTemplate, strOfficeClaimSubject, strOfficeClaimFrom, strOfficeDraftTemplate, strOfficeDraftSubject, strOfficeDraftFrom, strCustomerDraftTemplate, strCustomerDraftSubject, strCustomerDraftFrom, strCustomerSupportTelephone, strCustomerSupportEmail);
         }
         catch (Exception ex)
         {
@@ -311,6 +313,54 @@ public class SimulatorsManager
         }
         while (strReturn.length() < 4)
             strReturn = "0" + strReturn;
+        return strReturn;
+    }
+
+    /**
+     * Obtiene el nombre de dominio de la entidad desde el fichero de propiedades
+     * 
+     * @param strNRBEN
+     *            NRBE comercial de la entidad
+     * @return Numero NRBE de la entidad
+     * @throws Exception
+     */
+    public static String getDomainNameFromNRBE(String strNRBE) throws Exception
+    {
+        String strReturn = null;
+        /* se carga el fichero de propiedades que contien la resolución de nombres */
+        if (pPropNRBENames == null)
+        {
+            String strJsonContent;
+            try
+            {
+                InputStream pInputStream = (SimulatorsManager.class.getResourceAsStream("/NRBE.properties"));
+                strJsonContent = Utils.getStringFromInputStream(pInputStream);
+                pPropNRBENames = new JSONObject(strJsonContent);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException(500, 9999, "Se ha producido un error interno de la aplicación", "No ha sido posible recuperar la información necesaria para la entidad", ex);
+            }
+        }
+        Iterator<?> pKeys = pPropNRBENames.keys();
+        while (pKeys.hasNext())
+        {
+            String strKey = (String) pKeys.next();
+            if (pPropNRBENames.get(strKey) instanceof JSONObject)
+            {
+                JSONObject pInnerJsonObject = pPropNRBENames.getJSONObject(strKey);
+                String strInnerValue = pInnerJsonObject.optString("NRBE");
+                if (strNRBE.equals(strInnerValue))
+                {
+                    strReturn = strKey;
+                    break;
+                }
+            }
+        }
+        if (strReturn == null || strReturn.trim().isEmpty())
+        {
+            throw new LogicalErrorException(400, 9996, "No se ha encontrado información para esta entidad", "No ha sido posible recuperar la información necesaria para esta entidad", null);
+        }
         return strReturn;
     }
 
