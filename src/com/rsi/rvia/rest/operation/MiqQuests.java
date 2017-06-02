@@ -39,11 +39,11 @@ public class MiqQuests
     public static final String                     OPTION_PARAM_PROPAGATE_ID_MIQ = "propagateIdMiq";
 
     /**
-     * Enumración con el tipo de componente que gestiona la petición
+     * Enumeración con el tipo de componente que gestiona la petición
      */
     public enum CompomentType
     {
-        API, RVIA, LITE, SIMULATOR, WS, COORD
+        API, RVIA, LITE, SIMULATOR, WS, COORD, BECOMETOCLIENT
     };
 
     /**

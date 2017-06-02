@@ -1,4 +1,4 @@
-package com.rsi.rvia.rest.client;
+package com.rsi.rvia.rest.endpoint.comun;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +18,7 @@ public class SignExtractor
         strCoord = strCoord.replaceAll(".*value='([a-zA-Z]\\d+)'.*", "$1");
         if (!strCoord.replaceAll("[a-zA-Z]\\d+", "").equals(""))
         {
-            throw new ApplicationException(500, 99999, "Coordenada incorrecta", "Formato de coordenda no válido", null);
+            throw new ApplicationException(500, 99999, "Coordenada incorrecta", "Formato de coordenada no válido", null);
         }
         // TODO: Pendiente de extraer los datos de tipo de firma directamente de tabla, si aplica.
         String tiopcf = "A";
