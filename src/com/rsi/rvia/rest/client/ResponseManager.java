@@ -8,6 +8,7 @@ import com.rsi.Constants.Language;
 import com.rsi.rvia.rest.conector.RestConnector;
 import com.rsi.rvia.rest.conector.RestRviaConnector;
 import com.rsi.rvia.rest.conector.RestWSConnector;
+import com.rsi.rvia.rest.endpoint.common.SignExtractor;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.operation.MiqQuests.CompomentType;
 import com.rsi.rvia.rest.response.RviaRestResponse;
