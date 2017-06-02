@@ -43,7 +43,7 @@ public class MiqQuests
      */
     public enum CompomentType
     {
-        API, RVIA, LITE, SIMULATOR, WS, COORD, BECOMETOCLIENT
+        API, RVIA, LITE, SIMULATOR, WS, COORD
     };
 
     /**
