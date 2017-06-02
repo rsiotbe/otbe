@@ -106,13 +106,12 @@ public class TranslateRviaJsonCache
                 String strQuery = "select s.tiporesp, "
                         + "(select i.traduccion from BEL.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as error, "
                         + "(select i.comentario from BEL.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as descripcion "
-                        + "from BEL.BDPTB282_ERR_RVIA s where s.CODERR = ? AND s.ID_MIQ = ?";
+                        + "from BEL.BDPTB282_ERR_RVIA s where s.CODERR = ?";
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
                 pPreparedStatement.setString(1, pLanguage.getJavaCode());
                 pPreparedStatement.setString(2, pLanguage.getJavaCode());
                 pPreparedStatement.setString(3, strErrorCode);
-                pPreparedStatement.setInt(4, nIdMiq);
                 pResultSet = pPreparedStatement.executeQuery();
                 while (pResultSet.next())
                 {
@@ -175,9 +174,9 @@ public class TranslateRviaJsonCache
                 pConnection1 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection1.setAutoCommit(false);
                 pPreparedStatement1 = pConnection1.prepareStatement(strQuery1);
-                pPreparedStatement1.setString(1, code);
+                pPreparedStatement1.setString(1, strErrorCode);
                 pPreparedStatement1.setString(2, DEFAULT_LEVEL);
-                pPreparedStatement1.setString(3, strErrorText);
+                pPreparedStatement1.setString(3, code);
                 pPreparedStatement1.setLong(4, nIdMiq);
                 pPreparedStatement1.setString(5, DEFAULT_COMMENT);
                 nResult += pPreparedStatement1.executeUpdate();
@@ -231,11 +230,11 @@ public class TranslateRviaJsonCache
             }
             catch (Exception ex)
             {
+                fIsError = true;
                 pConnection1.rollback();
                 pConnection2.rollback();
                 pConnection3.rollback();
                 pLog.error("Error al realizar la consulta a la BBDD", ex);
-                fIsError = true;
             }
             finally
             {
@@ -256,9 +255,8 @@ public class TranslateRviaJsonCache
                 }
                 if (fIsError)
                 {
-                    throw new ApplicationException(500, 999993,
-                            "Error al procesar insertar respues ta de error de ruralvia", "Error al acceder a BBDD",
-                            null);
+                    throw new ApplicationException(500, 999993, "Error al insertar de error de ruralvia",
+                            "Error al acceder a BBDD", null);
                 }
             }
         }
