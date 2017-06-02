@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.session.RequestConfig;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.Utils;
 
 /** Clase que gestiona el los CSS de multientidad para adaptar el estilo de la web. */
@@ -69,7 +70,8 @@ public class CssMultiBankProcessor
         ResultSet pResultSet = null;
         try
         {
-            String strQuery = "SELECT * from bel.bdptb229_css_multibank";
+            String strQuery = "SELECT * from " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".bdptb229_css_multibank";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
             pResultSet = pPreparedStatement.executeQuery();

@@ -33,6 +33,7 @@ import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 import com.rsi.rvia.rest.response.RviaRestResponseErrorItem;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.BUSHeader;
 import com.rsi.rvia.rest.tool.Utils;
 
@@ -223,10 +224,14 @@ public class RestWSConnector
         ResultSet pResultSet = null;
         try
         {
-            String strQuery = "select c." + strCampo + " campo from " + " BEL.BDPTB222_MIQ_QUESTS a, "
-                    + " BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, " + " BEL.BDPTB225_MIQ_SESSION_PARAMS c "
-                    + " where a.id_miq=b.id_miq " + " and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " + " and a.path_rest='"
-                    + strPathRest + "' order by c.ID_MIQ_PARAM";
+            String strQuery = "select c." + strCampo + " campo from " + " "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB222_MIQ_QUESTS a, " + " "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB226_MIQ_QUEST_RL_SESSION b, " + " "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB225_MIQ_SESSION_PARAMS c " + " where a.id_miq=b.id_miq "
+                    + " and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM " + " and a.path_rest='" + strPathRest
+                    + "' order by c.ID_MIQ_PARAM";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
             pResultSet = pPreparedStatement.executeQuery();

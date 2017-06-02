@@ -261,7 +261,7 @@ public class MiqQuests
         ResultSet pResultSet = null;
         try
         {
-            String strQuery = "SELECT * from bel.bdptb222_miq_quests order by 1 asc";
+            String strQuery = "SELECT * from " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".bdptb222_miq_quests order by 1 asc";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
             pResultSet = pPreparedStatement.executeQuery();
@@ -308,8 +308,8 @@ public class MiqQuests
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         // String idMiq = pResultSet.getString("id_miq");
-        String strQuery = "select a.id_miq, c.* from  BEL.BDPTB222_MIQ_QUESTS a, "
-                + " BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, BEL.BDPTB225_MIQ_SESSION_PARAMS c "
+        String strQuery = "select a.id_miq, c.* from  " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB222_MIQ_QUESTS a, "
+                + " " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB226_MIQ_QUEST_RL_SESSION b, " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB225_MIQ_SESSION_PARAMS c "
                 + " where a.id_miq=b.id_miq  and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM  and a.path_rest='" + strPathRest
                 + "' order by c.ID_MIQ_PARAM";
         try

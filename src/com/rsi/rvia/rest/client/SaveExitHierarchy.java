@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 
 public class SaveExitHierarchy
 {
@@ -149,9 +150,11 @@ public class SaveExitHierarchy
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         boolean fReturn = false;
-        String strQuery = "select a.id_miq from  BEL.BDPTB222_MIQ_QUESTS a, "
-                + "BEL.BDPTB233_MIQ_QUEST_RL_EXITS b, BEL.BDPTB232_MIQ_EXITS c "
-                + "where a.id_miq=b.id_miq and b.ID_MIQ_EXIT=c.ID_MIQ_EXIT and a.id_miq=? " + "and c.EXITNAME=?";
+        String strQuery = "select a.id_miq from  " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB222_MIQ_QUESTS a, " + "" + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB233_MIQ_QUEST_RL_EXITS b, " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB232_MIQ_EXITS c " + "where a.id_miq=b.id_miq and b.ID_MIQ_EXIT=c.ID_MIQ_EXIT and a.id_miq=? "
+                + "and c.EXITNAME=?";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -192,7 +195,8 @@ public class SaveExitHierarchy
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         Integer nReturn = null;
-        String strQuery = "select a.ID_MIQ_EXIT from BEL.BDPTB232_MIQ_EXITS a where a.EXITNAME = ?";
+        String strQuery = "select a.ID_MIQ_EXIT from " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB232_MIQ_EXITS a where a.EXITNAME = ?";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -226,7 +230,9 @@ public class SaveExitHierarchy
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         Integer nReturn = null;
-        String strQuery = "select nvl((select * from (select ID_MIQ_EXIT from BEL.BDPTB232_MIQ_EXITS order by ID_MIQ_EXIT desc)	where rownum = 1),0) + 1 ID_MIQ_EXIT from dual";
+        String strQuery = "select nvl((select * from (select ID_MIQ_EXIT from "
+                + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB232_MIQ_EXITS order by ID_MIQ_EXIT desc)	where rownum = 1),0) + 1 ID_MIQ_EXIT from dual";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -239,7 +245,8 @@ public class SaveExitHierarchy
         }
         catch (Exception ex)
         {
-            pLog.error("No se ha podido generar un id de secuencia para el campo ID_MIQ_EXIT de la tabla BEL.BDPTB232_MIQ_EXITS", ex);
+            pLog.error("No se ha podido generar un id de secuencia para el campo ID_MIQ_EXIT de la tabla "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB232_MIQ_EXITS", ex);
         }
         finally
         {
@@ -258,7 +265,8 @@ public class SaveExitHierarchy
     {
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
-        String strQuery = "insert into BEL.BDPTB232_MIQ_EXITS values (?, ?, '', ?, null)";
+        String strQuery = "insert into " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB232_MIQ_EXITS values (?, ?, '', ?, null)";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -291,7 +299,8 @@ public class SaveExitHierarchy
     {
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
-        String strQuery = "insert into BEL.BDPTB233_MIQ_QUEST_RL_EXITS values(?, ?, ?, null)";
+        String strQuery = "insert into " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB233_MIQ_QUEST_RL_EXITS values(?, ?, ?, null)";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);

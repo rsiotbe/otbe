@@ -74,7 +74,7 @@ public class ServiceHelper
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         int nIdMiq = 0;
-        String strQuery = " select id_miq" + " from  BEL.BDPTB222_MIQ_QUESTS" + " where trim(path_rest)=?";
+        String strQuery = " select id_miq" + " from  " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB222_MIQ_QUESTS" + " where trim(path_rest)=?";
         strPathRest = strPathRest.replace("/help", "");
         try
         {
@@ -106,7 +106,7 @@ public class ServiceHelper
         JSONArray mapAr = null;
         String strQuery = " select" + "  replace(replace(path_rest,'{','##'),'}','@@') \"url\""
                 + " ,miq_name \"serviceName\"" + " ,replace(miq_description,',','zCOMAz') \"serviceDescription\""
-                + " from  BEL.BDPTB222_MIQ_QUESTS" + " where id_miq=?";
+                + " from  " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB222_MIQ_QUESTS" + " where id_miq=?";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -136,8 +136,8 @@ public class ServiceHelper
         String strQuery = " select" + " 	 c.exitname \"exitName\"" + " 	,case"
                 + " 		when trim(c.exitdesc) is not null then c.exitdesc"
                 + " 		when trim(c.exitdesc) is null then c.exitname else c.exitdesc end  \"exitDescription\"" + " from"
-                + " 	BEL.BDPTB222_MIQ_QUESTS a" + " 	left join BEL.BDPTB233_MIQ_QUEST_RL_EXITS b"
-                + " 	on a.id_miq=b.id_miq" + " 	left join BEL.BDPTB232_MIQ_EXITS c"
+                + " 	" + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB222_MIQ_QUESTS a" + " 	left join " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB233_MIQ_QUEST_RL_EXITS b"
+                + " 	on a.id_miq=b.id_miq" + " 	left join " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB232_MIQ_EXITS c"
                 + " 	on b.ID_MIQ_exit=c.ID_MIQ_exit" + " where a.id_miq= ?" + " and b.miq_verb='GET'"
                 + " and b.opciones not like '%propagate=false%'" + " and c.exithierarchy like 'response.data.%'";
         try
@@ -178,9 +178,9 @@ public class ServiceHelper
                 + " 	,case when trim(parammask) is null then 'n/a' else parammask end  \"inputMask\""
                 + " 	,case when trim(to_char(parammax)) is null then 'n/a' else trim(to_char(parammax)) end  \"inputMax\""
                 + " 	,case when trim(to_char(parammin)) is null then 'n/a' else trim(to_char(parammin)) end  \"inputMin\""
-                + " from" + " 	BEL.BDPTB222_MIQ_QUESTS a" + " 	left join BEL.BDPTB226_MIQ_QUEST_RL_SESSION b"
-                + " 	on a.id_miq=b.id_miq" + " 	left join BEL.BDPTB225_MIQ_SESSION_PARAMS c"
-                + " 	on b.ID_MIQ_PARAM=c.ID_MIQ_PARAM" + " 	left outer join BEL.BDPTB228_MIQ_PARAM_VALIDATION d"
+                + " from" + " 	" + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB222_MIQ_QUESTS a" + " 	left join " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB226_MIQ_QUEST_RL_SESSION b"
+                + " 	on a.id_miq=b.id_miq" + " 	left join " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB225_MIQ_SESSION_PARAMS c"
+                + " 	on b.ID_MIQ_PARAM=c.ID_MIQ_PARAM" + " 	left outer join " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB228_MIQ_PARAM_VALIDATION d"
                 + " 	on c.ID_MIQ_PARAM = d.ID_MIQ_PARAM" + " where a.id_miq=? "
                 + " and (b.opciones is null or b.opciones not like '%propagate=false%')";
         try
