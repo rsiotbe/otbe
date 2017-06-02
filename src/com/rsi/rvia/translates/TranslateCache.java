@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.rsi.Constants.Language;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.Utils;
 
 public class TranslateCache
@@ -103,9 +104,10 @@ public class TranslateCache
             ResultSet pResultSet = null;
             try
             {
-                String strQuery = "SELECT A.codigo, A.idioma, A.traduccion, B.aplicativo"
-                        + " FROM bel.bdptb079_idioma A, bel.bdptb079_idioma_aplicativo B"
-                        + " where A.codigo=b.codigo and A.codigo in (?)";
+                String strQuery = "SELECT A.codigo, A.idioma, A.traduccion, B.aplicativo" + " FROM "
+                        + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".bdptb079_idioma A, "
+                        + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                        + ".bdptb079_idioma_aplicativo B" + " where A.codigo=b.codigo and A.codigo in (?)";
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
                 pPreparedStatement.setString(1, strCodesToSearchInDDBB);

@@ -14,6 +14,7 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 import com.rsi.rvia.rest.response.RviaRestResponse;
 import com.rsi.rvia.rest.response.RviaRestResponse.Type;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.Utils;
 
 /**
@@ -102,10 +103,13 @@ public class TranslateRviaJsonCache
             try
             {
                 pLog.trace("Codigo de error a comprobar:" + strErrorCode);
-                String strQuery = "select s.tiporesp, "
-                        + "(select i.traduccion from BEL.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as error, "
-                        + "(select i.comentario from BEL.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as descripcion "
-                        + "from BEL.BDPTB282_ERR_RVIA s where s.CODERR = ? AND s.ID_MIQ = ?";
+                String strQuery = "select s.tiporesp, " + "(select i.traduccion from "
+                        + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                        + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as error, "
+                        + "(select i.comentario from " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                        + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as descripcion " + "from "
+                        + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                        + ".BDPTB282_ERR_RVIA s where s.CODERR = ? AND s.ID_MIQ = ?";
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
                 pPreparedStatement.setString(1, pLanguage.getJavaCode());
@@ -168,7 +172,9 @@ public class TranslateRviaJsonCache
                 // Insertar en BDPTB282_ERR_RVIA
                 //
                 pLog.trace("Se procede a insertar el codigo de error " + strErrorCode + " para el idMiq " + nIdMiq);
-                String strQuery1 = "INSERT INTO bel.BDPTB282_ERR_RVIA (CODERR, TIPORESP, TEXTERROR, ID_MIQ, DESCRIPCION) VALUES (?, ?, ?, ?, ?)";
+                String strQuery1 = "INSERT INTO "
+                        + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                        + ".BDPTB282_ERR_RVIA (CODERR, TIPORESP, TEXTERROR, ID_MIQ, DESCRIPCION) VALUES (?, ?, ?, ?, ?)";
                 pConnection1 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection1.setAutoCommit(false);
                 pPreparedStatement1 = pConnection1.prepareStatement(strQuery1);
@@ -186,7 +192,8 @@ public class TranslateRviaJsonCache
                 for (int i = 0; i < values.length; i++)
                 {
                     OKS++;
-                    strQuery2 += " INTO bel.BDPTB079_IDIOMA (IDIOMA, CODIGO, TRADUCCION, COMENTARIO) VALUES (?, ?, ?, ?)";
+                    strQuery2 += " INTO " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                            + ".BDPTB079_IDIOMA (IDIOMA, CODIGO, TRADUCCION, COMENTARIO) VALUES (?, ?, ?, ?)";
                 }
                 strQuery2 += " SELECT * FROM DUAL";
                 pLog.trace("Se realiza la insercción en la tabla BDPTB282_ERR_RVIA");
@@ -209,7 +216,8 @@ public class TranslateRviaJsonCache
                 //
                 OKS++;
                 pLog.trace("Se realiza la insercción en la tabla BDPTB079_IDIOMA");
-                String strQuery3 = "INSERT INTO bel.BDPTB079_IDIOMA_APLICATIVO (CODIGO, APLICATIVO, OPCIONES) VALUES (?, ?, ?)";
+                String strQuery3 = "INSERT INTO " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                        + ".BDPTB079_IDIOMA_APLICATIVO (CODIGO, APLICATIVO, OPCIONES) VALUES (?, ?, ?)";
                 pConnection3 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection3.setAutoCommit(false);
                 pPreparedStatement3 = pConnection3.prepareStatement(strQuery3);
