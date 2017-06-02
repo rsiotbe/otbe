@@ -10,6 +10,7 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.QueryCustomizer;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 
 public class AcuerdosRuralvia
 {
@@ -105,11 +106,13 @@ public class AcuerdosRuralvia
         try
         {
             strQuery = " select " + "   substr(b.cta_aso,11,20) \"acuerdo\", "
-                    + "   trim (b.descr_txt) \"txtproducto\" " + " from bel.belts009 b "
+                    + "   trim (b.descr_txt) \"txtproducto\" " + " from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".belts009 b "
                     + "   where trim(b.tarjeta_cod) = '" + strNumTarjeta + "' " + strComoPrimerTitularF1 + " union "
-                    + " select " + "   acuerdo, " + "   trim (c.descr_txt) \"txtproducto\" "
-                    + " from BEL.BDPTB083_TARJETAS_MP c " + " where trim(c.tarjeta_cod) = '" + strNumTarjeta + "' "
-                    + strTarjetasEmpresa + strComoPrimerTitularF2;
+                    + " select " + "   acuerdo, " + "   trim (c.descr_txt) \"txtproducto\" " + " from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB083_TARJETAS_MP c "
+                    + " where trim(c.tarjeta_cod) = '" + strNumTarjeta + "' " + strTarjetasEmpresa
+                    + strComoPrimerTitularF2;
             pLog.info("Query para extracción de alias de banca: " + strQuery);
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);

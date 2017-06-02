@@ -20,6 +20,7 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.template.TemplateManager;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.Utils;
 
 public class SimulatorsManager
@@ -70,13 +71,29 @@ public class SimulatorsManager
             strQuery = "select s.id_simulador, s.entidad, s.categoria, s.nombre_simple, s.nombre_comercial, s.tipo_calculo, s.activo, "
                     + "s.contratar, s.contacto_email, s.contacto_telef, s.atencion_cliente_email, s.atencion_cliente_telef, "
                     + "s.entidad_email_contacto, s.pdf_con_formualario, "
-                    + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_lopd) as texto_lopd, "
-                    + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_condiciones) as texto_condiciones, "
-                    + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_aviso_legal) as texto_aviso_legal, "
-                    + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_desc) as texto_desc, "
-                    + "p.clave, p.valor " + "from BEL.BDPTB235_SIMULADORES s, " + "BEL.BDPTB236_PARAM_SIMULADORES p "
-                    + "where s.id_simulador=p.id_simulador " + "and s.entidad = ? " + "and s.activo = '1' ";
-            /* se compone la condición de categoria con una clausula 'IN' */
+                    + "(select i.traduccion from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_lopd) as texto_lopd, "
+                    + "(select i.traduccion from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_condiciones) as texto_condiciones, "
+                    + "(select i.traduccion from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_aviso_legal) as texto_aviso_legal, "
+                    + "(select i.traduccion from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_desc) as texto_desc, "
+                    + "p.clave, p.valor "
+                    + "from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB235_SIMULADORES s, "
+                    + ""
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB236_PARAM_SIMULADORES p "
+                    + "where s.id_simulador=p.id_simulador "
+                    + "and s.entidad = ? "
+                    + "and s.activo = '1' ";
+            /* se conmpone la condición de categoria con una clausula 'IN' */
             pSimulatorType = SimulatorType.valueOf(strSimulatorType);
             if (pSimulatorType == null)
             {
@@ -194,7 +211,13 @@ public class SimulatorsManager
         try
         {
             strQuery = "select s.*, o.NOM_ENT_TXT, e.clave, e.valor  "
-                    + "from BEL.BDPTB235_SIMULADORES s, BEL.BELTS002 o, BEL.BDPTB273_SIMULADORES_EMAIL e "
+                    + "from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB235_SIMULADORES s, "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BELTS002 o, "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB273_SIMULADORES_EMAIL e "
                     + "where s.ENTIDAD = o.NRBE and s.id_simulador=e.id_simulador and s.id_simulador = ? and s.ENTIDAD=?";
             /* se rellena la query con los datos */
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);

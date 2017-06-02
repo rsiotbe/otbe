@@ -85,6 +85,25 @@ public class IdentityProviderRVIA implements IdentityProvider
             {
                 _claims.remove("idInternoPe");
                 _claims.put("idInternoPe", _pRequest.getParameter("idInternoPe"));
+                _claims.remove("codTarjeta");
+                switch (Integer.parseInt(_pRequest.getParameter("idInternoPe")))
+                {
+                    case 1569668:
+                        _claims.put("codTarjeta", "3076223156");
+                        break;
+                    case 1641496:
+                        _claims.put("codTarjeta", "3076287844");
+                        break;
+                    case 1726449:
+                        _claims.put("codTarjeta", "3076299214");
+                        break;
+                    case 93408:
+                        _claims.put("codTarjeta", "3076308913");
+                        break;
+                    case 1790785:
+                        _claims.put("codTarjeta", "3076341138");
+                        break;
+                }
             }
             if (_claims != null)
                 _JWT = generateJWT(_claims, _tokenId);

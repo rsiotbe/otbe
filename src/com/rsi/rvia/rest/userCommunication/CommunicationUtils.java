@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.rsi.Constants;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 
 public class CommunicationUtils
 {
@@ -131,7 +132,8 @@ public class CommunicationUtils
         pLog.info("Messages ::: MessageDetails ::: Start ");
         Connection pConnection = null;
         JSONArray pJsongetNewsResponse = null;
-        String strQuery = "{? = call BEL.PK_CONSULTA_BUZON_MOVIL.getHistoryNumber(?,?)}";
+        String strQuery = "{? = call " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".PK_CONSULTA_BUZON_MOVIL.getHistoryNumber(?,?)}";
         int iHistoryNumber = 0;
         try
         {
