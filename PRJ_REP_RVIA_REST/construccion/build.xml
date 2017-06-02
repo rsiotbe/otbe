@@ -103,7 +103,17 @@
         <echo message="Se procede a empaquetar todo en el war"/>
         <echo message="Se elimina el posible war anterior"/>
         <delete file="${dist-directory}/${war-file-name}" />
-        <echo message="Se genera el nuevo war"/>
+    	<echo message="Se genera el el fichero version.info"/>
+    	<buildnumber/>
+       	<tstamp>
+    		<format property="NOW" pattern="yyyy-MM-dd HH:mm:ss" />
+    	</tstamp>
+    	<manifest file="${dist-directory}/MANIFEST.MF">
+    		<attribute name="Version-Date" value="${NOW}"/>                 
+    	</manifest>
+    	<copy file="${dist-directory}/MANIFEST.MF" tofile="${dist-directory}/version.info"/>	
+        <delete file="${dist-directory}/MANIFEST.MF" />
+    	<echo message="Se genera el nuevo war"/>
         <war warfile="${dist-directory}/${war-file-name}" webxml="${web-xml-file}">
             <classes dir="${classes-directory}" />
             <classes dir="${configurations-directory}" />
@@ -112,7 +122,11 @@
                 <exclude name="${web-xml-file}" />
                 <exclude name="${oracle_jdb_lib}" />
             </fileset>
-            <lib dir="${lib-directory}"/>
+    		<zipfileset dir="${dist-directory}/" includes="**/*.info" prefix="tool/"/>
+           <lib dir="${lib-directory}"/>
         </war>
+    	<echo message="elimina el fichero version.info genrado"/>
+       <delete file="${dist-directory}/version.info" />
+       <echo message="FIN"/>
     </target>
 </project>
