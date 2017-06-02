@@ -151,6 +151,7 @@
 		pLog.info("Se procede a obtener y componer el cuerpo del mensaje para el cliente");
 		Hashtable<String, String> htEmailTemplateDataCustomer = new Hashtable<String, String>();
 		htEmailTemplateDataCustomer.put("NRBEName",pSimulatorEmailConfig.getNRBEName());
+		htEmailTemplateDataCustomer.put("NRBEDomainName",pSimulatorEmailConfig.getNRBEDomainName());
 		htEmailTemplateDataCustomer.put("ComercialName",pSimulatorEmailConfig.getComercialName());
 		htEmailTemplateDataCustomer.put("EmailMail",strEmailMail);
 		htEmailTemplateDataCustomer.put("CustomerSupportTelephone",pSimulatorEmailConfig.getCustomerSupportTelephone());

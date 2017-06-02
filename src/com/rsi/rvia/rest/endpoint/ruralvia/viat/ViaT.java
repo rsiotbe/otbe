@@ -10,8 +10,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constants;
 import com.rsi.rvia.rest.client.OperationManager;
 import com.rsi.rvia.rest.endpoint.ruralvia.prestamos.PrestamoPersonal;
 
@@ -40,7 +42,7 @@ public class ViaT
     public Response getSolicitud(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         pLog.info("Se obtienen las tarjetas disponibles");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_HTML_TYPE);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Se finaliza la obtencion de las tarjetas disponibles");
         return pReturn;
     }
@@ -130,11 +132,43 @@ public class ViaT
     @Path("/scoring/formdata/cnae")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public Response getSubGruposCNAETarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    public Response getSubGruposCNAEViaT(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         pLog.info("Se obtienen los datos relativos al listado de grupos CNAE para ViaT");
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Se finaliza la obtencion de los datos relativos  al listado de grupos CNAE para ViaT");
         return pReturn;
+    }
+
+    /**
+     * Devuelve PDF del documento INE de ViaT.
+     * 
+     * @param pRequest
+     *            the request
+     * @param pUriInfo
+     *            the uri info
+     * @return pdf con contrato de ViaT
+     */
+    @GET
+    @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/pdf")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces(Constants.HTTP_HEADER_MEDIATYPE_PDF)
+    public Response getpdfViaT(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        try
+        {
+            pLog.info("Se obtiene el pdf del contrato para ViaT");
+            Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+            String strPdfBase64 = (new JSONObject(pReturn.getEntity().toString())).getJSONObject("response").getJSONObject("data").getString("buffer");
+            byte[] abFile = org.apache.commons.codec.binary.Base64.decodeBase64(strPdfBase64.getBytes());
+            String strFileName = "INE.pdf";
+            String strHeaderDownload = "attachment; filename=\"" + strFileName + "\"";
+            pLog.info("Se finaliza la obtencion de el pdf del contrato para ViaT");
+            return Response.ok(abFile, Constants.HTTP_HEADER_MEDIATYPE_PDF).header("Content-Disposition", strHeaderDownload).build();
+        }
+        catch (Exception e)
+        {
+            return Response.serverError().build();
+        }
     }
 }
