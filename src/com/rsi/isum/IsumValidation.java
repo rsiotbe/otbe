@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
-import com.rsi.rvia.rest.error.exceptions.ISUMException;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 
 public class IsumValidation
@@ -52,7 +51,8 @@ public class IsumValidation
         catch (Exception ex)
         {
             pLog.error("El servicio NO está permitido para este usuario");
-            throw new ISUMException(500, null, "No ha sido posible validar el servicio contra ISUM", "Error al obtener obtener la información de los servicios de ISUM", ex);
+            // throw new ISUMException(500, null, "No ha sido posible validar el servicio contra ISUM",
+            // "Error al obtener obtener la información de los servicios de ISUM", ex);
         }
         finally
         {
