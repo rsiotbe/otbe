@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -140,6 +141,10 @@ public class Utils
                 else if (rsmd.getColumnType(i) == java.sql.Types.TIMESTAMP)
                 {
                     pJsonObj.put(column_name, pResultSet.getTimestamp(column_name));
+                }
+                else if (rsmd.getColumnType(i) == java.sql.Types.CLOB)
+                {
+                    pJsonObj.put(column_name, clobToString(pResultSet.getClob(column_name)));
                 }
                 else
                 {
@@ -283,15 +288,17 @@ public class Utils
             throws UnsupportedEncodingException
     {
         String strReturn = "";
-        Iterator<String> pIterator = pMap.keySet().iterator();
-        while (pIterator.hasNext())
+        if (pMap != null)
         {
-            String strKey = (String) pIterator.next();
-            if (pMap.get(strKey) != null)
+            Iterator<String> pIterator = pMap.keySet().iterator();
+            while (pIterator.hasNext())
             {
-                if (!strReturn.isEmpty())
-                    strReturn += "&";
-                strReturn += strKey + "=" + URLEncoder.encode(pMap.getFirst(strKey), "ISO-8859-1");
+                String strKey = (String) pIterator.next();
+                if (pMap.get(strKey) != null)
+                {
+                    strReturn = addParameterToQueryString(strReturn, strKey,
+                            URLEncoder.encode(pMap.getFirst(strKey), "ISO-8859-1"));
+                }
             }
         }
         return strReturn;
@@ -308,9 +315,8 @@ public class Utils
                 String strKey = (String) pIterator.next();
                 if (pMap.get(strKey) != null)
                 {
-                    if (!strReturn.isEmpty())
-                        strReturn += "&";
-                    strReturn += strKey + "=" + URLEncoder.encode(pMap.get(strKey), "ISO-8859-1");
+                    strReturn = addParameterToQueryString(strReturn, strKey,
+                            URLEncoder.encode(pMap.get(strKey), "ISO-8859-1"));
                 }
             }
         }
@@ -327,9 +333,8 @@ public class Utils
             while (pKeys.hasNext())
             {
                 String strKey = (String) pKeys.next();
-                if (!strReturn.isEmpty())
-                    strReturn += "&";
-                strReturn += strKey + "=" + URLEncoder.encode(pJSONObject.get(strKey).toString(), "ISO-8859-1");
+                strReturn = addParameterToQueryString(strReturn, strKey,
+                        URLEncoder.encode(pJSONObject.get(strKey).toString(), "ISO-8859-1"));
             }
         }
         return strReturn;
@@ -728,5 +733,60 @@ public class Utils
         {
             return "";
         }
+    }
+
+    public static String addParameterToQueryString(String strQueryString, String strParamName, String strValueName)
+    {
+        String strReturn = strQueryString;
+        if (strReturn == null)
+        {
+            strReturn = "";
+        }
+        if ((!strReturn.isEmpty()) && (!strReturn.endsWith("&")) && !strParamName.trim().isEmpty())
+        {
+            strReturn += "&";
+        }
+        strReturn += strParamName + "=" + strValueName;
+        return strReturn;
+    }
+
+    public static String addParametersToQueryString(String strQueryString, String strParams)
+    {
+        String strReturn = strQueryString;
+        if (strReturn == null)
+        {
+            strReturn = "";
+        }
+        if ((!strReturn.isEmpty()) && (!strReturn.endsWith("&")) && !strParams.trim().isEmpty())
+        {
+            strReturn += "&";
+        }
+        strReturn += strParams;
+        return strReturn;
+    }
+
+    private static String clobToString(java.sql.Clob data)
+    {
+        final StringBuilder sb = new StringBuilder();
+        try
+        {
+            final Reader reader = data.getCharacterStream();
+            final BufferedReader br = new BufferedReader(reader);
+            int b;
+            while (-1 != (b = br.read()))
+            {
+                sb.append((char) b);
+            }
+            br.close();
+        }
+        catch (SQLException e)
+        {
+            return e.toString();
+        }
+        catch (IOException e)
+        {
+            return e.toString();
+        }
+        return sb.toString();
     }
 }

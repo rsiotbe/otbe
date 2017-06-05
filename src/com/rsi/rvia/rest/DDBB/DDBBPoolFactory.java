@@ -85,12 +85,12 @@ public class DDBBPoolFactory
     {
         DataSource pReturn = null;
         String strNonbreBD = pDDBBProvider.name();
-        pLog.error("Se procede a conectar con la BD de tipo " + strNonbreBD);
         switch (pDDBBProvider)
         {
             case OracleBanca:
                 if (pOracleBanca == null)
                 {
+                    pLog.error("Se procede a conectar con la BD de tipo " + strNonbreBD);
                     pOracleBanca = DDBBPool.getDatasourceFromBancaOracleServerPool();
                 }
                 pReturn = pOracleBanca;
@@ -98,6 +98,7 @@ public class DDBBPoolFactory
             case OracleCIP:
                 if (pOracleCIP == null)
                 {
+                    pLog.error("Se procede a conectar con la BD de tipo " + strNonbreBD);
                     pOracleCIP = DDBBPool.getDatasourceFromCIPOracleServerPool();
                 }
                 pReturn = pOracleCIP;

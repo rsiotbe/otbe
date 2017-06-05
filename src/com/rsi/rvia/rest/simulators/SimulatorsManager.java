@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Entities.EscapeMode;
@@ -19,6 +20,7 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.template.TemplateManager;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.Utils;
 
 public class SimulatorsManager
@@ -69,14 +71,28 @@ public class SimulatorsManager
             strQuery = "select s.id_simulador, s.entidad, s.categoria, s.nombre_simple, s.nombre_comercial, s.tipo_calculo, s.activo, "
                     + "s.contratar, s.contacto_email, s.contacto_telef, s.atencion_cliente_email, s.atencion_cliente_telef, "
                     + "s.entidad_email_contacto, s.pdf_con_formualario, "
-                    + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_lopd) as texto_lopd, "
-                    + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_condiciones) as texto_condiciones, "
-                    + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_aviso_legal) as texto_aviso_legal, "
-                    + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_desc) as texto_desc, "
+                    + "(select i.traduccion from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_lopd) as texto_lopd, "
+                    + "(select i.traduccion from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_condiciones) as texto_condiciones, "
+                    + "(select i.traduccion from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_aviso_legal) as texto_aviso_legal, "
+                    + "(select i.traduccion from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_desc) as texto_desc, "
                     + "p.clave, p.valor "
-                    + "from BEL.BDPTB235_SIMULADORES s, "
-                    + "BEL.BDPTB236_PARAM_SIMULADORES p "
-                    + "where s.id_simulador=p.id_simulador " + "and s.entidad = ? " + "and s.activo = '1' ";
+                    + "from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB235_SIMULADORES s, "
+                    + ""
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB236_PARAM_SIMULADORES p "
+                    + "where s.id_simulador=p.id_simulador "
+                    + "and s.entidad = ? "
+                    + "and s.activo = '1' ";
             /* se conmpone la condición de categoria con una clausula 'IN' */
             pSimulatorType = SimulatorType.valueOf(strSimulatorType);
             if (pSimulatorType == null)
@@ -141,7 +157,11 @@ public class SimulatorsManager
                     strLOPD = pResultSet.getString("TEXTO_LOPD");
                     strDescription = pResultSet.getString("TEXTO_DESC");
                     fDownloadByForm = pResultSet.getBoolean("PDF_CON_FORMUALARIO");
-                    pSimulatorObject = new SimulatorConfig(nSimulatorId, strNRBE, strNRBEName, strCategory, strSimpleName, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail, fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone, strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions, strDescription, fDownloadByForm);
+                    pSimulatorObject = new SimulatorConfig(nSimulatorId, strNRBE, strNRBEName, strCategory,
+                            strSimpleName, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail,
+                            fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone,
+                            strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions, strDescription,
+                            fDownloadByForm);
                 }
                 pSimulatorObject.addConfigParam(pResultSet.getString("CLAVE"), pResultSet.getString("VALOR"));
             }
@@ -174,6 +194,7 @@ public class SimulatorsManager
         int nId = -1;
         String strNRBEName = null;
         String strSimpleName = null;
+        String strNRBEComercialName = null;
         String strComercialName = null;
         String strOfficeTo = null;
         String strOfficeClaimTemplate = null;
@@ -190,7 +211,13 @@ public class SimulatorsManager
         try
         {
             strQuery = "select s.*, o.NOM_ENT_TXT, e.clave, e.valor  "
-                    + "from BEL.BDPTB235_SIMULADORES s, BEL.BELTS002 o, BEL.BDPTB273_SIMULADORES_EMAIL e "
+                    + "from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB235_SIMULADORES s, "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BELTS002 o, "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB273_SIMULADORES_EMAIL e "
                     + "where s.ENTIDAD = o.NRBE and s.id_simulador=e.id_simulador and s.id_simulador = ? and s.ENTIDAD=?";
             /* se rellena la query con los datos */
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -250,7 +277,10 @@ public class SimulatorsManager
                         break;
                 }
             }
-            pReturn = new SimulatorEmailConfig(nId, strNRBE, strNRBEName, strSimpleName, strComercialName, strOfficeTo, strOfficeClaimTemplate, strOfficeClaimSubject, strOfficeClaimFrom, strOfficeDraftTemplate, strOfficeDraftSubject, strOfficeDraftFrom, strCustomerDraftTemplate, strCustomerDraftSubject, strCustomerDraftFrom, strCustomerSupportTelephone, strCustomerSupportEmail);
+            /* se obtiene el nombre comercial (de dmominio) de la entidad a apritr de su coodigo NRBE */
+            strNRBEComercialName = getDomainNameFromNRBE(strNRBE);
+            /* se construye el objeto de configuración */
+            pReturn = new SimulatorEmailConfig(nId, strNRBE, strNRBEName, strNRBEComercialName, strSimpleName, strComercialName, strOfficeTo, strOfficeClaimTemplate, strOfficeClaimSubject, strOfficeClaimFrom, strOfficeDraftTemplate, strOfficeDraftSubject, strOfficeDraftFrom, strCustomerDraftTemplate, strCustomerDraftSubject, strCustomerDraftFrom, strCustomerSupportTelephone, strCustomerSupportEmail);
         }
         catch (Exception ex)
         {
@@ -287,22 +317,73 @@ public class SimulatorsManager
             }
             catch (Exception ex)
             {
-                throw new ApplicationException(500, 9999, "Se ha producido un error interno de la aplicación", "No ha sido posible recuperar la información necesaria para la entidad", ex);
+                throw new ApplicationException(500, 9999, "Se ha producido un error interno de la aplicación",
+                        "No ha sido posible recuperar la información necesaria para la entidad", ex);
             }
         }
         /* se obtiene el codigo de entidad para el nombre dado */
         JSONObject pDataObject = pPropNRBENames.getJSONObject(strNRBEName);
         if (pDataObject == null)
         {
-            throw new LogicalErrorException(400, 9998, "No se ha encontrado información para esta entidad", "No ha sido posible recuperar la información necesaria para esta entidad", null);
+            throw new LogicalErrorException(400, 9998, "No se ha encontrado información para esta entidad",
+                    "No ha sido posible recuperar la información necesaria para esta entidad", null);
         }
         strReturn = pDataObject.getString("NRBE");
         if (strReturn == null || strReturn.trim().isEmpty())
         {
-            throw new LogicalErrorException(400, 9997, "No se ha encontrado información para esta entidad", "No ha sido posible recuperar la información necesaria para esta entidad", null);
+            throw new LogicalErrorException(400, 9997, "No se ha encontrado información para esta entidad",
+                    "No ha sido posible recuperar la información necesaria para esta entidad", null);
         }
         while (strReturn.length() < 4)
             strReturn = "0" + strReturn;
+        return strReturn;
+    }
+
+    /**
+     * Obtiene el nombre de dominio de la entidad desde el fichero de propiedades
+     * 
+     * @param strNRBEN
+     *            NRBE comercial de la entidad
+     * @return Numero NRBE de la entidad
+     * @throws Exception
+     */
+    public static String getDomainNameFromNRBE(String strNRBE) throws Exception
+    {
+        String strReturn = null;
+        /* se carga el fichero de propiedades que contien la resolución de nombres */
+        if (pPropNRBENames == null)
+        {
+            String strJsonContent;
+            try
+            {
+                InputStream pInputStream = (SimulatorsManager.class.getResourceAsStream("/NRBE.properties"));
+                strJsonContent = Utils.getStringFromInputStream(pInputStream);
+                pPropNRBENames = new JSONObject(strJsonContent);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException(500, 9999, "Se ha producido un error interno de la aplicación", "No ha sido posible recuperar la información necesaria para la entidad", ex);
+            }
+        }
+        Iterator<?> pKeys = pPropNRBENames.keys();
+        while (pKeys.hasNext())
+        {
+            String strKey = (String) pKeys.next();
+            if (pPropNRBENames.get(strKey) instanceof JSONObject)
+            {
+                JSONObject pInnerJsonObject = pPropNRBENames.getJSONObject(strKey);
+                String strInnerValue = pInnerJsonObject.optString("NRBE");
+                if (strNRBE.equals(strInnerValue))
+                {
+                    strReturn = strKey;
+                    break;
+                }
+            }
+        }
+        if (strReturn == null || strReturn.trim().isEmpty())
+        {
+            throw new LogicalErrorException(400, 9996, "No se ha encontrado información para esta entidad", "No ha sido posible recuperar la información necesaria para esta entidad", null);
+        }
         return strReturn;
     }
 

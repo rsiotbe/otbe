@@ -123,7 +123,7 @@ public class RequestConfigRvia extends RequestConfig
      */
     public RequestConfigRvia(HttpServletRequest request) throws Exception
     {
-        super(request);
+        super(request, null);
         try
         {
             String[] strParameters;
@@ -131,6 +131,7 @@ public class RequestConfigRvia extends RequestConfig
             pLog.debug("Se procede a cargar la configuración de la conexión con ruralvia");
             /* se comprueba si el contenido viene encriptado enel parámetro token */
             strToken = request.getParameter("token");
+            System.out.println(strToken);
             if (strToken == null)
             {
                 /* se comprueba si el token esta inicializado en la sesión de la aplicación */
@@ -139,6 +140,8 @@ public class RequestConfigRvia extends RequestConfig
             }
             if (strToken != null)
             {
+                /* se reemplazan los caracteres espacios por mases, por si al viahar como url se han transformado */
+                strToken = strToken.replace(" ", "+");
                 pLog.debug("La información viene cifrada, se procede a descifrarla");
                 /* se desencipta la información */
                 strDesToken = RviaConnectCipher.symmetricDecrypt(strToken, RviaConnectCipher.RVIA_CONNECT_KEY);

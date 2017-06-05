@@ -15,7 +15,7 @@
     		com.rsi.rvia.rest.operation.MiqQuests,
     		com.rsi.rvia.rest.session.RequestConfigRvia,
 		 	java.sql.Connection, java.net.URL,
-		 	java.util.Enumeration,
+		 	java.util.*,
 		 	org.slf4j.Logger,org.slf4j.LoggerFactory,
 		 	com.rsi.rvia.rest.tool.AppConfiguration,
 		 	com.rsi.rvia.rest.session.RequestConfigRvia,
@@ -41,8 +41,17 @@
 	String strInputs = "";
 	boolean fToLocalhost = false;
 	boolean fLocalhostHttps = false;
-	String strLocalhostPort = "8080";
+	String strLocalhostPort = "443";
 	String strFinalUrl;
+	
+	/* se carga el array con los parámetros que no se desean enviar a rviarest */
+	ArrayList<String> alParamToNotForwarding = new ArrayList<String>();
+	alParamToNotForwarding.add("method");
+	alParamToNotForwarding.add("codigo");
+	alParamToNotForwarding.add("toLocalhost");
+	alParamToNotForwarding.add("localhostHttps");
+	alParamToNotForwarding.add("localhostPort");
+	alParamToNotForwarding.add("idMiq");
 
 	strIdMiq = request.getParameter("idMiq");
 	pLog.info("Se recibe una petición para acceder a la operativa con idMiq " + strIdMiq);
@@ -82,19 +91,30 @@
 	{
 		String strParamName = pEnumParams.nextElement().toString();
 		String[] astrValues = request.getParameterValues(strParamName);
-		if(1 >= astrValues.length)
+		if(astrValues.length <=1)
 		{
-		    if(("tolocalhost".equals(strParamName)) || ("localhostPort".equals(strParamName)) || ("method".equals(strParamName)) || ("idMiq".equals(strParamName)))
+		    String strValue = "";;
+		    if(astrValues.length == 1 && astrValues[0] != null)
+		    {
+		        strValue = astrValues[0];
+		    }
+			pLog.trace("Se procesa el parámetro: " + strParamName + "=" + strValue);
+		    
+		    if(alParamToNotForwarding.contains(strParamName))
+		    {
+				pLog.trace("El parámetro " + strParamName + " se descarta para enviarse a rviarest");
 		        continue;
-			out.println("<!-- " + strParamName + " = " + request.getParameter(strParamName) + "-->\n" );
-			strInputs += "<input type='hidden' value='" + request.getParameter(strParamName) + "' name='" + strParamName + "'>\n";
+		    }
+			out.println("<!-- " + strParamName + " = " + strValue + "-->" );
+			strInputs += "<input type=\"hidden\" name=\"" + strParamName + "\" value=\"" + strValue + "\">\n";
 		}
 		else
 		{
+			pLog.trace("Se procesa el parámetro: " + strParamName + "=" + astrValues);
 			for( int i=0; i < astrValues.length; i++ )
 			{
-				out.println("<!-- " + strParamName + "[" + i + "] = " + astrValues[i] + "-->\n" );
-				strInputs=strInputs+"<input type='hidden' value='" +astrValues[i] + "' name='" + strParamName + "'>\n";
+				out.println("<!-- " + strParamName + "[" + i + "] = " + astrValues[i] + "-->" );
+				strInputs=strInputs+"<input type=\"hidden\" value=\"" +astrValues[i] + "\" name=\"" + strParamName + "\">\n";
 			}
 		}
 	}
@@ -145,14 +165,7 @@
 <body>
 	<form id="formRedirect" action="<%=strFinalUrl%>" method="<%=strMethod%>" enctype="multipart/form-data">
 		<%=strInputs%> 
-<%
-	if(!strError.trim().isEmpty())
-	{
-%>
-		<input type="hidden" name="errorCode" value="<%=strError%>">
-<%
-	}
-%>		
+<%if(!strError.trim().isEmpty()){%><input type="hidden" name="errorCode" value="<%=strError%>"><%}%>		
 	</form>
 	<script type="text/javascript">	
 		document.getElementById('formRedirect').submit();

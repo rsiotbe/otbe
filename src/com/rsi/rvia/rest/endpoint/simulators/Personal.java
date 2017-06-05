@@ -11,10 +11,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constants;
 import com.rsi.Constants.SimulatorType;
 import com.rsi.rvia.rest.client.OperationManager;
+import com.rsi.rvia.rest.simulators.SimulatorsManager;
 
 @Path("/simuladores")
 public class Personal
@@ -63,15 +66,16 @@ public class Personal
             @PathParam("entidad") String strBankName, @PathParam("nombreSimulador") String strLoanName,
             @PathParam("idioma") String strLanguage)
     {
-        return process(pRequest, pUriInfo, strBankName, strLoanName, strLanguage, OperationManager.getMediaType(pRequest));
+        return process(pRequest, pUriInfo, strBankName, strLoanName, strLanguage,
+                OperationManager.getMediaType(pRequest));
     }
 
     @POST
     @Path("{entidad}/personal")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getAllSimulatorsDefaultLanguagePost(@Context HttpServletRequest pRequest,
-            @Context UriInfo pUriInfo, @PathParam("entidad") String strBankName)
+    public Response getAllSimulatorsDefaultLanguagePost(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            @PathParam("entidad") String strBankName)
     {
         return process(pRequest, pUriInfo, strBankName, null, null, MediaType.APPLICATION_JSON_TYPE);
     }
@@ -124,7 +128,24 @@ public class Personal
         pLog.info("entidad: " + strNRBEName);
         pLog.info("nombre: " + strLoanName);
         pLog.info("idioma: " + strLanguage);
-        Response pReturn = OperationManager.processDataFromSimulators(pRequest, pUriInfo, strNRBEName, SimulatorType.PERSONAL, strLoanName, strLanguage, pMediaType);
+        JSONObject pDataInput = null;
+        try
+        {
+            pDataInput = new JSONObject();
+            // Se obtiene el id de la entidad a partir del nombre simple.
+            String strNRBE = SimulatorsManager.getNRBEFromName(strNRBEName);
+            // Se conpone un objeto json con los datos necesarios para poder procesar la petición.
+            pDataInput.put(Constants.SIMULADOR_NRBE, strNRBE);
+            pDataInput.put(Constants.SIMULADOR_LANGUAGE, strLanguage);
+            pDataInput.put(Constants.SIMULADOR_NRBE_NAME, strNRBEName);
+            pDataInput.put(Constants.SIMULADOR_SIMPLE_NAME, strLoanName);
+            pDataInput.put(Constants.SIMULADOR_TYPE, SimulatorType.PERSONAL);
+        }
+        catch (Exception e)
+        {
+            pLog.error("Error al procesar la peticón de simuladores personal", e);
+        }
+        Response pReturn = OperationManager.processGenericAPP(pRequest, pUriInfo, pDataInput.toString(), pMediaType);
         pLog.info("Se devuelve la respuesta final al usuario");
         return pReturn;
     }

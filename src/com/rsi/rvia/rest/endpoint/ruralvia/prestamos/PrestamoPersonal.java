@@ -10,16 +10,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.QueryParam;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.rsi.rvia.rest.client.OperationManager;
 
-@Path("/prestamopersonal")
-public class PrestamoPersonal {
-
+@Path("/loan/personal")
+public class PrestamoPersonal
+{
     private static Logger pLog = LoggerFactory.getLogger(PrestamoPersonal.class);
 
     /**
@@ -28,69 +25,171 @@ public class PrestamoPersonal {
      * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarifas@
      */
     @GET
-    @Path("/tarifas")
+    @Path("/rates")
     @Produces({ MediaType.TEXT_HTML })
+    @Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
+            "application/x-ms-application" })
+    public Response getTarifasHtml(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Se solicita el template HTML para Prestamo Personal");
+        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, true);
+        pLog.info("Se finaliza la solicitud del template HTML para Prestamo Personal");
+        return pReturn;
+    }
+
+    /**
+     * Obtiene el listado completo de las tarifas disponibles de un usuario
+     * 
+     * @return Objeto que contiene la respuesta y en caso positivo se adjunta el listado de tarifas@
+     */
+    @GET
+    @Path("/rates")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
     public Response getTarifas(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro tarifas");
-    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-    	//Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, id, MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Tarifas");
+        pLog.info("Se obtiene tarifas disponibles");
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Finaliza la obtencion de las tarifas disponibles");
         return pReturn;
     }
 
     @GET
-    @Path("/detalletarifas")
-    @Produces({ MediaType.TEXT_HTML })
+    @Path("/{idLinea}/{idGrupo}/{idProducto}/{idTarifa}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public Response getDetTarifas(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro detalle tarifas");
-    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Detalle tarifas");
+        pLog.info("Se obtiene el detalle de la tarifa");
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Finaliza la obtencion del detalle de la tarifa");
         return pReturn;
     }
 
     @GET
     @Path("/lopd")
-    @Produces({ MediaType.TEXT_HTML })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public Response getLopd(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro lopd");
-    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> LOPD");
+        pLog.info("Se obtienen los datos lopd");
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Finaliza la obtencion de los datos lopd");
         return pReturn;
     }
 
     @GET
-    @Path("/datosprestamo")
-    @Produces({ MediaType.TEXT_HTML })
+    @Path("/accounts")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public Response getDatoPrestamo(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro datos prestamo");
-    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Datos prestamo");
+        pLog.info("Se obtienen los datos de usuario para contratacion");
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Finaliza la obtencion de datos del usuario para contratacion");
+        return pReturn;
+    }
+
+    @GET
+    @Path("/idtype")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Response getTiposDocumento(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Se obtienen los tipos de documentos identificativos");
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Finaliza la obtencion de los tipos de documentos identificativos");
         return pReturn;
     }
 
     @POST
-    @Path("/datospersona")
-    @Produces({ MediaType.TEXT_HTML })
+    @Path("/scoring/formdata")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public Response getDatosPersona(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro datos persona");
-    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Datos persona");
+        pLog.info("Se obtienen datos personales");
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Finaliza la obtencion de los datos personales");
         return pReturn;
     }
 
     @POST
-    @Path("/scoring")
-    @Produces({ MediaType.TEXT_HTML })
+    @Path("/{idLinea}/{idGrupo}/{idProducto}/{idTarifa}/scoring")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public Response getScoring(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Entro scoring");
-    	Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.TEXT_PLAIN_TYPE);
-        pLog.info(" ---------> Scoring");
+        pLog.info("Se realiza la llamada al scoring");
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Finaliza la llamada al scoring");
+        return pReturn;
+    }
+
+    @POST
+    @Path("/signature")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Response getFirma(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Se realiza la llamada a la firma");
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Finaliza la llamada a la firma");
+        return pReturn;
+    }
+
+    /**
+     * Devuelve PDF del contrato de Prestamo Personal.
+     * 
+     * @param pRequest
+     *            the request
+     * @param pUriInfo
+     *            the uri info
+     * @return pdf con contrato de prestamo personal
+     */
+    // @GET
+    // @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/pdf")
+    // @Consumes({ MediaType.APPLICATION_JSON })
+    // @Produces(Constants.HTTP_HEADER_MEDIATYPE_PDF)
+    // public Response getpdfViaT(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    // {
+    // try
+    // {
+    // pLog.info("Se obtiene el pdf del contrato para prestamo personal");
+    // Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}",
+    // MediaType.APPLICATION_JSON_TYPE);
+    // String strPdfBase64 = (new
+    // JSONObject(pReturn.getEntity().toString())).getJSONObject("response").getJSONObject("data").getString("buffer");
+    // byte[] abFile = org.apache.commons.codec.binary.Base64.decodeBase64(strPdfBase64.getBytes());
+    // String strFileName = "INE.pdf";
+    // String strHeaderDownload = "attachment; filename=\"" + strFileName + "\"";
+    // pLog.info("Se finaliza la obtencion de elpdf del contrato de prestamo personal");
+    // return Response.ok(abFile, Constants.HTTP_HEADER_MEDIATYPE_PDF).header("Content-Disposition",
+    // strHeaderDownload).build();
+    // }
+    // catch (Exception e)
+    // {
+    // return Response.serverError().build();
+    // }
+    // }
+    /**
+     * Devuelve PDF del contrato de Prestamo Personal.
+     * 
+     * @param pRequest
+     *            the request
+     * @param pUriInfo
+     *            the uri info
+     * @return pdf con contrato de prestamo personal
+     */
+    @GET
+    @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/pdf")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Response getpdfViaT(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Se obtiene el JSON con los datos para acceder al pdf del contrato para prestamo personal");
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+        pLog.info("Se finaliza la obtencion de el JSON con los datos para acceder al pdf del contrato de prestamo personal");
         return pReturn;
     }
 }

@@ -1,5 +1,6 @@
 package com.rsi.rvia.rest.conector;
 
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,6 +40,7 @@ import com.rsi.rvia.rest.response.RviaRestResponseErrorItem;
 import com.rsi.rvia.rest.response.ruralvia.TranslateRviaJsonCache;
 import com.rsi.rvia.rest.response.ruralvia.TranslateRviaJsonObject;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.Utils;
 
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos Ruralvia */
@@ -74,6 +76,8 @@ public class RestRviaConnector
             String strSesId = pRequestConfigRvia.getRviaSessionId();
             String strHost = pRequestConfigRvia.getUriRvia().toString();
             String strClavePagina = pMiqQuests.getEndPoint();
+            String strQueryStringParams = ((pRequest.getQueryString() == null) ? ""
+                    : URLDecoder.decode(pRequest.getQueryString(), "UTF-8"));
             String strUrl = strHost + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + strSesId + "?clavePagina="
                     + strClavePagina;
             pLog.trace("Se compone la url a invocar a ruralvia: " + strUrl + ":" + pRequestConfigRvia.getToken());
@@ -82,7 +86,7 @@ public class RestRviaConnector
             pLog.trace("Se obtiene el xml de configuración desde ruralvia y se procede a evaluar su contenido");
             proccessInformationFromRviaXML(pXmlDoc, pMiqQuests, pSessionFields);
             pLog.trace("Se añade la información recibida en la propia petición");
-            addDataToSessionFields(strClavePagina, strData, pSessionFields);
+            addDataToSessionFields(strClavePagina, strQueryStringParams, pSessionFields);
             pSessionFields.putAll(pPathParams);
             /*
              * se comprueba si existe algúna opción en la configuración de miqQuest para enviarla como parámetro en la
@@ -105,6 +109,9 @@ public class RestRviaConnector
             pLog.info("Params: " + pSessionFields);
             pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
             /* TODO: Revisar la necesidad de enviar los parámetros de sesión. Diríase que no es necesario. */
+            pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
+            pLog.info("Url: " + strUrl);
+            pLog.info("Params: " + pRviaFields);
             pReturn = pTarget.request().post(Entity.form(pRviaFields));
             // pReturn = pTarget.request().post(Entity.form(pPathParams));
             pLog.trace("Respuesta obtenida desde ruralvia: " + pReturn);
@@ -232,13 +239,13 @@ public class RestRviaConnector
         saveDDBBSenssionVarNames(pMiqQuests.getIdMiq(), pSessionParamNames, pSessionParamInSession);
     }
 
-    private static void addDataToSessionFields(String strClavePagina, String strData,
+    private static void addDataToSessionFields(String strClavePagina, String strQueryStringData,
             MultivaluedMap<String, String> pSessionFields)
     {
         pSessionFields.add("clavePagina", strClavePagina);
         // Se evaluan los datos que llegan en la parte de datos.
-        String[] pArr = strData.split("&");
-        if (!strData.trim().isEmpty())
+        String[] pArr = strQueryStringData.split("&");
+        if (!strQueryStringData.trim().isEmpty())
         {
             for (int i = 0; i < pArr.length; i++)
             {
@@ -313,8 +320,10 @@ public class RestRviaConnector
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         boolean fReturn = false;
-        String strQuery = "select a.id_miq from  BEL.BDPTB222_MIQ_QUESTS a, "
-                + "BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, BEL.BDPTB225_MIQ_SESSION_PARAMS c "
+        String strQuery = "select a.id_miq from  " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB222_MIQ_QUESTS a, " + "" + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB226_MIQ_QUEST_RL_SESSION b, " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB225_MIQ_SESSION_PARAMS c "
                 + "where a.id_miq=b.id_miq and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM and a.id_miq=? " + "and c.PARAMNAME=?";
         try
         {
@@ -357,7 +366,9 @@ public class RestRviaConnector
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         Integer nReturn = null;
-        String strQuery = "select a.ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS a where a.PARAMNAME = ?";
+        String strQuery = "select a.ID_MIQ_PARAM from "
+                + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB225_MIQ_SESSION_PARAMS a where a.PARAMNAME = ?";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -391,7 +402,9 @@ public class RestRviaConnector
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         Integer nReturn = null;
-        String strQuery = "select (select * from (select ID_MIQ_PARAM from BEL.BDPTB225_MIQ_SESSION_PARAMS order by ID_MIQ_PARAM desc)	where rownum = 1) + 1 ID_MIQ_PARAM from dual";
+        String strQuery = "select (select * from (select ID_MIQ_PARAM from "
+                + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB225_MIQ_SESSION_PARAMS order by ID_MIQ_PARAM desc)	where rownum = 1) + 1 ID_MIQ_PARAM from dual";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -404,7 +417,8 @@ public class RestRviaConnector
         }
         catch (Exception ex)
         {
-            pLog.error("No se ha podido generar un id de secuencia para el campo ID_MIQ_PARAM de la tabla BEL.BDPTB225_MIQ_SESSION_PARAMS", ex);
+            pLog.error("No se ha podido generar un id de secuencia para el campo ID_MIQ_PARAM de la tabla "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB225_MIQ_SESSION_PARAMS", ex);
         }
         finally
         {
@@ -428,7 +442,8 @@ public class RestRviaConnector
         {
             strTipoParam = "RVIASESSION";
         }
-        String strQuery = "insert into BEL.BDPTB225_MIQ_SESSION_PARAMS values (?, ? ,'','',?,'','')";
+        String strQuery = "insert into " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB225_MIQ_SESSION_PARAMS values (?, ? ,'','',?,'','')";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -465,7 +480,8 @@ public class RestRviaConnector
         {
             strPropagate = "propagate=false";
         }
-        String strQuery = "insert into BEL.BDPTB226_MIQ_QUEST_RL_SESSION values(?, ?, ' ','" + strPropagate + "')";
+        String strQuery = "insert into " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB226_MIQ_QUEST_RL_SESSION values(?, ?, ' ','" + strPropagate + "')";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -501,7 +517,9 @@ public class RestRviaConnector
             pHtmlDoc = Jsoup.parse(strHtml);
             if ((pHtmlDoc.getElementsByClass("txtaviso") != null)
                     && (pHtmlDoc.getElementsByClass("txtaviso").size() > 0))
+            {
                 fReturn = true;
+            }
         }
         catch (Exception ex)
         {
@@ -526,7 +544,13 @@ public class RestRviaConnector
             pHtmlDoc = Jsoup.parse(strHtml);
             if ((pHtmlDoc.getElementsByClass("txtaviso") != null)
                     && (pHtmlDoc.getElementsByClass("txtaviso").size() > 0))
-                fReturn = true;
+            {
+                String strText = pHtmlDoc.getElementsByClass("txtaviso").first().text();
+                if (strText.contains("La sesión ha caducado"))
+                {
+                    fReturn = true;
+                }
+            }
         }
         catch (Exception ex)
         {

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.session.RequestConfig;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.Utils;
 
 /** Clase que gestiona el los CSS de multientidad para adaptar el estilo de la web. */
@@ -69,7 +70,8 @@ public class CssMultiBankProcessor
         ResultSet pResultSet = null;
         try
         {
-            String strQuery = "SELECT * from bel.bdptb229_css_multibank";
+            String strQuery = "SELECT * from " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".bdptb229_css_multibank";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
             pResultSet = pPreparedStatement.executeQuery();
@@ -139,6 +141,19 @@ public class CssMultiBankProcessor
     }
 
     /**
+     * Sincroniza el acceso a la carga de la cache de miqquest
+     * 
+     * @throws Exception
+     */
+    private static synchronized void synchronizeLoadCache() throws Exception
+    {
+        if (getCacheSize() == 0)
+        {
+            loadDDBBCache();
+        }
+    }
+
+    /**
      * Función que modifica los links css de un documento JSOUP.
      * 
      * @param doc
@@ -156,7 +171,7 @@ public class CssMultiBankProcessor
         if (htCacheData == null || getCacheSize() < 1)
         {
             pLog.debug("La caché no está inicializada se procede a inicializarla");
-            loadDDBBCache();
+            synchronizeLoadCache();
         }
         for (Element pItem : pLinksCss)
         {

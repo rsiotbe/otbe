@@ -102,6 +102,10 @@ public class Constants
     // /////////////////////////
     public static final String   PARAM_LANG                                     = "lang";
     public static final String   PARAM_NRBE                                     = "NRBE";
+    public static final String   PARAM_CARD_ID                                  = "cardId";
+    public static final String   PARAM_OPTIONS                                  = "options";
+    public static final String   PARAM_SERVICE                                  = "service";
+    public static final String   PARAM_ID_MIQ                                   = "idMiq";
     // /////////////////////////
     // General
     // /////////////////////////
@@ -121,6 +125,22 @@ public class Constants
     public static final String   KEY_ERROR_CODE                                 = "CODERR";
     public static final String   KEY_ERROR_TEXT                                 = "TXTERR";
     public static final String   KEY_LIST_NAME                                  = "NOMBRELISTACUENTA";
+    // //////////////////////////
+    // Parámetros cabeceras de llamadas al bus
+    // /////////////////////////
+    public static final String   BUS_HEADER_COD_SEC_ENT                         = "CODSecEnt";
+    public static final String   BUS_HEADER_COD_SEC_TRANS                       = "CODSecTrans";
+    public static final String   BUS_HEADER_COD_SEC_USER                        = "CODSecUser";
+    public static final String   BUS_HEADER_COD_APL                             = "CODApl";
+    public static final String   BUS_HEADER_COD_TERMINAL                        = "CODTerminal";
+    public static final String   BUS_HEADER_COD_CANAL                           = "CODCanal";
+    public static final String   BUS_HEADER_COD_SEC_IP                          = "CODSecIp";
+    // //////////////////////////
+    // Cabeceras http
+    // /////////////////////////
+    public static final String   HTTP_HEADER_AUTORIZATION                       = "Authorization";
+    public static final String   HTTP_HEADER_MEDIATYPE_PDF                      = "application/pdf";
+    public static final String   UTF8                                           = "UTF-8";
 
     public enum SimulatorLoanCategory
     {
@@ -134,7 +154,7 @@ public class Constants
 
     public enum SimulatorType
     {
-        PERSONAL, MORTGAGE
+        PERSONAL, MORTGAGE, CARD
     }
 
     public enum Environment
@@ -166,9 +186,19 @@ public class Constants
      */
     public enum CanalHost
     {
-        VALORES_BANCA_INTERNET(1), VALORES_BANCA_TELEFONICA(2), BANCA_INTERNET(3), BANCA_TELEFONICA(4), ABOGADOS(5), ABOGADOS_TELEFONICA(
-                6), TPV_VIRTUAL(7), SEGUROS(8), OFICINA(9), TPV_VIRTUAL_TELEFONICA(10), BANCA_MOVIL(11), BANCA_TABLET(
-                13), BANCA_TABLET_CAU(14);
+        VALORES_BANCA_INTERNET(1),
+        VALORES_BANCA_TELEFONICA(2),
+        BANCA_INTERNET(3),
+        BANCA_TELEFONICA(4),
+        ABOGADOS(5),
+        ABOGADOS_TELEFONICA(6),
+        TPV_VIRTUAL(7),
+        SEGUROS(8),
+        OFICINA(9),
+        TPV_VIRTUAL_TELEFONICA(10),
+        BANCA_MOVIL(11),
+        BANCA_TABLET(13),
+        BANCA_TABLET_CAU(14);
         private final int value;
 
         CanalHost(int newValue)

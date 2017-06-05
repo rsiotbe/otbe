@@ -71,7 +71,7 @@ public class OperationManagerTest extends TestBase
         Mockito.when(uriInfo.getPathParameters()).thenReturn(map);
         Mockito.when(uriInfo.getPath()).thenReturn("foo/bar");
         Mockito.when(miqQuests.getComponentType()).thenReturn(CompomentType.RVIA);
-        Response response = OperationManager.processTemplateFromRvia(request, uriInfo, data);
+        Response response = OperationManager.processTemplate(request, uriInfo, true);
         assertNotNull("testProcessTemplateFromRvia: response es null", response);
         // No se crean los MiqQuests.
         assertEquals("testProcessTemplateFromRvia: response es null", response.getStatus(), 500);
@@ -122,7 +122,7 @@ public class OperationManagerTest extends TestBase
         map.add("foo", "bar");
         Mockito.when(uriInfo.getPathParameters()).thenReturn(map);
         Mockito.when(uriInfo.getPath()).thenReturn("foo/bar");
-        Response response = OperationManager.processTemplate(request, uriInfo, data);
+        Response response = OperationManager.processTemplate(request, uriInfo, false);
         assertNotNull("testProcessTemplate: response es null", response);
         // No se crean los MiqQuests.
         assertEquals("testProcessTemplate: response es null", response.getStatus(), 500);

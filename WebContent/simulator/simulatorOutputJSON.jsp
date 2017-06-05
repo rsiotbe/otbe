@@ -37,7 +37,7 @@
         }
         catch (Exception e)
         {
-            // TODO: report an error.
+            pLog.error("Error al leer el buffer de entrada", e);
         }
         JSONObject jsonObject = new JSONObject(jb.toString());
         strNRBE = jsonObject.optString(Constants.SIMULADOR_NRBE);
@@ -55,6 +55,7 @@
         strSimulatorName = (String) request.getParameter(Constants.SIMULADOR_SIMPLE_NAME);
         strLanguage = (String) request.getParameter(Constants.SIMULADOR_LANGUAGE);
     }
+
     /* se obtiene le objeto idioma */
     if(strLanguage == null || strLanguage.trim().isEmpty())
     {

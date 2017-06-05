@@ -40,7 +40,7 @@ public class MiqQuests
     public static final String                     OPTION_PARAM_PROPAGATE_ID_MIQ = "propagateIdMiq";
 
     /**
-     * Enumración con el tipo de componente que gestiona la petición
+     * Enumeración con el tipo de componente que gestiona la petición
      */
     public enum CompomentType
     {
@@ -76,8 +76,8 @@ public class MiqQuests
     public static void resetCache()
     {
         htCacheDataId.clear();
-        htCacheDataId = new Hashtable<Integer, MiqQuests>();
         htCacheDataPath.clear();
+        htCacheDataId = new Hashtable<Integer, MiqQuests>();
         htCacheDataPath = new Hashtable<String, MiqQuests>();
         htParamsInput.clear();
         htParamsInput = new Hashtable<String, MiqQuestParam>();
@@ -94,9 +94,9 @@ public class MiqQuests
         String strReturn;
         strReturn = Utils.hastablePrettyPrintHtml(htCacheDataId);
         strReturn += "\n";
-        strReturn = Utils.hastablePrettyPrintHtml(htCacheDataPath);
+        strReturn += Utils.hastablePrettyPrintHtml(htCacheDataPath);
         strReturn += "\n";
-        strReturn = Utils.hastablePrettyPrintHtml(htParamsInput);
+        strReturn += Utils.hastablePrettyPrintHtml(htParamsInput);
         return strReturn;
     }
 
@@ -208,7 +208,7 @@ public class MiqQuests
         return pUriReturn;
     }
 
-    /** Contructor generico */
+    /** Contructor genérico */
     public MiqQuests()
     {
     }
@@ -275,7 +275,8 @@ public class MiqQuests
         ResultSet pResultSet = null;
         try
         {
-            String strQuery = "SELECT * from bel.bdptb222_miq_quests order by 1 asc";
+            String strQuery = "SELECT * from " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".bdptb222_miq_quests order by 1 asc";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
             pResultSet = pPreparedStatement.executeQuery();
@@ -322,8 +323,10 @@ public class MiqQuests
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         // String idMiq = pResultSet.getString("id_miq");
-        String strQuery = "select a.id_miq, c.* from  BEL.BDPTB222_MIQ_QUESTS a, "
-                + " BEL.BDPTB226_MIQ_QUEST_RL_SESSION b, BEL.BDPTB225_MIQ_SESSION_PARAMS c "
+        String strQuery = "select a.id_miq, c.* from  "
+                + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB222_MIQ_QUESTS a, " + " "
+                + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB226_MIQ_QUEST_RL_SESSION b, "
+                + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB225_MIQ_SESSION_PARAMS c "
                 + " where a.id_miq=b.id_miq  and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM  and a.path_rest='" + strPathRest
                 + "' order by c.ID_MIQ_PARAM";
         try
@@ -335,18 +338,12 @@ public class MiqQuests
             {
                 String idMiq = pResultSet.getString("id_miq");
                 MiqQuestParam pMiqQuestParam = new MiqQuestParam(pResultSet.getInt("id_miq_param"), pResultSet.getString("paramname"), pResultSet.getString("paramvalue"), pResultSet.getString("paramdesc"), pResultSet.getString("paramtype"), pResultSet.getString("headername"), pResultSet.getString("aliasname"));
-                // if (pResultSet.getString("aliasname") != null)
-                // {
-                // if (!"".equals(pResultSet.getString("aliasname").trim()))
-                // {
                 String keyForHtParamsInput = idMiq + pResultSet.getString("aliasname");
                 if (!htParamsInput.containsKey(keyForHtParamsInput))
                 {
                     pLog.info("Añadiendo parametro: " + pResultSet.getString("aliasname"));
                     htParamsInput.put(keyForHtParamsInput, pMiqQuestParam);
                 }
-                // }
-                // }
             }
         }
         catch (Exception ex)
@@ -408,7 +405,9 @@ public class MiqQuests
         MiqQuests pMiqQuests = null;
         /* si la caché no está cargada se carga */
         if (getCacheSize() == 0)
+        {
             synchronizeLoadCache();
+        }
         pMiqQuests = htCacheDataPath.get(strPath);
         return pMiqQuests;
     }
@@ -446,9 +445,13 @@ public class MiqQuests
     public MultivaluedMap<String, String> testInputParams(MultivaluedMap<String, String> pAllInputs) throws Exception
     {
         if (pAllInputs == null)
+        {
             return pAllInputs;
+        }
         if (htParamsInput == null)
+        {
             return pAllInputs;
+        }
         MultivaluedMap<String, String> paramsToRvia = new MultivaluedHashMap<String, String>();
         Iterator<String> pIterator = pAllInputs.keySet().iterator();
         int nIdMiq = getIdMiq();

@@ -9,7 +9,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
-import com.rsi.Constants;
 import com.rsi.Constants.CanalFront;
 import com.rsi.Constants.Language;
 import com.rsi.TestBase;
@@ -38,27 +37,11 @@ public class RequestConfigRviaTest extends TestBase
     }
 
     @Test
-    public void testRequestConfigFromStrings() throws Exception
-    {
-        RequestConfig sessionRviaStrs = new RequestConfig(Constants.DEFAULT_LANGUAGE.getJavaCode(), "MOCKED NRBE");
-        assertNotNull("testRequestConfigFromStrings: session es null", sessionRviaStrs);
-        assertTrue("testRequestConfigFromStrings: RequestConfigStrs no es instancia de RequestConfig", sessionRviaStrs instanceof RequestConfig);
-    }
-
-    @Test
-    public void testRequestConfigFromStringsDefault() throws Exception
-    {
-        RequestConfig sessionRviaStrs = new RequestConfig(null, null);
-        assertNotNull("testRequestConfigFromStringsDefault: session es null", sessionRviaStrs);
-        assertTrue("testRequestConfigFromStringsDefault: sessionRviaStrs no es instancia de RequestConfig", sessionRviaStrs instanceof RequestConfig);
-    }
-
-    @Test
     public void testClearSession() throws Exception
     {
         when(request.getParameter("lang")).thenReturn("FOO");
         when(request.getParameter("NRBE")).thenReturn("FOO");
-        RequestConfig clearSession = new RequestConfig(request);
+        RequestConfig clearSession = new RequestConfig(request, null);
         assertNotNull("testClearSession: clearSession es null", clearSession);
         assertTrue("testClearSession: clearSession no es instancia de RequestConfig", clearSession instanceof RequestConfig);
     }

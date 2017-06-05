@@ -17,18 +17,18 @@ import javax.ws.rs.core.UriInfo;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constants;
 import com.rsi.rvia.rest.client.OperationManager;
 
 @Path("/simuladores")
 public class Common
 {
-    private static final String MEDIATYPE_PDF = "application/pdf";
     // private static final String MEDIATYPE_PDF = "application/vnd.ms.excel";
-    private static Logger       pLog          = LoggerFactory.getLogger(Common.class);
+    private static Logger pLog = LoggerFactory.getLogger(Common.class);
 
     @POST
     @Path("/pdf")
-    @Produces(MEDIATYPE_PDF)
+    @Produces(Constants.HTTP_HEADER_MEDIATYPE_PDF)
     @Consumes({ MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.APPLICATION_FORM_URLENCODED,
             "application/x-ms-application" })
     public Response getSimulatorPdfPrinter(@Context HttpServletRequest pRequest,
@@ -47,7 +47,7 @@ public class Common
             String strDate = pSdf.format(new Date());
             String strFileName = "simulacion_" + strDate + ".pdf";
             String strHeaderDownload = "attachment; filename=\"" + strFileName + "\"";
-            return Response.ok(abFile, MEDIATYPE_PDF).header("Content-Disposition", strHeaderDownload).build();
+            return Response.ok(abFile, Constants.HTTP_HEADER_MEDIATYPE_PDF).header("Content-Disposition", strHeaderDownload).build();
         }
         catch (Exception e)
         {
@@ -63,7 +63,7 @@ public class Common
             String strJsonData)
     {
         pLog.info("Entra una petición para enviar correo con los datos de simulación al cliente.");
-        Response pResponse = OperationManager.processDataFromSimulators(pRequest, pUriInfo, strJsonData, MediaType.APPLICATION_JSON_TYPE);
+        Response pResponse = OperationManager.processGenericAPP(pRequest, pUriInfo, strJsonData, MediaType.APPLICATION_JSON_TYPE);
         return pResponse;
     }
 
@@ -74,7 +74,7 @@ public class Common
     public Response sendEmailToBank(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo, String strJsonData)
     {
         pLog.info("Entra una petición para enviar correo con los datos de simulación a la sucursal.");
-        Response pResponse = OperationManager.processDataFromSimulators(pRequest, pUriInfo, strJsonData, MediaType.APPLICATION_JSON_TYPE);
+        Response pResponse = OperationManager.processGenericAPP(pRequest, pUriInfo, strJsonData, MediaType.APPLICATION_JSON_TYPE);
         return pResponse;
     }
 }

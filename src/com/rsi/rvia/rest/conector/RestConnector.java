@@ -68,10 +68,12 @@ public class RestConnector
         switch (pMiqQuests.getComponentType())
         {
             case RVIA:
-                pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, (RequestConfigRvia) pRequestConfig, strData, pPathParams, pParamsToInject);
+                pReturn = RestRviaConnector.doConnection(pRequest, pMiqQuests, (RequestConfigRvia) pRequestConfig,
+                        strData, pPathParams, pParamsToInject);
                 break;
             case COORD:
-                pReturn = RestRviaConnector.doDirectConnectionToJsp(pRequest, pMiqQuests, (RequestConfigRvia) pRequestConfig, strData, pPathParams, pParamsToInject);
+                pReturn = RestRviaConnector.doDirectConnectionToJsp(pRequest, pMiqQuests,
+                        (RequestConfigRvia) pRequestConfig, strData, pPathParams, pParamsToInject);
                 break;
             case WS:
             case API:
@@ -79,13 +81,16 @@ public class RestConnector
                 switch (strMethod)
                 {
                     case "GET":
-                        pReturn = RestWSConnector.get(pRequest, pMiqQuests, strData, pPathParams, pParamsToInject);
+                        pReturn = RestWSConnector.get(pRequest, pMiqQuests, pRequestConfig, strData, pPathParams,
+                                pParamsToInject);
                         break;
                     case "POST":
-                        pReturn = RestWSConnector.post(pRequest, pMiqQuests, pRequestConfig, strData, pPathParams, pParamsToInject);
+                        pReturn = RestWSConnector.post(pRequest, pMiqQuests, pRequestConfig, strData, pPathParams,
+                                pParamsToInject);
                         break;
                     case "PUT":
-                        pReturn = RestWSConnector.put(pRequest, pMiqQuests, pRequestConfig, strData, pPathParams, pParamsToInject);
+                        pReturn = RestWSConnector.put(pRequest, pMiqQuests, pRequestConfig, strData, pPathParams,
+                                pParamsToInject);
                         break;
                     case "PATCH":
                         pLog.warn("No existe ninguna acción para este método");
@@ -94,7 +99,8 @@ public class RestConnector
                         pReturn = RestWSConnector.delete(pRequest);
                         break;
                     default:
-                        pLog.warn("No existe tipo de componente definido para esta petición, se devuelve una respuesta ok vacía");
+                        pLog.warn(
+                                "No existe tipo de componente definido para esta petición, se devuelve una respuesta ok vacía");
                         pReturn = Response.ok("{}").build();
                         break;
                 }

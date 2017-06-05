@@ -8,6 +8,7 @@ public class SimulatorEmailConfig
     private int    nId;
     private String strNRBE;
     private String strNrbeName;
+    private String strNRBEDomainName;
     private String strSimpleName;
     private String strComercialName;
     private String strOfficeTo;
@@ -31,6 +32,11 @@ public class SimulatorEmailConfig
     public String getNRBEName()
     {
         return strNrbeName;
+    }
+
+    public String getNRBEDomainName()
+    {
+        return strNRBEDomainName;
     }
 
     public String getSimpleName()
@@ -115,6 +121,8 @@ public class SimulatorEmailConfig
      *            NRBE de la entidad propietaria del simulador
      * @param strNRBEName
      *            Nombre de la entidad propietaria del simulador
+     * @param strNRBEDomainName
+     *            Nombre comercial (elq ue aparece en el dominio) de la entidad
      * @param strSimpleName
      *            Nombre simple del simulador
      * @param strComercialName
@@ -140,15 +148,17 @@ public class SimulatorEmailConfig
      * @param strCustomerDraftTemplate
      *            Remitente del email dirigido con el pdf generado por el cliente
      */
-    public SimulatorEmailConfig(int nId, String strNRBE, String strNRBEName, String strSimpleName,
-            String strComercialName, String strOfficeTo, String strOfficeClaimTemplate, String strOfficeClaimSubject,
-            String strOfficeClaimFrom, String strOfficeDraftTemplate, String strOfficeDraftSubject,
-            String strOfficeDraftFrom, String strCustomerDraftTemplate, String strCustomerDraftSubject,
-            String strCustomerDraftFrom, String strCustomerSupportTelephone, String strCustomerSupportEmail)
+    public SimulatorEmailConfig(int nId, String strNRBE, String strNRBEName, String strNRBEDomainName,
+            String strSimpleName, String strComercialName, String strOfficeTo, String strOfficeClaimTemplate,
+            String strOfficeClaimSubject, String strOfficeClaimFrom, String strOfficeDraftTemplate,
+            String strOfficeDraftSubject, String strOfficeDraftFrom, String strCustomerDraftTemplate,
+            String strCustomerDraftSubject, String strCustomerDraftFrom, String strCustomerSupportTelephone,
+            String strCustomerSupportEmail)
     {
         this.nId = nId;
         this.strNRBE = strNRBE;
         this.strNrbeName = strNRBEName;
+        this.strNRBEDomainName = strNRBEDomainName;
         this.strSimpleName = strSimpleName;
         this.strComercialName = strComercialName;
         this.strOfficeTo = strOfficeTo;
@@ -172,11 +182,12 @@ public class SimulatorEmailConfig
     public String toString()
     {
         StringBuilder pSb = new StringBuilder();
-        pSb.append("Id              : " + nId + "\n");
-        pSb.append("NRBE            : " + strNRBE + "\n");
-        pSb.append("NrbeName        : " + strNrbeName + "\n");
-        pSb.append("ComercialName   : " + strComercialName + "\n");
-        pSb.append("OfficeTo        : " + strOfficeTo + "\n");
+        pSb.append("Id                         : " + nId + "\n");
+        pSb.append("NRBE                       : " + strNRBE + "\n");
+        pSb.append("NrbeName                   : " + strNrbeName + "\n");
+        pSb.append("NRBEDomainName             : " + strNRBEDomainName + "\n");
+        pSb.append("ComercialName              : " + strComercialName + "\n");
+        pSb.append("OfficeTo                   : " + strOfficeTo + "\n");
         pSb.append("strOfficeClaimTemplate     : " + strOfficeClaimTemplate + "\n");
         pSb.append("strOfficeClaimSubject      : " + strOfficeClaimSubject + "\n");
         pSb.append("strOfficeClaimFrom         : " + strOfficeClaimFrom + "\n");
