@@ -42,7 +42,7 @@ public class TarjetaCredito
             "application/x-ms-application" })
     public Response getListadoTarjetaCreditoHtml(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Se finaliza la solicitud del template HTML para Tarjeta de Crédito");
+        pLog.info("Se solicita template HTML para Tarjeta de Crédito");
         Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, true);
         pLog.info("Se finaliza la solicitud del template HTML para Tarjeta de Crédito");
         return pReturn;

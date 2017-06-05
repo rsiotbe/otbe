@@ -12,12 +12,11 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.OperationManager;
-import com.rsi.rvia.rest.endpoint.ruralvia.domiciliacionrecibo.DomiciliacionRecibo;
 
 @Path("/comun")
 public class Coordenada
 {
-    private static Logger pLog = LoggerFactory.getLogger(DomiciliacionRecibo.class);
+    private static Logger pLog = LoggerFactory.getLogger(Coordenada.class);
 
     /**
      * Obtiene la coordenada
