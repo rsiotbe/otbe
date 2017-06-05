@@ -63,6 +63,10 @@ public class MiqQuests
         {
             nReturn = +htCacheDataPath.size();
         }
+        if (htParamsInput != null)
+        {
+            nReturn = +htParamsInput.size();
+        }
         return nReturn;
     }
 
@@ -75,6 +79,8 @@ public class MiqQuests
         htCacheDataId = new Hashtable<Integer, MiqQuests>();
         htCacheDataPath.clear();
         htCacheDataPath = new Hashtable<String, MiqQuests>();
+        htParamsInput.clear();
+        htParamsInput = new Hashtable<String, MiqQuestParam>();
     }
 
     /**
@@ -89,6 +95,8 @@ public class MiqQuests
         strReturn = Utils.hastablePrettyPrintHtml(htCacheDataId);
         strReturn += "\n";
         strReturn = Utils.hastablePrettyPrintHtml(htCacheDataPath);
+        strReturn += "\n";
+        strReturn = Utils.hastablePrettyPrintHtml(htParamsInput);
         return strReturn;
     }
 
