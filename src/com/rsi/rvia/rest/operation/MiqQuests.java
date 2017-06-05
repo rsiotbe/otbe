@@ -26,8 +26,7 @@ import com.rsi.rvia.rest.tool.Utils;
  */
 public class MiqQuests
 {
-    private static Logger                          pLog                          = LoggerFactory.getLogger(
-            MiqQuests.class);
+    private static Logger                          pLog                          = LoggerFactory.getLogger(MiqQuests.class);
     private int                                    nIdMiq;
     private String                                 strPathRest;
     private CompomentType                          pCompomentType;
@@ -92,17 +91,13 @@ public class MiqQuests
      */
     public static String cacheToString() throws Exception
     {
-<<<<<<< HEAD
-        return Utils.hastablePrettyPrintHtml(htCacheDataPath);
-=======
         String strReturn;
         strReturn = Utils.hastablePrettyPrintHtml(htCacheDataId);
         strReturn += "\n";
-        strReturn = Utils.hastablePrettyPrintHtml(htCacheDataPath);
+        strReturn += Utils.hastablePrettyPrintHtml(htCacheDataPath);
         strReturn += "\n";
-        strReturn = Utils.hastablePrettyPrintHtml(htParamsInput);
+        strReturn += Utils.hastablePrettyPrintHtml(htParamsInput);
         return strReturn;
->>>>>>> master
     }
 
     public int getIdMiq()
@@ -193,10 +188,6 @@ public class MiqQuests
                 strRealEndPoint = "https://localhost";
             }
             else
-<<<<<<< HEAD
-                strRealEndPoint = "http://localhost:"
-                        + AppConfiguration.getInstance().getProperty("catalinaServicePort").trim();
-=======
             {
                 String servicePort = "9082";
                 if (AppConfiguration.getInstance().getProperty("catalinaServicePort") != null)
@@ -205,7 +196,6 @@ public class MiqQuests
                 }
                 strRealEndPoint = "http://localhost:" + servicePort;
             }
->>>>>>> master
             strRealEndPoint += this.strEndPoint;
             pUriReturn = UriBuilder.fromUri(strRealEndPoint).build();
         }
@@ -285,7 +275,8 @@ public class MiqQuests
         ResultSet pResultSet = null;
         try
         {
-            String strQuery = "SELECT * from " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".bdptb222_miq_quests order by 1 asc";
+            String strQuery = "SELECT * from " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".bdptb222_miq_quests order by 1 asc";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
             pResultSet = pPreparedStatement.executeQuery();
@@ -299,10 +290,7 @@ public class MiqQuests
                             + " y se continua con el resto");
                     continue;
                 }
-                MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"),
-                        pResultSet.getString("component_type"), pResultSet.getString("direccionador"),
-                        pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"),
-                        pResultSet.getString("opciones"));
+                MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("direccionador"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"), pResultSet.getString("opciones"));
                 if (!htCacheDataId.containsKey(pResultSet.getInt("id_miq")))
                     htCacheDataId.put(pResultSet.getInt("id_miq"), pMiqQuests);
                 if (!htCacheDataPath.containsKey(pResultSet.getString("path_rest")))
@@ -335,8 +323,10 @@ public class MiqQuests
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         // String idMiq = pResultSet.getString("id_miq");
-        String strQuery = "select a.id_miq, c.* from  " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB222_MIQ_QUESTS a, "
-                + " " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB226_MIQ_QUEST_RL_SESSION b, " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB225_MIQ_SESSION_PARAMS c "
+        String strQuery = "select a.id_miq, c.* from  "
+                + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB222_MIQ_QUESTS a, " + " "
+                + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB226_MIQ_QUEST_RL_SESSION b, "
+                + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB225_MIQ_SESSION_PARAMS c "
                 + " where a.id_miq=b.id_miq  and b.ID_MIQ_PARAM=c.ID_MIQ_PARAM  and a.path_rest='" + strPathRest
                 + "' order by c.ID_MIQ_PARAM";
         try
@@ -347,10 +337,7 @@ public class MiqQuests
             while (pResultSet.next())
             {
                 String idMiq = pResultSet.getString("id_miq");
-                MiqQuestParam pMiqQuestParam = new MiqQuestParam(pResultSet.getInt("id_miq_param"),
-                        pResultSet.getString("paramname"), pResultSet.getString("paramvalue"),
-                        pResultSet.getString("paramdesc"), pResultSet.getString("paramtype"),
-                        pResultSet.getString("headername"), pResultSet.getString("aliasname"));
+                MiqQuestParam pMiqQuestParam = new MiqQuestParam(pResultSet.getInt("id_miq_param"), pResultSet.getString("paramname"), pResultSet.getString("paramvalue"), pResultSet.getString("paramdesc"), pResultSet.getString("paramtype"), pResultSet.getString("headername"), pResultSet.getString("aliasname"));
                 String keyForHtParamsInput = idMiq + pResultSet.getString("aliasname");
                 if (!htParamsInput.containsKey(keyForHtParamsInput))
                 {
@@ -418,13 +405,9 @@ public class MiqQuests
         MiqQuests pMiqQuests = null;
         /* si la caché no está cargada se carga */
         if (getCacheSize() == 0)
-<<<<<<< HEAD
         {
             synchronizeLoadCache();
         }
-=======
-            synchronizeLoadCache();
->>>>>>> master
         pMiqQuests = htCacheDataPath.get(strPath);
         return pMiqQuests;
     }
