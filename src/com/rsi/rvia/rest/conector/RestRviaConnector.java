@@ -104,6 +104,9 @@ public class RestRviaConnector
                 }
             }
             MultivaluedMap<String, String> pRviaFields = pMiqQuests.testInputParams(pSessionFields);
+            pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
+            pLog.info("Url: " + strUrl);
+            pLog.info("Params: " + pSessionFields);
             pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
             /* TODO: Revisar la necesidad de enviar los parámetros de sesión. Diríase que no es necesario. */
             pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");

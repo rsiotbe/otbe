@@ -64,6 +64,10 @@ public class MiqQuests
         {
             nReturn = +htCacheDataPath.size();
         }
+        if (htParamsInput != null)
+        {
+            nReturn = +htParamsInput.size();
+        }
         return nReturn;
     }
 
@@ -76,6 +80,8 @@ public class MiqQuests
         htCacheDataPath.clear();
         htCacheDataId = new Hashtable<Integer, MiqQuests>();
         htCacheDataPath = new Hashtable<String, MiqQuests>();
+        htParamsInput.clear();
+        htParamsInput = new Hashtable<String, MiqQuestParam>();
     }
 
     /**
@@ -86,7 +92,17 @@ public class MiqQuests
      */
     public static String cacheToString() throws Exception
     {
+<<<<<<< HEAD
         return Utils.hastablePrettyPrintHtml(htCacheDataPath);
+=======
+        String strReturn;
+        strReturn = Utils.hastablePrettyPrintHtml(htCacheDataId);
+        strReturn += "\n";
+        strReturn = Utils.hastablePrettyPrintHtml(htCacheDataPath);
+        strReturn += "\n";
+        strReturn = Utils.hastablePrettyPrintHtml(htParamsInput);
+        return strReturn;
+>>>>>>> master
     }
 
     public int getIdMiq()
@@ -177,8 +193,19 @@ public class MiqQuests
                 strRealEndPoint = "https://localhost";
             }
             else
+<<<<<<< HEAD
                 strRealEndPoint = "http://localhost:"
                         + AppConfiguration.getInstance().getProperty("catalinaServicePort").trim();
+=======
+            {
+                String servicePort = "9082";
+                if (AppConfiguration.getInstance().getProperty("catalinaServicePort") != null)
+                {
+                    servicePort = AppConfiguration.getInstance().getProperty("catalinaServicePort").trim();
+                }
+                strRealEndPoint = "http://localhost:" + servicePort;
+            }
+>>>>>>> master
             strRealEndPoint += this.strEndPoint;
             pUriReturn = UriBuilder.fromUri(strRealEndPoint).build();
         }
@@ -391,9 +418,13 @@ public class MiqQuests
         MiqQuests pMiqQuests = null;
         /* si la caché no está cargada se carga */
         if (getCacheSize() == 0)
+<<<<<<< HEAD
         {
             synchronizeLoadCache();
         }
+=======
+            synchronizeLoadCache();
+>>>>>>> master
         pMiqQuests = htCacheDataPath.get(strPath);
         return pMiqQuests;
     }
