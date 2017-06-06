@@ -11,7 +11,7 @@ public class RviaConnectCipher
 {
     public static String  RVIA_CONNECT_KEY  = "rsi12345RSI12345";                              // 128 bit key
     private static String ENCRYPT_KEY_RVIA  = "AES";
-    private static String ENCRYPT_MODE_RVIA = "AES/CBC/PKCS5Padding";
+    private static String ENCRYPT_MODE_RVIA = "AES";
     private static Logger pLog              = LoggerFactory.getLogger(RviaConnectCipher.class);
 
     /**
