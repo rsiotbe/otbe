@@ -143,6 +143,9 @@ public class RequestConfigRvia extends RequestConfig
             pLog.debug("La información viene cifrada, se procede a descifrarla");
             /* se desencipta la información */
             strDesToken = RviaConnectCipher.symmetricDecrypt(strToken, RviaConnectCipher.RVIA_CONNECT_KEY);
+            /* si se recibe null se intenta descifrar con el método antiguo */
+            pLog.warn("Al intentar descifrar el token con el metodo nuevo AES/CBC/PKCS5Padding no se consigue nada, se intenta con el método antiguo AES");
+            strDesToken = RviaConnectCipher.symmetricDecryptOld(strToken, RviaConnectCipher.RVIA_CONNECT_KEY);
             pLog.debug("Contenido descifrado. Token: " + strDesToken);
             /* se obtienen las variables recibidas */
             strParameters = strDesToken.split("&");

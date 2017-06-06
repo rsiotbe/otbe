@@ -12,16 +12,31 @@
  		strResult = RviaConnectCipher.symmetricDecrypt(strTextValue, RviaConnectCipher.RVIA_CONNECT_KEY);
  		strKeyValues = strResult.split("&");
  	}
+ 	else if("encryptOld".equalsIgnoreCase(strType))
+ 	{
+ 		strResult = RviaConnectCipher.symmetricDecryptOld(strTextValue, RviaConnectCipher.RVIA_CONNECT_KEY);
+ 		strKeyValues = strResult.split("&");
+ 	}
  	else if("encrypt".equalsIgnoreCase(strType))
  	{
  		strResult = RviaConnectCipher.symmetricEncrypt(strTextValue, RviaConnectCipher.RVIA_CONNECT_KEY);
+ 	}
+ 	else if("encryptOld".equalsIgnoreCase(strType))
+ 	{
+ 		strResult = RviaConnectCipher.symmetricEncryptOld(strTextValue, RviaConnectCipher.RVIA_CONNECT_KEY);
  	}
  	else if("session".equalsIgnoreCase(strType))
  	{
  		strTextValue = session.getAttribute("token").toString();
  		strResult = RviaConnectCipher.symmetricDecrypt(strTextValue, RviaConnectCipher.RVIA_CONNECT_KEY);
  		strKeyValues = strResult.split("&");		
- 	} 		
+ 	} 
+ 	else if("sessionOld".equalsIgnoreCase(strType))
+ 	{
+ 		strTextValue = session.getAttribute("token").toString();
+ 		strResult = RviaConnectCipher.symmetricDecryptOld(strTextValue, RviaConnectCipher.RVIA_CONNECT_KEY);
+ 		strKeyValues = strResult.split("&");		
+ 	} 
  %>  
    
 <!DOCTYPE>
@@ -35,17 +50,24 @@
 		<textArea id="textAreaInput"></textArea>
 		<%if(session.getAttribute("token") != null)
 		{%>
-			<button onclick="fromSession()">Recuperar de sesión</button>
+			<button onclick="fromSession('new')">Recuperar de sesión</button>
+			<button onclick="fromSession('old')">Recuperar de sesión con metodo antiguo</button>
 		<%
 		}
 		%>
 	</div>
 	<div>
 		<div>
-			<button onclick="decrypt()">Desencriptar</button>
+			<button onclick="decrypt('new')">Desencriptar</button>
+		</div>
+		<div>
+			<button onclick="decrypt('old')">Desencriptar con método antiguo</button>
 		</div>
 		<div>		
-			<button onclick="encrypt()">Encriptar</button> 
+			<button onclick="encrypt('new')">Encriptar</button> 
+		</div>
+		<div>
+			<button onclick="decrypt('old')">Encriptar con método antiguo</button>
 		</div>
 	</div>
 
@@ -88,24 +110,30 @@
 		<input id="type" name="type" type="hidden" value="">
 	</form>
 	<script>
-		function decrypt()
+		function decrypt(type)
 		{
 			var texto = document.getElementById('textAreaInput').value;
 			document.getElementById('type').value = 'decrypt';
+			if(type == 'old')
+				document.getElementById('type').value = 'decryptOld';
 			document.getElementById('text').value = texto;
 			document.getElementById('formulario').submit();
 		}
 		
-		function encrypt()
+		function encrypt(type)
 		{
 			var texto = document.getElementById('textAreaInput').value;
 			document.getElementById('type').value = 'encrypt';
+			if(type == 'old')
+				document.getElementById('type').value = 'encryptOld';
 			document.getElementById('text').value = texto;
 			document.getElementById('formulario').submit();
 		}
-		function fromSession()
+		function fromSession(type)
 		{
 			document.getElementById('type').value = 'session';
+			if(type == 'old')
+				document.getElementById('type').value = 'sessionOld';
 			document.getElementById('formulario').submit();
 		}
 	</script>
