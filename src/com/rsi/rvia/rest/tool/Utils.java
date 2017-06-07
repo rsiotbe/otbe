@@ -14,6 +14,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -25,7 +26,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
@@ -164,8 +167,8 @@ public class Utils
      * @throws SQLException
      * @throws JSONException
      */
-    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet)
-            throws SQLException, JSONException
+    public static JSONObject convertResultSetToJSONWithTotalRegCount(ResultSet pResultSet) throws SQLException,
+            JSONException
     {
         JSONObject pJsonRetorno = new JSONObject();
         JSONArray pJson = new JSONArray();
@@ -296,8 +299,7 @@ public class Utils
                 String strKey = (String) pIterator.next();
                 if (pMap.get(strKey) != null)
                 {
-                    strReturn = addParameterToQueryString(strReturn, strKey,
-                            URLEncoder.encode(pMap.getFirst(strKey), "ISO-8859-1"));
+                    strReturn = addParameterToQueryString(strReturn, strKey, URLEncoder.encode(pMap.getFirst(strKey), "ISO-8859-1"));
                 }
             }
         }
@@ -315,8 +317,7 @@ public class Utils
                 String strKey = (String) pIterator.next();
                 if (pMap.get(strKey) != null)
                 {
-                    strReturn = addParameterToQueryString(strReturn, strKey,
-                            URLEncoder.encode(pMap.get(strKey), "ISO-8859-1"));
+                    strReturn = addParameterToQueryString(strReturn, strKey, URLEncoder.encode(pMap.get(strKey), "ISO-8859-1"));
                 }
             }
         }
@@ -333,8 +334,7 @@ public class Utils
             while (pKeys.hasNext())
             {
                 String strKey = (String) pKeys.next();
-                strReturn = addParameterToQueryString(strReturn, strKey,
-                        URLEncoder.encode(pJSONObject.get(strKey).toString(), "ISO-8859-1"));
+                strReturn = addParameterToQueryString(strReturn, strKey, URLEncoder.encode(pJSONObject.get(strKey).toString(), "ISO-8859-1"));
             }
         }
         return strReturn;
@@ -456,8 +456,8 @@ public class Utils
      * @param strJsonData
      * @throws Exception
      */
-    public static void writeMock(HttpServletRequest pRequest, UriInfo pUriInfo, MiqQuests pMiqQuests,
-            String strJsonData) throws Exception
+    public static void writeMock(HttpServletRequest pRequest, UriInfo pUriInfo, MiqQuests pMiqQuests, String strJsonData)
+            throws Exception
     {
         int i;
         String strTargetMockRootDir = AppConfiguration.getInstance().getProperty(Constants.TARGET_MOCK_DIRECTORY);
@@ -476,8 +476,8 @@ public class Utils
             }
             catch (Exception e)
             {
-                throw new LogicalErrorException(500, 9999, "Error al intentar crear directorio",
-                        "Fallo al crear directorio para mocks: " + strTestPath, null);
+                throw new LogicalErrorException(500, 9999, "Error al intentar crear directorio", "Fallo al crear directorio para mocks: "
+                        + strTestPath, null);
             }
         }
         FileWriter fichero = null;
@@ -494,8 +494,8 @@ public class Utils
         }
         catch (Exception e)
         {
-            throw new LogicalErrorException(500, 9999, "Error manejo de ficheros",
-                    "Fallo al crear fichero para mocks: " + strTestPath + "/__" + strPartes[i], null);
+            throw new LogicalErrorException(500, 9999, "Error manejo de ficheros", "Fallo al crear fichero para mocks: "
+                    + strTestPath + "/__" + strPartes[i], null);
         }
         finally
         {
@@ -788,5 +788,33 @@ public class Utils
             return e.toString();
         }
         return sb.toString();
+    }
+
+    /**
+     * convierte una QueryString en un objeto Map clave-valor. Los parametros sin '=' son despreciados
+     * 
+     * @param strQueryString
+     *            QueryString a analizar
+     * @return Map con los datos generados
+     * @throws UnsupportedEncodingException
+     */
+    public static Map<String, String> queryStringToMap(String strQueryString) throws UnsupportedEncodingException
+    {
+        Map<String, String> pMapRetun = new LinkedHashMap<String, String>();
+        String[] astrPairs = strQueryString.split("&");
+        for (String strPair : astrPairs)
+        {
+            int nPos = strPair.indexOf("=");
+            if (nPos == -1)
+            {
+                continue;
+            }
+            String strKey = strPair.substring(0, nPos);
+            strKey = URLDecoder.decode(strKey, "UTF-8");
+            String strValue = strPair.substring(nPos + 1);
+            strValue = URLDecoder.decode(strValue, "UTF-8");
+            pMapRetun.put(strKey, strValue);
+        }
+        return pMapRetun;
     }
 }

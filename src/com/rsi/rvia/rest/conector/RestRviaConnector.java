@@ -1,11 +1,13 @@
 package com.rsi.rvia.rest.conector;
 
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Client;
@@ -240,24 +242,19 @@ public class RestRviaConnector
     }
 
     private static void addDataToSessionFields(String strClavePagina, String strQueryStringData,
-            MultivaluedMap<String, String> pSessionFields)
+            MultivaluedMap<String, String> pSessionFields) throws IOException
     {
         pSessionFields.add("clavePagina", strClavePagina);
         // Se evaluan los datos que llegan en la parte de datos.
-        String[] pArr = strQueryStringData.split("&");
-        if (!strQueryStringData.trim().isEmpty())
+        Map<String, String> pMap = Utils.queryStringToMap(strQueryStringData);
+        for (String strKey : pMap.keySet())
         {
-            for (int i = 0; i < pArr.length; i++)
+            if (pSessionFields.containsKey(strKey))
             {
-                if (pArr[i].trim().isEmpty())
-                    continue;
-                String[] pArr2 = pArr[i].split("=");
-                if (pArr2.length < 2)
-                    continue;
-                if (pArr2[0].trim().isEmpty() || pArr2[1].trim().isEmpty())
-                    continue;
-                pSessionFields.add(pArr2[0], pArr2[1]);
+                pLog.info("Se sobreescribe el campo " + strKey + " con el valor recuperado de la request");
+                pSessionFields.remove(strKey);
             }
+            pSessionFields.add(strKey, pMap.get(strKey));
         }
     }
 
