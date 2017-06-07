@@ -48,7 +48,7 @@ public class RequestConfigTest extends TestBase
         when(request.getParameter("NRBE")).thenReturn("FOO");
         when(request.getParameter("canalAix")).thenReturn(CanalFront.WEB.getValue() + "");
         when(request.getParameter("canal")).thenReturn(CanalHost.BANCA_INTERNET.getValue() + "");
-        RequestConfig clearSession = new RequestConfig(request, null);
+        RequestConfig clearSession = RequestConfig.getRequestConfig(request, null);
         assertNotNull("testClearSession: clearSession es null", clearSession);
         assertTrue("testClearSession: clearSession no es instancia de RequestConfig", clearSession instanceof RequestConfig);
     }

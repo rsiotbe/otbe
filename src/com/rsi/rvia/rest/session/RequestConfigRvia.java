@@ -1,22 +1,21 @@
 package com.rsi.rvia.rest.session;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.Properties;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.Constants.CanalFront;
 import com.rsi.Constants.CanalHost;
-import com.rsi.Constants.Language;
 import com.rsi.rvia.rest.error.exceptions.SessionException;
 import com.rsi.rvia.rest.tool.RviaConnectCipher;
+import com.rsi.rvia.rest.tool.Utils;
 
 public class RequestConfigRvia extends RequestConfig
 {
     private static Logger     pLog               = LoggerFactory.getLogger(RequestConfigRvia.class);
     private String            strNodeRvia;
-    private Cookie[]          pCookiesRviaData;
     private static Properties pAddressRviaProp   = new Properties();
     private URI               pUriRvia           = null;
     private String            strRviaSessionId   = "";
@@ -33,7 +32,7 @@ public class RequestConfigRvia extends RequestConfig
     private static enum TokenKey
     {
         NODE("node"), RVIASESION("RVIASESION"), RVIAUSERID("rviaUserId"), ISUMUSERPROFILE("isumUserProfile"), ISUMSERVICEID(
-                "isumServiceId"), LANG("lang"), NRBE("NRBE"), CANALAIX("canalAix"), CANAL("canal"), IP("ip");
+                "isumServiceId"), LANG("lang"), NRBE("NRBE"), CANALFRONT("canalAix"), CANALHOST("canal"), IP("ip");
         private String value;
 
         private TokenKey(String newValue)
@@ -62,11 +61,6 @@ public class RequestConfigRvia extends RequestConfig
     public String getNodeRvia()
     {
         return strNodeRvia;
-    }
-
-    public Cookie[] getCookiesRviaData()
-    {
-        return pCookiesRviaData;
     }
 
     public URI getUriRvia()
@@ -121,91 +115,74 @@ public class RequestConfigRvia extends RequestConfig
      *            Objeto request recibido
      * @throws Exception
      */
-    public RequestConfigRvia(HttpServletRequest request) throws Exception
+    public static RequestConfigRvia getInstance(HttpServletRequest request) throws Exception
     {
-        super(request, null);
+        RequestConfigRvia pReturn = null;
+        ;
         try
         {
-            String[] strParameters;
-            String strDesToken = "";
+            String strTokenReaded;
+            String strCleanData = "";
             pLog.debug("Se procede a cargar la configuración de la conexión con ruralvia");
             /* se comprueba si el contenido viene encriptado enel parámetro token */
-            strToken = request.getParameter("token");
-            System.out.println(strToken);
-            if (strToken == null)
+            strTokenReaded = request.getParameter("token");
+            if (strTokenReaded == null)
             {
                 /* se comprueba si el token esta inicializado en la sesión de la aplicación */
-                strToken = (String) request.getSession(false).getAttribute("token");
-                pLog.info("Se lee el token de la sesión del usuario. Token: " + strToken);
+                strTokenReaded = (String) request.getSession(false).getAttribute("token");
+                pLog.info("Se lee el token de la sesión del usuario. Token: " + strTokenReaded);
             }
             /* se reemplazan los caracteres espacios por mases, por si al viahar como url se han transformado */
-            strToken = strToken.replace(" ", "+");
+            strTokenReaded = strTokenReaded.replace(" ", "+");
             pLog.debug("La información viene cifrada, se procede a descifrarla");
             /* se desencipta la información */
-            strDesToken = RviaConnectCipher.symmetricDecrypt(strToken, RviaConnectCipher.RVIA_CONNECT_KEY);
+            strCleanData = RviaConnectCipher.symmetricDecrypt(strTokenReaded, RviaConnectCipher.RVIA_CONNECT_KEY);
             /* si se recibe null se intenta descifrar con el método antiguo */
             pLog.warn("Al intentar descifrar el token con el metodo nuevo AES/CBC/PKCS5Padding no se consigue nada, se intenta con el método antiguo AES");
-            strDesToken = RviaConnectCipher.symmetricDecryptOld(strToken, RviaConnectCipher.RVIA_CONNECT_KEY);
-            pLog.debug("Contenido descifrado. Token: " + strDesToken);
-            /* se obtienen las variables recibidas */
-            strParameters = strDesToken.split("&");
-            for (int i = 0; i < strParameters.length; i++)
+            strCleanData = RviaConnectCipher.symmetricDecryptOld(strTokenReaded, RviaConnectCipher.RVIA_CONNECT_KEY);
+            pLog.debug("Contenido descifrado. Token: " + strCleanData);
+            if (strCleanData == null)
             {
-                String[] strAux = strParameters[i].split("=");
-                TokenKey strName = TokenKey.getFromValue(strAux[0]);
-                String strValue = null;
-                if (strAux.length > 1)
-                    strValue = strAux[1];
-                if (strValue != null)
-                {
-                    switch (strName)
-                    {
-                        case NODE:
-                            strNodeRvia = strValue;
-                            break;
-                        case RVIASESION:
-                            strRviaSessionId = strValue;
-                            break;
-                        case RVIAUSERID:
-                            strRviaUserId = strValue;
-                            break;
-                        case ISUMUSERPROFILE:
-                            strIsumUserProfile = new String(strValue);
-                            break;
-                        case ISUMSERVICEID:
-                            strIsumServiceId = strValue;
-                            break;
-                        case LANG:
-                            pLanguage = Language.getEnumValue(strValue);
-                            break;
-                        case NRBE:
-                            strNRBE = strValue;
-                            break;
-                        case CANALAIX:
-                            // Se buscan en todas los posibles valores de la enumeración
-                            pCanalFront = obtainCanalWebFromStringValue(strValue);
-                            break;
-                        case CANAL:
-                            // Se buscan en todas los posibles valores de la enumeración
-                            pCanalHost = obtainCanalHostFromStringValue(strValue);
-                            break;
-                        case IP:
-                            // Se buscan en todas los posibles valores de la enumeración
-                            strIp = strValue;
-                            break;
-                        default:
-                            // No hace nada.
-                            break;
-                    }
-                }
+                throw new Exception("Error al recuperar la información del token");
             }
-            pCookiesRviaData = request.getCookies();
-            /* se precargan las propiedades de comunicación con RVIA */
-            loadProperties();
+            /* se obtienen las variables recibidas */
+            pReturn = new RequestConfigRvia(Utils.queryStringToMap(strCleanData));
+            pReturn.strToken = strTokenReaded;
+            pLog.debug("Objeto de configuación creado. RequestConfigRvia: " + pReturn);
         }
         catch (Exception ex)
         {
-            throw new SessionException(500, 999999, "Error al obtener datos de sesion desde Ruralvia", strIsumServiceId, ex);
+            throw new SessionException(500, 999999, "Error al obtener datos de sesion desde Ruralvia", null, ex);
+        }
+        return pReturn;
+    }
+
+    /**
+     * Constructor de la clase
+     * 
+     * @param request
+     *            Objeto request recibido
+     * @throws SessionException
+     * @throws Exception
+     */
+    public RequestConfigRvia(Map<String, String> pTokenvalues) throws SessionException
+    {
+        super((String) pTokenvalues.get(TokenKey.LANG), (String) pTokenvalues.get(TokenKey.NRBE));
+        try
+        {
+            this.strNodeRvia = (String) pTokenvalues.get(TokenKey.NODE);
+            this.strRviaSessionId = (String) pTokenvalues.get(TokenKey.RVIASESION);
+            this.strRviaUserId = (String) pTokenvalues.get(TokenKey.RVIAUSERID);
+            this.strIsumUserProfile = (String) pTokenvalues.get(TokenKey.ISUMUSERPROFILE);
+            this.strIsumServiceId = (String) pTokenvalues.get(TokenKey.ISUMSERVICEID);
+            this.strIp = (String) pTokenvalues.get(TokenKey.IP);
+            this.pCanalFront = obtainCanalWebFromStringValue((String) pTokenvalues.get(TokenKey.CANALFRONT));
+            this.pCanalHost = obtainCanalHostFromStringValue((String) pTokenvalues.get(TokenKey.CANALHOST));
+            loadRuralviaAddressProperties();
+        }
+        catch (Exception ex)
+        {
+            throw new SessionException(500, 999999, "Error al obtener datos de sesion que provienen de Ruralvia", null, ex);
         }
     }
 
@@ -214,7 +191,7 @@ public class RequestConfigRvia extends RequestConfig
      * 
      * @throws Exception
      */
-    private void loadProperties() throws Exception
+    private void loadRuralviaAddressProperties() throws Exception
     {
         try
         {
@@ -319,17 +296,6 @@ public class RequestConfigRvia extends RequestConfig
         pSb.append("Ip                    :" + strIp + "\n");
         pSb.append("CanalFront (CanalAix) :" + pCanalFront.name() + "\n");
         pSb.append("CanalHost (Canal)     :" + pCanalHost.name() + "\n");
-        if (pCookiesRviaData != null)
-        {
-            pSb.append("Cookies         :\n");
-            for (int i = 0; i < pCookiesRviaData.length; i++)
-            {
-                pSb.append("                 [" + (i) + "] " + pCookiesRviaData[i].getName() + " -> "
-                        + pCookiesRviaData[i].getValue());
-                if (i < pCookiesRviaData.length - 1)
-                    pSb.append("\n");
-            }
-        }
         return pSb.toString();
     }
 }

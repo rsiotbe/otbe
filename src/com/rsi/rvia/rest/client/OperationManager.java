@@ -226,7 +226,7 @@ public class OperationManager
             /*
              * Se crea el objeto RequestConfig con los solo con los datos del lang y css para aplicarlos en el template
              */
-            pRequestConfig = new RequestConfig(pRequest, strJsonData);
+            pRequestConfig = RequestConfig.getRequestConfig(pRequest, strJsonData);
             /* se obtienen los datos necesario para realizar la petición al proveedor */
             pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
             /* se procesa el resultado del conector paa evaluar y adaptar su contenido */
@@ -278,7 +278,7 @@ public class OperationManager
             }
             else
             {
-                pRequestConfig = new RequestConfig(pRequest, null);
+                pRequestConfig = RequestConfig.getRequestConfig(pRequest, null);
             }
             /* se obtienen los datos necesario para realizar la petición al proveedor */
             pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
@@ -384,7 +384,7 @@ public class OperationManager
     {
         RequestConfigRvia pRequestConfigRvia = null;
         // Se obtiene los datos asociados a la petición de ruralvia.
-        pRequestConfigRvia = new RequestConfigRvia(pRequest);
+        pRequestConfigRvia = RequestConfigRvia.getInstance(pRequest);
         // Se establece el token de datos recibido desde ruralvia como dato de sesión.
         HttpSession pSession = pRequest.getSession(true);
         pSession.setAttribute("token", pRequestConfigRvia.getToken());

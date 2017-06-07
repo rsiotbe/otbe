@@ -41,7 +41,7 @@ public class RequestConfigRviaTest extends TestBase
     {
         when(request.getParameter("lang")).thenReturn("FOO");
         when(request.getParameter("NRBE")).thenReturn("FOO");
-        RequestConfig clearSession = new RequestConfig(request, null);
+        RequestConfig clearSession = RequestConfig.getRequestConfig(request, null);
         assertNotNull("testClearSession: clearSession es null", clearSession);
         assertTrue("testClearSession: clearSession no es instancia de RequestConfig", clearSession instanceof RequestConfig);
     }
@@ -51,15 +51,6 @@ public class RequestConfigRviaTest extends TestBase
     {
         String nodeRvia = sessionRvia.getNodeRvia();
         assertNotNull(nodeRvia);
-    }
-
-    @Test
-    public void testGetCookiesRviaData() throws Exception
-    {
-        when(request.getCookies()).thenReturn(new Cookie[] { new Cookie("foo", "bar") });
-        when(request.getParameter("node")).thenReturn("baz");
-        Cookie[] cookiesRviaData = buildSession(false, true).getCookiesRviaData();
-        assertNotNull("testGetCookiesRviaData: cookiesRviaData es null", cookiesRviaData);
     }
 
     @Test

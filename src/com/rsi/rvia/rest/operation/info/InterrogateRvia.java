@@ -7,14 +7,15 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.glassfish.jersey.client.ClientConfig;
-import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
+import com.rsi.rvia.rest.client.RviaRestHttpClient;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 
 /**
@@ -39,7 +40,7 @@ public class InterrogateRvia
      */
     public static Document getXmlDatAndUserInfo(HttpServletRequest pRequest, String strClavepagina) throws Exception
     {
-        return getXmlDatAndUserInfo(new RequestConfigRvia(pRequest), strClavepagina);
+        return getXmlDatAndUserInfo(RequestConfigRvia.getInstance(pRequest), strClavepagina);
     }
 
     /**
@@ -114,7 +115,7 @@ public class InterrogateRvia
     }
 
     /**
-     * Obtiene los valores de la sesión de ruralvia dao una lista de parámetros. Realiza una invoación a un servlet
+     * Obtiene los valores de la sesión de ruralvia dada una lista de parámetros. Realiza una invocación a un servlet
      * específico de ruralvia
      * 
      * @param strParameters
@@ -137,19 +138,19 @@ public class InterrogateRvia
     public static Hashtable<String, String> getParameterFromSession(String strParameters, String strSesId,
             String strHost)
     {
-        String url;
+        String strUrl;
         String strHTML = "";
         String[] strDatosParam = null;
         Hashtable<String, String> htReturn = new Hashtable<String, String>();
-        org.jsoup.nodes.Document pDocResp;
         /* se obtienen los parametros de la petición a ruralvia */
-        htReturn = new Hashtable<String, String>();
-        url = strHost + "/portal_rvia/RviaRestInfo;RVIASESION=" + strSesId + "?listAttributes=" + strParameters;
+        strUrl = strHost + "/portal_rvia/RviaRestInfo;RVIASESION=" + strSesId + "?listAttributes=" + strParameters;
         try
         {
             /* Se fuerza que sea Document el tipo: org.jsoup.nodes.Document */
-            pDocResp = Jsoup.connect(url).get();
-            strHTML = pDocResp.html();
+            Client pClient = RviaRestHttpClient.getClient();
+            WebTarget pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
+            Response pResponse = pTarget.request().get();
+            strHTML = pResponse.readEntity(String.class);
             strDatosParam = strHTML.split(";");
             if (strDatosParam != null)
             {

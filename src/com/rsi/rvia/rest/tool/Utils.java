@@ -14,6 +14,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -25,13 +26,13 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
-
 import org.apache.commons.collections4.MapUtils;
 import org.glassfish.jersey.server.ExtendedUriInfo;
 import org.glassfish.jersey.uri.UriTemplate;
@@ -40,7 +41,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.rsi.Constants;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
@@ -761,22 +761,19 @@ public class Utils
         strReturn += strParams;
         return strReturn;
     }
-    
+
     private static String clobToString(java.sql.Clob data)
     {
         final StringBuilder sb = new StringBuilder();
-
         try
         {
-            final Reader         reader = data.getCharacterStream();
-            final BufferedReader br     = new BufferedReader(reader);
-
+            final Reader reader = data.getCharacterStream();
+            final BufferedReader br = new BufferedReader(reader);
             int b;
-            while(-1 != (b = br.read()))
+            while (-1 != (b = br.read()))
             {
-                sb.append((char)b);
+                sb.append((char) b);
             }
-
             br.close();
         }
         catch (SQLException e)
@@ -787,7 +784,22 @@ public class Utils
         {
             return e.toString();
         }
-
         return sb.toString();
+    }
+
+    public static Map<String, String> queryStringToMap(String strQueryString) throws UnsupportedEncodingException
+    {
+        Map<String, String> pMapRetun = new LinkedHashMap<String, String>();
+        String[] astrPairs = strQueryString.split("&");
+        for (String strPair : astrPairs)
+        {
+            int nPos = strPair.indexOf("=");
+            String strKey = strPair.substring(0, nPos);
+            strKey = URLDecoder.decode(strKey, "UTF-8");
+            String strValue = strPair.substring(nPos + 1);
+            strValue = URLDecoder.decode(strValue, "UTF-8");
+            pMapRetun.put(strKey, strValue);
+        }
+        return pMapRetun;
     }
 }

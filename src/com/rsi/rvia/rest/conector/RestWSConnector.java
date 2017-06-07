@@ -412,7 +412,7 @@ public class RestWSConnector
      * @param pParameters
      * @return
      */
-    public static Hashtable<String, String> checkSessionValues(@Context HttpServletRequest pRequest,
+    public static Hashtable<String, String> checkSessionValues(HttpServletRequest pRequest,
             Hashtable<String, String> pParameters)
     {
         if (pParameters != null)

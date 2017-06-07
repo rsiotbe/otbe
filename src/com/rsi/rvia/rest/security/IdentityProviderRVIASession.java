@@ -88,7 +88,7 @@ public class IdentityProviderRVIASession implements IdentityProvider
     };
 
     /**
-     * Proceso de obtenciónd e datos de ruralvia utilizando los datos que llegan en la request
+     * Proceso de obtención de datos de ruralvia utilizando los datos que llegan en la request
      * 
      * @param pRequest
      * @return HashMap con los campos del payload, o null si falló login
