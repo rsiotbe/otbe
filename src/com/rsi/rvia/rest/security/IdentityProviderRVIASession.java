@@ -11,6 +11,7 @@ import com.rsi.rvia.rest.client.ManageJWToken;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
+import com.rsi.rvia.rest.session.RequestConfigRvia;
 
 /**
  * @class Gestor de validaciónd etoken desde ruralvia y tokens de autorización a partir de usuario obetnido en el token
@@ -19,18 +20,19 @@ import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 public class IdentityProviderRVIASession implements IdentityProvider
 {
     private static Logger           pLog            = LoggerFactory.getLogger(IdentityProviderRVIASession.class);
-    private HttpServletRequest      _pRequest;
-    private HashMap<String, String> _claims;
-    private String                  _JWT;
+    private HttpServletRequest      pRequest;
+    private HashMap<String, String> pClaims;
+    private String                  pJWT;
+    private RequestConfigRvia       pRequestConfigRvia;
     public static final String      RURALVIA_NODE   = "node";
     public static final String      RURALVIA_COOKIE = "RVIASESION";
     public static final String      TOKEN_ID        = "rviatk1";
 
     public IdentityProviderRVIASession(HttpServletRequest pRequest, MiqQuests pMiqQuests)
     {
-        _pRequest = pRequest;
-        _claims = null;
-        _JWT = "";
+        this.pRequest = pRequest;
+        pClaims = null;
+        pJWT = "";
     }
 
     /**
@@ -65,13 +67,15 @@ public class IdentityProviderRVIASession implements IdentityProvider
      */
     public void process() throws Exception
     {
-        _claims = null;
-        _JWT = _pRequest.getHeader("Authorization");
-        if (_JWT == null)
+        pClaims = null;
+        pJWT = pRequest.getHeader("Authorization");
+        if (pJWT == null)
         {
-            _claims = getUserInfo(_pRequest);
-            if (_claims != null)
-                _JWT = generateJWT(_claims, TOKEN_ID);
+            pClaims = getUserInfo(pRequest);
+            if (pClaims != null)
+            {
+                pJWT = generateJWT(pClaims, TOKEN_ID);
+            }
             else
             {
                 // Login fallido
@@ -79,12 +83,13 @@ public class IdentityProviderRVIASession implements IdentityProvider
                 throw new LogicalErrorException(403, 9999, "Login failed", "Suministre credenciales válidas para iniciar sesión", new Exception());
             }
         }
-        _claims = validateJWT(_JWT, TOKEN_ID);
-        if (_claims == null)
+        pClaims = validateJWT(pJWT, TOKEN_ID);
+        if (pClaims == null)
         {
             pLog.error("Se genera un error de comprobación de JWT");
             throw new LogicalErrorException(401, 9999, "Unauthorized", "Sesión no válida", new Exception());
         }
+        pRequestConfigRvia = new RequestConfigRvia(pClaims);
     };
 
     /**
@@ -112,7 +117,7 @@ public class IdentityProviderRVIASession implements IdentityProvider
      */
     public HashMap<String, String> getClaims()
     {
-        return _claims;
+        return pClaims;
     };
 
     /*
@@ -121,13 +126,11 @@ public class IdentityProviderRVIASession implements IdentityProvider
      */
     public String getJWT()
     {
-        return _JWT;
+        return pJWT;
     };
 
-    public getRequestConfigRvia()
+    public RequestConfigRvia getRequestConfigRvia()
     {
-        _claims
-        
-        pRequestConfigRvia
+        return pRequestConfigRvia;
     }
 }
