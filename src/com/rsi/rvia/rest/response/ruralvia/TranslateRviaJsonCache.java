@@ -197,7 +197,7 @@ public class TranslateRviaJsonCache
                             + ".BDPTB079_IDIOMA (IDIOMA, CODIGO, TRADUCCION, COMENTARIO) VALUES (?, ?, ?, ?)";
                 }
                 strQuery2 += " SELECT * FROM DUAL";
-                pLog.trace("Se realiza la insercción en la tabla BDPTB282_ERR_RVIA");
+                pLog.trace("Se realiza la inserción en la tabla BDPTB282_ERR_RVIA");
                 pConnection2 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection2.setAutoCommit(false);
                 pPreparedStatement2 = pConnection2.prepareStatement(strQuery2);
@@ -238,9 +238,18 @@ public class TranslateRviaJsonCache
             catch (Exception ex)
             {
                 fIsError = true;
-                pConnection1.rollback();
-                pConnection2.rollback();
-                pConnection3.rollback();
+                if (pConnection1 != null)
+                {
+                    pConnection1.rollback();
+                }
+                if (pConnection2 != null)
+                {
+                    pConnection2.rollback();
+                }
+                if (pConnection3 != null)
+                {
+                    pConnection3.rollback();
+                }
                 pLog.error("Error al realizar la consulta a la BBDD", ex);
             }
             finally
