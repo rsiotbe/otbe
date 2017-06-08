@@ -110,7 +110,7 @@ public class TranslateRviaJsonCache
                         + "(select i.comentario from " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
                         + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as descripcion " + "from "
                         + AppConfiguration.getInstance().getProperty("BELScheme").trim()
-                        + ".BDPTB282_ERR_RVIA s where s.CODERR = ?";
+                        + ".BDPTB282_ERR_RVIA s where s.TEXTERROR = ?";
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
                 pPreparedStatement.setString(1, pLanguage.getJavaCode());
