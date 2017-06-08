@@ -20,6 +20,8 @@
     Logger pLog = LoggerFactory.getLogger("cardJSON.jsp");
     String strResponse;
     String strCardId;
+    String strLanguage = null;
+    Language pLanguage;
     if (request.getMethod().equals(javax.ws.rs.HttpMethod.POST))
     {
         StringBuffer jb = new StringBuffer();
@@ -41,9 +43,18 @@
     {
         /* GET: Se recuperan los parametros de entrada */
         strCardId = (String) request.getParameter(Constants.PARAM_CARD_ID);
+        strLanguage = (String) request.getParameter(Constants.SIMULADOR_LANGUAGE);
     }
-    
-    JSONObject card = CardsManager.getCardDetails(request);
+    /* se obtiene le objeto idioma */
+    if(strLanguage == null || strLanguage.trim().isEmpty())
+    {
+        pLanguage = Constants.DEFAULT_LANGUAGE;
+    }
+    else
+    {
+        pLanguage = Language.getEnumValue(strLanguage);
+    }
+    JSONObject card = CardsManager.getCardDetails(request, pLanguage);
     /* se comprueba si se genera algún objeto de respuesta, en caso negativo se devuelve un error 404 */
     if(card == null)
     {
