@@ -23,7 +23,8 @@ import com.rsi.rvia.rest.tool.Utils;
 public class TranslateRviaJsonCache
 {
     /** The p log. */
-    private static Logger                                     pLog                 = LoggerFactory.getLogger(TranslateRviaJsonCache.class);
+    private static Logger                                     pLog                 = LoggerFactory.getLogger(
+            TranslateRviaJsonCache.class);
     /** The ht translate cache data. */
     private static Hashtable<String, TranslateRviaJsonObject> htTranslateCacheData = new Hashtable<String, TranslateRviaJsonObject>();
     final static String                                       DEFAULT_LEVEL        = RviaRestResponse.Type.ERROR.name();
@@ -110,18 +111,7 @@ public class TranslateRviaJsonCache
                         + "(select i.comentario from " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
                         + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as descripcion " + "from "
                         + AppConfiguration.getInstance().getProperty("BELScheme").trim()
-                        + ".BDPTB282_ERR_RVIA s where s.CODERR = ?";
-                /*
-                 * String strQuery = "select s.tiporesp, " + "(select i.traduccion from " +
-                 * AppConfiguration.getInstance().getProperty("BELScheme").trim() +
-                 * ".BDPTB079_IDIOMA i where i.idioma = '" + pLanguage.getJavaCode() +
-                 * "' and codigo = s.TEXTERROR) as error, " + "(select i.comentario from " +
-                 * AppConfiguration.getInstance().getProperty("BELScheme").trim() +
-                 * ".BDPTB079_IDIOMA i where i.idioma = '" + pLanguage.getJavaCode() +
-                 * "' and codigo = s.TEXTERROR) as descripcion " + "from " +
-                 * AppConfiguration.getInstance().getProperty("BELScheme").trim() +
-                 * ".BDPTB282_ERR_RVIA s where s.CODERR = '" + strErrorCode + "'";
-                 */
+                        + ".BDPTB282_ERR_RVIA s where s.TEXTERROR = ?";
                 pLog.info("Query:" + strQuery);
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
@@ -152,7 +142,9 @@ public class TranslateRviaJsonCache
                 DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
                 if (fIsError)
                 {
-                    throw new ApplicationException(500, 999994, "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD", null);
+                    throw new ApplicationException(500, 999994,
+                            "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD",
+                            null);
                 }
             }
         }
@@ -183,8 +175,7 @@ public class TranslateRviaJsonCache
                 // Insertar en BDPTB282_ERR_RVIA
                 //
                 pLog.trace("Se procede a insertar el codigo de error " + strErrorCode + " para el idMiq " + nIdMiq);
-                String strQuery1 = "INSERT INTO "
-                        + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                String strQuery1 = "INSERT INTO " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
                         + ".BDPTB282_ERR_RVIA (CODERR, TIPORESP, TEXTERROR, ID_MIQ, DESCRIPCION) VALUES (?, ?, ?, ?, ?)";
                 pConnection1 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection1.setAutoCommit(false);
@@ -281,7 +272,8 @@ public class TranslateRviaJsonCache
                 }
                 if (fIsError)
                 {
-                    throw new ApplicationException(500, 999993, "Error al insertar de error de ruralvia", "Error al acceder a BBDD", null);
+                    throw new ApplicationException(500, 999993, "Error al insertar de error de ruralvia",
+                            "Error al acceder a BBDD", null);
                 }
             }
         }
