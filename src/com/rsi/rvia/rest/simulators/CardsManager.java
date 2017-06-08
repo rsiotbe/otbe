@@ -25,19 +25,24 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.endpoint.simulators.CardObject;
 import com.rsi.rvia.rest.session.RequestConfig;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.BUSHeader;
 
 public class CardsManager
 {
-    private static Logger      pLog            = LoggerFactory.getLogger(CardsManager.class);
-    public static final String KEY_ID          = "id";
-    public static final String KEY_NAME        = "name";
-    public static final String KEY_NRBE        = "nrbe";
-    public static final String KEY_NRBENAME    = "nrbeName";
-    public static final String KEY_ACTIVE      = "active";
-    public static final String KEY_TARJETAS    = "tarjetas";
-    public static final String SERVICE_PUBLIC  = "SimulacionLiquidacionTarjetaPublico";
-    public static final String SERVICE_PRIVATE = "SimulacionLiquidacionTarjetaPrivado";
+    private static Logger      pLog                       = LoggerFactory.getLogger(CardsManager.class);
+    public static final String KEY_ID                     = "id";
+    public static final String KEY_NAME                   = "name";
+    public static final String KEY_LOPD                   = "lopd";
+    public static final String KEY_LEGAL                  = "legal";
+    public static final String KEY_CONDICIONES_CUOTA      = "condicionesCuota";
+    public static final String KEY_CONDICIONES_PORCENTAJE = "condicionesPorcentaje";
+    public static final String KEY_NRBE                   = "nrbe";
+    public static final String KEY_NRBENAME               = "nrbeName";
+    public static final String KEY_ACTIVE                 = "active";
+    public static final String KEY_TARJETAS               = "tarjetas";
+    public static final String SERVICE_PUBLIC             = "SimulacionLiquidacionTarjetaPublico";
+    public static final String SERVICE_PRIVATE            = "SimulacionLiquidacionTarjetaPrivado";
 
     public static JSONObject getAllCards(String strIdNRBE, Language pLanguage, String strNRBE) throws Exception
     {
@@ -49,18 +54,28 @@ public class CardsManager
         JSONObject card = null;
         try
         {
-            String strQuery = "SELECT DISTINCT NOMB_TRFA_PDV, ID_TARJETA FROM BEL.BDPTB283_TARJETAS "
-                    + "WHERE COD_NRBE_EN = ? AND FECHA_COMRCLCN < ? " + "ORDER BY ID_TARJETA";
+            String strQuery = "SELECT DISTINCT T.NOMB_TRFA_PDV, T.ID_TARJETA, " + "(SELECT I.TRADUCCION FROM "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA I WHERE I.IDIOMA = ? AND I.CODIGO = T.TEXTO_LOPD) AS lopd, "
+                    + "(SELECT I.TRADUCCION FROM " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA I WHERE I.IDIOMA = ? AND I.CODIGO = T.TEXTO_AVISO_LEGAL) AS legal " + "FROM "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB283_TARJETAS T WHERE T.COD_NRBE_EN = ? AND T.FECHA_COMRCLCN < ? "
+                    + "ORDER BY T.ID_TARJETA";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
-            pPreparedStatement.setString(1, strIdNRBE);
-            pPreparedStatement.setDate(2, new java.sql.Date(System.currentTimeMillis()));
+            pPreparedStatement.setString(1, pLanguage.getJavaCode());
+            pPreparedStatement.setString(2, pLanguage.getJavaCode());
+            pPreparedStatement.setString(3, strIdNRBE);
+            pPreparedStatement.setDate(4, new java.sql.Date(System.currentTimeMillis()));
             pResultSet = pPreparedStatement.executeQuery();
             while (pResultSet.next())
             {
                 card = new JSONObject();
                 card.put(KEY_NAME, pResultSet.getString(1));
                 card.put(KEY_ID, pResultSet.getString(2));
+                card.put(KEY_LOPD, pResultSet.getString(3));
+                card.put(KEY_LEGAL, pResultSet.getString(4));
                 jsonList.put(card);
             }
             jsonCards.put(KEY_NRBE, strIdNRBE);
@@ -81,7 +96,7 @@ public class CardsManager
         return jsonCards;
     }
 
-    public static JSONObject getCardDetails(HttpServletRequest pRequest) throws Exception
+    public static JSONObject getCardDetails(HttpServletRequest pRequest, Language pLanguage) throws Exception
     {
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
@@ -89,16 +104,21 @@ public class CardsManager
         JSONObject pCardDetails = null;
         CardObject pCard = new CardObject();
         String strIdCard = (String) pRequest.getParameter(Constants.PARAM_CARD_ID);
-        // JSONObject pOptions = new JSONObject(
-        // URLDecoder.decode(pRequest.getParameter(Constants.PARAM_OPTIONS), "UTF-8"));
         try
         {
             pCard.setStrTarjeta(strIdCard);
-            String strQuery = "SELECT COD_NRBE_EN, LPAD(COD_LINEA, 2, '0'), ID_GRP_PD, ID_PDV, ID_TRFA_PDV "
-                    + "FROM BEL.BDPTB283_TARJETAS " + "WHERE ID_TARJETA = ? ";
+            String strQuery = "SELECT T.COD_NRBE_EN, T.COD_LINEA, T.ID_GRP_PD, T.ID_PDV, T.ID_TRFA_PDV, "
+                    + "(SELECT I.TRADUCCION FROM " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA I WHERE I.IDIOMA = ? AND I.CODIGO = T.TEXTO_CONDICIONES_CUOTA) AS condiciones_cuota, "
+                    + "(SELECT I.TRADUCCION FROM " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA I WHERE I.IDIOMA = ? AND I.CODIGO = T.TEXTO_CONDICIONES_PORCENTAJE) AS condiciones_porcentaje "
+                    + "FROM " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB283_TARJETAS T "
+                    + "WHERE ID_TARJETA = ? ";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
-            pPreparedStatement.setString(1, pCard.getStrTarjeta());
+            pPreparedStatement.setString(1, pLanguage.getJavaCode());
+            pPreparedStatement.setString(2, pLanguage.getJavaCode());
+            pPreparedStatement.setString(3, pCard.getStrTarjeta());
             pResultSet = pPreparedStatement.executeQuery();
             while (pResultSet.next())
             {
@@ -107,6 +127,8 @@ public class CardsManager
                 pCard.setStrGrProducto(pResultSet.getString(3));
                 pCard.setStrProducto(pResultSet.getString(4));
                 pCard.setStrTarifa(pResultSet.getString(5));
+                pCard.setStrCondicionesCuota(pResultSet.getString(6));
+                pCard.setStrCondicionesPorcentaje(pResultSet.getString(7));
             }
             // Servicio REST
             String srtJson = getServiceDetails(pRequest, pCard);
@@ -115,6 +137,8 @@ public class CardsManager
                 JSONObject dataProcess = new JSONObject(srtJson);
                 pCardDetails = dataProcess.getJSONObject("EE_O_SimulacionLiquidacionTarjetaPublico").getJSONObject(
                         "Respuesta");
+                pCardDetails.put(KEY_CONDICIONES_CUOTA, pCard.getStrCondicionesCuota());
+                pCardDetails.put(KEY_CONDICIONES_PORCENTAJE, pCard.getStrCondicionesPorcentaje());
                 pLog.info("Respuesta servicio:" + pCardDetails);
             }
         }
