@@ -24,10 +24,11 @@ public class SignExtractor
         strCoord = strCoord.replaceAll(".*value='([a-zA-Z]\\d+)'.*", "$1");
         if (!strCoord.replaceAll("[a-zA-Z]\\d+", "").equals(""))
         {
-            throw new ApplicationException(500, 99999, "Coordenada incorrecta", "Formato de coordenada no válido", null);
+            throw new ApplicationException(500, 99999, "Coordenada incorrecta", "Formato de coordenada no válido",
+                    null);
         }
         /* se comprueba que tipo de firma es, coordenada o posiciones */
-        pSignType = (strHtml.contains("/cajafirma/bootstrap.css")) ? SignType.posiciones : SignType.coordenada;
+        pSignType = (strHtml.contains("/cajafirma/bootstrap.css")) ? SignType.coordenada : SignType.posiciones;
         String tiopcf = "A";
         String tipope = "142";
         JSONObject pJson = new JSONObject();
