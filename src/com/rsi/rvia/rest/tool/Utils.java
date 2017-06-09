@@ -438,7 +438,7 @@ public class Utils
                 String strKey = objKey.toString();
                 strHtml += "<div class=\"hastableElement\">";
                 strHtml += "<div class=\"hastableKey\"><span class=\"hastableKeySpan\">" + strKey + "</span></div>";
-                strHtml += "<div class=\"hastableValue\"><span class=\"hastableValueSpan\">" + pHashtable.get(strKey)
+                strHtml += "<div class=\"hastableValue\"><span class=\"hastableValueSpan\">" + pHashtable.get(objKey)
                         + "</span></div>";
                 strHtml += "</div>";
             }
