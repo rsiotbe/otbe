@@ -92,10 +92,11 @@ public class MiqQuests
     public static String cacheToString() throws Exception
     {
         String strReturn;
-        strReturn = Utils.hastablePrettyPrintHtml(htCacheDataId);
-        strReturn += "\n";
+        strReturn = "Cache por Id";
+        strReturn += Utils.hastablePrettyPrintHtml(htCacheDataId);
+        strReturn += "\nCache por Path";
         strReturn += Utils.hastablePrettyPrintHtml(htCacheDataPath);
-        strReturn += "\n";
+        strReturn += "\nCache de parámetros asociados a cada IdMiq";
         strReturn += Utils.hastablePrettyPrintHtml(htParamsInput);
         return strReturn;
     }
@@ -189,10 +190,17 @@ public class MiqQuests
             }
             else
             {
-                String servicePort = "9082";
-                if (AppConfiguration.getInstance().getProperty("catalinaServicePort") != null)
+                String servicePort = String.valueOf(pRequest.getServerPort());
+                /*
+                 * se comprueba si el servidor de tomcat está publicado en un puerto diferente al que se utiliza para la
+                 * invocación
+                 */
+                String strCatalinaServicePort = AppConfiguration.getInstance().getProperty("catalinaServicePort");
+                if (strCatalinaServicePort != null && !strCatalinaServicePort.trim().isEmpty())
                 {
-                    servicePort = AppConfiguration.getInstance().getProperty("catalinaServicePort").trim();
+                    pLog.info("Se detecta por configuración que el servidor Catalina de Tomcat utiliza el puerto "
+                            + strCatalinaServicePort.trim() + " en lugar del puerto de la petición " + servicePort);
+                    servicePort = strCatalinaServicePort.trim();
                 }
                 strRealEndPoint = "http://localhost:" + servicePort;
             }
@@ -383,12 +391,12 @@ public class MiqQuests
     public String toString()
     {
         StringBuilder pSb = new StringBuilder();
-        pSb.append("IdMiq         :" + nIdMiq + "\n");
-        pSb.append("PathRest      :" + strPathRest + "\n");
-        pSb.append("ComponentType :" + pCompomentType.name() + "\n");
-        pSb.append("IdProvider    :" + pIdProvider.name() + "\n");
-        pSb.append("EndPoint      :" + strEndPoint + "\n");
-        pSb.append("Template      :" + strTemplate + "\n");
+        pSb.append("IdMiq         : " + nIdMiq + "\n");
+        pSb.append("PathRest      : " + strPathRest + "\n");
+        pSb.append("ComponentType : " + pCompomentType.name() + "\n");
+        pSb.append("IdProvider    : " + pIdProvider.name() + "\n");
+        pSb.append("EndPoint      : " + strEndPoint + "\n");
+        pSb.append("Template      : " + strTemplate + "\n");
         if (jsonOpciones != null)
         {
             pSb.append("Opciones      :" + jsonOpciones.toString());
