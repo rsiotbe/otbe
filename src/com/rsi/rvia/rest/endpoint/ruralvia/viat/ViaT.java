@@ -157,13 +157,13 @@ public class ViaT
     {
         try
         {
-            pLog.info("Se obtiene el pdf del contrato para ViaT");
+            pLog.info("Se obtiene el pdf del documento INE de ViaT");
             Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
             String strPdfBase64 = (new JSONObject(pReturn.getEntity().toString())).getJSONObject("response").getJSONObject("data").getString("buffer");
             byte[] abFile = org.apache.commons.codec.binary.Base64.decodeBase64(strPdfBase64.getBytes());
-            String strFileName = "INE.pdf";
+            String strFileName = "INE_ViaT.pdf";
             String strHeaderDownload = "attachment; filename=\"" + strFileName + "\"";
-            pLog.info("Se finaliza la obtencion de el pdf del contrato para ViaT");
+            pLog.info("Se finaliza la obtencion de el pdf del documento INE de ViaT");
             return Response.ok(abFile, Constants.HTTP_HEADER_MEDIATYPE_PDF).header("Content-Disposition", strHeaderDownload).build();
         }
         catch (Exception e)
