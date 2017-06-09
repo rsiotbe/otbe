@@ -92,10 +92,11 @@ public class MiqQuests
     public static String cacheToString() throws Exception
     {
         String strReturn;
-        strReturn = Utils.hastablePrettyPrintHtml(htCacheDataId);
-        strReturn += "\n";
+        strReturn = "Cache por Id";
+        strReturn += Utils.hastablePrettyPrintHtml(htCacheDataId);
+        strReturn += "\nCache por Path";
         strReturn += Utils.hastablePrettyPrintHtml(htCacheDataPath);
-        strReturn += "\n";
+        strReturn += "\nCache de parámetros asociados a cada IdMiq";
         strReturn += Utils.hastablePrettyPrintHtml(htParamsInput);
         return strReturn;
     }
@@ -189,10 +190,17 @@ public class MiqQuests
             }
             else
             {
-                String servicePort = "9082";
-                if (AppConfiguration.getInstance().getProperty("catalinaServicePort") != null)
+                String servicePort = String.valueOf(pRequest.getServerPort());
+                /*
+                 * se comprueba si el servidor de tomcat está publicado en un puerto diferente al que se utiliza para la
+                 * invocación
+                 */
+                String strCatalinaServicePort = AppConfiguration.getInstance().getProperty("catalinaServicePort");
+                if (strCatalinaServicePort != null && !strCatalinaServicePort.trim().isEmpty())
                 {
-                    servicePort = AppConfiguration.getInstance().getProperty("catalinaServicePort").trim();
+                    pLog.info("Se detecta por configuración que el servidor Catalina de Tomcat utiliza el puerto "
+                            + strCatalinaServicePort.trim() + " en lugar del puerto de la petición " + servicePort);
+                    servicePort = strCatalinaServicePort.trim();
                 }
                 strRealEndPoint = "http://localhost:" + servicePort;
             }
@@ -273,6 +281,14 @@ public class MiqQuests
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
+        MiqQuests pMiqQuests;
+        int nIdMiq = -1;
+        String strPathrest = null;
+        String strComponentype = null;
+        String strIdentityProvider = null;
+        String strEndPoint = null;
+        String strTemplate = null;
+        String strOpciones = null;
         try
         {
             String strQuery = "SELECT * from " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
@@ -282,15 +298,27 @@ public class MiqQuests
             pResultSet = pPreparedStatement.executeQuery();
             while (pResultSet.next())
             {
-                if (pResultSet.getString("direccionador") == null)
+                try
                 {
-                    pLog.error("Tipo de proveedor de identidad del miqQuest " + pResultSet.getInt("id_miq")
-                            + " no esta informado. Es necesario definir uno en el campo 'Direccionador' de la tabla");
-                    pLog.warn("Se descarta la carga del del miqQuest " + pResultSet.getInt("id_miq")
-                            + " y se continua con el resto");
+                    nIdMiq = pResultSet.getInt("id_miq");
+                    strPathrest = pResultSet.getString("path_rest");
+                    strComponentype = pResultSet.getString("component_type");
+                    strIdentityProvider = pResultSet.getString("direccionador");
+                    strEndPoint = pResultSet.getString("end_point");
+                    strTemplate = pResultSet.getString("miq_out_template");
+                    strOpciones = pResultSet.getString("opciones");
+                    pMiqQuests = new MiqQuests(nIdMiq, strPathrest, strComponentype, strIdentityProvider, strEndPoint, strTemplate, strOpciones);
+                }
+                catch (Exception ex)
+                {
+                    pLog.error("Error al cargar un Miquest desde BBDD.Datos leidos de carga: " + "\n" + "id_miq: "
+                            + nIdMiq + "\n" + "path_rest: " + strPathrest + "\n" + "component_type: " + strComponentype
+                            + "\n" + "direccionador: " + strIdentityProvider + "\n" + "end_point: " + strEndPoint
+                            + "\n" + "miq_out_template: " + strTemplate + "\n" + "opciones: " + strOpciones, ex);
+                    pLog.error("Error al cargar un Miquest desde BBDD", ex);
+                    pMiqQuests = null;
                     continue;
                 }
-                MiqQuests pMiqQuests = new MiqQuests(pResultSet.getInt("id_miq"), pResultSet.getString("path_rest"), pResultSet.getString("component_type"), pResultSet.getString("direccionador"), pResultSet.getString("end_point"), pResultSet.getString("miq_out_template"), pResultSet.getString("opciones"));
                 if (!htCacheDataId.containsKey(pResultSet.getInt("id_miq")))
                     htCacheDataId.put(pResultSet.getInt("id_miq"), pMiqQuests);
                 if (!htCacheDataPath.containsKey(pResultSet.getString("path_rest")))
@@ -363,12 +391,12 @@ public class MiqQuests
     public String toString()
     {
         StringBuilder pSb = new StringBuilder();
-        pSb.append("IdMiq         :" + nIdMiq + "\n");
-        pSb.append("PathRest      :" + strPathRest + "\n");
-        pSb.append("ComponentType :" + pCompomentType.name() + "\n");
-        pSb.append("IdProvider    :" + pIdProvider.name() + "\n");
-        pSb.append("EndPoint      :" + strEndPoint + "\n");
-        pSb.append("Template      :" + strTemplate + "\n");
+        pSb.append("IdMiq         : " + nIdMiq + "\n");
+        pSb.append("PathRest      : " + strPathRest + "\n");
+        pSb.append("ComponentType : " + pCompomentType.name() + "\n");
+        pSb.append("IdProvider    : " + pIdProvider.name() + "\n");
+        pSb.append("EndPoint      : " + strEndPoint + "\n");
+        pSb.append("Template      : " + strTemplate + "\n");
         if (jsonOpciones != null)
         {
             pSb.append("Opciones      :" + jsonOpciones.toString());
