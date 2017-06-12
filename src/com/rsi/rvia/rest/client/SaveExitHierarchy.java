@@ -70,8 +70,6 @@ public class SaveExitHierarchy
         int i;
         String key;
         @SuppressWarnings("unchecked")
-        JSONObject secResponse1 = new JSONObject();
-        secResponse = secResponse1;
         Iterator<String> iterator = secResponse.keys();
         while (iterator.hasNext())
         {
