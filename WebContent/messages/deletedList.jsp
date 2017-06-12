@@ -16,6 +16,7 @@
 <%@page import="org.slf4j.Logger"%>
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider"%>
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory"%>
+<%@page import="com.rsi.rvia.rest.tool.AppConfiguration"%>
 <%
 	pLog.info("Messages ::: DeletedList ::: Start");
 	JSONObject pJsonResponse = new JSONObject();
@@ -39,7 +40,7 @@ public JSONArray getDeletedList (String strCodNrbe, String strLanguage, String s
 	pLog.debug("Messages ::: getDeletedList ::: Start ");
 	Connection pConnection = null;
 	JSONArray pJsongetNewsResponse = null;
-	String strQuery = "{call BEL.PK_CONSULTA_BUZON_MOVIL.getDeletedMessages(?,?,?,?)}";
+	String strQuery = "{call " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".PK_CONSULTA_BUZON_MOVIL.getDeletedMessages(?,?,?,?)}";
 	try
 	{
 		pLog.debug("Messages ::: getDeletedList ::: DDBBProvider ");

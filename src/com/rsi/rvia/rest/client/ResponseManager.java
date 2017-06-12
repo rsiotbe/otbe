@@ -62,7 +62,7 @@ public class ResponseManager
             else if (RestRviaConnector.isRuralviaWebError(strResponseData))
             {
                 /* se evalua el html para construir un error JSOn con los datos obtenidos */
-                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Error no controlado de la aplicaciónroir");
+                RviaRestResponseErrorItem pRviaRestResponseErrorItem = new RviaRestResponseErrorItem("999999", "Error no controlado de la aplicación");
                 pRviaRestResponse = new RviaRestResponse(RviaRestResponse.Type.ERROR, null, pRviaRestResponseErrorItem);
             }
             else if (pMiqQuests.getComponentType() == CompomentType.COORD)

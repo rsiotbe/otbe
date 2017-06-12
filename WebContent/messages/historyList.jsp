@@ -15,6 +15,7 @@
 <%@page import="org.slf4j.Logger"%>
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider"%>
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory"%>
+<%@page import="com.rsi.rvia.rest.tool.AppConfiguration"%>
 <%
 	pLog.info("Messages ::: getHistory ::: Start");
 	JSONObject pJsonResponse = new JSONObject();
@@ -40,7 +41,7 @@ public JSONArray getHistoryList (String codHistory, String codMail) throws Excep
 	pLog.debug("Messages ::: historyList ::: getHistoryList ::: Start ");
 	Connection pConnection = null;
 	JSONArray pJsongetNewsResponse = null;
-	String strQuery = "{call BEL.PK_CONSULTA_BUZON_MOVIL.getHistoryMessages(?,?,?)}";
+	String strQuery = "{call " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".PK_CONSULTA_BUZON_MOVIL.getHistoryMessages(?,?,?)}";
 	try
 	{
 		pLog.debug("Messages ::: historyList ::: getHistoryList ::: DDBBProvider ");
