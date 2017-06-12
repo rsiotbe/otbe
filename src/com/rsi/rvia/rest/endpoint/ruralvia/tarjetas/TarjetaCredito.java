@@ -126,7 +126,7 @@ public class TarjetaCredito
      *            the uri info
      * @return the datos persona
      */
-    @POST
+    @GET
     @Path("/scoring/formdata")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
