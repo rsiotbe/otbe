@@ -14,6 +14,7 @@
 <%@page import="org.slf4j.Logger"%>
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider"%>
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory"%>
+<%@page import="com.rsi.rvia.rest.tool.AppConfiguration"%>
 <%
 	pLog.info("GetNews ::: Start");
 	JSONObject pJsonResponse = new JSONObject();
@@ -64,7 +65,7 @@ public JSONArray getNews (String strCodNrbe, String strProfile, String strUser) 
 	pLog.info("getNews ::: updateNews ::: User " + strUser);
 	Connection pConnection = null;
 	JSONArray pJsongetNewsResponse = null;
-	String strQuery = "{call BEL.PK_COMUNICACION_CLIENTE.getNews(?,?,?,?)}";
+	String strQuery = "{call " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".PK_COMUNICACION_CLIENTE.getNews(?,?,?,?)}";
 	CallableStatement pCallableStatement = null;
 	try
 	{
@@ -105,8 +106,8 @@ public JSONObject updateNews (String strUser, JSONArray pViews, Object pNoMore)
 	JSONObject pJsongetNewsResponse = new JSONObject();
 	pLog.info("getNews ::: updateNews ::: Start ");
 	pLog.info("getNews ::: updateNews ::: User " + strUser);
-	String strQueryNoMore = "{call BEL.PK_COMUNICACION_CLIENTE.noMore(?,?,?,?)}";
-	String strQueryViews  = "{call BEL.PK_COMUNICACION_CLIENTE.viewed(?,?,?,?)}";
+	String strQueryNoMore = "{call " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".PK_COMUNICACION_CLIENTE.noMore(?,?,?,?)}";
+	String strQueryViews  = "{call " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".PK_COMUNICACION_CLIENTE.viewed(?,?,?,?)}";
 	int iErrorCode = 0;
 	String strErrorMessage = "";
 	try
