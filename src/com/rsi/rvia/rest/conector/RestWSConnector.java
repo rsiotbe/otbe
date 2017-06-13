@@ -29,10 +29,8 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.client.RviaRestHttpClient;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
-import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 import com.rsi.rvia.rest.response.RviaRestResponseErrorItem;
 import com.rsi.rvia.rest.session.RequestConfig;
-import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.BUSHeader;
 import com.rsi.rvia.rest.tool.Utils;
@@ -81,14 +79,12 @@ public class RestWSConnector
         strFinalQueryParams = Utils.addParametersToQueryString(strFinalQueryParams, strPathParams);
         strFinalQueryParams = Utils.addParametersToQueryString(strFinalQueryParams, strInjectParams);
         strFinalQueryParams = Utils.addParametersToQueryString(strFinalQueryParams, strJsonDataParams);
-        strFinalQueryParams = Utils.addParameterToQueryString(strFinalQueryParams, Constants.PARAM_ID_MIQ,
-                String.valueOf(pMiqQuests.getIdMiq()));
+        strFinalQueryParams = Utils.addParameterToQueryString(strFinalQueryParams, Constants.PARAM_ID_MIQ, String.valueOf(pMiqQuests.getIdMiq()));
         String strUrlTotal = pMiqQuests.getBaseWSEndPoint(pRequest) + "?" + strFinalQueryParams;
         WebTarget pTarget = pClient.target(strUrlTotal);
         pLog.info("Url final de petición de datos: " + strUrlTotal);
         String JWT = pRequest.getHeader(Constants.HTTP_HEADER_AUTORIZATION);
-        Response pReturn = pTarget.request().header(Constants.HTTP_HEADER_AUTORIZATION, JWT).headers(
-                BUSHeader.getHeaders(pRequest, pRequestConfig)).accept(MediaType.APPLICATION_JSON).get();
+        Response pReturn = pTarget.request().header(Constants.HTTP_HEADER_AUTORIZATION, JWT).headers(BUSHeader.getHeaders(pRequest, pRequestConfig)).accept(MediaType.APPLICATION_JSON).get();
         // Evitar logueo de campos de login
         logWithFilter(pReturn);
         return pReturn;
@@ -122,9 +118,10 @@ public class RestWSConnector
         pLog.info("Query Params: " + strParameters);
         if (!strParameters.isEmpty())
         {
-            htDatesParameters = InterrogateRvia.getParameterFromSession(strParameters,
-                    (RequestConfigRvia) pRequestConfig);
-            htDatesParameters = checkSessionValues(pRequest, htDatesParameters);
+            // TODO: es necesario decidicir si se debe llamar a rvia para llamar a un ws ajeno
+            // htDatesParameters = InterrogateRvia.getParameterFromSession(strParameters,
+            // (RequestConfigRvia) pRequestConfig);
+            // htDatesParameters = checkSessionValues(pRequest, htDatesParameters);
         }
         ObjectMapper pMapper = new ObjectMapper();
         ObjectNode pJson = (ObjectNode) pMapper.readTree(strJsonData);
@@ -157,9 +154,7 @@ public class RestWSConnector
         strJsonData = pJson.toString();
         pLog.info("Url final de petición de datos: " + pMiqQuests.getBaseWSEndPoint(pRequest));
         WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint(pRequest));
-        Response pReturn = pTarget.request().header("Authorization", JWT).headers(
-                BUSHeader.getHeaders(pRequest, pRequestConfig)).accept(MediaType.APPLICATION_JSON).post(
-                        Entity.json(strJsonData));
+        Response pReturn = pTarget.request().header("Authorization", JWT).headers(BUSHeader.getHeaders(pRequest, pRequestConfig)).accept(MediaType.APPLICATION_JSON).post(Entity.json(strJsonData));
         logWithFilter(pReturn);
         return pReturn;
     }
@@ -182,9 +177,9 @@ public class RestWSConnector
      * @return Respuesta del proveedor de datos
      * @throws Exception
      */
-    public static Response put(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests, RequestConfig pRequestConfig,
-            String strJsonData, MultivaluedMap<String, String> pPathParams, HashMap<String, String> pParamsToInject)
-            throws Exception
+    public static Response put(@Context HttpServletRequest pRequest, MiqQuests pMiqQuests,
+            RequestConfig pRequestConfig, String strJsonData, MultivaluedMap<String, String> pPathParams,
+            HashMap<String, String> pParamsToInject) throws Exception
     {
         /*
          * se reutiliza la petición post puesto que es similar, en caso de una implementación diferente, es necesario
@@ -207,8 +202,7 @@ public class RestWSConnector
     {
         // /??? falta por implementar el método delete
         pLog.error("El método delete no está implementado");
-        throw new Exception(
-                "Se ha recibido una petición de tipo DELETE y no existe ningún método que implemente este tipo de peticiones");
+        throw new Exception("Se ha recibido una petición de tipo DELETE y no existe ningún método que implemente este tipo de peticiones");
     }
 
     /**
@@ -387,8 +381,7 @@ public class RestWSConnector
             {
                 JSONObject pJsonContent = pJsonData.getJSONObject(strPrimaryKey).getJSONObject(RAMA_ERROR);
                 if (pJsonContent == null)
-                    pLog.error(
-                            "No se ha encontrado el nodo 'Errores' dentro del contenido del JSON devuelto por el WS");
+                    pLog.error("No se ha encontrado el nodo 'Errores' dentro del contenido del JSON devuelto por el WS");
                 else
                 {
                     nCode = Integer.parseInt(pJsonContent.getString(RAMA_COD_ERROR));

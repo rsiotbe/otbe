@@ -1,10 +1,8 @@
 package com.rsi.rvia.rest.security;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.http.client.ClientProtocolException;
+import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.client.ManageJWToken;
@@ -12,6 +10,8 @@ import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.operation.info.InterrogateRvia;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
+import com.rsi.rvia.rest.tool.RviaConnectCipher;
+import com.rsi.rvia.rest.tool.Utils;
 
 /**
  * @class Gestor de validaciónd etoken desde ruralvia y tokens de autorización a partir de usuario obetnido en el token
@@ -22,7 +22,7 @@ public class IdentityProviderRVIASession implements IdentityProvider
     private static Logger           pLog            = LoggerFactory.getLogger(IdentityProviderRVIASession.class);
     private HttpServletRequest      pRequest;
     private HashMap<String, String> pClaims;
-    private String                  pJWT;
+    private String                  strJWT;
     private RequestConfigRvia       pRequestConfigRvia;
     public static final String      RURALVIA_NODE   = "node";
     public static final String      RURALVIA_COOKIE = "RVIASESION";
@@ -32,7 +32,7 @@ public class IdentityProviderRVIASession implements IdentityProvider
     {
         this.pRequest = pRequest;
         pClaims = null;
-        pJWT = "";
+        strJWT = "";
     }
 
     /**
@@ -68,13 +68,25 @@ public class IdentityProviderRVIASession implements IdentityProvider
     public void process() throws Exception
     {
         pClaims = null;
-        pJWT = pRequest.getHeader("Authorization");
-        if (pJWT == null)
+        strJWT = pRequest.getHeader("Authorization");
+        /* si el JWT no viene en la cabecera, se intenta buscar en la sesión del usuario */
+        if (strJWT == null)
+        {
+            strJWT = pRequest.getHeader("Authorization");
+            HttpSession pSession = pRequest.getSession(false);
+            if (pSession != null)
+            {
+                strJWT = (String) pSession.getAttribute("JWT");
+            }
+        }
+        if (strJWT == null)
         {
             pClaims = getUserInfo(pRequest);
             if (pClaims != null)
             {
-                pJWT = generateJWT(pClaims, TOKEN_ID);
+                strJWT = generateJWT(pClaims, TOKEN_ID);
+                HttpSession pSession = pRequest.getSession(true);
+                pSession.setAttribute("JWT", strJWT);
             }
             else
             {
@@ -83,7 +95,7 @@ public class IdentityProviderRVIASession implements IdentityProvider
                 throw new LogicalErrorException(403, 9999, "Login failed", "Suministre credenciales válidas para iniciar sesión", new Exception());
             }
         }
-        pClaims = validateJWT(pJWT, TOKEN_ID);
+        pClaims = validateJWT(strJWT, TOKEN_ID);
         if (pClaims == null)
         {
             pLog.error("Se genera un error de comprobación de JWT");
@@ -97,18 +109,54 @@ public class IdentityProviderRVIASession implements IdentityProvider
      * 
      * @param pRequest
      * @return HashMap con los campos del payload, o null si falló login
-     * @throws ClientProtocolException
-     * @throws IOException
+     * @throws Exception
      */
-    private HashMap<String, String> getUserInfo(HttpServletRequest pRequest) throws ClientProtocolException,
-            IOException
+    private HashMap<String, String> getUserInfo(HttpServletRequest pRequest) throws Exception
     {
         String strNode = pRequest.getParameter(RURALVIA_NODE);
         String strRviaCookie = pRequest.getParameter(RURALVIA_COOKIE);
-        Hashtable<String, String> pHtReturn;
+        HashMap<String, String> pHtReturn;
         String strParameters = "USUARIO;ENTID;PERUSU;idioma;ENTID;canalAix;canal;IP";
-        pHtReturn = InterrogateRvia.getParameterFromSession(strParameters, strRviaCookie, strNode);
-        return new HashMap<String, String>(pHtReturn);
+        /*
+         * si no se reciben los parameñtros para interrogar a rvia, se intenta obtener el token de sesión de la fomra
+         * antigua
+         */
+        if (strNode != null && strRviaCookie != null)
+        {
+            pHtReturn = InterrogateRvia.getParameterFromSession(strNode, strRviaCookie, strParameters);
+        }
+        else
+        {
+            // TODO: Esta parte del código ses necesario eliminarla cuando ruralvia ya no gnere token, si no que consuma
+            // la generaicón de JWT
+            pLog.info("Se accede a leer el token de forma antigua");
+            pRequestConfigRvia = RequestConfigRvia.getInstance(pRequest);
+            String strTokenReaded = pRequest.getParameter("token");
+            if (strTokenReaded == null)
+            {
+                /* se comprueba si el token esta inicializado en la sesión de la aplicación */
+                strTokenReaded = (String) pRequest.getSession(false).getAttribute("token");
+                pLog.info("Se lee el token de la sesión del usuario. Token: " + strTokenReaded);
+            }
+            /* se reemplazan los caracteres espacios por mases, por si al viahar como url se han transformado */
+            strTokenReaded = strTokenReaded.replace(" ", "+");
+            pLog.debug("La información viene cifrada, se procede a descifrarla");
+            /* se desencipta la información */
+            String strCleanData = RviaConnectCipher.symmetricDecrypt(strTokenReaded, RviaConnectCipher.RVIA_CONNECT_KEY);
+            /* si se recibe null se intenta descifrar con el método antiguo */
+            pLog.warn("Al intentar descifrar el token con el metodo nuevo AES/CBC/PKCS5Padding no se consigue nada, se intenta con el método antiguo AES");
+            strCleanData = RviaConnectCipher.symmetricDecryptOld(strTokenReaded, RviaConnectCipher.RVIA_CONNECT_KEY);
+            pLog.debug("Contenido descifrado. Token: " + strCleanData);
+            if (strCleanData == null)
+            {
+                throw new Exception("Error al recuperar la información del token antiguo de rvia");
+            }
+            pHtReturn = (HashMap<String, String>) Utils.queryStringToMap(strCleanData);
+            // Se establece el token de datos recibido desde ruralvia como dato de sesión.
+            HttpSession pSession = pRequest.getSession(true);
+            pSession.setAttribute("token", pRequestConfigRvia.getToken());
+        }
+        return pHtReturn;
     }
 
     /*
@@ -126,7 +174,7 @@ public class IdentityProviderRVIASession implements IdentityProvider
      */
     public String getJWT()
     {
-        return pJWT;
+        return strJWT;
     };
 
     public RequestConfigRvia getRequestConfigRvia()

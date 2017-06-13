@@ -1,8 +1,7 @@
 package com.rsi.rvia.rest.operation.info;
 
 import java.io.StringReader;
-import java.util.Hashtable;
-import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import com.rsi.rvia.rest.client.RviaRestHttpClient;
-import com.rsi.rvia.rest.session.RequestConfigRvia;
 
 /**
  * Clase que gestiona el interrogatoria a ruralvia para conocer los datos de la operativa y los valores que el usuario
@@ -31,21 +29,6 @@ public class InterrogateRvia
     /**
      * Obtiene un documento de tipo XML con la información, es simmilar al fichero xml.dat de la operativa
      * 
-     * @param pRequest
-     *            Petición original
-     * @param strClavepagina
-     *            Clave pagina de la operativa a preguntar
-     * @return Documento Xml que contiene toda la info
-     * @throws Exception
-     */
-    public static Document getXmlDatAndUserInfo(HttpServletRequest pRequest, String strClavepagina) throws Exception
-    {
-        return getXmlDatAndUserInfo(RequestConfigRvia.getInstance(pRequest), strClavepagina);
-    }
-
-    /**
-     * Obtiene un documento de tipo XML con la información, es simmilar al fichero xml.dat de la operativa
-     * 
      * @param pRequestConfigRvia
      *            Objeto que contiene la información extraida de la sesión de ruralvia
      * @param strClavepagina
@@ -53,7 +36,7 @@ public class InterrogateRvia
      * @return Documento Xml que contiene toda la info
      * @throws Exception
      */
-    public static Document getXmlDatAndUserInfo(RequestConfigRvia pRequestConfigRvia, String strClavepagina)
+    public static Document getXmlDatAndUserInfo(String strHostRvia, String strRviaSessionId, String strClavepagina)
             throws Exception
     {
         String strURL;
@@ -67,10 +50,12 @@ public class InterrogateRvia
         try
         {
             /* se compone la url a invocar, para ello se accede a la inforamción de la sesión */
-            strURL = pRequestConfigRvia.getUriRvia() + URI_INTERROGATE_SERVICE;
+            strURL = strHostRvia + URI_INTERROGATE_SERVICE;
             /* si existe sesión de ruralvia asociada al usuario */
-            if (pRequestConfigRvia.getRviaSessionId() != null && !pRequestConfigRvia.getRviaSessionId().isEmpty())
-                strURL += ";RVIASESION=" + pRequestConfigRvia.getRviaSessionId();
+            if (strRviaSessionId != null && !strRviaSessionId.isEmpty())
+            {
+                strURL += ";RVIASESION=" + strRviaSessionId;
+            }
             strURL += "?" + INTERROGATE_PARAM_CLAVEPAGINA + "=" + strClavepagina;
             pLog.info("se compone la URL para interrogar a RVIA. URL: " + strURL);
             /* se utiliza el objeto cliente de peticiones http de Jersey */
@@ -124,26 +109,16 @@ public class InterrogateRvia
      *            Datos de petición recibida desde ruralvia de Ruralvia
      * @return Hastable con los parámetros leidos desde ruralvia
      */
-    public static Hashtable<String, String> getParameterFromSession(String strParameters, RequestConfigRvia pSessionRvia)
-    {
-        Hashtable<String, String> htReturn = new Hashtable<String, String>();
-        /* se obtienen los parametros de la petición a ruralvia */
-        if (pSessionRvia != null && pSessionRvia.getRviaSessionId() != null && pSessionRvia.getUriRvia() != null)
-        {
-            htReturn = getParameterFromSession(strParameters, pSessionRvia.getRviaSessionId(), pSessionRvia.getNodeRvia());
-        }
-        return htReturn;
-    }
-
-    public static Hashtable<String, String> getParameterFromSession(String strParameters, String strSesId,
-            String strHost)
+    public static HashMap<String, String> getParameterFromSession(String strHostRvia, String strRviaSessionId,
+            String strParameters)
     {
         String strUrl;
         String strHTML = "";
         String[] strDatosParam = null;
-        Hashtable<String, String> htReturn = new Hashtable<String, String>();
+        HashMap<String, String> htReturn = new HashMap<String, String>();
         /* se obtienen los parametros de la petición a ruralvia */
-        strUrl = strHost + "/portal_rvia/RviaRestInfo;RVIASESION=" + strSesId + "?listAttributes=" + strParameters;
+        strUrl = strHostRvia + "/portal_rvia/RviaRestInfo;RVIASESION=" + strRviaSessionId + "?listAttributes="
+                + strParameters;
         try
         {
             /* Se fuerza que sea Document el tipo: org.jsoup.nodes.Document */
@@ -167,7 +142,7 @@ public class InterrogateRvia
         catch (Exception ex)
         {
             pLog.error("Error al recuperar parametros de la sesion de Rvia: " + ex);
-            htReturn = new Hashtable<String, String>();
+            htReturn = new HashMap<String, String>();
         }
         return htReturn;
     }

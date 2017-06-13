@@ -108,12 +108,14 @@ public class CardsManager
         {
             pCard.setStrTarjeta(strIdCard);
             String strQuery = "SELECT T.COD_NRBE_EN, T.COD_LINEA, T.ID_GRP_PD, T.ID_PDV, T.ID_TRFA_PDV, "
-                    + "(SELECT I.TRADUCCION FROM " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + "(SELECT I.TRADUCCION FROM "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
                     + ".BDPTB079_IDIOMA I WHERE I.IDIOMA = ? AND I.CODIGO = T.TEXTO_CONDICIONES_CUOTA) AS condiciones_cuota, "
-                    + "(SELECT I.TRADUCCION FROM " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + "(SELECT I.TRADUCCION FROM "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
                     + ".BDPTB079_IDIOMA I WHERE I.IDIOMA = ? AND I.CODIGO = T.TEXTO_CONDICIONES_PORCENTAJE) AS condiciones_porcentaje "
-                    + "FROM " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB283_TARJETAS T "
-                    + "WHERE ID_TARJETA = ? ";
+                    + "FROM " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB283_TARJETAS T " + "WHERE ID_TARJETA = ? ";
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
             pPreparedStatement = pConnection.prepareStatement(strQuery);
             pPreparedStatement.setString(1, pLanguage.getJavaCode());
@@ -135,8 +137,7 @@ public class CardsManager
             if (srtJson != null)
             {
                 JSONObject dataProcess = new JSONObject(srtJson);
-                pCardDetails = dataProcess.getJSONObject("EE_O_SimulacionLiquidacionTarjetaPublico").getJSONObject(
-                        "Respuesta");
+                pCardDetails = dataProcess.getJSONObject("EE_O_SimulacionLiquidacionTarjetaPublico").getJSONObject("Respuesta");
                 pCardDetails.put(KEY_CONDICIONES_CUOTA, pCard.getStrCondicionesCuota());
                 pCardDetails.put(KEY_CONDICIONES_PORCENTAJE, pCard.getStrCondicionesPorcentaje());
                 pLog.info("Respuesta servicio:" + pCardDetails);
@@ -163,16 +164,13 @@ public class CardsManager
         String strServiceUrl = (String) pProperties.get(SERVICE_PUBLIC);
         // Creamos la URL con parámetros.
         URIBuilder builder = new URIBuilder(strServiceUrl);
-        builder.setParameter(CardObject.ATTR_CODIGO_ENTIDAD, pCard.getStrCodEntidad()).setParameter(
-                CardObject.ATTR_CODIGO_LINEA, pCard.getStrLinea()).setParameter(CardObject.ATTR_GRUPO_PRODUCTO,
-                        pCard.getStrGrProducto()).setParameter(CardObject.ATTR_PRODUCTO,
-                                pCard.getStrProducto()).setParameter(CardObject.ATTR_TARIFA, pCard.getStrTarifa());
+        builder.setParameter(CardObject.ATTR_CODIGO_ENTIDAD, pCard.getStrCodEntidad()).setParameter(CardObject.ATTR_CODIGO_LINEA, pCard.getStrLinea()).setParameter(CardObject.ATTR_GRUPO_PRODUCTO, pCard.getStrGrProducto()).setParameter(CardObject.ATTR_PRODUCTO, pCard.getStrProducto()).setParameter(CardObject.ATTR_TARIFA, pCard.getStrTarifa());
         HttpGet httpGet = new HttpGet(builder.build());
         HttpClient httpClient = HttpClientBuilder.create().build();
         // Creamos el RequestConfig necesario para atacar al Bus.
         JSONObject pDataRequestConfig = new JSONObject();
         pDataRequestConfig.put(Constants.PARAM_NRBE, pCard.getStrCodEntidad());
-        RequestConfig pRequestConfig = new RequestConfig(pRequest, pDataRequestConfig.toString());
+        RequestConfig pRequestConfig = RequestConfig.getRequestConfig(pRequest, pDataRequestConfig.toString());
         // Se recuperan los headers necesarios para el Bus.
         MultivaluedMap<String, Object> headers = BUSHeader.getHeaders(pRequest, pRequestConfig);
         Iterator<String> it = headers.keySet().iterator();
