@@ -66,15 +66,16 @@ public class Personal
             @PathParam("entidad") String strBankName, @PathParam("nombreSimulador") String strLoanName,
             @PathParam("idioma") String strLanguage)
     {
-        return process(pRequest, pUriInfo, strBankName, strLoanName, strLanguage, OperationManager.getMediaType(pRequest));
+        return process(pRequest, pUriInfo, strBankName, strLoanName, strLanguage,
+                OperationManager.getMediaType(pRequest));
     }
 
     @POST
     @Path("{entidad}/personal")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getAllSimulatorsDefaultLanguagePost(@Context HttpServletRequest pRequest,
-            @Context UriInfo pUriInfo, @PathParam("entidad") String strBankName)
+    public Response getAllSimulatorsDefaultLanguagePost(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo,
+            @PathParam("entidad") String strBankName)
     {
         return process(pRequest, pUriInfo, strBankName, null, null, MediaType.APPLICATION_JSON_TYPE);
     }
@@ -131,9 +132,9 @@ public class Personal
         try
         {
             pDataInput = new JSONObject();
-            /* se obtiene la entidad dlenguaje */
+            // Se obtiene el id de la entidad a partir del nombre simple.
             String strNRBE = SimulatorsManager.getNRBEFromName(strNRBEName);
-            /* se conpone un objeto json con los datos necesarios para poder procesar la petición */
+            // Se conpone un objeto json con los datos necesarios para poder procesar la petición.
             pDataInput.put(Constants.SIMULADOR_NRBE, strNRBE);
             pDataInput.put(Constants.SIMULADOR_LANGUAGE, strLanguage);
             pDataInput.put(Constants.SIMULADOR_NRBE_NAME, strNRBEName);

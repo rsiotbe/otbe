@@ -20,6 +20,7 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 import com.rsi.rvia.rest.error.exceptions.LogicalErrorException;
 import com.rsi.rvia.rest.template.TemplateManager;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.Utils;
 
 public class SimulatorsManager
@@ -70,15 +71,29 @@ public class SimulatorsManager
             strQuery = "select s.id_simulador, s.entidad, s.categoria, s.nombre_simple, s.nombre_comercial, s.tipo_calculo, s.activo, "
                     + "s.contratar, s.contacto_email, s.contacto_telef, s.atencion_cliente_email, s.atencion_cliente_telef, "
                     + "s.entidad_email_contacto, s.pdf_con_formualario, "
-                    + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_lopd) as texto_lopd, "
-                    + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_condiciones) as texto_condiciones, "
-                    + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_aviso_legal) as texto_aviso_legal, "
-                    + "(select i.traduccion from bel.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_desc) as texto_desc, "
+                    + "(select i.traduccion from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_lopd) as texto_lopd, "
+                    + "(select i.traduccion from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_condiciones) as texto_condiciones, "
+                    + "(select i.traduccion from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_aviso_legal) as texto_aviso_legal, "
+                    + "(select i.traduccion from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.texto_desc) as texto_desc, "
                     + "p.clave, p.valor "
-                    + "from BEL.BDPTB235_SIMULADORES s, "
-                    + "BEL.BDPTB236_PARAM_SIMULADORES p "
-                    + "where s.id_simulador=p.id_simulador " + "and s.entidad = ? " + "and s.activo = '1' ";
-            /* se conmpone la condición de categoria con una clausula 'IN' */
+                    + "from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB235_SIMULADORES s, "
+                    + ""
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB236_PARAM_SIMULADORES p "
+                    + "where s.id_simulador=p.id_simulador "
+                    + "and s.entidad = ? "
+                    + "and s.activo = '1' ";
+            /* se compone la condición de categoria con una clausula 'IN' */
             pSimulatorType = SimulatorType.valueOf(strSimulatorType);
             if (pSimulatorType == null)
             {
@@ -142,7 +157,11 @@ public class SimulatorsManager
                     strLOPD = pResultSet.getString("TEXTO_LOPD");
                     strDescription = pResultSet.getString("TEXTO_DESC");
                     fDownloadByForm = pResultSet.getBoolean("PDF_CON_FORMUALARIO");
-                    pSimulatorObject = new SimulatorConfig(nSimulatorId, strNRBE, strNRBEName, strCategory, strSimpleName, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail, fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone, strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions, strDescription, fDownloadByForm);
+                    pSimulatorObject = new SimulatorConfig(nSimulatorId, strNRBE, strNRBEName, strCategory,
+                            strSimpleName, strComercialName, strCalcType, fIsActive, fAllowBooking, fAllowUserEmail,
+                            fAllowUserTelephone, strCustomerSupportEmail, strCustomerSupportTelephone,
+                            strReceivingOfficeEmail, strLOPD, strDisclaimer, strContractConditions, strDescription,
+                            fDownloadByForm);
                 }
                 pSimulatorObject.addConfigParam(pResultSet.getString("CLAVE"), pResultSet.getString("VALOR"));
             }
@@ -192,7 +211,13 @@ public class SimulatorsManager
         try
         {
             strQuery = "select s.*, o.NOM_ENT_TXT, e.clave, e.valor  "
-                    + "from BEL.BDPTB235_SIMULADORES s, BEL.BELTS002 o, BEL.BDPTB273_SIMULADORES_EMAIL e "
+                    + "from "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB235_SIMULADORES s, "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BELTS002 o, "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                    + ".BDPTB273_SIMULADORES_EMAIL e "
                     + "where s.ENTIDAD = o.NRBE and s.id_simulador=e.id_simulador and s.id_simulador = ? and s.ENTIDAD=?";
             /* se rellena la query con los datos */
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -292,19 +317,22 @@ public class SimulatorsManager
             }
             catch (Exception ex)
             {
-                throw new ApplicationException(500, 9999, "Se ha producido un error interno de la aplicación", "No ha sido posible recuperar la información necesaria para la entidad", ex);
+                throw new ApplicationException(500, 9999, "Se ha producido un error interno de la aplicación",
+                        "No ha sido posible recuperar la información necesaria para la entidad", ex);
             }
         }
         /* se obtiene el codigo de entidad para el nombre dado */
         JSONObject pDataObject = pPropNRBENames.getJSONObject(strNRBEName);
         if (pDataObject == null)
         {
-            throw new LogicalErrorException(400, 9998, "No se ha encontrado información para esta entidad", "No ha sido posible recuperar la información necesaria para esta entidad", null);
+            throw new LogicalErrorException(400, 9998, "No se ha encontrado información para esta entidad",
+                    "No ha sido posible recuperar la información necesaria para esta entidad", null);
         }
         strReturn = pDataObject.getString("NRBE");
         if (strReturn == null || strReturn.trim().isEmpty())
         {
-            throw new LogicalErrorException(400, 9997, "No se ha encontrado información para esta entidad", "No ha sido posible recuperar la información necesaria para esta entidad", null);
+            throw new LogicalErrorException(400, 9997, "No se ha encontrado información para esta entidad",
+                    "No ha sido posible recuperar la información necesaria para esta entidad", null);
         }
         while (strReturn.length() < 4)
             strReturn = "0" + strReturn;

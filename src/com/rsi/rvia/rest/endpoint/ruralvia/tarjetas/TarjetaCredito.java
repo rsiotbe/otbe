@@ -10,8 +10,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constants;
 import com.rsi.rvia.rest.client.OperationManager;
 
 /**
@@ -42,7 +44,7 @@ public class TarjetaCredito
             "application/x-ms-application" })
     public Response getListadoTarjetaCreditoHtml(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Se finaliza la solicitud del template HTML para Tarjeta de Crédito");
+        pLog.info("Se solicita template HTML para Tarjeta de Crédito");
         Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, true);
         pLog.info("Se finaliza la solicitud del template HTML para Tarjeta de Crédito");
         return pReturn;
@@ -219,5 +221,37 @@ public class TarjetaCredito
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Se finaliza la llamada a la operativa de firma tarjeta de credito");
         return pReturn;
+    }
+
+    /**
+     * Devuelve PDF del documento INE de Tarjeta de Crédito.
+     * 
+     * @param pRequest
+     *            the request
+     * @param pUriInfo
+     *            the uri info
+     * @return pdf con contrato de ViaT
+     */
+    @GET
+    @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/pdf")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces(Constants.HTTP_HEADER_MEDIATYPE_PDF)
+    public Response getpdfViaT(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        try
+        {
+            pLog.info("Se obtiene el pdf del documento INE de Tarjeta de Crédito");
+            Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
+            String strPdfBase64 = (new JSONObject(pReturn.getEntity().toString())).getJSONObject("response").getJSONObject("data").getString("buffer");
+            byte[] abFile = org.apache.commons.codec.binary.Base64.decodeBase64(strPdfBase64.getBytes());
+            String strFileName = "INE_TarjetaCredito.pdf";
+            String strHeaderDownload = "attachment; filename=\"" + strFileName + "\"";
+            pLog.info("Se finaliza la obtencion de el pdf del documento INE de Tarjeta de Crédito");
+            return Response.ok(abFile, Constants.HTTP_HEADER_MEDIATYPE_PDF).header("Content-Disposition", strHeaderDownload).build();
+        }
+        catch (Exception e)
+        {
+            return Response.serverError().build();
+        }
     }
 }

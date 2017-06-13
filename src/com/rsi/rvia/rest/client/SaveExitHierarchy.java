@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory;
 import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 
 public class SaveExitHierarchy
 {
@@ -58,40 +59,49 @@ public class SaveExitHierarchy
     /**
      * Realiza un recorrido recursivo sobre un objeto json
      * 
-     * @param secResponse
+     * @param pJsonTree
      *            Objeto json
-     * @param toPath
+     * @param strToPath
      *            Nombre totalmente cualificado del campo de salida
      * @throws Exception
      */
-    private static void analisisRecursivo(JSONObject secResponse, String toPath) throws Exception
+    private static void analisisRecursivo(JSONObject pJsonTree, String strToPath) throws Exception
     {
         int i;
-        String key;
+        String strKey;
         @SuppressWarnings("unchecked")
-        Iterator<String> iterator = secResponse.keys();
+        Iterator<String> iterator = pJsonTree.keys();
+        String strPathInner = strToPath;
         while (iterator.hasNext())
         {
-            key = iterator.next();
-            /*
-             * if ("paginationinfo".equals(key)) { return; }
-             */
-            if (secResponse.optJSONArray(key) != null)
-            { // Es un objeto array de objetos
-                toPath = toPath + "." + key;
-                for (i = 0; i < secResponse.optJSONArray(key).length(); i++)
+            strKey = iterator.next();
+            if (pJsonTree.optJSONArray(strKey) != null)
+            {
+                /* Es un objeto array de objetos */
+                strPathInner = strToPath + "." + strKey;
+                for (i = 0; i < pJsonTree.optJSONArray(strKey).length(); i++)
                 {
-                    analisisRecursivo(secResponse.optJSONArray(key).getJSONObject(i), toPath);
+                    Object aObj = pJsonTree.optJSONArray(strKey).get(i);
+                    if (aObj instanceof JSONObject)
+                    {
+                        analisisRecursivo(pJsonTree.optJSONArray(strKey).getJSONObject(i), strPathInner);
+                    }
+                    else
+                    { // Es un campo del objeto
+                        save(strKey, strToPath);
+                    }
                 }
             }
-            else if (secResponse.optJSONObject(key) != null)
-            { // Es un objeto json
-                toPath = toPath + "." + key;
-                analisisRecursivo(secResponse.optJSONObject(key), toPath);
+            else if (pJsonTree.optJSONObject(strKey) != null)
+            {
+                /* Es un objeto json */
+                strPathInner = strToPath + "." + strKey;
+                analisisRecursivo(pJsonTree.optJSONObject(strKey), strPathInner);
             }
             else
-            { // Es un campo del objeto
-                save(key, toPath);
+            {
+                /* Es un campo del objeto */
+                save(strKey, strToPath);
             }
         }
     }
@@ -149,9 +159,11 @@ public class SaveExitHierarchy
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         boolean fReturn = false;
-        String strQuery = "select a.id_miq from  BEL.BDPTB222_MIQ_QUESTS a, "
-                + "BEL.BDPTB233_MIQ_QUEST_RL_EXITS b, BEL.BDPTB232_MIQ_EXITS c "
-                + "where a.id_miq=b.id_miq and b.ID_MIQ_EXIT=c.ID_MIQ_EXIT and a.id_miq=? " + "and c.EXITNAME=?";
+        String strQuery = "select a.id_miq from  " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB222_MIQ_QUESTS a, " + "" + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB233_MIQ_QUEST_RL_EXITS b, " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB232_MIQ_EXITS c " + "where a.id_miq=b.id_miq and b.ID_MIQ_EXIT=c.ID_MIQ_EXIT and a.id_miq=? "
+                + "and c.EXITNAME=?";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -192,7 +204,8 @@ public class SaveExitHierarchy
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         Integer nReturn = null;
-        String strQuery = "select a.ID_MIQ_EXIT from BEL.BDPTB232_MIQ_EXITS a where a.EXITNAME = ?";
+        String strQuery = "select a.ID_MIQ_EXIT from " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB232_MIQ_EXITS a where a.EXITNAME = ?";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -226,7 +239,9 @@ public class SaveExitHierarchy
         PreparedStatement pPreparedStatement = null;
         ResultSet pResultSet = null;
         Integer nReturn = null;
-        String strQuery = "select nvl((select * from (select ID_MIQ_EXIT from BEL.BDPTB232_MIQ_EXITS order by ID_MIQ_EXIT desc)	where rownum = 1),0) + 1 ID_MIQ_EXIT from dual";
+        String strQuery = "select nvl((select * from (select ID_MIQ_EXIT from "
+                + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB232_MIQ_EXITS order by ID_MIQ_EXIT desc)	where rownum = 1),0) + 1 ID_MIQ_EXIT from dual";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -239,7 +254,8 @@ public class SaveExitHierarchy
         }
         catch (Exception ex)
         {
-            pLog.error("No se ha podido generar un id de secuencia para el campo ID_MIQ_EXIT de la tabla BEL.BDPTB232_MIQ_EXITS", ex);
+            pLog.error("No se ha podido generar un id de secuencia para el campo ID_MIQ_EXIT de la tabla "
+                    + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".BDPTB232_MIQ_EXITS", ex);
         }
         finally
         {
@@ -258,7 +274,8 @@ public class SaveExitHierarchy
     {
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
-        String strQuery = "insert into BEL.BDPTB232_MIQ_EXITS values (?, ?, '', ?, null)";
+        String strQuery = "insert into " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB232_MIQ_EXITS values (?, ?, '', ?, null)";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
@@ -291,7 +308,8 @@ public class SaveExitHierarchy
     {
         Connection pConnection = null;
         PreparedStatement pPreparedStatement = null;
-        String strQuery = "insert into BEL.BDPTB233_MIQ_QUEST_RL_EXITS values(?, ?, ?, null)";
+        String strQuery = "insert into " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB233_MIQ_QUEST_RL_EXITS values(?, ?, ?, null)";
         try
         {
             pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);

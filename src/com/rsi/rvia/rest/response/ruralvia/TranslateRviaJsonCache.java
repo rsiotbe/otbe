@@ -14,6 +14,7 @@ import com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider;
 import com.rsi.rvia.rest.error.exceptions.ApplicationException;
 import com.rsi.rvia.rest.response.RviaRestResponse;
 import com.rsi.rvia.rest.response.RviaRestResponse.Type;
+import com.rsi.rvia.rest.tool.AppConfiguration;
 import com.rsi.rvia.rest.tool.Utils;
 
 /**
@@ -22,9 +23,11 @@ import com.rsi.rvia.rest.tool.Utils;
 public class TranslateRviaJsonCache
 {
     /** The p log. */
-    private static Logger                                     pLog                 = LoggerFactory.getLogger(TranslateRviaJsonCache.class);
+    private static Logger                                     pLog                 = LoggerFactory.getLogger(
+            TranslateRviaJsonCache.class);
     /** The ht translate cache data. */
     private static Hashtable<String, TranslateRviaJsonObject> htTranslateCacheData = new Hashtable<String, TranslateRviaJsonObject>();
+    final static String                                       DEFAULT_LEVEL        = RviaRestResponse.Type.ERROR.name();
 
     /**
      * Devuelve el tamaño de la cache.
@@ -102,16 +105,19 @@ public class TranslateRviaJsonCache
             try
             {
                 pLog.trace("Codigo de error a comprobar:" + strErrorCode);
-                String strQuery = "select s.tiporesp, "
-                        + "(select i.traduccion from BEL.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as error, "
-                        + "(select i.comentario from BEL.BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as descripcion "
-                        + "from BEL.BDPTB282_ERR_RVIA s where s.CODERR = ? AND s.ID_MIQ = ?";
+                String strQuery = "select s.tiporesp, " + "(select i.traduccion from "
+                        + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                        + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as error, "
+                        + "(select i.comentario from " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                        + ".BDPTB079_IDIOMA i where i.idioma = ? and codigo = s.TEXTERROR) as descripcion " + "from "
+                        + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                        + ".BDPTB282_ERR_RVIA s where s.TEXTERROR = ?";
+                pLog.info("Query:" + strQuery);
                 pConnection = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pPreparedStatement = pConnection.prepareStatement(strQuery);
                 pPreparedStatement.setString(1, pLanguage.getJavaCode());
                 pPreparedStatement.setString(2, pLanguage.getJavaCode());
-                pPreparedStatement.setString(3, strErrorCode);
-                pPreparedStatement.setInt(4, nIdMiq);
+                pPreparedStatement.setString(3, getErrorCode(nIdMiq, strErrorCode));
                 pResultSet = pPreparedStatement.executeQuery();
                 while (pResultSet.next())
                 {
@@ -136,7 +142,9 @@ public class TranslateRviaJsonCache
                 DDBBPoolFactory.closeDDBBObjects(pLog, pResultSet, pPreparedStatement, pConnection);
                 if (fIsError)
                 {
-                    throw new ApplicationException(500, 999994, "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD", null);
+                    throw new ApplicationException(500, 999994,
+                            "Error al procesar la información de respuesta de error de RVIA", "Error al acceder a BBDD",
+                            null);
                 }
             }
         }
@@ -148,7 +156,6 @@ public class TranslateRviaJsonCache
     {
         int OKS = 0; // Se corresponde con tres ejecuciones de query OK.
         final String DEFAULT_COMMENT = "Error generado automáticamente";
-        final String DEFAULT_LEVEL = RviaRestResponse.Type.ERROR.name();
         final String DEFAULT_APP = "AUTO";
         int nResult = 0;
         boolean fIsError = false;
@@ -163,18 +170,19 @@ public class TranslateRviaJsonCache
             try
             {
                 OKS++;
-                String code = DEFAULT_LEVEL + "_" + nIdMiq + "_" + strErrorCode; // Formato: ERROR_IDMIQ_CODERROR;
+                String code = getErrorCode(nIdMiq, strErrorCode);
                 //
                 // Insertar en BDPTB282_ERR_RVIA
                 //
                 pLog.trace("Se procede a insertar el codigo de error " + strErrorCode + " para el idMiq " + nIdMiq);
-                String strQuery1 = "INSERT INTO bel.BDPTB282_ERR_RVIA (CODERR, TIPORESP, TEXTERROR, ID_MIQ, DESCRIPCION) VALUES (?, ?, ?, ?, ?)";
+                String strQuery1 = "INSERT INTO " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                        + ".BDPTB282_ERR_RVIA (CODERR, TIPORESP, TEXTERROR, ID_MIQ, DESCRIPCION) VALUES (?, ?, ?, ?, ?)";
                 pConnection1 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection1.setAutoCommit(false);
                 pPreparedStatement1 = pConnection1.prepareStatement(strQuery1);
-                pPreparedStatement1.setString(1, code);
+                pPreparedStatement1.setString(1, strErrorCode);
                 pPreparedStatement1.setString(2, DEFAULT_LEVEL);
-                pPreparedStatement1.setString(3, strErrorText);
+                pPreparedStatement1.setString(3, code);
                 pPreparedStatement1.setLong(4, nIdMiq);
                 pPreparedStatement1.setString(5, DEFAULT_COMMENT);
                 nResult += pPreparedStatement1.executeUpdate();
@@ -186,10 +194,11 @@ public class TranslateRviaJsonCache
                 for (int i = 0; i < values.length; i++)
                 {
                     OKS++;
-                    strQuery2 += " INTO bel.BDPTB079_IDIOMA (IDIOMA, CODIGO, TRADUCCION, COMENTARIO) VALUES (?, ?, ?, ?)";
+                    strQuery2 += " INTO " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                            + ".BDPTB079_IDIOMA (IDIOMA, CODIGO, TRADUCCION, COMENTARIO) VALUES (?, ?, ?, ?)";
                 }
                 strQuery2 += " SELECT * FROM DUAL";
-                pLog.trace("Se realiza la insercción en la tabla BDPTB282_ERR_RVIA");
+                pLog.trace("Se realiza la inserción en la tabla BDPTB282_ERR_RVIA");
                 pConnection2 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection2.setAutoCommit(false);
                 pPreparedStatement2 = pConnection2.prepareStatement(strQuery2);
@@ -201,7 +210,6 @@ public class TranslateRviaJsonCache
                     pPreparedStatement2.setString(count++, strErrorText);
                     pPreparedStatement2.setString(count++, DEFAULT_COMMENT);
                 }
-                pLog.trace("pPreparedStatement2:" + pPreparedStatement2);
                 nResult += pPreparedStatement2.executeUpdate();
                 //
                 // Insertar en BDPTB079_IDIOMA_APLICATIVO
@@ -209,7 +217,8 @@ public class TranslateRviaJsonCache
                 //
                 OKS++;
                 pLog.trace("Se realiza la insercción en la tabla BDPTB079_IDIOMA");
-                String strQuery3 = "INSERT INTO bel.BDPTB079_IDIOMA_APLICATIVO (CODIGO, APLICATIVO, OPCIONES) VALUES (?, ?, ?)";
+                String strQuery3 = "INSERT INTO " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                        + ".BDPTB079_IDIOMA_APLICATIVO (CODIGO, APLICATIVO, OPCIONES) VALUES (?, ?, ?)";
                 pConnection3 = DDBBPoolFactory.getDDBB(DDBBProvider.OracleBanca);
                 pConnection3.setAutoCommit(false);
                 pPreparedStatement3 = pConnection3.prepareStatement(strQuery3);
@@ -229,27 +238,51 @@ public class TranslateRviaJsonCache
             }
             catch (Exception ex)
             {
-                pConnection1.rollback();
-                pConnection2.rollback();
-                pConnection3.rollback();
-                pLog.error("Error al realizar la consulta a la BBDD", ex);
                 fIsError = true;
+                if (pConnection1 != null)
+                {
+                    pConnection1.rollback();
+                }
+                if (pConnection2 != null)
+                {
+                    pConnection2.rollback();
+                }
+                if (pConnection3 != null)
+                {
+                    pConnection3.rollback();
+                }
+                pLog.error("Error al realizar la consulta a la BBDD", ex);
             }
             finally
             {
-                pConnection1.setAutoCommit(true);
-                pConnection2.setAutoCommit(true);
-                pConnection3.setAutoCommit(true);
-                DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement1, pConnection1);
-                DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement2, pConnection2);
-                DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement3, pConnection3);
+                if (pConnection1 != null)
+                {
+                    pConnection1.setAutoCommit(true);
+                    DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement1, pConnection1);
+                }
+                if (pConnection2 != null)
+                {
+                    pConnection2.setAutoCommit(true);
+                    DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement2, pConnection2);
+                }
+                if (pConnection3 != null)
+                {
+                    pConnection3.setAutoCommit(true);
+                    DDBBPoolFactory.closeDDBBObjects(pLog, null, pPreparedStatement3, pConnection3);
+                }
                 if (fIsError)
                 {
-                    throw new ApplicationException(500, 999993, "Error al procesar insertar respues ta de error de ruralvia", "Error al acceder a BBDD", null);
+                    throw new ApplicationException(500, 999993, "Error al insertar de error de ruralvia",
+                            "Error al acceder a BBDD", null);
                 }
             }
         }
         return nResult;
+    }
+
+    private static String getErrorCode(int nIdMiq, String strErrorCode)
+    {
+        return DEFAULT_LEVEL + "_" + nIdMiq + "_" + strErrorCode; // Formato: ERROR_IDMIQ_CODERROR;
     }
 
     public static RviaRestResponse.Type getRviaResponseType(String strErrorCode, String strTextError, int nIdMiq,
