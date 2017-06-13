@@ -126,7 +126,7 @@ public class TarjetaCredito
      *            the uri info
      * @return the datos persona
      */
-    @POST
+    @GET
     @Path("/scoring/formdata")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
@@ -154,7 +154,7 @@ public class TarjetaCredito
     public Response getLopdTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         pLog.info("Se llama al método de LOPD de tarjetas de crédito");
-        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, true);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Se finaliza el método de LOPD de tarjetas de crédito.");
         return pReturn;
     }
