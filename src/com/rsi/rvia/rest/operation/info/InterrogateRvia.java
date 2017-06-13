@@ -2,6 +2,7 @@ package com.rsi.rvia.rest.operation.info;
 
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.Iterator;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -10,6 +11,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.glassfish.jersey.client.ClientConfig;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -114,30 +116,25 @@ public class InterrogateRvia
     {
         String strUrl;
         String strHTML = "";
-        String[] strDatosParam = null;
         HashMap<String, String> htReturn = new HashMap<String, String>();
         /* se obtienen los parametros de la petición a ruralvia */
-        strUrl = strHostRvia + "/portal_rvia/RviaRestInfo;RVIASESION=" + strRviaSessionId + "?listAttributes="
+        strUrl = strHostRvia + "/portal_rvia/rviaRestInfo;RVIASESION=" + strRviaSessionId + "?listAttributes="
                 + strParameters;
         try
         {
-            /* Se fuerza que sea Document el tipo: org.jsoup.nodes.Document */
+            pLog.debug("Se procede a obtener de ruralvia los datos necesario para gnerar el token JWT");
             Client pClient = RviaRestHttpClient.getClient();
             WebTarget pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
             Response pResponse = pTarget.request().get();
             strHTML = pResponse.readEntity(String.class);
-            strDatosParam = strHTML.split(";");
-            if (strDatosParam != null)
+            JSONObject pData = new JSONObject(strHTML);
+            Iterator<String> aKeys = pData.keys();
+            while (aKeys.hasNext())
             {
-                for (String strParam : strDatosParam)
-                {
-                    String[] strPartesParam = strParam.split("#-#");
-                    if ((strPartesParam != null) && (strPartesParam.length >= 2))
-                    {
-                        htReturn.put(strPartesParam[0], strPartesParam[1]);
-                    }
-                }
+                String strKey = aKeys.next();
+                htReturn.put(strKey, pData.getString(strKey).toString());
             }
+            pLog.debug("Datos recuperado: " + htReturn);
         }
         catch (Exception ex)
         {

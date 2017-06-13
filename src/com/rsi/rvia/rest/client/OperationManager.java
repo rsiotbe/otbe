@@ -25,6 +25,7 @@ import com.rsi.rvia.rest.response.RviaRestResponse;
 import com.rsi.rvia.rest.security.IdentityProvider;
 import com.rsi.rvia.rest.security.IdentityProviderFactory;
 import com.rsi.rvia.rest.security.IdentityProviderRVIASession;
+import com.rsi.rvia.rest.security.IdentityProviderTRUSTED;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.template.TemplateManager;
@@ -62,12 +63,13 @@ public class OperationManager
         Response pResponseConnector;
         RviaRestResponse pRviaRestResponse = null;
         RequestConfigRvia pRequestConfigRvia = null;
+        IdentityProvider pIdentityProvider = null;
         try
         {
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
             /* se comprueba la validaez de la petición */
-            IdentityProvider pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests);
+            pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests);
             pIdentityProvider.process();
             pRequestConfigRvia = ((IdentityProviderRVIASession) pIdentityProvider).getRequestConfigRvia();
             // se comrpeuba el permiso de acceso de isum para esta petición */
@@ -84,13 +86,17 @@ public class OperationManager
         try
         {
             // Se construye la respuesta ya sea error, o correcta, json o template.
-            pResponseConnector = buildResponse(pErrorCaptured, pMediaType, pMiqQuests, pRviaRestResponse, pRequestConfigRvia);
+            pResponseConnector = buildResponse(pErrorCaptured, pMediaType, pMiqQuests, pRviaRestResponse, pRequestConfigRvia, pIdentityProvider);
         }
         catch (Exception ex)
         {
             pLog.error("Se ha generado un error al procesar la respuesta final", ex);
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).build();
+            if (pIdentityProvider == null)
+            {
+                pIdentityProvider = new IdentityProviderTRUSTED(pRequest, pMiqQuests);
+            }
+            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).header("Authorization", pIdentityProvider.getJWT()).build();
         }
         pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
         return pResponseConnector;
@@ -221,6 +227,7 @@ public class OperationManager
         Response pResponseConnector;
         RequestConfig pRequestConfig = null;
         RviaRestResponse pRviaRestResponse = null;
+        IdentityProvider pIdentityProvider = null;
         try
         {
             /*
@@ -229,25 +236,31 @@ public class OperationManager
             pRequestConfig = RequestConfig.getRequestConfig(pRequest, strJsonData);
             /* se obtienen los datos necesario para realizar la petición al proveedor */
             pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
+            pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests);
+            pIdentityProvider.process();
             /* se procesa el resultado del conector paa evaluar y adaptar su contenido */
             pRviaRestResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, strJsonData);
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + pRviaRestResponse.toJsonString());
         }
         catch (Exception ex)
         {
-            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada", ex);
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
         {
-            /* Se construye la respuesta ya sea error, o correcta, json o template */
-            pResponseConnector = buildResponse(pErrorCaptured, pMediaType, pMiqQuests, pRviaRestResponse, pRequestConfig);
+            pResponseConnector = buildResponse(pErrorCaptured, pMediaType, pMiqQuests, pRviaRestResponse, pRequestConfig, pIdentityProvider);
         }
         catch (Exception ex)
         {
             pLog.error("Se ha generado un error al procesar la respuesta final", ex);
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).build();
+            /* Se construye la respuesta ya sea error, o correcta, json o template */
+            if (pIdentityProvider == null)
+            {
+                pIdentityProvider = new IdentityProviderTRUSTED(pRequest, pMiqQuests);
+            }
+            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).header("Authorization", pIdentityProvider.getJWT()).build();
         }
         pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
         return pResponseConnector;
@@ -270,12 +283,16 @@ public class OperationManager
         ErrorResponse pErrorCaptured = null;
         Response pResponseConnector;
         RequestConfig pRequestConfig = null;
+        IdentityProvider pIdentityProvider = null;
         try
         {
+            pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
+            pLog.debug("MiqQuest a procesar para obtener el template: " + pMiqQuests);
+            pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests);
+            pIdentityProvider.process();
+            /* se obtienen los datos necesarios para realizar la petición al proveedor */
             if (fValidateTokenRvia)
             {
-                IdentityProvider pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests);
-                pIdentityProvider.process();
                 RequestConfigRvia pRequestConfigRvia = ((IdentityProviderRVIASession) pIdentityProvider).getRequestConfigRvia();
                 checkIsumPermission(pRequestConfigRvia);
                 pRequestConfig = pRequestConfigRvia;
@@ -284,9 +301,6 @@ public class OperationManager
             {
                 pRequestConfig = RequestConfig.getRequestConfig(pRequest, null);
             }
-            /* se obtienen los datos necesario para realizar la petición al proveedor */
-            pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
-            pLog.debug("MiqQuest a procesar para obtener el template: " + pMiqQuests);
         }
         catch (Exception ex)
         {
@@ -296,13 +310,18 @@ public class OperationManager
         try
         {
             /* Se construye la respuesta ya sea error, o correcta, json o template */
-            pResponseConnector = buildResponse(pErrorCaptured, MediaType.APPLICATION_XHTML_XML_TYPE, pMiqQuests, null, pRequestConfig);
+            pResponseConnector = buildResponse(pErrorCaptured, MediaType.APPLICATION_XHTML_XML_TYPE, pMiqQuests, null, pRequestConfig, pIdentityProvider);
         }
         catch (Exception ex)
         {
             pLog.error("Se ha generado un error al procesar la respuesta final", ex);
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).build();
+            /* Se construye la respuesta ya sea error, o correcta, json o template */
+            if (pIdentityProvider == null)
+            {
+                pIdentityProvider = new IdentityProviderTRUSTED(pRequest, pMiqQuests);
+            }
+            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).header("Authorization", pIdentityProvider.getJWT()).build();
         }
         pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
         return pResponseConnector;
@@ -343,7 +362,8 @@ public class OperationManager
      * @throws Exception
      */
     private static Response buildResponse(ErrorResponse pErrorCaptured, MediaType pMediaType, MiqQuests pMiqQuests,
-            RviaRestResponse pRviaRestResponse, RequestConfig pRequestConfig) throws Exception
+            RviaRestResponse pRviaRestResponse, RequestConfig pRequestConfig, IdentityProvider pIdentityProvider)
+            throws Exception
     {
         int nReturnHttpCode = HTTP_CODE_OK;
         String strTemplate = "";
@@ -374,7 +394,7 @@ public class OperationManager
             pLog.info("La petición utiliza plantilla XHTML o HTML");
             strJsonData = TemplateManager.processTemplate(pMiqQuests, strTemplate, pRequestConfig, strJsonData);
         }
-        return (Response.status(nReturnHttpCode).entity(strJsonData).encoding(ENCODING_UTF8).build());
+        return (Response.status(nReturnHttpCode).entity(strJsonData).encoding(ENCODING_UTF8).header("Authorization", pIdentityProvider.getJWT()).build());
     }
 
     /**
