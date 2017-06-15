@@ -159,7 +159,8 @@
 		throw new Exception("Error al procesar la petición. Imposible crear JWT");       
     }
     String strUrlJWT = pMiqQuestsJWT.getBaseWSEndPoint(request).toString();
-    strUrlJWT += "?node=" + strNode + "&RVIASESION=" + strRviaSession + "&isumServiceId=" + strIsumServiceId;
+    strUrlJWT = strUrlJWT.substring(0, strUrlJWT.indexOf("/", 10));
+    strUrlJWT += "/api/rest/rviasession/login?node=" + strNode + "&RVIASESION=" + strRviaSession + "&isumServiceId=" + strIsumServiceId;
     /* se proceas la peticicón de JWT */
     Client pClient = RviaRestHttpClient.getClient();
 	WebTarget pTarget = pClient.target(UriBuilder.fromUri(strUrlJWT).build());
