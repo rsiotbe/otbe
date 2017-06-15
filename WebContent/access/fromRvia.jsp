@@ -1,4 +1,5 @@
 
+<%@page import="org.glassfish.jersey.internal.util.ExceptionUtils"%>
 <%@page import="org.json.JSONArray"%>
 <%@page import="org.json.JSONObject"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -19,7 +20,13 @@
 		 	org.slf4j.Logger,org.slf4j.LoggerFactory,
 		 	com.rsi.rvia.rest.tool.AppConfiguration,
 		 	com.rsi.rvia.rest.session.RequestConfigRvia,
-		 	org.json.JSONObject"%>
+		 	org.json.JSONObject,
+		 	javax.ws.rs.client.WebTarget,
+		 	javax.ws.rs.core.Response,
+		 	javax.ws.rs.core.UriBuilder,
+		 	javax.ws.rs.client.Client,
+		 	com.rsi.rvia.rest.client.RviaRestHttpClient
+		 	"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -35,7 +42,6 @@
 	String strError = "";
 	int nMiqQuestId = 0;
 	String strIdMiq = null;
-	String strToken = null;
 	String strMethod = null;
 	String strData = null;
 	String strInputs = "";
@@ -52,6 +58,7 @@
 	alParamToNotForwarding.add("localhostHttps");
 	alParamToNotForwarding.add("localhostPort");
 	alParamToNotForwarding.add("idMiq");
+	alParamToNotForwarding.add("token"); // antiguo token de acceso
 
 	strIdMiq = request.getParameter("idMiq");
 	pLog.info("Se recibe una petición para acceder a la operativa con idMiq " + strIdMiq);
@@ -61,10 +68,11 @@
 	} catch (Exception ex) 
 	{
 		pLog.error("Imposible convertir strIdMiq a Integer, valor de strIdMiq: " + strIdMiq);
-		nMiqQuestId = 0; 
+		throw new Exception("Error al procesar la petición. IdMiq no tiene un valor válido");
 	}
-	strToken = request.getParameter("token");
 	strMethod = request.getParameter("method");
+	if (strMethod == null)
+		strMethod = "GET";
 	
 	/* se comprueba si es necesario redirigir la petición a localhost */
 	if((request.getParameter("toLocalhost")!= null) && ("on".equals(request.getParameter("toLocalhost"))))
@@ -76,79 +84,54 @@
 	if(request.getParameter("data")!= null && !(request.getParameter("data").trim().isEmpty()))
 	    strData = request.getParameter("data");
 
-	if (strMethod == null)
-		strMethod = "GET";
 	pLog.trace("Method: " + strMethod);
 	pLog.trace("IdMiq: " + strIdMiq);
-	pLog.trace("Token: " + strToken);
 	pLog.trace("Data: " + strData);
 	pLog.trace("ToLocalhost: " + fToLocalhost);
 	pLog.trace("LocalhostPort: " + strLocalhostPort);
 	pLog.trace("LocalhostHttps: " + fLocalhostHttps);
 	
+	/* se componen los campos input de fomrulario para enviar la petición */
 	Enumeration <String> pEnumParams = request.getParameterNames();
 	while(pEnumParams.hasMoreElements())
 	{
 		String strParamName = pEnumParams.nextElement().toString();
 		String[] astrValues = request.getParameterValues(strParamName);
-		if(astrValues.length <=1)
+		if(astrValues.length > 1)
 		{
-		    String strValue = "";;
-		    if(astrValues.length == 1 && astrValues[0] != null)
-		    {
-		        strValue = astrValues[0];
-		    }
-			pLog.trace("Se procesa el parámetro: " + strParamName + "=" + strValue);
-		    
-		    if(alParamToNotForwarding.contains(strParamName))
-		    {
-				pLog.trace("El parámetro " + strParamName + " se descarta para enviarse a rviarest");
-		        continue;
-		    }
-			out.println("<!-- " + strParamName + " = " + strValue + "-->" );
-			strInputs += "<input type=\"hidden\" name=\"" + strParamName + "\" value=\"" + strValue + "\">\n";
+			pLog.warn("El parámetro: " + strParamName + "tiene más de un valor, se coge solo el primero");
 		}
-		else
-		{
-			pLog.trace("Se procesa el parámetro: " + strParamName + "=" + astrValues);
-			for( int i=0; i < astrValues.length; i++ )
-			{
-				out.println("<!-- " + strParamName + "[" + i + "] = " + astrValues[i] + "-->" );
-				strInputs=strInputs+"<input type=\"hidden\" value=\"" +astrValues[i] + "\" name=\"" + strParamName + "\">\n";
-			}
-		}
+	    String strValue = "";;
+	    if(astrValues.length == 1 && astrValues[0] != null)
+	    {
+	        strValue = astrValues[0];
+	    }
+		pLog.trace("Se procesa el parámetro: " + strParamName + "=" + strValue);
+	    /* se comprueba si este parámetro se debe descartar */
+	    if(alParamToNotForwarding.contains(strParamName))
+	    {
+			pLog.trace("El parámetro " + strParamName + " se descarta para enviarse a rviarest");
+	        continue;
+	    }
+		out.println("<!-- " + strParamName + " = " + strValue + "-->");
+		strInputs += "<input type=\"hidden\" name=\"" + strParamName + "\" value=\"" + strValue + "\">\n";
 	}
-	if (nMiqQuestId > 0) 
+	pMiqQuests = MiqQuests.getMiqQuests(nMiqQuestId);
+	if(pMiqQuests != null)
 	{
-		pMiqQuests = MiqQuests.getMiqQuests(nMiqQuestId);
-		if(pMiqQuests != null)
-		{
-			strPathRest = pMiqQuests.getPathRest();
-			pLog.info("Datos de la operativa: " + pMiqQuests.toString());
-		}
-		else
-		{
-			pLog.error("No se ha recuperado un objeto MiqQuest valido para el id: " + strIdMiq);
-			strError = "1111";
-			strPathRest = "/rviaerror";
-		}
-
-	} else {
-		strError = "1111";
-		strPathRest = "/rviaerror";
+		strPathRest = pMiqQuests.getPathRest();
+		pLog.info("Operación a jecutar: " + pMiqQuests.toString());
 	}
-	
+	else
+	{
+		pLog.error("No se ha recuperado un objeto MiqQuest valido para el id: " + strIdMiq);
+		throw new Exception("Error al procesar la petición. MiqQuests no válido");
+	}
+
 	/* se comprueba si es necesario redirigir a la máquina local */
  	String strHost = "";
     if (fToLocalhost)
     {         
-        RequestConfigRvia pRequestConfigRvia;
-        JSONObject pConfig;
-        HttpPost pHttpPost;
-        HttpClient pHttpClient;
-        HttpResponse pHttpResponse;
-        HttpEntity pHttpEntity; 
-        String strContent = null;
         if(fLocalhostHttps)
         	strHost = "https://localhost:" + strLocalhostPort;
         else
@@ -157,6 +140,31 @@
     }
     strFinalUrl = strHost + "/api/rest" + strPathRest;
     pLog.info("Dirección final del iframe: " + strFinalUrl);
+    
+    /* se llama a generar el token JWT de acceso */
+    String strNode = request.getParameter("node");
+    String strRviaSession = request.getParameter("RVIASESION");
+    String strIsumServiceId = request.getParameter("isumServiceId");
+    pLog.info("Se procede a generar el token JWT de sesión");
+    pLog.info("node:          " + strNode);
+    pLog.info("RVIASESION:    " + strRviaSession);
+    pLog.info("isumServiceId: " + strIsumServiceId);
+    if( (strNode == null || strNode.trim().isEmpty()) || (strNode == null || strNode.trim().isEmpty()) || (strNode == null || strNode.trim().isEmpty()))
+    {
+		pLog.error("Faltan parámetros para gnerar el token de sesión");
+		throw new Exception("Error al procesar la petición. Imposible crear JWT");       
+    }
+    String strUrlJWT = strHost + "/api/rest/rviasession/login?node=" + strNode + "&RVIASESION=" + strRviaSession + "&isumServiceId=" + strIsumServiceId;
+    /* se proceas la peticicón de JWT */
+    Client pClient = RviaRestHttpClient.getClient();
+	WebTarget pTarget = pClient.target(UriBuilder.fromUri(strUrlJWT).build());
+    Response pResponse = pTarget.request().get();
+	pLog.info("Token JWT generado. Respuesta:" + pResponse.readEntity(String.class));
+	if(pResponse.getStatus() != 200)
+	{
+		pLog.error("Error en la petición de token JWT");
+		throw new Exception("Error al procesar la petición. Imposible generar el token JWT");           
+	}
 %>
 <body>
 	<form id="formRedirect" action="<%=strFinalUrl%>" method="<%=strMethod%>" enctype="multipart/form-data">
