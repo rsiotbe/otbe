@@ -68,7 +68,7 @@
 		}
 		%>
 	</div>
-	<div>generateJWT
+	<div>
 		<div>
 			<button onclick="decryptJWT()">Desencriptar JWT</button>
 		</div>
