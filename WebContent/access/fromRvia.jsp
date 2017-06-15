@@ -141,7 +141,7 @@
         pLog.info("Se procesa la petición apuntando a localhost, puerto " + strLocalhostPort);
     }
     strFinalUrl = strHost + "/api/rest" + strPathRest;
-    pLog.info("Dirección final del iframe: " + strFinalUrl);
+    pLog.info("Dirección final del iframe:  " + strFinalUrl);
     
     /* se llama a generar el token JWT de acceso */
     MiqQuests pMiqQuestsJWT = MiqQuests.getMiqQuests(9002);
