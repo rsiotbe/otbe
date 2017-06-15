@@ -61,7 +61,7 @@ public class IdentityProviderRVIASession implements IdentityProvider
      * @return HashMap con los campos del payload
      * @throws Exception
      */
-    private HashMap<String, String> validateJWT(String jwt, String strTokenId) throws Exception
+    public HashMap<String, String> validateJWT(String jwt, String strTokenId) throws Exception
     {
         return ManageJWToken.validateJWT(jwt, strTokenId);
     };

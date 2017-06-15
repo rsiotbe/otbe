@@ -1,3 +1,7 @@
+<%@page import="com.rsi.rvia.rest.tool.Utils"%>
+<%@page import="com.rsi.rvia.rest.security.IdentityProviderFactory"%>
+<%@page import="com.rsi.rvia.rest.security.IdentityProviderRVIASession"%>
+<%@page import="java.util.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
 	import="com.rsi.rvia.rest.tool.RviaConnectCipher"%>
@@ -6,7 +10,15 @@
  	String strType = request.getParameter("type");
  	String strTextValue = request.getParameter("text");
  	String strResult = "";
+ 	HashMap<String,String> pPayload;
  	String strKeyValues[] = null;
+ 	if("decryptJWT".equalsIgnoreCase(strType))
+	{
+ 	    IdentityProviderRVIASession pIdentityProviderRVIASession = new IdentityProviderRVIASession(null, null);
+ 	    pPayload = pIdentityProviderRVIASession.validateJWT(strTextValue, IdentityProviderRVIASession.TOKEN_ID);
+ 	    strResult = Utils.hashMapToQueryString(pPayload);
+ 		strKeyValues = strResult.split("&");
+ 	}
  	if("decrypt".equalsIgnoreCase(strType))
 	{
  		strResult = RviaConnectCipher.symmetricDecrypt(strTextValue, RviaConnectCipher.RVIA_CONNECT_KEY);
@@ -56,18 +68,21 @@
 		}
 		%>
 	</div>
-	<div>
+	<div>generateJWT
 		<div>
-			<button onclick="decrypt('new')">Desencriptar</button>
+			<button onclick="decryptJWT()">Desencriptar JWT</button>
 		</div>
 		<div>
-			<button onclick="decrypt('old')">Desencriptar con método antiguo</button>
+			<button onclick="decrypt('new')">Desencriptar token</button>
+		</div>		
+		<div>
+			<button onclick="decrypt('old')">Desencriptar token con método antiguo</button>
 		</div>
 		<div>		
-			<button onclick="encrypt('new')">Encriptar</button> 
+			<button onclick="encrypt('new')">Encriptar token </button> 
 		</div>
 		<div>
-			<button onclick="decrypt('old')">Encriptar con método antiguo</button>
+			<button onclick="decrypt('old')">Encriptar token con método antiguo</button>
 		</div>
 	</div>
 
@@ -110,6 +125,14 @@
 		<input id="type" name="type" type="hidden" value="">
 	</form>
 	<script>
+	function decryptJWT(type)
+	{
+		var texto = document.getElementById('textAreaInput').value;
+		document.getElementById('type').value = 'decryptJWT';
+		document.getElementById('text').value = texto;
+		document.getElementById('formulario').submit();
+	}
+	
 		function decrypt(type)
 		{
 			var texto = document.getElementById('textAreaInput').value;
