@@ -24,15 +24,18 @@ public class IdentityProviderRVIASession implements IdentityProvider
     private static Logger           pLog            = LoggerFactory.getLogger(IdentityProviderRVIASession.class);
     private HttpServletRequest      pRequest;
     private HashMap<String, String> pClaims;
+    private MiqQuests               pMiqQuests;
     private String                  strJWT;
     private RequestConfigRvia       pRequestConfigRvia;
     public static final String      RURALVIA_NODE   = "node";
     public static final String      RURALVIA_COOKIE = "RVIASESION";
+    public static final String      ISUM_SERVICE_ID = "isumServiceId";
     public static final String      TOKEN_ID        = "rviatk1";
 
     public IdentityProviderRVIASession(HttpServletRequest pRequest, MiqQuests pMiqQuests)
     {
         this.pRequest = pRequest;
+        this.pMiqQuests = pMiqQuests;
         pClaims = null;
         strJWT = "";
     }
@@ -78,22 +81,38 @@ public class IdentityProviderRVIASession implements IdentityProvider
             if (pSession != null)
             {
                 strJWT = (String) pSession.getAttribute("JWT");
+                if (this.pMiqQuests.getPathRest().indexOf("/login") != -1)
+                {
+                    /* si la pagina es el login se guarda el jwt como atributo para recuperalo en la pagina jsp */
+                    pRequest.setAttribute("JWT", strJWT);
+                }
             }
         }
         if (strJWT == null)
         {
-            pClaims = getUserInfo(pRequest);
-            if (pClaims != null)
+            // String strPrimaryPath = _pRequest.
+            if (this.pMiqQuests.getPathRest().indexOf("/login") != -1)
             {
-                strJWT = generateJWT(pClaims, TOKEN_ID);
-                HttpSession pSession = pRequest.getSession(true);
-                pSession.setAttribute("JWT", strJWT);
+                pClaims = getUserInfo(pRequest);
+                if (pClaims != null)
+                {
+                    strJWT = generateJWT(pClaims, TOKEN_ID);
+                    HttpSession pSession = pRequest.getSession(true);
+                    pSession.setAttribute("JWT", strJWT);
+                    pRequest.setAttribute("JWT", strJWT);
+                }
+                else
+                {
+                    // Login fallido
+                    pLog.error("Se lanza una excepción de fallo de obtención de los parámetros de identificación de Rvia");
+                    throw new LogicalErrorException(403, 9999, "Login failed", "Es necesario suministrar credenciales válidos para iniciar sesión", null);
+                }
             }
             else
             {
                 // Login fallido
-                pLog.error("Se lanza una excepción de fallo de obtención de los parámetros de identificación de Rvia");
-                throw new LogicalErrorException(403, 9999, "Login failed", "Suministre credenciales válidas para iniciar sesión", new Exception());
+                pLog.error("Se lanza una excepción de fallo debido a que no esxiste JWT para una petición que no es /login");
+                throw new LogicalErrorException(403, 9999, "Login failed", "Es necesario acceder por el path /login para poder validar su sesión", null);
             }
         }
         pClaims = validateJWT(strJWT, TOKEN_ID);
@@ -116,17 +135,24 @@ public class IdentityProviderRVIASession implements IdentityProvider
     {
         String strNode = pRequest.getParameter(RURALVIA_NODE);
         String strSessionId = pRequest.getParameter(RURALVIA_COOKIE);
+        String strIsumServiceID = pRequest.getParameter(ISUM_SERVICE_ID);
         HashMap<String, String> pHtReturn;
         String strParameters = "USUARIO;ENTID;PERUSU;idioma;canalAix;canal;IP";
         /*
          * si no se reciben los parameñtros para interrogar a rvia, se intenta obtener el token de sesión de la forma
          * antigua
          */
-        if (strNode != null && strSessionId != null)
+        if (strNode != null && strSessionId != null && strIsumServiceID != null)
         {
             HashMap<String, String> pHtAux = InterrogateRvia.getParameterFromSession(RestRviaConnector.getRuralviaAddress(strNode), strSessionId, strParameters);
             /* se genera el objeto completo necesario apra poder generar el JWT */
             String[] strParamNames = strParameters.split(";");
+            if (strParamNames[0] == null)
+            {
+                /* si la respuesta de ruralvia es una sesión invalida se genera un error */
+                pLog.error("Los datos recibidos de ruralvia no son validos. Datos: " + pHtAux);
+                throw new SessionException(401, 777777, "Error al generar el token de sesión", "Los datos proporcionados no son correctos", null);
+            }
             pHtReturn = new HashMap<String, String>();
             pHtReturn.put(RequestConfigRvia.TokenKey.NODE.getValue(), strNode);
             pHtReturn.put(RequestConfigRvia.TokenKey.RVIASESION.getValue(), strSessionId);
@@ -138,7 +164,7 @@ public class IdentityProviderRVIASession implements IdentityProvider
             pHtReturn.put(RequestConfigRvia.TokenKey.CANALFRONT.getValue(), pHtAux.get(strParamNames[4]));
             pHtReturn.put(RequestConfigRvia.TokenKey.CANALHOST.getValue(), pHtAux.get(strParamNames[5]));
             pHtReturn.put(RequestConfigRvia.TokenKey.IP.getValue(), pHtAux.get(strParamNames[6]));
-            pHtReturn.put(RequestConfigRvia.TokenKey.ISUMSERVICEID.getValue(), "TRANSF_NAC_OTROS_ORD_MOVIL");
+            pHtReturn.put(RequestConfigRvia.TokenKey.ISUMSERVICEID.getValue(), strIsumServiceID);
         }
         else
         {

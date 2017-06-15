@@ -83,8 +83,16 @@ public class RestWSConnector
         String strUrlTotal = pMiqQuests.getBaseWSEndPoint(pRequest) + "?" + strFinalQueryParams;
         WebTarget pTarget = pClient.target(strUrlTotal);
         pLog.info("Url final de petición de datos: " + strUrlTotal);
-        String JWT = pRequest.getHeader(Constants.HTTP_HEADER_AUTORIZATION);
-        Response pReturn = pTarget.request().header(Constants.HTTP_HEADER_AUTORIZATION, JWT).headers(BUSHeader.getHeaders(pRequest, pRequestConfig)).accept(MediaType.APPLICATION_JSON).get();
+        /* se configuran los heades del bus y de JWT a insertar en la petición */
+        MultivaluedMap<String, Object> aHeaders = BUSHeader.getHeaders(pRequest, pRequestConfig);
+        /* se intenta obtener el JWT de la request original */
+        String strJWT = pRequest.getHeader(Constants.HTTP_HEADER_AUTORIZATION);
+        if (strJWT == null)
+        {
+            strJWT = (String) pRequest.getAttribute("JWT");
+        }
+        aHeaders.putSingle("Authorization", strJWT);
+        Response pReturn = pTarget.request().headers(aHeaders).accept(MediaType.APPLICATION_JSON).get();
         // Evitar logueo de campos de login
         logWithFilter(pReturn);
         return pReturn;
@@ -112,8 +120,6 @@ public class RestWSConnector
     {
         Hashtable<String, String> htDatesParameters = new Hashtable<String, String>();
         Client pClient = RviaRestHttpClient.getClient();
-        // Headers
-        String JWT = pRequest.getHeader("Authorization");
         String strParameters = getDDBBOperationParameters(pMiqQuests.getPathRest(), "paramname");
         pLog.info("Query Params: " + strParameters);
         if (!strParameters.isEmpty())
@@ -154,7 +160,16 @@ public class RestWSConnector
         strJsonData = pJson.toString();
         pLog.info("Url final de petición de datos: " + pMiqQuests.getBaseWSEndPoint(pRequest));
         WebTarget pTarget = pClient.target(pMiqQuests.getBaseWSEndPoint(pRequest));
-        Response pReturn = pTarget.request().header("Authorization", JWT).headers(BUSHeader.getHeaders(pRequest, pRequestConfig)).accept(MediaType.APPLICATION_JSON).post(Entity.json(strJsonData));
+        /* se configuran los heades del bus y de JWT a insertar en la petición */
+        MultivaluedMap<String, Object> aHeaders = BUSHeader.getHeaders(pRequest, pRequestConfig);
+        /* se intenta obtener el JWT de la request original */
+        String strJWT = pRequest.getHeader(Constants.HTTP_HEADER_AUTORIZATION);
+        if (strJWT == null)
+        {
+            strJWT = (String) pRequest.getAttribute("JWT");
+        }
+        aHeaders.putSingle("Authorization", strJWT);
+        Response pReturn = pTarget.request().headers(aHeaders).accept(MediaType.APPLICATION_JSON).post(Entity.json(strJsonData));
         logWithFilter(pReturn);
         return pReturn;
     }
