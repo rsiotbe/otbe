@@ -21,8 +21,18 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
     String strConceptoApunte = request.getParameter("concepto");
     String strDateFin = request.getParameter("mesFin");
     String strDateIni = request.getParameter("mesFin"); 
-    String strExcluClops = " and trim(t1.cod_origen) not in (" + AcuerdosRuralvia.getExcludedClops() + ")";
-       
+    String strExcluClops = " and trim(t1.cod_origen) not in (";
+    if(strContrato != null){
+        strExcluClops = strExcluClops + AcuerdosRuralvia.getExcludedClops() + ")";
+    }
+    else{
+        strExcluClops = strExcluClops + AcuerdosRuralvia.getExcludedClops() + AcuerdosRuralvia.getExcludedClopsAlDebe() + AcuerdosRuralvia.getExcludedClopsAlHaber() + ")";
+    }    
+    
+    
+    
+    
+    
     strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
     strDateIni= QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni); 
     String strQuery =
