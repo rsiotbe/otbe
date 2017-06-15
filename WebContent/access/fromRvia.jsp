@@ -1,4 +1,6 @@
 
+<%@page import="com.rsi.rvia.rest.security.IdentityProviderRVIASession"%>
+<%@page import="com.sun.net.httpserver.Headers"%>
 <%@page import="org.glassfish.jersey.internal.util.ExceptionUtils"%>
 <%@page import="org.json.JSONArray"%>
 <%@page import="org.json.JSONObject"%>
@@ -165,6 +167,7 @@
 		pLog.error("Error en la petición de token JWT");
 		throw new Exception("Error al procesar la petición. Imposible generar el token JWT");           
 	}
+	response.addHeader("authorization", pResponse.getHeaderString("authorization"));
 %>
 <body>
 	<form id="formRedirect" action="<%=strFinalUrl%>" method="<%=strMethod%>" enctype="multipart/form-data">
