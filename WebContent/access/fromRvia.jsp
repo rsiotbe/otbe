@@ -144,6 +144,8 @@
     pLog.info("Dirección final del iframe: " + strFinalUrl);
     
     /* se llama a generar el token JWT de acceso */
+    MiqQuests pMiqQuestsJWT = MiqQuests.getMiqQuests(9002);
+
     String strNode = request.getParameter("node");
     String strRviaSession = request.getParameter("RVIASESION");
     String strIsumServiceId = request.getParameter("isumServiceId");
@@ -156,7 +158,8 @@
 		pLog.error("Faltan parámetros para gnerar el token de sesión");
 		throw new Exception("Error al procesar la petición. Imposible crear JWT");       
     }
-    String strUrlJWT = strHost + "/api/rest/rviasession/login?node=" + strNode + "&RVIASESION=" + strRviaSession + "&isumServiceId=" + strIsumServiceId;
+    String strUrlJWT = pMiqQuestsJWT.getBaseWSEndPoint(request).toString();
+    strUrlJWT += "?node=" + strNode + "&RVIASESION=" + strRviaSession + "&isumServiceId=" + strIsumServiceId;
     /* se proceas la peticicón de JWT */
     Client pClient = RviaRestHttpClient.getClient();
 	WebTarget pTarget = pClient.target(UriBuilder.fromUri(strUrlJWT).build());
