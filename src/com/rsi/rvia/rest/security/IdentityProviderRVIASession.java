@@ -120,7 +120,12 @@ public class IdentityProviderRVIASession implements IdentityProvider
             {
                 pLog.trace("Se intenta recuperar los datos de sesiñon del token antiguo. Esto debería ser a extinguir");
                 pClaims = getUserInfoOldToken(pRequest);
-                // TODO: descomentar esta dos siguientes lineas cualdo se desactive el metodo de token antiguo
+                strJWT = generateJWT(pClaims, TOKEN_ID);
+                HttpSession pSession = pRequest.getSession(true);
+                pSession.setAttribute("JWT", strJWT);
+                pRequest.setAttribute("JWT", strJWT);
+                // TODO: descomentar esta dos siguientes lineas cualdo se desactive el metodo de token antiguo y borrar
+                // las anteriores
                 // pLog.error("Se lanza una excepción de fallo debido a que no esxiste JWT para una petición que no es /login");
                 // throw new LogicalErrorException(403, 9999, "Login failed",
                 // "Es necesario acceder por el path /login para poder validar su sesión", null);
