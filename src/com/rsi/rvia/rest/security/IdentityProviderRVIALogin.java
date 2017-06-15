@@ -23,9 +23,9 @@ import com.rsi.rvia.rest.tool.AppConfiguration;
  * @author zenhaust
  * @class Gestor de login y tokens de autorización a partir de usuarios de Ruralvía
  */
-public class IdentityProviderRVIA implements IdentityProvider
+public class IdentityProviderRVIALogin implements IdentityProvider
 {
-    private static Logger           pLog = LoggerFactory.getLogger(IdentityProviderRVIA.class);
+    private static Logger           pLog = LoggerFactory.getLogger(IdentityProviderRVIALogin.class);
     private HttpServletRequest      _pRequest;
     private HashMap<String, String> _claims;
     private String                  _JWT;
@@ -33,7 +33,7 @@ public class IdentityProviderRVIA implements IdentityProvider
     private HashMap<String, String> _pParamsToInject;
     private String                  _tokenId;
 
-    public IdentityProviderRVIA(HttpServletRequest pRequest, MiqQuests pMiqQuests)
+    public IdentityProviderRVIALogin(HttpServletRequest pRequest, MiqQuests pMiqQuests)
     {
         _pRequest = pRequest;
         _pMiqQuests = pMiqQuests;

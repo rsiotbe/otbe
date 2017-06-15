@@ -142,22 +142,18 @@
  	String strHost = "";
     if (fToLocalhost)
     {         
-    	/* se recupera la ip del usuairo que genra la invoación para comprobar si está en la lista de ips redireccionables */
         RequestConfigRvia pRequestConfigRvia;
-        String strUserIp;
         JSONObject pConfig;
         HttpPost pHttpPost;
         HttpClient pHttpClient;
         HttpResponse pHttpResponse;
         HttpEntity pHttpEntity; 
         String strContent = null;
-        pRequestConfigRvia = new RequestConfigRvia(request); 
-        strUserIp = pRequestConfigRvia.getIp();
         if(fLocalhostHttps)
         	strHost = "https://localhost:" + strLocalhostPort;
         else
         	strHost = "http://localhost:" + strLocalhostPort;
-        pLog.info("Se procesa la petición apuntando a localhost, puerto " + strLocalhostPort + " apuntando a la máquina " + strUserIp);
+        pLog.info("Se procesa la petición apuntando a localhost, puerto " + strLocalhostPort);
     }
     strFinalUrl = strHost + "/api/rest" + strPathRest;
     pLog.info("Dirección final del iframe: " + strFinalUrl);

@@ -1,3 +1,4 @@
+<%@page import="com.rsi.rvia.rest.conector.RestRviaConnector"%>
 <%@page import="com.rsi.rvia.rest.session.RequestConfigRvia"%>
 <%@page import="org.jsoup.select.Elements"%>
 <%@page import="org.jsoup.nodes.Element"%>
@@ -44,7 +45,7 @@ private final String strEndpoint = "altaMensaje.do";
 
 private JSONObject sendMessage(HttpServletRequest request) throws Exception {
 
-	RequestConfigRvia pConfigRvia = new RequestConfigRvia(request);
+	RequestConfigRvia pConfigRvia =  (RequestConfigRvia)RequestConfigRvia.getRequestConfig(request, null);
 	JSONObject pJsonResult = new JSONObject();
 	StringBuilder pUrlParameters = new StringBuilder(strDatosSesion);
 	
@@ -73,7 +74,7 @@ private JSONObject sendMessage(HttpServletRequest request) throws Exception {
 	pUrlParameters.append(strAmper).append("ENTALT=").append(pConfigRvia.getNRBE());
 	pUrlParameters.append(strAmper).append("canal=").append(pConfigRvia.getCanalHost());
 	pUrlParameters.append(strAmper).append("IP=").append(pConfigRvia.getIp());
-	pUrlParameters.append(strAmper).append("PATH=").append(pConfigRvia.getUriRvia());
+	pUrlParameters.append(strAmper).append("PATH=").append(RestRviaConnector.getRuralviaAddress(pConfigRvia.getNodeRvia()));
 	
 	pUrlParameters.append("&firmaRSI="+CommunicationUtils.getRsiSign(pConfigRvia.getRviaUserId(), pConfigRvia.getNRBE(), strOffice, pConfigRvia.getIsumUserProfile(), pConfigRvia.getLanguage().name()));
 	pUrlParameters.append("&fechaRSI="+CommunicationUtils.getRsiDate());
