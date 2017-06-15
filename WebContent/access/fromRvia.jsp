@@ -171,7 +171,9 @@
 		pLog.error("Error en la petición de token JWT");
 		throw new Exception("Error al procesar la petición. Imposible generar el token JWT");           
 	}
+	/* se fija el token en la cabecera de respuesta y en la sesión la sesión */
 	response.addHeader("authorization", pResponse.getHeaderString("authorization"));
+	session.setAttribute("JWT", pResponse.getHeaderString("authorization"));
 %>
 <body>
 	<form id="formRedirect" action="<%=strFinalUrl%>" method="<%=strMethod%>" enctype="multipart/form-data">
