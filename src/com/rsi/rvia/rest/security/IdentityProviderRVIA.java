@@ -100,6 +100,10 @@ public class IdentityProviderRVIA implements IdentityProvider
                     case 93408:
                         _claims.put("codTarjeta", "3076308913");
                         break;
+                    case 77276:
+                        // _claims.put("codTarjeta", "30760227");
+                        _claims.put("codTarjeta", "3076000004");
+                        break;
                     case 1790785:
                         _claims.put("codTarjeta", "3076341138");
                         break;
@@ -145,6 +149,10 @@ public class IdentityProviderRVIA implements IdentityProvider
             usuario = "03052445";
             documento = "33334444S";
             password = "03052445";
+            SOAPEndPoint = "http://soa02.risa";
+        }
+        else if (entorno.equals("PREP"))
+        {
             SOAPEndPoint = "http://soa02.risa";
         }
         String strBody = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:se=\"http://www.ruralserviciosinformaticos.com/empresa/SE_RVA_LoginTarjeta/\" xmlns:sec=\"http://www.ruralserviciosinformaticos.com/XSD/SecurityHeader/\">"
