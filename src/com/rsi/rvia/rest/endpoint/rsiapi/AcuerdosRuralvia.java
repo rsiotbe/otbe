@@ -18,7 +18,8 @@ public class AcuerdosRuralvia
     private static String[] _reserved          = { "select", "update", "delete", "insert", "alter", "drop", "create" };
     private static String   _strClopsExcluidos = "'070002', '070001', '410003', '410001'";
     private static String   _strClopsAlDebe    = ",'060011'";
-    private static String   _strClopsAlHaber   = ",'060001'";
+    // private static String _strClopsAlHaber = ",'060001'"; // Dejamos comentado hasta identificar los traspasos.
+    private static String   _strClopsAlHaber   = "";
 
     public static String[] getRviaContractsDecodeAliases(HttpServletRequest request) throws ApplicationException
     {
