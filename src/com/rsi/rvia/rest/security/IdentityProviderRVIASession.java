@@ -75,22 +75,29 @@ public class IdentityProviderRVIASession implements IdentityProvider
         pClaims = null;
         strJWT = pRequest.getHeader("Authorization");
         /* si el JWT no viene en la cabecera, se intenta buscar en la sesión del usuario */
+        pLog.trace("JWT recuperado de la cabecera: " + strJWT);
         if (strJWT == null)
         {
             HttpSession pSession = pRequest.getSession(false);
             if (pSession != null)
             {
                 strJWT = (String) pSession.getAttribute("JWT");
+                pLog.trace("JWT recuperado de la sesión: " + strJWT);
                 if (this.pMiqQuests.getPathRest().indexOf("/login") != -1)
                 {
                     /* si la pagina es el login se guarda el jwt como atributo para recuperalo en la pagina jsp */
                     pRequest.setAttribute("JWT", strJWT);
+                    pLog.trace("Se establece el valor recuperado como atributo de la request");
                 }
+            }
+            else
+            {
+                pLog.trace("No existe sesión del usuario");
             }
         }
         if (strJWT == null)
         {
-            // String strPrimaryPath = _pRequest.
+            pLog.trace("El valor recibido de JWT es nulo, se intenta obtener siempre y cuando el path de la petición sea /login");
             if (this.pMiqQuests.getPathRest().indexOf("/login") != -1)
             {
                 pClaims = getUserInfo(pRequest);
@@ -100,6 +107,7 @@ public class IdentityProviderRVIASession implements IdentityProvider
                     HttpSession pSession = pRequest.getSession(true);
                     pSession.setAttribute("JWT", strJWT);
                     pRequest.setAttribute("JWT", strJWT);
+                    pLog.trace("Se genera un nuevo token JWT y se guarda en sesión y en la request");
                 }
                 else
                 {
@@ -121,6 +129,7 @@ public class IdentityProviderRVIASession implements IdentityProvider
             pLog.error("Se genera un error de comprobación de JWT");
             throw new LogicalErrorException(401, 9999, "Unauthorized", "Sesión no válida", new Exception());
         }
+        pLog.trace("Se procede a generar el objeto RequestConfigRvia");
         this.pRequestConfigRvia = new RequestConfigRvia(pClaims);
     };
 
@@ -203,6 +212,7 @@ public class IdentityProviderRVIASession implements IdentityProvider
             HttpSession pSession = pRequest.getSession(true);
             pSession.setAttribute("token", strTokenReaded);
         }
+        pLog.trace("Valore obtenidos: " + pHtReturn);
         return pHtReturn;
     }
 
