@@ -83,7 +83,7 @@ public class IdentityProviderRVIASession implements IdentityProvider
             {
                 strJWT = (String) pSession.getAttribute("JWT");
                 pLog.trace("JWT recuperado de la sesión: " + strJWT);
-                if (this.pMiqQuests.getPathRest().indexOf("/login") != -1)
+                if (strJWT != null && this.pMiqQuests.getPathRest().indexOf("/login") != -1)
                 {
                     /* si la pagina es el login se guarda el jwt como atributo para recuperalo en la pagina jsp */
                     pRequest.setAttribute("JWT", strJWT);

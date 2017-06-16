@@ -142,10 +142,6 @@
     }
     strFinalUrl = strHost + "/api/rest" + strPathRest;
     pLog.info("Dirección final del iframe:  " + strFinalUrl);
-    
-    /* se llama a generar el token JWT de acceso */
-    MiqQuests pMiqQuestsJWT = MiqQuests.getMiqQuests(9002);
-
     String strNode = request.getParameter("node");
     String strRviaSession = request.getParameter("RVIASESION");
     String strIsumServiceId = request.getParameter("isumServiceId");
@@ -158,22 +154,30 @@
 		pLog.error("Faltan parámetros para gnerar el token de sesión");
 		throw new Exception("Error al procesar la petición. Imposible crear JWT");       
     }
-    String strUrlJWT = pMiqQuestsJWT.getBaseWSEndPoint(request).toString();
-    strUrlJWT = strUrlJWT.substring(0, strUrlJWT.indexOf("/", 10));
-    strUrlJWT += "/api/rest/rviasession/login?node=" + strNode + "&RVIASESION=" + strRviaSession + "&isumServiceId=" + strIsumServiceId;
+    /* se compruba el acceso a rviasession */
+    MiqQuests pMiqQuestsJWT = MiqQuests.getMiqQuests(9002);    
+    IdentityProviderRVIASession pIdentityProviderRVIASession= new IdentityProviderRVIASession(request,pMiqQuestsJWT);
+    pIdentityProviderRVIASession.process();
+    
+    /* se llama a generar el token JWT de acceso */
+
+
+//   String strUrlJWT = pMiqQuestsJWT.getBaseWSEndPoint(request).toString();
+//    strUrlJWT = strUrlJWT.substring(0, strUrlJWT.indexOf("/", 10));
+//    strUrlJWT += "/api/rest/rviasession/login?node=" + strNode + "&RVIASESION=" + strRviaSession + "&isumServiceId=" + strIsumServiceId;
     /* se proceas la peticicón de JWT */
-    Client pClient = RviaRestHttpClient.getClient();
-	WebTarget pTarget = pClient.target(UriBuilder.fromUri(strUrlJWT).build());
-    Response pResponse = pTarget.request().get();
-	pLog.info("Token JWT generado. Respuesta:" + pResponse.readEntity(String.class));
-	if(pResponse.getStatus() != 200)
-	{
-		pLog.error("Error en la petición de token JWT");
-		throw new Exception("Error al procesar la petición. Imposible generar el token JWT");           
-	}
+//    Client pClient = RviaRestHttpClient.getClient();
+//	WebTarget pTarget = pClient.target(UriBuilder.fromUri(strUrlJWT).build());
+//    Response pResponse = pTarget.request().get();
+//	pLog.info("Token JWT generado. Respuesta:" + pResponse.readEntity(String.class));
+//	if(pResponse.getStatus() != 200)
+//	{
+//		pLog.error("Error en la petición de token JWT");
+//		throw new Exception("Error al procesar la petición. Imposible generar el token JWT");           
+//	}
 	/* se fija el token en la cabecera de respuesta y en la sesión la sesión */
-	response.addHeader("authorization", pResponse.getHeaderString("authorization"));
-	session.setAttribute("JWT", pResponse.getHeaderString("authorization"));
+//	response.addHeader("authorization", pResponse.getHeaderString("authorization"));
+//	session.setAttribute("JWT", //pResponse.getHeaderString("authorization"));
 %>
 <body>
 	<form id="formRedirect" action="<%=strFinalUrl%>" method="<%=strMethod%>" enctype="multipart/form-data">
