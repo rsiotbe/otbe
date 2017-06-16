@@ -60,6 +60,8 @@
 	alParamToNotForwarding.add("localhostHttps");
 	alParamToNotForwarding.add("localhostPort");
 	alParamToNotForwarding.add("idMiq");
+	alParamToNotForwarding.add("isumServiceId");
+	alParamToNotForwarding.add("RVIASESION");
 	alParamToNotForwarding.add("token"); // antiguo token de acceso
 
 	strIdMiq = request.getParameter("idMiq");
