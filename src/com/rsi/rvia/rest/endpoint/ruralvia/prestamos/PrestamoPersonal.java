@@ -127,7 +127,7 @@ public class PrestamoPersonal
     }
 
     @POST
-    @Path("/signature")
+    @Path("/{idLinea}/{idGrupo}/{idProducto}/{idTarifa}/signature")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public Response getFirma(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
