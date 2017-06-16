@@ -103,6 +103,64 @@ public class OperationManager
     }
 
     /**
+     * Se procesa una petición que llega desde la antigua apliación de ruralvia
+     * 
+     * @param pRequest
+     *            Objeto petición original
+     * @param pUriInfo
+     *            Uri asociada a la petición
+     * @param strData
+     *            Datos asociados a la petición
+     * @param pMediaType
+     *            Tipo de mediatype que debe cumplir la petición
+     * @return Objeto respuesta de Jersey
+     */
+    public static Response processDownload(HttpServletRequest pRequest, UriInfo pUriInfo, String strData)
+    {
+        MiqQuests pMiqQuests = null;
+        Response pResponseConnector = null;
+        RequestConfigRvia pRequestConfigRvia = null;
+        IdentityProvider pIdentityProvider = null;
+        try
+        {
+            // Se obtienen los datos necesario para realizar la petición al proveedor.
+            pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
+            /* se comprueba la validaez de la petición */
+            pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests);
+            pIdentityProvider.process();
+            if (pMiqQuests.getComponentType() == MiqQuests.CompomentType.RVIA)
+            {
+                pRequestConfigRvia = ((IdentityProviderRVIASession) pIdentityProvider).getRequestConfigRvia();
+                // se comrpeuba el permiso de acceso de isum para esta petición */
+                checkIsumPermission(pRequestConfigRvia);
+                // Se instancia el conector y se solicitan los datos.
+                pResponseConnector = doDownloadConector(pUriInfo, pRequest, pRequestConfigRvia, pMiqQuests, strData);
+                pLog.info("Respuesta correcta.");
+            }
+        }
+        catch (Exception ex)
+        {
+            pLog.error("Se ha generado un error al procesar la respuesta final", ex);
+        }
+        return pResponseConnector;
+    }
+
+    private static Response doDownloadConector(UriInfo pUriInfo, HttpServletRequest pRequest,
+            RequestConfig pRequestConfig, MiqQuests pMiqQuests, String strData) throws Exception
+    {
+        RestConnector pRestConnector = null;
+        Response pResponseConnector = null;
+        MultivaluedMap<String, String> pListParams = Utils.getParamByPath(pUriInfo);
+        MultivaluedMap<String, String> pAllParams = new MultivaluedHashMap<String, String>();
+        pAllParams.putAll(pListParams);
+        // Se instancia el conector y se solicitan los datos.
+        pRestConnector = new RestConnector();
+        pResponseConnector = pRestConnector.getData(pRequest, strData, pRequestConfig, pMiqQuests, pAllParams, null);
+        pLog.info("Respuesta recuperada del conector, se procede a devolver al cliente");
+        return pResponseConnector;
+    }
+
+    /**
      * Se procesa una petición para consumo http, la cual puede ser ajena a Ruralvía
      * 
      * @param pRequest
