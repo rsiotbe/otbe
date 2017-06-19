@@ -154,16 +154,9 @@ public class ViaT
     @Produces(Constants.HTTP_HEADER_MEDIATYPE_PDF)
     public Response getpdfViaT(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        try
-        {
-            pLog.info("Se obtiene el pdf del documento INE de ViaT");
-            Response pReturn = OperationManager.processDownload(pRequest, pUriInfo, "{}");
-            pLog.info("Se finaliza la obtencion de el pdf del documento INE de ViaT");
-            return pReturn;
-        }
-        catch (Exception e)
-        {
-            return Response.serverError().build();
-        }
+        pLog.info("Se obtiene el pdf del documento INE de ViaT");
+        Response pReturn = OperationManager.processDownload(pRequest, pUriInfo, "{}");
+        pLog.info("Se finaliza la obtencion de el pdf del documento INE de ViaT");
+        return pReturn;
     }
 }
