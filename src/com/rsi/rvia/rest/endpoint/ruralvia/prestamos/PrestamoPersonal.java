@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constants;
 import com.rsi.rvia.rest.client.OperationManager;
 
 @Path("/loan/personal")
@@ -147,49 +148,15 @@ public class PrestamoPersonal
      *            the uri info
      * @return pdf con contrato de prestamo personal
      */
-    // @GET
-    // @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/pdf")
-    // @Consumes({ MediaType.APPLICATION_JSON })
-    // @Produces(Constants.HTTP_HEADER_MEDIATYPE_PDF)
-    // public Response getpdfViaT(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
-    // {
-    // try
-    // {
-    // pLog.info("Se obtiene el pdf del contrato para prestamo personal");
-    // Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}",
-    // MediaType.APPLICATION_JSON_TYPE);
-    // String strPdfBase64 = (new
-    // JSONObject(pReturn.getEntity().toString())).getJSONObject("response").getJSONObject("data").getString("buffer");
-    // byte[] abFile = org.apache.commons.codec.binary.Base64.decodeBase64(strPdfBase64.getBytes());
-    // String strFileName = "INE.pdf";
-    // String strHeaderDownload = "attachment; filename=\"" + strFileName + "\"";
-    // pLog.info("Se finaliza la obtencion de elpdf del contrato de prestamo personal");
-    // return Response.ok(abFile, Constants.HTTP_HEADER_MEDIATYPE_PDF).header("Content-Disposition",
-    // strHeaderDownload).build();
-    // }
-    // catch (Exception e)
-    // {
-    // return Response.serverError().build();
-    // }
-    // }
-    /**
-     * Devuelve PDF del contrato de Prestamo Personal.
-     * 
-     * @param pRequest
-     *            the request
-     * @param pUriInfo
-     *            the uri info
-     * @return pdf con contrato de prestamo personal
-     */
     @GET
     @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/pdf")
     @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces(Constants.HTTP_HEADER_MEDIATYPE_PDF)
     public Response getpdfViaT(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
-        pLog.info("Se obtiene el JSON con los datos para acceder al pdf del contrato para prestamo personal");
-        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
-        pLog.info("Se finaliza la obtencion de el JSON con los datos para acceder al pdf del contrato de prestamo personal");
+        pLog.info("Se obtiene el pdf del contrato para prestamo personal");
+        Response pReturn = OperationManager.processDownload(pRequest, pUriInfo, "{}");
+        pLog.info("Se finaliza la obtencion de el pdf del contrato para prestamo personal");
         return pReturn;
     }
 }
