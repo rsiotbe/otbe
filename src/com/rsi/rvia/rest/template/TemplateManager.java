@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Hashtable;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,7 +15,6 @@ import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.rsi.Constants;
 import com.rsi.Constants.Language;
 import com.rsi.rvia.rest.multibank.CssMultiBankProcessor;
@@ -124,7 +122,7 @@ public class TemplateManager
             String strCacheKey = strPathToTemplate;
             /* si no llega objeto pRequestConfig es porque no ha dado tienpo a instanciarse, se genera uno vacio */
             if (pRequestConfig == null)
-                pRequestConfig = new RequestConfig();
+                pRequestConfig = RequestConfig.getDefaultRequestConfig();
             /* si se trata de una petición con datos de ruralvia se itneta recupera la información */
             if (RequestConfigRvia.class.isAssignableFrom(pRequestConfig.getClass()))
             {

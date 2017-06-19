@@ -16,6 +16,8 @@ public class CardObject
     private String             strTarifa;
     private String             strTarjeta;
     private String             strCodEntidad;
+    private String             strCondCuota;
+    private String             strCondPorc;
 
     public String getStrLinea()
     {
@@ -75,6 +77,26 @@ public class CardObject
     public void setStrCodEntidad(String strCodEntidad)
     {
         this.strCodEntidad = strCodEntidad;
+    }
+
+    public void setStrCondicionesCuota(String strCondCuota)
+    {
+        this.strCondCuota = strCondCuota;
+    }
+
+    public String getStrCondicionesCuota()
+    {
+        return strCondCuota;
+    }
+
+    public String getStrCondicionesPorcentaje()
+    {
+        return strCondPorc;
+    }
+
+    public void setStrCondicionesPorcentaje(String strCondPorc)
+    {
+        this.strCondPorc = strCondPorc;
     }
 
     public JSONObject toJSON()

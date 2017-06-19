@@ -8,9 +8,6 @@ import java.util.HashMap;
  */
 public interface IdentityProvider
 {
-    // public String generateJWT(HashMap<String, String> claims, String strTokenId) throws Exception;
-    // public HashMap<String, String> validateJWT(String jwt, String strTokenId) throws Exception;
-    // public HashMap<String, String> doLogin(HttpServletRequest pRequest) throws ClientProtocolException, IOException;
     /**
      * Recuperador de campos del JWT de un token válido.
      * 

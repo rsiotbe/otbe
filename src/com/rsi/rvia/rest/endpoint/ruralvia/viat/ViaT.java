@@ -10,7 +10,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rsi.Constants;
@@ -157,14 +156,10 @@ public class ViaT
     {
         try
         {
-            pLog.info("Se obtiene el pdf del contrato para ViaT");
-            Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
-            String strPdfBase64 = (new JSONObject(pReturn.getEntity().toString())).getJSONObject("response").getJSONObject("data").getString("buffer");
-            byte[] abFile = org.apache.commons.codec.binary.Base64.decodeBase64(strPdfBase64.getBytes());
-            String strFileName = "INE.pdf";
-            String strHeaderDownload = "attachment; filename=\"" + strFileName + "\"";
-            pLog.info("Se finaliza la obtencion de el pdf del contrato para ViaT");
-            return Response.ok(abFile, Constants.HTTP_HEADER_MEDIATYPE_PDF).header("Content-Disposition", strHeaderDownload).build();
+            pLog.info("Se obtiene el pdf del documento INE de ViaT");
+            Response pReturn = OperationManager.processDownload(pRequest, pUriInfo, "{}");
+            pLog.info("Se finaliza la obtencion de el pdf del documento INE de ViaT");
+            return pReturn;
         }
         catch (Exception e)
         {

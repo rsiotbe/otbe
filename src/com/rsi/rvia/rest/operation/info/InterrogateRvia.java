@@ -1,21 +1,22 @@
 package com.rsi.rvia.rest.operation.info;
 
 import java.io.StringReader;
-import java.util.Hashtable;
-import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Iterator;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.glassfish.jersey.client.ClientConfig;
-import org.jsoup.Jsoup;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-import com.rsi.rvia.rest.session.RequestConfigRvia;
+import com.rsi.rvia.rest.client.RviaRestHttpClient;
 
 /**
  * Clase que gestiona el interrogatoria a ruralvia para conocer los datos de la operativa y los valores que el usuario
@@ -30,21 +31,6 @@ public class InterrogateRvia
     /**
      * Obtiene un documento de tipo XML con la información, es simmilar al fichero xml.dat de la operativa
      * 
-     * @param pRequest
-     *            Petición original
-     * @param strClavepagina
-     *            Clave pagina de la operativa a preguntar
-     * @return Documento Xml que contiene toda la info
-     * @throws Exception
-     */
-    public static Document getXmlDatAndUserInfo(HttpServletRequest pRequest, String strClavepagina) throws Exception
-    {
-        return getXmlDatAndUserInfo(new RequestConfigRvia(pRequest), strClavepagina);
-    }
-
-    /**
-     * Obtiene un documento de tipo XML con la información, es simmilar al fichero xml.dat de la operativa
-     * 
      * @param pRequestConfigRvia
      *            Objeto que contiene la información extraida de la sesión de ruralvia
      * @param strClavepagina
@@ -52,7 +38,7 @@ public class InterrogateRvia
      * @return Documento Xml que contiene toda la info
      * @throws Exception
      */
-    public static Document getXmlDatAndUserInfo(RequestConfigRvia pRequestConfigRvia, String strClavepagina)
+    public static Document getXmlDatAndUserInfo(String strHostRvia, String strRviaSessionId, String strClavepagina)
             throws Exception
     {
         String strURL;
@@ -66,10 +52,12 @@ public class InterrogateRvia
         try
         {
             /* se compone la url a invocar, para ello se accede a la inforamción de la sesión */
-            strURL = pRequestConfigRvia.getUriRvia() + URI_INTERROGATE_SERVICE;
+            strURL = strHostRvia + URI_INTERROGATE_SERVICE;
             /* si existe sesión de ruralvia asociada al usuario */
-            if (pRequestConfigRvia.getRviaSessionId() != null && !pRequestConfigRvia.getRviaSessionId().isEmpty())
-                strURL += ";RVIASESION=" + pRequestConfigRvia.getRviaSessionId();
+            if (strRviaSessionId != null && !strRviaSessionId.isEmpty())
+            {
+                strURL += ";RVIASESION=" + strRviaSessionId;
+            }
             strURL += "?" + INTERROGATE_PARAM_CLAVEPAGINA + "=" + strClavepagina;
             pLog.info("se compone la URL para interrogar a RVIA. URL: " + strURL);
             /* se utiliza el objeto cliente de peticiones http de Jersey */
@@ -86,15 +74,13 @@ public class InterrogateRvia
         // if (pResponseService == null || pResponseService.getStatus() != 200)
         if (pResponseService == null)
         {
-            if (pResponseService == null)
-            {
-                pLog.error("No se ha podido procesar el objeto ResponseService que devuelve la invocación, el elemento es nulo");
-            }
-            else
-            {
-                pLog.error("El servidor ha respondido un codigo http " + pResponseService.getStatus()
-                        + " al realizar la petición al servicio de intearrogar ruralvia");
-            }
+            pLog.error("No se ha podido procesar el objeto ResponseService que devuelve la invocación, el elemento es nulo");
+            throw new Exception("No se ha podido obtener la información del xml.dat y la información del usuario de ruralvia");
+        }
+        else if (pResponseService.getStatus() != 200)
+        {
+            pLog.error("El servidor ha respondido un codigo http " + pResponseService.getStatus()
+                    + " al realizar la petición al servicio de intearrogar ruralvia");
             throw new Exception("No se ha podido obtener la información del xml.dat y la información del usuario de ruralvia");
         }
         try
@@ -116,7 +102,7 @@ public class InterrogateRvia
     }
 
     /**
-     * Obtiene los valores de la sesión de ruralvia dao una lista de parámetros. Realiza una invoación a un servlet
+     * Obtiene los valores de la sesión de ruralvia dada una lista de parámetros. Realiza una invocación a un servlet
      * específico de ruralvia
      * 
      * @param strParameters
@@ -125,45 +111,35 @@ public class InterrogateRvia
      *            Datos de petición recibida desde ruralvia de Ruralvia
      * @return Hastable con los parámetros leidos desde ruralvia
      */
-    public static Hashtable<String, String> getParameterFromSession(String strParameters, RequestConfigRvia pSessionRvia)
+    public static HashMap<String, String> getParameterFromSession(String strHostRvia, String strRviaSessionId,
+            String strParameters)
     {
-        String strSesId;
-        String strHost;
-        String url;
+        String strUrl;
         String strHTML = "";
-        String[] strDatosParam = null;
-        Hashtable<String, String> htReturn = new Hashtable<String, String>();
-        org.jsoup.nodes.Document pDocResp;
+        HashMap<String, String> htReturn = new HashMap<String, String>();
         /* se obtienen los parametros de la petición a ruralvia */
-        if (pSessionRvia != null && pSessionRvia.getRviaSessionId() != null && pSessionRvia.getUriRvia() != null)
+        strUrl = strHostRvia + "/portal_rvia/rviaRestInfo;RVIASESION=" + strRviaSessionId + "?listAttributes="
+                + strParameters;
+        try
         {
-            strSesId = pSessionRvia.getRviaSessionId();
-            strHost = pSessionRvia.getUriRvia().toString();
-            htReturn = new Hashtable<String, String>();
-            url = strHost + "/portal_rvia/RviaRestInfo;RVIASESION=" + strSesId + "?listAttributes=" + strParameters;
-            try
+            pLog.debug("Se procede a obtener de ruralvia los datos necesario para gnerar el token JWT");
+            Client pClient = RviaRestHttpClient.getClient();
+            WebTarget pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
+            Response pResponse = pTarget.request().get();
+            strHTML = pResponse.readEntity(String.class);
+            JSONObject pData = new JSONObject(strHTML);
+            Iterator<String> aKeys = pData.keys();
+            while (aKeys.hasNext())
             {
-                /* Se fuerza que sea Document el tipo: org.jsoup.nodes.Document */
-                pDocResp = Jsoup.connect(url).get();
-                strHTML = pDocResp.html();
-                strDatosParam = strHTML.split(";");
-                if (strDatosParam != null)
-                {
-                    for (String strParam : strDatosParam)
-                    {
-                        String[] strPartesParam = strParam.split("#-#");
-                        if ((strPartesParam != null) && (strPartesParam.length >= 2))
-                        {
-                            htReturn.put(strPartesParam[0], strPartesParam[1]);
-                        }
-                    }
-                }
+                String strKey = aKeys.next();
+                htReturn.put(strKey, pData.getString(strKey).toString());
             }
-            catch (Exception ex)
-            {
-                pLog.error("Error al recuperar parametros de la sesion de Rvia: " + ex);
-                htReturn = new Hashtable<String, String>();
-            }
+            pLog.debug("Datos recuperado: " + htReturn);
+        }
+        catch (Exception ex)
+        {
+            pLog.error("Error al recuperar parametros de la sesion de Rvia: " + ex);
+            htReturn = new HashMap<String, String>();
         }
         return htReturn;
     }

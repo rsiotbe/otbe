@@ -93,7 +93,7 @@ public class SimulatorsManager
                     + "where s.id_simulador=p.id_simulador "
                     + "and s.entidad = ? "
                     + "and s.activo = '1' ";
-            /* se conmpone la condición de categoria con una clausula 'IN' */
+            /* se compone la condición de categoria con una clausula 'IN' */
             pSimulatorType = SimulatorType.valueOf(strSimulatorType);
             if (pSimulatorType == null)
             {

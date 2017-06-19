@@ -7,11 +7,12 @@ public class MiqQuestParam
     String strValue;
     String strDesc;
     String strType;
+    String strHeaderName;
+    String strAlias;
 
     public MiqQuestParam(int nId, String strName, String strValue, String strDesc, String strType,
             String strHeaderName, String strAlias)
     {
-        super();
         this.nId = nId;
         this.strName = strName;
         this.strValue = strValue;
@@ -91,6 +92,16 @@ public class MiqQuestParam
         this.strAlias = strAlias;
     }
 
-    String strHeaderName;
-    String strAlias;
+    public String toString()
+    {
+        StringBuilder pSb = new StringBuilder();
+        pSb.append("Id          : " + nId + "\n");
+        pSb.append("Name        : " + strName + "\n");
+        pSb.append("Value       : " + strValue + "\n");
+        pSb.append("Description : " + strDesc + "\n");
+        pSb.append("Type        : " + strType + "\n");
+        pSb.append("HeaderName  : " + strHeaderName + "\n");
+        pSb.append("Alias       : " + strAlias + "\n");
+        return pSb.toString();
+    }
 }
