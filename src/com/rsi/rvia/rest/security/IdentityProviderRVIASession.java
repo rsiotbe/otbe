@@ -73,32 +73,40 @@ public class IdentityProviderRVIASession implements IdentityProvider
     public void process() throws Exception
     {
         pClaims = null;
-        strJWT = pRequest.getHeader("Authorization");
-        /* si el JWT no viene en la cabecera, se intenta buscar en la sesión del usuario */
-        pLog.trace("JWT recuperado de la cabecera: " + strJWT);
-        if (strJWT == null)
+        if (!isRequestToLogin(this.pMiqQuests))
         {
-            HttpSession pSession = pRequest.getSession(false);
-            if (pSession != null)
+            strJWT = pRequest.getHeader("Authorization");
+            /* si el JWT no viene en la cabecera, se intenta buscar en la sesión del usuario */
+            pLog.trace("JWT recuperado de la cabecera: " + strJWT);
+            if (strJWT == null)
             {
-                strJWT = (String) pSession.getAttribute("JWT");
-                pLog.trace("JWT recuperado de la sesión: " + strJWT);
-                if (strJWT != null && this.pMiqQuests.getPathRest().indexOf("/login") != -1)
+                HttpSession pSession = pRequest.getSession(false);
+                if (pSession != null)
                 {
-                    /* si la pagina es el login se guarda el jwt como atributo para recuperalo en la pagina jsp */
-                    pRequest.setAttribute("JWT", strJWT);
-                    pLog.trace("Se establece el valor recuperado como atributo de la request");
+                    strJWT = (String) pSession.getAttribute("JWT");
+                    pLog.trace("JWT recuperado de la sesión: " + strJWT);
+                    if (strJWT != null && isRequestToLogin(this.pMiqQuests))
+                    {
+                        /* si la pagina es el login se guarda el jwt como atributo para recuperalo en la pagina jsp */
+                        pRequest.setAttribute("JWT", strJWT);
+                        pLog.trace("Se establece el valor recuperado como atributo de la request");
+                    }
+                }
+                else
+                {
+                    pLog.trace("No existe sesión del usuario");
                 }
             }
-            else
-            {
-                pLog.trace("No existe sesión del usuario");
-            }
+        }
+        else
+        {
+            /* si la petición es de login se fuerza a regenerar el tojen */
+            strJWT = null;
         }
         if (strJWT == null)
         {
             pLog.trace("El valor recibido de JWT es nulo, se intenta obtener siempre y cuando el path de la petición sea /login");
-            if (this.pMiqQuests.getPathRest().indexOf("/login") != -1)
+            if (isRequestToLogin(this.pMiqQuests))
             {
                 pClaims = getUserInfo(pRequest);
                 if (pClaims != null)
@@ -118,7 +126,7 @@ public class IdentityProviderRVIASession implements IdentityProvider
             }
             else
             {
-                pLog.trace("Se intenta recuperar los datos de sesiñon del token antiguo. Esto debería ser a extinguir");
+                pLog.trace("Se intenta recuperar los datos de sesión del token antiguo. Esto debería ser a extinguir");
                 pClaims = getUserInfoOldToken(pRequest);
                 strJWT = generateJWT(pClaims, TOKEN_ID);
                 HttpSession pSession = pRequest.getSession(true);
@@ -251,5 +259,10 @@ public class IdentityProviderRVIASession implements IdentityProvider
     public RequestConfigRvia getRequestConfigRvia()
     {
         return pRequestConfigRvia;
+    }
+
+    private boolean isRequestToLogin(MiqQuests pMiqQuests)
+    {
+        return ((this.pMiqQuests != null) && (this.pMiqQuests.getPathRest().indexOf("/login") != -1));
     }
 }
