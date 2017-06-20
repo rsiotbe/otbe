@@ -23,6 +23,7 @@
 <%@page import="org.jsoup.parser.Parser"%>
 <%@page import="org.jsoup.Jsoup"%>
 <%@page import="org.jsoup.nodes.Document"%>
+<%@page import="com.rsi.rvia.rest.tool.AppConfiguration"%>
 <%
 	pLog.debug("Messages ::: MessageDetails ::: Start");
 	JSONObject pJsonResponse = new JSONObject();
@@ -81,7 +82,7 @@ public JSONObject getMessageDetails (String strMessage, String strCodNrbe, Strin
 	pLog.debug("Messages ::: MessageDetails ::: Start ");
 	Connection pConnection = null;
 	JSONObject pJsongetMessageResponse = null;
-	String strQuery = "{call BEL.PK_CONSULTA_BUZON_MOVIL.getMessageDetails(?,?,?,?)}";
+	String strQuery = "{call " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".PK_CONSULTA_BUZON_MOVIL.getMessageDetails(?,?,?,?)}";
 	try
 	{
 		pLog.info("Messages ::: MessageDetails ::: DDBBProvider ");

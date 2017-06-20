@@ -51,79 +51,57 @@ String [] strRviaAcuerdos = AcuerdosRuralvia.getRviaContractsDecodeAliases(reque
   }
   */  
     String strResponse = "{}";
-   String strQuery =
-           " select" +
-           "    to_char(fecha_oprcn,'YYYY-MM')  \"mes\"" +
-           "   ,sgn  \"tipoApunte\"" +
-           "   ,sum(imp_apnte) \"importe\"" ;
-/*
-        " case " + 
-        "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0311','0321')  then 'PASIVO A LA VISTA'" + 
-        "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0351','0352')  then 'DEPÓSITOS'" + 
-        "  when trim(COD_LINEA)||trim(ID_GRP_PD) =  '0171'  then 'PRÉSTAMOS'" + 
-        "  when trim(COD_LINEA)||trim(ID_GRP_PD) =  '0151'  then 'TARJETAS CRÉDITO'" + 
-        "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0151','0551')  then 'TARJETAS CRÉDITO Y DÉBITO'" + 
-        " end \"nombreClasificacion\", " + 
-        " case " + 
-        "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0311','0321')  then '1'" + 
-        "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0351','0352')  then '2'" + 
-        "  when trim(COD_LINEA)||trim(ID_GRP_PD) =  '0171'  then '3'" + 
-        "  when trim(COD_LINEA)||trim(ID_GRP_PD) =  '0151'  then '4'" + 
-        "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0151','0551')  then '5'" + 
-        " end \"codClasificacion\" ";
-*/           
-        strQuery = strQuery + " from rdwc01.mi_do_apte_cta t1" +
-           " where cod_nrbe_en='" + strEntidad + "'" ;
+    String strQuery =
+            " select " + 
+            "   z1.a \"mes\", " + 
+            "   case when z1.b > 0 then 'H' else 'D' end  \"tipoApunte\", " + 
+            "   sum(abs(z1.b)) \"importe\" " + 
+            " from ( " + 
+            "           select " + 
+            "               to_char(fecha_oprcn,'YYYY-MM') a, " + 
+            "               sum(imp_apnte * decode(sgn,'H',1,'D',-1)) b " + 
+            "           from rdwc01.mi_do_apte_cta t1 " + 
+            " where cod_nrbe_en='" + strEntidad + "'" ;
 
-	 if(strDateFin == null){
-	    strDateFin =  AcuerdosRuralvia.getLastProcessDateMasUno("MI_DO_APTE_CTA");
-	 }
-	 else{
-	    strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
-	 } 
-	 strQuery = strQuery + " and t1.fecha_oprcn < to_date('" + strDateFin + "','yyyy-mm-dd') ";
- 
-   strDateIni = QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni);
-   strQuery = strQuery + " and fecha_oprcn > to_date('" + strDateIni + "','yyyy-mm-dd') ";      
-   String strRestrictorApuntes = " and cod_cta = '01' and ind_accion <> '3' ";
-   
-   strQuery = strQuery + strRestrictorApuntes;
-   if(strContrato == null){
- 	  if(strRviaAcuerdos[1]==null){ 
-	 	  strQuery = strQuery + " and num_sec_ac in (" +
-	 			  " select num_sec_ac from rdwc01.mi_ac_cont_gen " +
-	 			  " where cod_nrbe_en='" + strEntidad + "' " +
-	 			  "    and id_interno_pe=" + strIdInternoPe +
-	 			  "    and mi_fecha_fin=to_date('31.12.9999','dd.mm.yyyy') " + 
-	 		")";
- 	  }
- 	  else{
- 	     strQuery = strQuery + " and t1.num_sec_ac in (" + strRviaAcuerdos[1] +  ")";
- 	  }
- 	  
-   }
-   else{
- 	  strQuery = strQuery + " and num_sec_ac =" + strContrato; 
-   }         
-   strQuery = strQuery +  strExcluClops;
-   strQuery = strQuery + " group by to_char(fecha_oprcn,'YYYY-MM'), "+
-   /*
-         " case " + 
-         "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0311','0321')  then 'PASIVO A LA VISTA'" + 
-         "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0351','0352')  then 'DEPÓSITOS'" + 
-         "  when trim(COD_LINEA)||trim(ID_GRP_PD) =  '0171'  then 'PRÉSTAMOS'" + 
-         "  when trim(COD_LINEA)||trim(ID_GRP_PD) =  '0151'  then 'TARJETAS CRÉDITO'" + 
-         "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0151','0551')  then 'TARJETAS CRÉDITO Y DÉBITO'" + 
-         " end, " + 
-         " case " + 
-         "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0311','0321')  then '1'" + 
-         "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0351','0352')  then '2'" + 
-         "  when trim(COD_LINEA)||trim(ID_GRP_PD) =  '0171'  then '3'" + 
-         "  when trim(COD_LINEA)||trim(ID_GRP_PD) =  '0151'  then '4'" + 
-         "  when trim(COD_LINEA)||trim(ID_GRP_PD) in  ('0151','0551')  then '5'" + 
-         " end,  " + 
-    */     
-   		 "sgn  " ;
+                     if(strDateFin == null){
+                        strDateFin =  AcuerdosRuralvia.getLastProcessDateMasUno("MI_DO_APTE_CTA");
+                     }
+                     else{
+                        strDateFin= QueryCustomizer.yearMonthToFirstDayOfNextMonth(strDateFin);
+                     } 
+                     strQuery = strQuery + " and t1.fecha_oprcn < to_date('" + strDateFin + "','yyyy-mm-dd') ";
+                 
+                   strDateIni = QueryCustomizer.yearMonthToLastDayOfPreviousMonth(strDateIni);
+                   strQuery = strQuery + " and fecha_oprcn > to_date('" + strDateIni + "','yyyy-mm-dd') ";      
+                   String strRestrictorApuntes = " and cod_cta = '01' and ind_accion <> '3' ";
+                   
+                   strQuery = strQuery + strRestrictorApuntes;
+                   if(strContrato == null){
+                      if(strRviaAcuerdos[1]==null){ 
+                          strQuery = strQuery + " and num_sec_ac in (" +
+                                  " select num_sec_ac from rdwc01.mi_ac_cont_gen " +
+                                  " where cod_nrbe_en='" + strEntidad + "' " +
+                                  "    and id_interno_pe=" + strIdInternoPe +
+                                  "    and mi_fecha_fin=to_date('31.12.9999','dd.mm.yyyy') " + 
+                            ")";
+                      }
+                      else{
+                         strQuery = strQuery + " and t1.num_sec_ac in (" + strRviaAcuerdos[1] +  ")";
+                      }
+                      
+                   }
+                   else{
+                      strQuery = strQuery + " and num_sec_ac =" + strContrato; 
+                   }         
+                   strQuery = strQuery +  strExcluClops;
+                   
+        strQuery = strQuery + " group by " + 
+            " to_char(fecha_oprcn,'YYYY-MM') " + 
+            " ,hora_oprcn " + 
+            " ) z1 " + 
+            " where abs(z1.b) > 0 " + 
+            " group by z1.a, " + 
+            "   case when z1.b > 0 then 'H' else 'D' end " ;
    pLog.info("Query al customizador: " + strQuery);
    strResponse= QueryCustomizer.process(request,strQuery);          
    response.setHeader("content-type", "application/json");

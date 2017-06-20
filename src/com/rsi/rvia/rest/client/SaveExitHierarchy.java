@@ -160,7 +160,7 @@ public class SaveExitHierarchy
         ResultSet pResultSet = null;
         boolean fReturn = false;
         String strQuery = "select a.id_miq from  " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
-                + ".BDPTB222_MIQ_QUESTS a, " + "" + AppConfiguration.getInstance().getProperty("BELScheme").trim()
+                + ".BDPTB222_MIQ_QUESTS a, " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
                 + ".BDPTB233_MIQ_QUEST_RL_EXITS b, " + AppConfiguration.getInstance().getProperty("BELScheme").trim()
                 + ".BDPTB232_MIQ_EXITS c " + "where a.id_miq=b.id_miq and b.ID_MIQ_EXIT=c.ID_MIQ_EXIT and a.id_miq=? "
                 + "and c.EXITNAME=?";
