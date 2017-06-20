@@ -59,40 +59,49 @@ public class SaveExitHierarchy
     /**
      * Realiza un recorrido recursivo sobre un objeto json
      * 
-     * @param secResponse
+     * @param pJsonTree
      *            Objeto json
-     * @param toPath
+     * @param strToPath
      *            Nombre totalmente cualificado del campo de salida
      * @throws Exception
      */
-    private static void analisisRecursivo(JSONObject secResponse, String toPath) throws Exception
+    private static void analisisRecursivo(JSONObject pJsonTree, String strToPath) throws Exception
     {
         int i;
-        String key;
+        String strKey;
         @SuppressWarnings("unchecked")
-        Iterator<String> iterator = secResponse.keys();
+        Iterator<String> iterator = pJsonTree.keys();
+        String strPathInner = strToPath;
         while (iterator.hasNext())
         {
-            key = iterator.next();
-            /*
-             * if ("paginationinfo".equals(key)) { return; }
-             */
-            if (secResponse.optJSONArray(key) != null)
-            { // Es un objeto array de objetos
-                toPath = toPath + "." + key;
-                for (i = 0; i < secResponse.optJSONArray(key).length(); i++)
+            strKey = iterator.next();
+            if (pJsonTree.optJSONArray(strKey) != null)
+            {
+                /* Es un objeto array de objetos */
+                strPathInner = strToPath + "." + strKey;
+                for (i = 0; i < pJsonTree.optJSONArray(strKey).length(); i++)
                 {
-                    analisisRecursivo(secResponse.optJSONArray(key).getJSONObject(i), toPath);
+                    Object aObj = pJsonTree.optJSONArray(strKey).get(i);
+                    if (aObj instanceof JSONObject)
+                    {
+                        analisisRecursivo(pJsonTree.optJSONArray(strKey).getJSONObject(i), strPathInner);
+                    }
+                    else
+                    { // Es un campo del objeto
+                        save(strKey, strToPath);
+                    }
                 }
             }
-            else if (secResponse.optJSONObject(key) != null)
-            { // Es un objeto json
-                toPath = toPath + "." + key;
-                analisisRecursivo(secResponse.optJSONObject(key), toPath);
+            else if (pJsonTree.optJSONObject(strKey) != null)
+            {
+                /* Es un objeto json */
+                strPathInner = strToPath + "." + strKey;
+                analisisRecursivo(pJsonTree.optJSONObject(strKey), strPathInner);
             }
             else
-            { // Es un campo del objeto
-                save(key, toPath);
+            {
+                /* Es un campo del objeto */
+                save(strKey, strToPath);
             }
         }
     }

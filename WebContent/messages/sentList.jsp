@@ -21,7 +21,7 @@
 	JSONObject pJsonResponse = new JSONObject();
 	response.setHeader("content-type", "application/json");
 
-	RequestConfigRvia pConfigRvia = new RequestConfigRvia(request);
+	RequestConfigRvia pConfigRvia =  (RequestConfigRvia)RequestConfigRvia.getRequestConfig(request, null);
 	JSONArray pJsonResult = getSentList(pConfigRvia.getNRBE(), pConfigRvia.getLanguage().name(), pConfigRvia.getRviaUserId());
 	pJsonResponse.put("sentMessages", pJsonResult);
 	%><%=Utils.generateWSResponseJsonOk("sentMessages", pJsonResponse.toString())%>
@@ -83,7 +83,7 @@ public JSONArray getSentList (String strCodNrbe, String strLanguage, String strU
 			}
 			pJsongetNewsResponse = pAuxResponse;
 		}
-		pLog.debug("Messages ::: getSentList ::: pJsongetNewsResponse " + pJsongetNewsResponse);
+		pLog.debug("pJsongetNewsResponse " + pJsongetNewsResponse);
 	}
 	catch (Exception e)
 	{

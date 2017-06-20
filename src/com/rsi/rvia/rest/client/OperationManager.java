@@ -5,11 +5,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
@@ -25,6 +25,8 @@ import com.rsi.rvia.rest.operation.MiqQuests;
 import com.rsi.rvia.rest.response.RviaRestResponse;
 import com.rsi.rvia.rest.security.IdentityProvider;
 import com.rsi.rvia.rest.security.IdentityProviderFactory;
+import com.rsi.rvia.rest.security.IdentityProviderRVIASession;
+import com.rsi.rvia.rest.security.IdentityProviderTRUSTED;
 import com.rsi.rvia.rest.session.RequestConfig;
 import com.rsi.rvia.rest.session.RequestConfigRvia;
 import com.rsi.rvia.rest.template.TemplateManager;
@@ -62,36 +64,129 @@ public class OperationManager
         Response pResponseConnector;
         RviaRestResponse pRviaRestResponse = null;
         RequestConfigRvia pRequestConfigRvia = null;
+        IdentityProvider pIdentityProvider = null;
         try
         {
-            // Se obtiene los datos asociados a la petición de ruralvia y valida contra ISUM.
-            // comentada para postman
-            pRequestConfigRvia = getValidateSessionRvia(pRequest);
             // Se obtienen los datos necesario para realizar la petición al proveedor.
             pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
+            /* se comprueba la validaez de la petición */
+            pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests);
+            pIdentityProvider.process();
+            pRequestConfigRvia = ((IdentityProviderRVIASession) pIdentityProvider).getRequestConfigRvia();
+            // se comrpeuba el permiso de acceso de isum para esta petición */
+            checkIsumPermission(pRequestConfigRvia);
             // Se instancia el conector y se solicitan los datos.
             pRviaRestResponse = doRestConector(pUriInfo, pRequest, pRequestConfigRvia, pMiqQuests, strData);
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + pRviaRestResponse.toJsonString());
         }
         catch (Exception ex)
         {
-            pLog.error(
-                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
         {
             // Se construye la respuesta ya sea error, o correcta, json o template.
-            pResponseConnector = buildResponse(pErrorCaptured, pMediaType, pMiqQuests, pRviaRestResponse,
-                    pRequestConfigRvia);
+            pResponseConnector = buildResponse(pErrorCaptured, pMediaType, pMiqQuests, pRviaRestResponse, pRequestConfigRvia, pIdentityProvider);
         }
         catch (Exception ex)
         {
             pLog.error("Se ha generado un error al procesar la respuesta final", ex);
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).build();
+            if (pIdentityProvider == null)
+            {
+                pIdentityProvider = new IdentityProviderTRUSTED(pRequest, pMiqQuests);
+            }
+            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).header("Authorization", pIdentityProvider.getJWT()).build();
         }
         pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
+        return pResponseConnector;
+    }
+
+    /**
+     * Se procesa una petición que llega desde la antigua apliación de ruralvia
+     * 
+     * @param pRequest
+     *            Objeto petición original
+     * @param pUriInfo
+     *            Uri asociada a la petición
+     * @param strData
+     *            Datos asociados a la petición
+     * @param pMediaType
+     *            Tipo de mediatype que debe cumplir la petición
+     * @return Objeto respuesta de Jersey
+     */
+    public static Response processDownload(HttpServletRequest pRequest, UriInfo pUriInfo, String strData)
+    {
+        MiqQuests pMiqQuests = null;
+        Response pResponseConnector = null;
+        RequestConfigRvia pRequestConfigRvia = null;
+        IdentityProvider pIdentityProvider = null;
+        try
+        {
+            // Se obtienen los datos necesario para realizar la petición al proveedor.
+            pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
+            /* se comprueba la validaez de la petición */
+            pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests);
+            pIdentityProvider.process();
+            if (pMiqQuests.getComponentType() == MiqQuests.CompomentType.RVIA)
+            {
+                pRequestConfigRvia = ((IdentityProviderRVIASession) pIdentityProvider).getRequestConfigRvia();
+                // se comrpeuba el permiso de acceso de isum para esta petición */
+                checkIsumPermission(pRequestConfigRvia);
+                // Se instancia el conector y se solicitan los datos.
+                pResponseConnector = doDownloadConector(pUriInfo, pRequest, pRequestConfigRvia, pMiqQuests, strData);
+                pLog.info("Respuesta correcta desde el servidor de rvia");
+            }
+            /* se genera una nueva respuesta con el contenido descargado */
+            Object objFile = pResponseConnector.getEntity();
+            ResponseBuilder responseBuilder = Response.ok(objFile);
+            String strFileName = pRequest.getParameter("filename");
+            if (strFileName == null)
+            {
+                pLog.info("No existe nombre de la descarga definido desde parámetro, se intenta conseguir del origen");
+                try
+                {
+                    strFileName = pResponseConnector.getHeaderString("Content-disposition").split("filename=")[1].trim().replace(";", "");
+                    pLog.info("Nombre leido:" + strFileName);
+                }
+                catch (Exception ex)
+                {
+                    pLog.warn("Error al recuperar el nombre desde la petición original", ex);
+                    strFileName = "descarga";
+                    try
+                    {
+                        strFileName += pResponseConnector.getHeaderString("Content-type").split("/")[1];
+                    }
+                    catch (Exception ex2)
+                    {
+                        pLog.warn("Error al recuperar la extensión de fichero descargado", ex2);
+                    }
+                    pLog.info("Imposible lerr el nombre, se asigna uno por defecto: " + strFileName);
+                }
+            }
+            responseBuilder.header("Content-Disposition", "attachment; filename=\"" + strFileName + "\"");
+            return responseBuilder.build();
+        }
+        catch (Exception ex)
+        {
+            pLog.error("Se ha generado un error al procesar la respuesta final", ex);
+        }
+        return pResponseConnector;
+    }
+
+    private static Response doDownloadConector(UriInfo pUriInfo, HttpServletRequest pRequest,
+            RequestConfig pRequestConfig, MiqQuests pMiqQuests, String strData) throws Exception
+    {
+        RestConnector pRestConnector = null;
+        Response pResponseConnector = null;
+        MultivaluedMap<String, String> pListParams = Utils.getParamByPath(pUriInfo);
+        MultivaluedMap<String, String> pAllParams = new MultivaluedHashMap<String, String>();
+        pAllParams.putAll(pListParams);
+        // Se instancia el conector y se solicitan los datos.
+        pRestConnector = new RestConnector();
+        pResponseConnector = pRestConnector.getData(pRequest, strData, pRequestConfig, pMiqQuests, pAllParams, null);
+        pLog.info("Respuesta recuperada del conector, se procede a devolver al cliente");
         return pResponseConnector;
     }
 
@@ -147,13 +242,11 @@ public class OperationManager
             // Si estamos invocando a login tendremos los campos resueltos o el error
             JWT = pIdentityProvider.getJWT();
             HashMap<String, String> pParamsToInject = pIdentityProvider.getClaims();
-            pResponseConnector = pRestConnector.getData(pRequest, strData, null, pMiqQuests, pListParams,
-                    pParamsToInject);
+            pResponseConnector = pRestConnector.getData(pRequest, strData, null, pMiqQuests, pListParams, pParamsToInject);
             int nHttpCode = pResponseConnector.getStatus();
             if (nHttpCode != 200)
             {
-                throw new ApplicationException(nHttpCode, 99999, "Respuesta errónea desde end point",
-                        "No se ha podido recuperar la información de la operación", new Exception());
+                throw new ApplicationException(nHttpCode, 99999, "Respuesta errónea desde end point", "No se ha podido recuperar la información de la operación", new Exception());
             }
             strJsonData = pResponseConnector.readEntity(String.class);
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + strJsonData);
@@ -168,8 +261,7 @@ public class OperationManager
         }
         catch (Exception ex)
         {
-            pLog.error(
-                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
@@ -183,16 +275,14 @@ public class OperationManager
                     strTemplate = ErrorManager.ERROR_TEMPLATE;
                 strJsonData = pErrorCaptured.getJsonError();
                 nReturnHttpCode = pErrorCaptured.getHttpCode();
-                pLog.info(
-                        "Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
+                pLog.info("Se obtiene el JSON de error, modifica la cabecera de retrono y la plantilla si es necesario");
             }
             if (pMediaType == MediaType.APPLICATION_XHTML_XML_TYPE)
             {
                 pLog.info("La petición utiliza plantilla XHTML");
                 strJsonData = TemplateManager.processTemplate(pMiqQuests, strTemplate, null, strJsonData);
             }
-            pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).header("Authorization",
-                    JWT).build();
+            pResponseConnector = Response.status(nReturnHttpCode).entity(strJsonData).header("Authorization", JWT).build();
         }
         catch (Exception ex)
         {
@@ -225,35 +315,40 @@ public class OperationManager
         Response pResponseConnector;
         RequestConfig pRequestConfig = null;
         RviaRestResponse pRviaRestResponse = null;
+        IdentityProvider pIdentityProvider = null;
         try
         {
             /*
              * Se crea el objeto RequestConfig con los solo con los datos del lang y css para aplicarlos en el template
              */
-            pRequestConfig = new RequestConfig(pRequest, strJsonData);
+            pRequestConfig = RequestConfig.getRequestConfig(pRequest, strJsonData);
             /* se obtienen los datos necesario para realizar la petición al proveedor */
             pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
+            pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests);
+            pIdentityProvider.process();
             /* se procesa el resultado del conector paa evaluar y adaptar su contenido */
             pRviaRestResponse = doRestConector(pUriInfo, pRequest, pRequestConfig, pMiqQuests, strJsonData);
             pLog.info("Respuesta correcta. Datos finales obtenidos: " + pRviaRestResponse.toJsonString());
         }
         catch (Exception ex)
         {
-            pLog.error(
-                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada", ex);
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
         {
-            /* Se construye la respuesta ya sea error, o correcta, json o template */
-            pResponseConnector = buildResponse(pErrorCaptured, pMediaType, pMiqQuests, pRviaRestResponse,
-                    pRequestConfig);
+            pResponseConnector = buildResponse(pErrorCaptured, pMediaType, pMiqQuests, pRviaRestResponse, pRequestConfig, pIdentityProvider);
         }
         catch (Exception ex)
         {
             pLog.error("Se ha generado un error al procesar la respuesta final", ex);
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).build();
+            /* Se construye la respuesta ya sea error, o correcta, json o template */
+            if (pIdentityProvider == null)
+            {
+                pIdentityProvider = new IdentityProviderTRUSTED(pRequest, pMiqQuests);
+            }
+            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).header("Authorization", pIdentityProvider.getJWT()).build();
         }
         pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
         return pResponseConnector;
@@ -276,37 +371,45 @@ public class OperationManager
         ErrorResponse pErrorCaptured = null;
         Response pResponseConnector;
         RequestConfig pRequestConfig = null;
+        IdentityProvider pIdentityProvider = null;
         try
         {
+            pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
+            pLog.debug("MiqQuest a procesar para obtener el template: " + pMiqQuests);
+            pIdentityProvider = IdentityProviderFactory.getIdentityProvider(pRequest, pMiqQuests);
+            pIdentityProvider.process();
+            /* se obtienen los datos necesarios para realizar la petición al proveedor */
             if (fValidateTokenRvia)
             {
-                pRequestConfig = getValidateSessionRvia(pRequest);
+                RequestConfigRvia pRequestConfigRvia = ((IdentityProviderRVIASession) pIdentityProvider).getRequestConfigRvia();
+                checkIsumPermission(pRequestConfigRvia);
+                pRequestConfig = pRequestConfigRvia;
             }
             else
             {
-                pRequestConfig = new RequestConfig(pRequest, null);
+                pRequestConfig = RequestConfig.getRequestConfig(pRequest, null);
             }
-            /* se obtienen los datos necesario para realizar la petición al proveedor */
-            pMiqQuests = MiqQuests.getMiqQuests(pUriInfo);
-            pLog.debug("MiqQuest a procesar para obtener el template: " + pMiqQuests);
         }
         catch (Exception ex)
         {
-            pLog.error(
-                    "Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
+            pLog.error("Se captura un error. Se procede a evaluar que tipo de error es para generar la respuesta adecuada");
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
         }
         try
         {
             /* Se construye la respuesta ya sea error, o correcta, json o template */
-            pResponseConnector = buildResponse(pErrorCaptured, MediaType.APPLICATION_XHTML_XML_TYPE, pMiqQuests, null,
-                    pRequestConfig);
+            pResponseConnector = buildResponse(pErrorCaptured, MediaType.APPLICATION_XHTML_XML_TYPE, pMiqQuests, null, pRequestConfig, pIdentityProvider);
         }
         catch (Exception ex)
         {
             pLog.error("Se ha generado un error al procesar la respuesta final", ex);
             pErrorCaptured = ErrorManager.getErrorResponseObject(ex);
-            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).build();
+            /* Se construye la respuesta ya sea error, o correcta, json o template */
+            if (pIdentityProvider == null)
+            {
+                pIdentityProvider = new IdentityProviderTRUSTED(pRequest, pMiqQuests);
+            }
+            pResponseConnector = Response.serverError().encoding(ENCODING_UTF8).header("Authorization", pIdentityProvider.getJWT()).build();
         }
         pLog.trace("Se devuelve el objeto respuesta de la petición: " + pResponseConnector);
         return pResponseConnector;
@@ -347,7 +450,8 @@ public class OperationManager
      * @throws Exception
      */
     private static Response buildResponse(ErrorResponse pErrorCaptured, MediaType pMediaType, MiqQuests pMiqQuests,
-            RviaRestResponse pRviaRestResponse, RequestConfig pRequestConfig) throws Exception
+            RviaRestResponse pRviaRestResponse, RequestConfig pRequestConfig, IdentityProvider pIdentityProvider)
+            throws Exception
     {
         int nReturnHttpCode = HTTP_CODE_OK;
         String strTemplate = "";
@@ -378,7 +482,7 @@ public class OperationManager
             pLog.info("La petición utiliza plantilla XHTML o HTML");
             strJsonData = TemplateManager.processTemplate(pMiqQuests, strTemplate, pRequestConfig, strJsonData);
         }
-        return (Response.status(nReturnHttpCode).entity(strJsonData).encoding(ENCODING_UTF8).build());
+        return (Response.status(nReturnHttpCode).entity(strJsonData).encoding(ENCODING_UTF8).header("Authorization", pIdentityProvider.getJWT()).build());
     }
 
     /**
@@ -388,21 +492,13 @@ public class OperationManager
      * @return RequestConfigRvia con todos los datos cargados del token
      * @throws Exception
      */
-    public static RequestConfigRvia getValidateSessionRvia(HttpServletRequest pRequest) throws Exception
+    public static void checkIsumPermission(RequestConfigRvia pRequestConfigRvia) throws Exception
     {
-        RequestConfigRvia pRequestConfigRvia = null;
-        // Se obtiene los datos asociados a la petición de ruralvia.
-        pRequestConfigRvia = new RequestConfigRvia(pRequest);
-        // Se establece el token de datos recibido desde ruralvia como dato de sesión.
-        HttpSession pSession = pRequest.getSession(true);
-        pSession.setAttribute("token", pRequestConfigRvia.getToken());
         // Se comprueba si el servicio de isum está permitido.
         if (!IsumValidation.IsValidService(pRequestConfigRvia))
         {
-            throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido",
-                    "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
+            throw new ISUMException(ISUM_ERROR_CODE_EX, null, "Servicio no permitido", "El servicio solicitado de ISUM no está permitido para le perfil de este usuario.", null);
         }
-        return pRequestConfigRvia;
     }
 
     /**
@@ -427,12 +523,10 @@ public class OperationManager
         pAllParams.putAll(pListParams);
         // Se instancia el conector y se solicitan los datos.
         pRestConnector = new RestConnector();
-        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pAllParams,
-                null);
+        pResponseConnector = pRestConnector.getData(pRequest, strJsonData, pRequestConfig, pMiqQuests, pAllParams, null);
         pLog.info("Respuesta recuperada del conector, se procede a procesar su contenido");
         // Se procesa el resultado del conector paa evaluar y adaptar su contenido.
-        RviaRestResponse pRespuesta = ResponseManager.processResponseConnector(pRequestConfig, pRestConnector,
-                pResponseConnector, pMiqQuests);
+        RviaRestResponse pRespuesta = ResponseManager.processResponseConnector(pRequestConfig, pRestConnector, pResponseConnector, pMiqQuests);
         String entorno = AppConfiguration.getInstance().getProperty(Constants.ENVIRONMENT);
         if (Constants.Environment.TEST.name().equals(entorno))
         {

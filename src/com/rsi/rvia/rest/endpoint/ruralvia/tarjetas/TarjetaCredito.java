@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.rsi.Constants;
 import com.rsi.rvia.rest.client.OperationManager;
 
 /**
@@ -124,7 +125,7 @@ public class TarjetaCredito
      *            the uri info
      * @return the datos persona
      */
-    @POST
+    @GET
     @Path("/scoring/formdata")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
@@ -152,7 +153,7 @@ public class TarjetaCredito
     public Response getLopdTarjetaCredito(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
     {
         pLog.info("Se llama al método de LOPD de tarjetas de crédito");
-        Response pReturn = OperationManager.processTemplate(pRequest, pUriInfo, true);
+        Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Se finaliza el método de LOPD de tarjetas de crédito.");
         return pReturn;
     }
@@ -218,6 +219,27 @@ public class TarjetaCredito
         pLog.info("Se llama a la operativa de firma tarjeta de credito");
         Response pReturn = OperationManager.processDataFromRvia(pRequest, pUriInfo, "{}", MediaType.APPLICATION_JSON_TYPE);
         pLog.info("Se finaliza la llamada a la operativa de firma tarjeta de credito");
+        return pReturn;
+    }
+
+    /**
+     * Devuelve PDF del documento INE de Tarjeta de Crédito.
+     * 
+     * @param pRequest
+     *            the request
+     * @param pUriInfo
+     *            the uri info
+     * @return pdf con contrato de ViaT
+     */
+    @GET
+    @Path("/{idLinea}/{idGrupo}/{idPdv}/{idTrfa}/pdf")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces(Constants.HTTP_HEADER_MEDIATYPE_PDF)
+    public Response getpdfViaT(@Context HttpServletRequest pRequest, @Context UriInfo pUriInfo)
+    {
+        pLog.info("Se obtiene el pdf del documento INE de Tarjeta de Crédito");
+        Response pReturn = OperationManager.processDownload(pRequest, pUriInfo, "{}");
+        pLog.info("Se finaliza la obtencion de el pdf del documento INE de Tarjeta de Crédito");
         return pReturn;
     }
 }

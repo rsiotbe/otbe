@@ -14,7 +14,15 @@ public class AppConfiguration
     private AppConfiguration() throws IOException
     {
         pProperties = new Properties();
-        pProperties.load(AppConfiguration.class.getClassLoader().getResourceAsStream("/application.properties"));
+        try
+        {
+            pProperties.load(AppConfiguration.class.getClassLoader().getResourceAsStream("/application.properties"));
+        }
+        catch (Exception ex)
+        {
+            pLog.error("Error al cargar el fichero de propiedades '/application.properties'", ex);
+            throw ex;
+        }
         pLog.info("Se cargan las propiedades generales de la aplaición");
     }
 

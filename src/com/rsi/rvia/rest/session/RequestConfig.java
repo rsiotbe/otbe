@@ -31,10 +31,10 @@ public class RequestConfig
      * Constructor por defecto, no se debrái utilizar salvo para casos puntuales dodne no se ha recibido la información
      * del usuario
      */
-    public RequestConfig()
+    public static RequestConfig getDefaultRequestConfig()
     {
         pLog.debug("Se procede a cargar la configuración de la petición con los parámetros por defecto");
-        setValues(null, null);
+        return new RequestConfig(null, null);
     }
 
     /**
@@ -44,12 +44,12 @@ public class RequestConfig
      *            Objeto request recibido
      * @throws Exception
      */
-    public RequestConfig(HttpServletRequest pRequest, String strJsonData) throws Exception
+    public static RequestConfig getRequestConfig(HttpServletRequest pRequest, String strJsonData) throws Exception
     {
         String strLangValue;
         String strNRBE;
         JSONObject pJSONObject = null;
-        pLog.debug("Se procede a cargar la configuración de la petición leyendo objeto request y datos json asociados");
+        pLog.debug("Se procede a intanciar un objeto RequestConfig leyendo configuración de la petición leyendo objeto request o de datos json asociados");
         if (strJsonData != null && !strJsonData.isEmpty())
         {
             pJSONObject = new JSONObject(strJsonData);
@@ -66,7 +66,7 @@ public class RequestConfig
         {
             strNRBE = pJSONObject.optString(Constants.PARAM_NRBE);
         }
-        setValues(strLangValue, strNRBE);
+        return new RequestConfig(strLangValue, strNRBE);
     }
 
     /**
@@ -79,7 +79,7 @@ public class RequestConfig
      * @param strAppName
      *            String con el nombre del aplicativo que responde a la petición
      */
-    private void setValues(String strLang, String strNRBE)
+    protected RequestConfig(String strLang, String strNRBE)
     {
         if (strLang == null || strLang.trim().isEmpty())
         {

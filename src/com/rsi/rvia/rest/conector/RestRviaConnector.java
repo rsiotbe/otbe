@@ -1,11 +1,14 @@
 package com.rsi.rvia.rest.conector;
 
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Client;
@@ -46,9 +49,10 @@ import com.rsi.rvia.rest.tool.Utils;
 /** Clase que gestiona la conexión y comunicaciñon con el proveedor de datos Ruralvia */
 public class RestRviaConnector
 {
-    private static Logger pLog                      = LoggerFactory.getLogger(RestRviaConnector.class);
-    private static String PRIMARY_KEY_JSON_RESPONSE = "ruralvia";
-    private static String DATA_JSON_RESPONSE        = "data";
+    private static Logger     pLog                      = LoggerFactory.getLogger(RestRviaConnector.class);
+    private static String     PRIMARY_KEY_JSON_RESPONSE = "ruralvia";
+    private static String     DATA_JSON_RESPONSE        = "data";
+    private static Properties pAddressRviaProp          = new Properties();
 
     /**
      * Realiza la comunicación con Ruralvia para obtener los datos necesarios de la operación
@@ -74,15 +78,15 @@ public class RestRviaConnector
         {
             MultivaluedMap<String, String> pSessionFields = new MultivaluedHashMap<String, String>();
             String strSesId = pRequestConfigRvia.getRviaSessionId();
-            String strHost = pRequestConfigRvia.getUriRvia().toString();
+            String strHost = RestRviaConnector.getRuralviaAddress(pRequestConfigRvia.getNodeRvia());
             String strClavePagina = pMiqQuests.getEndPoint();
             String strQueryStringParams = ((pRequest.getQueryString() == null) ? ""
                     : URLDecoder.decode(pRequest.getQueryString(), "UTF-8"));
             String strUrl = strHost + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + strSesId + "?clavePagina="
                     + strClavePagina;
-            pLog.trace("Se compone la url a invocar a ruralvia: " + strUrl + ":" + pRequestConfigRvia.getToken());
+            pLog.trace("Se compone la url a invocar a ruralvia: " + strUrl);
             Client pClient = RviaRestHttpClient.getClient();
-            org.w3c.dom.Document pXmlDoc = InterrogateRvia.getXmlDatAndUserInfo(pRequest, strClavePagina);
+            org.w3c.dom.Document pXmlDoc = InterrogateRvia.getXmlDatAndUserInfo(RestRviaConnector.getRuralviaAddress(pRequestConfigRvia.getNodeRvia()), pRequestConfigRvia.getRviaSessionId(), strClavePagina);
             pLog.trace("Se obtiene el xml de configuración desde ruralvia y se procede a evaluar su contenido");
             proccessInformationFromRviaXML(pXmlDoc, pMiqQuests, pSessionFields);
             pLog.trace("Se añade la información recibida en la propia petición");
@@ -109,11 +113,7 @@ public class RestRviaConnector
             pLog.info("Params: " + pSessionFields);
             pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
             /* TODO: Revisar la necesidad de enviar los parámetros de sesión. Diríase que no es necesario. */
-            pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
-            pLog.info("Url: " + strUrl);
-            pLog.info("Params: " + pRviaFields);
             pReturn = pTarget.request().post(Entity.form(pRviaFields));
-            // pReturn = pTarget.request().post(Entity.form(pPathParams));
             pLog.trace("Respuesta obtenida desde ruralvia: " + pReturn);
         }
         catch (Exception ex)
@@ -149,18 +149,10 @@ public class RestRviaConnector
         {
             MultivaluedMap<String, String> pSessionFields = new MultivaluedHashMap<String, String>();
             String strSesId = pRequestConfigRvia.getRviaSessionId();
-            String strHost = pRequestConfigRvia.getUriRvia().toString();
+            String strHost = RestRviaConnector.getRuralviaAddress(pRequestConfigRvia.getNodeRvia());
             String strEndPoint = pMiqQuests.getEndPoint();
-            // String strUrl = strHost + "/portal_rvia/ServletDirectorPortal;RVIASESION=" + strSesId + "?clavePagina="
-            // + strClavePagina;
             String strUrl = strEndPoint.replaceAll("\\{host\\}", strHost) + ";RVIASESION=" + strSesId;
             pLog.trace("Se compone la url a invocar a ruralvia: " + strUrl);
-            Client pClient = RviaRestHttpClient.getClient();
-            // org.w3c.dom.Document pXmlDoc = InterrogateRvia.getXmlDatAndUserInfo(pRequest, strClavePagina);
-            // pLog.trace("Se obtiene el xml de configuración desde ruralvia y se procede a evaluar su contenido");
-            // proccessInformationFromRviaXML(pXmlDoc, pMiqQuests, pSessionFields);
-            // pLog.trace("Se añade la información recibida en la propia petición");
-            // addDataToSessionFields(strClavePagina, strData, pSessionFields);
             pSessionFields.putAll(pPathParams);
             /*
              * se comprueba si existe algúna opción en la configuración de miqQuest para enviarla como parámetro en la
@@ -180,6 +172,7 @@ public class RestRviaConnector
             MultivaluedMap<String, String> pRviaFields = pMiqQuests.testInputParams(pSessionFields);
             // pSessionFields.putAll(pParamsToInject);
             pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
+            Client pClient = RviaRestHttpClient.getClient();
             pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
             /* TODO: Revisar la necesidad de enviar los parámetros de sesión. Diríase que no es necesario. */
             pReturn = pTarget.request().post(Entity.form(pRviaFields));
@@ -240,24 +233,19 @@ public class RestRviaConnector
     }
 
     private static void addDataToSessionFields(String strClavePagina, String strQueryStringData,
-            MultivaluedMap<String, String> pSessionFields)
+            MultivaluedMap<String, String> pSessionFields) throws IOException
     {
         pSessionFields.add("clavePagina", strClavePagina);
         // Se evaluan los datos que llegan en la parte de datos.
-        String[] pArr = strQueryStringData.split("&");
-        if (!strQueryStringData.trim().isEmpty())
+        Map<String, String> pMap = Utils.queryStringToMap(strQueryStringData);
+        for (String strKey : pMap.keySet())
         {
-            for (int i = 0; i < pArr.length; i++)
+            if (pSessionFields.containsKey(strKey))
             {
-                if (pArr[i].trim().isEmpty())
-                    continue;
-                String[] pArr2 = pArr[i].split("=");
-                if (pArr2.length < 2)
-                    continue;
-                if (pArr2[0].trim().isEmpty() || pArr2[1].trim().isEmpty())
-                    continue;
-                pSessionFields.add(pArr2[0], pArr2[1]);
+                pLog.info("Se sobreescribe el campo " + strKey + " con el valor recuperado de la request");
+                pSessionFields.remove(strKey);
             }
+            pSessionFields.add(strKey, pMap.get(strKey));
         }
     }
 
@@ -724,5 +712,41 @@ public class RestRviaConnector
     private static void setErrorCode(JSONObject pJsonData, String strErrorCode) throws JSONException
     {
         pJsonData.put(Constants.KEY_ERROR_CODE, strErrorCode);
+    }
+
+    /**
+     * Carga las propiedades de ruralvia
+     * 
+     * @throws Exception
+     */
+    private static void loadRuralviaAddressProperties() throws Exception
+    {
+        try
+        {
+            pAddressRviaProp.load(RestRviaConnector.class.getResourceAsStream("/RuralviaAddress.properties"));
+            pLog.debug("Se carga el fichero de resolución de direcciones");
+        }
+        catch (Exception ex)
+        {
+            pLog.error("Fallo al cargar las propiedades de conexión con ruralvia", ex);
+            throw ex;
+        }
+    }
+
+    /**
+     * Devuevle la URL donde está montado un nodo
+     * 
+     * @param strNode
+     *            Nodoa resolver en dirección
+     * @return
+     * @throws Exception
+     */
+    public static String getRuralviaAddress(String strNode) throws Exception
+    {
+        if (pAddressRviaProp.isEmpty())
+        {
+            loadRuralviaAddressProperties();
+        }
+        return (String) pAddressRviaProp.get(strNode);
     }
 }

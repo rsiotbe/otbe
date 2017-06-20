@@ -16,7 +16,7 @@ public class IdentityProviderFactory
 
     public enum IdProvider
     {
-        RSI, RVIA, TRUSTED;
+        RSI, RVIA, RVIASESSION, TRUSTED;
     }
 
     /**
@@ -29,25 +29,28 @@ public class IdentityProviderFactory
     public static IdentityProvider getIdentityProvider(HttpServletRequest pRequest, MiqQuests pMiqQuests)
             throws Exception
     {
-        IdentityProvider rIdentityProvider;
+        IdentityProvider pIdentityProvider;
         pLog.debug("Retornando proveedor de identidad: " + pMiqQuests.getIdProvider().name());
         switch (pMiqQuests.getIdProvider())
         {
             case RSI:
-                rIdentityProvider = new IdentityProviderRSI(pRequest, pMiqQuests);
+                pIdentityProvider = new IdentityProviderRSI(pRequest, pMiqQuests);
                 break;
             case RVIA:
-                rIdentityProvider = new IdentityProviderRVIA(pRequest, pMiqQuests);
+                pIdentityProvider = new IdentityProviderRVIALogin(pRequest, pMiqQuests);
+                break;
+            case RVIASESSION:
+                pIdentityProvider = new IdentityProviderRVIASession(pRequest, pMiqQuests);
                 break;
             case TRUSTED:
-                rIdentityProvider = new IdentityProviderTRUSTED(pRequest, pMiqQuests);
+                pIdentityProvider = new IdentityProviderTRUSTED(pRequest, pMiqQuests);
                 break;
             default:
                 pLog.error("Proveedor de identidad no encontrado, no existe configuración para este proveedor. Proveedor:"
                         + pMiqQuests.getIdProvider().name());
-                rIdentityProvider = null;
+                pIdentityProvider = null;
                 break;
         }
-        return rIdentityProvider;
+        return pIdentityProvider;
     }
 }
