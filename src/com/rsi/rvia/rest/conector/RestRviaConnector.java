@@ -113,11 +113,7 @@ public class RestRviaConnector
             pLog.info("Params: " + pSessionFields);
             pTarget = pClient.target(UriBuilder.fromUri(strUrl).build());
             /* TODO: Revisar la necesidad de enviar los parámetros de sesión. Diríase que no es necesario. */
-            pLog.info("Se procede a invocar a ruralvia utilizando la url y los campos obtenidos desde sesión del usuario y por la propia petición.");
-            pLog.info("Url: " + strUrl);
-            pLog.info("Params: " + pRviaFields);
             pReturn = pTarget.request().post(Entity.form(pRviaFields));
-            // pReturn = pTarget.request().post(Entity.form(pPathParams));
             pLog.trace("Respuesta obtenida desde ruralvia: " + pReturn);
         }
         catch (Exception ex)

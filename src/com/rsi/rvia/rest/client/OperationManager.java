@@ -144,7 +144,21 @@ public class OperationManager
             String strFileName = pRequest.getParameter("filename");
             if (strFileName == null)
             {
-                strFileName = "descarga.pdf";
+                try
+                {
+                    strFileName = pResponseConnector.getHeaderString("Content-disposition").split("filename=")[1].trim().replace(";", "");
+                }
+                catch (Exception ex)
+                {
+                    strFileName = "descarga";
+                    try
+                    {
+                        strFileName += pResponseConnector.getHeaderString("Content-type").split("/")[1];
+                    }
+                    catch (Exception ex2)
+                    {
+                    }
+                }
             }
             responseBuilder.header("Content-Disposition", "attachment; filename=\"" + strFileName + "\"");
             return responseBuilder.build();
