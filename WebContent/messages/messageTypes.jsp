@@ -15,6 +15,7 @@
 <%@page import="org.slf4j.Logger"%>
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory.DDBBProvider"%>
 <%@page import="com.rsi.rvia.rest.DDBB.DDBBPoolFactory"%>
+<%@page import="com.rsi.rvia.rest.tool.AppConfiguration"%>
 <%
 	pLog.debug("Messages ::: MessageTypes ::: Start");
 	JSONObject pJsonResponse = new JSONObject();
@@ -38,7 +39,7 @@ public JSONArray getMessageTypes (String strCodNrbe) throws Exception
 	pLog.debug("Messages ::: getMessageTypes ::: Start ");
 	Connection pConnection = null;
 	JSONArray pJsongetNewsResponse = null;
-	String strQuery = "{call BEL.PK_CONSULTA_BUZON_MOVIL.getMessageTypes(?,?)}";
+	String strQuery = "{call " + AppConfiguration.getInstance().getProperty("BELScheme").trim() + ".PK_CONSULTA_BUZON_MOVIL.getMessageTypes(?,?)}";
 	try
 	{
 		pLog.debug("Messages ::: getMessageTypes ::: DDBBProvider ");
