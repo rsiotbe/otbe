@@ -9,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
@@ -135,8 +136,18 @@ public class OperationManager
                 checkIsumPermission(pRequestConfigRvia);
                 // Se instancia el conector y se solicitan los datos.
                 pResponseConnector = doDownloadConector(pUriInfo, pRequest, pRequestConfigRvia, pMiqQuests, strData);
-                pLog.info("Respuesta correcta.");
+                pLog.info("Respuesta correcta desde el servidor de rvia");
             }
+            /* se genera una nueva respuesta con el contenido descargado */
+            Object objFile = pResponseConnector.getEntity();
+            ResponseBuilder responseBuilder = Response.ok(objFile);
+            String strFileName = pRequest.getParameter("filename");
+            if (strFileName == null)
+            {
+                strFileName = "descarga.pdf";
+            }
+            responseBuilder.header("Content-Disposition", "attachment; filename=\"" + strFileName + "\"");
+            return responseBuilder.build();
         }
         catch (Exception ex)
         {
