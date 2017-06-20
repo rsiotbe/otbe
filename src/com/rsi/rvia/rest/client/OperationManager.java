@@ -144,12 +144,15 @@ public class OperationManager
             String strFileName = pRequest.getParameter("filename");
             if (strFileName == null)
             {
+                pLog.info("No existe nombre de la descarga definido desde parámetro, se intenta conseguir del origen");
                 try
                 {
                     strFileName = pResponseConnector.getHeaderString("Content-disposition").split("filename=")[1].trim().replace(";", "");
+                    pLog.info("Nombre leido:" + strFileName);
                 }
                 catch (Exception ex)
                 {
+                    pLog.warn("Error al recuperar el nombre desde la petición original", ex);
                     strFileName = "descarga";
                     try
                     {
@@ -157,7 +160,9 @@ public class OperationManager
                     }
                     catch (Exception ex2)
                     {
+                        pLog.warn("Error al recuperar la extensión de fichero descargado", ex2);
                     }
+                    pLog.info("Imposible lerr el nombre, se asigna uno por defecto: " + strFileName);
                 }
             }
             responseBuilder.header("Content-Disposition", "attachment; filename=\"" + strFileName + "\"");
