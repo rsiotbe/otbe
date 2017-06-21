@@ -53,38 +53,6 @@ public class RviaConnectCipher
     }
 
     /**
-     * Cifra un texto en funcion de una clave que se le pasa
-     * 
-     * @param strText
-     *            Texto sin cifrar
-     * @param strSecretKey
-     *            Clave para cifrar el texto
-     * @return String texto cifrado en base a la clave.
-     */
-    public static String symmetricEncryptOld(String strText, String strSecretKey)
-    {
-        byte[] bRaw;
-        String strEncryptedString;
-        SecretKeySpec pSkeySpec;
-        byte[] bEncryptText = strText.getBytes();
-        Cipher pCipher;
-        try
-        {
-            bRaw = strSecretKey.getBytes();
-            pSkeySpec = new SecretKeySpec(bRaw, ENCRYPT_MODE_RVIA);
-            pCipher = Cipher.getInstance(ENCRYPT_MODE_RVIA_OLD);
-            pCipher.init(Cipher.ENCRYPT_MODE, pSkeySpec);
-            strEncryptedString = Base64.encodeBase64String(pCipher.doFinal(bEncryptText));
-        }
-        catch (Exception e)
-        {
-            pLog.error("Error en el proceso de desencriptado: " + e);
-            return null;
-        }
-        return strEncryptedString;
-    }
-
-    /**
      * Descifra una cadena de texto en funcion de una clave
      * 
      * @param strText
@@ -123,6 +91,38 @@ public class RviaConnectCipher
     }
 
     /**
+     * Cifra un texto en funcion de una clave que se le pasa
+     * 
+     * @param strText
+     *            Texto sin cifrar
+     * @param strSecretKey
+     *            Clave para cifrar el texto
+     * @return String texto cifrado en base a la clave.
+     */
+    public static String symmetricEncryptOld(String strText, String strSecretKey)
+    {
+        byte[] bRaw;
+        String strEncryptedString;
+        SecretKeySpec pSkeySpec;
+        byte[] bEncryptText = strText.getBytes();
+        Cipher pCipher;
+        try
+        {
+            bRaw = strSecretKey.getBytes();
+            pSkeySpec = new SecretKeySpec(bRaw, ENCRYPT_KEY_RVIA);
+            pCipher = Cipher.getInstance(ENCRYPT_MODE_RVIA_OLD);
+            pCipher.init(Cipher.ENCRYPT_MODE, pSkeySpec);
+            strEncryptedString = Base64.encodeBase64String(pCipher.doFinal(bEncryptText));
+        }
+        catch (Exception e)
+        {
+            pLog.error("Error en el proceso de desencriptado: " + e);
+            return null;
+        }
+        return strEncryptedString;
+    }
+
+    /**
      * Descifra una cadena de texto en funcion de una clave
      * 
      * @param strText
@@ -141,7 +141,7 @@ public class RviaConnectCipher
         try
         {
             bRaw = strSecretKey.getBytes();
-            pSkeySpec = new SecretKeySpec(bRaw, ENCRYPT_MODE_RVIA);
+            pSkeySpec = new SecretKeySpec(bRaw, ENCRYPT_KEY_RVIA);
             bDecryptText = Base64.decodeBase64(strText);
             pCipher = Cipher.getInstance(ENCRYPT_MODE_RVIA_OLD);
             pCipher.init(Cipher.DECRYPT_MODE, pSkeySpec);
