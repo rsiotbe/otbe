@@ -144,6 +144,7 @@
     }
     strFinalUrl = strHost + "/api/rest" + strPathRest;
     pLog.info("Dirección final del iframe:  " + strFinalUrl);
+    String strToken = request.getParameter("token");
     String strNode = request.getParameter("node");
     String strRviaSession = request.getParameter("RVIASESION");
     String strIsumServiceId = request.getParameter("isumServiceId");
@@ -151,7 +152,9 @@
     pLog.info("node:          " + strNode);
     pLog.info("RVIASESION:    " + strRviaSession);
     pLog.info("isumServiceId: " + strIsumServiceId);
-    if( (strNode == null || strNode.trim().isEmpty()) || (strNode == null || strNode.trim().isEmpty()) || (strNode == null || strNode.trim().isEmpty()))
+    pLog.info("token: " + strToken);
+   
+    if( (strToken == null || strToken.trim().isEmpty()) && (strNode == null || strNode.trim().isEmpty()) || (strNode == null || strNode.trim().isEmpty()) || (strNode == null || strNode.trim().isEmpty()))
     {
 		pLog.error("Faltan parámetros para gnerar el token de sesión");
 		throw new Exception("Error al procesar la petición. Imposible crear JWT");       
