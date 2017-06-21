@@ -158,7 +158,7 @@
     if( (strToken == null || strToken.trim().isEmpty()))
     {
 		pLog.info("No se recibe el token antiguo de rvia");
-	    if( (strNode == null || strNode.trim().isEmpty()) || (strNode == null || strNode.trim().isEmpty()) || (strNode == null || strNode.trim().isEmpty()))
+	    if(!IdentityProviderRVIASession.requestContainsDataToLoginJWT(request) )
 	    {
 			pLog.error("Faltan parámetros para gnerar el token de sesión");
 			throw new Exception("Error al procesar la petición. Imposible crear JWT");       

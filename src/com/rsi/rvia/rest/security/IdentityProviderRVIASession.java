@@ -100,13 +100,13 @@ public class IdentityProviderRVIASession implements IdentityProvider
         }
         else
         {
-            /* si la petición es de login se fuerza a regenerar el tojen */
+            /* si la petición es de login se fuerza a regenerar el token */
             strJWT = null;
         }
         if (strJWT == null)
         {
-            pLog.trace("El valor recibido de JWT es nulo, se intenta obtener siempre y cuando el path de la petición sea /login");
-            if (isRequestToLogin(this.pMiqQuests))
+            pLog.trace("El valor recibido de JWT es nulo, se intenta obtener siempre y cuando el path de la petición sea /login y token venga vacio");
+            if (isRequestToLogin(this.pMiqQuests) && requestContainsDataToLoginJWT(this.pRequest))
             {
                 pClaims = getUserInfo(pRequest);
                 if (pClaims != null)
@@ -261,8 +261,17 @@ public class IdentityProviderRVIASession implements IdentityProvider
         return pRequestConfigRvia;
     }
 
+    public static boolean requestContainsDataToLoginJWT(HttpServletRequest pRequest)
+    {
+        String strNode = pRequest.getParameter(RURALVIA_NODE);
+        String strSessionId = pRequest.getParameter(RURALVIA_COOKIE);
+        String strIsumServiceID = pRequest.getParameter(ISUM_SERVICE_ID);
+        return ((strNode != null && !strNode.trim().isEmpty())
+                && (strSessionId != null && !strSessionId.trim().isEmpty()) || (strIsumServiceID != null && !strIsumServiceID.trim().isEmpty()));
+    }
+
     private boolean isRequestToLogin(MiqQuests pMiqQuests)
     {
-        return ((this.pMiqQuests != null) && (this.pMiqQuests.getPathRest().indexOf("/login") != -1));
+        return ((this.pMiqQuests != null) && (this.pMiqQuests.getPathRest().contains("/rviasession/login")));
     }
 }
