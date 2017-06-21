@@ -72,7 +72,7 @@ public class RviaConnectCipher
         {
             bRaw = strSecretKey.getBytes();
             pSkeySpec = new SecretKeySpec(bRaw, ENCRYPT_MODE_RVIA);
-            pCipher = Cipher.getInstance(ENCRYPT_MODE_RVIA);
+            pCipher = Cipher.getInstance(ENCRYPT_MODE_RVIA_OLD);
             pCipher.init(Cipher.ENCRYPT_MODE, pSkeySpec);
             strEncryptedString = Base64.encodeBase64String(pCipher.doFinal(bEncryptText));
         }
@@ -143,7 +143,7 @@ public class RviaConnectCipher
             bRaw = strSecretKey.getBytes();
             pSkeySpec = new SecretKeySpec(bRaw, ENCRYPT_MODE_RVIA);
             bDecryptText = Base64.decodeBase64(strText);
-            pCipher = Cipher.getInstance(ENCRYPT_MODE_RVIA);
+            pCipher = Cipher.getInstance(ENCRYPT_MODE_RVIA_OLD);
             pCipher.init(Cipher.DECRYPT_MODE, pSkeySpec);
             strDecryptedString = new String(pCipher.doFinal(bDecryptText));
         }
