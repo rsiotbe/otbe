@@ -154,10 +154,15 @@
     pLog.info("isumServiceId: " + strIsumServiceId);
     pLog.info("token: " + strToken);
    
-    if( (strToken == null || strToken.trim().isEmpty()) && (strNode == null || strNode.trim().isEmpty()) || (strNode == null || strNode.trim().isEmpty()) || (strNode == null || strNode.trim().isEmpty()))
+    //TODO: qiuitar esta comprobación cuando ruralvia ya no genere token JWT*/
+    if( (strToken == null || strToken.trim().isEmpty()))
     {
-		pLog.error("Faltan parámetros para gnerar el token de sesión");
-		throw new Exception("Error al procesar la petición. Imposible crear JWT");       
+		pLog.info("No se recibe el token antiguo de rvia");
+	    if( (strNode == null || strNode.trim().isEmpty()) || (strNode == null || strNode.trim().isEmpty()) || (strNode == null || strNode.trim().isEmpty()))
+	    {
+			pLog.error("Faltan parámetros para gnerar el token de sesión");
+			throw new Exception("Error al procesar la petición. Imposible crear JWT");       
+	    }
     }
     /* se compruba el acceso a rviasession */
     MiqQuests pMiqQuestsJWT = MiqQuests.getMiqQuests(9002);    
