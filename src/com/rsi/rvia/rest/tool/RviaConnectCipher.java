@@ -68,22 +68,17 @@ public class RviaConnectCipher
         SecretKeySpec pSkeySpec;
         byte[] bEncryptText = strText.getBytes();
         Cipher pCipher;
-        byte[] bIvByte;
-        IvParameterSpec pIvParameterSpec;
         try
         {
             bRaw = strSecretKey.getBytes();
-            pSkeySpec = new SecretKeySpec(bRaw, ENCRYPT_KEY_RVIA);
-            pCipher = Cipher.getInstance(ENCRYPT_MODE_RVIA_OLD);
-            bIvByte = new byte[pCipher.getBlockSize()];
-            pIvParameterSpec = new IvParameterSpec(bIvByte);
-            pCipher.init(Cipher.ENCRYPT_MODE, pSkeySpec, pIvParameterSpec);
+            pSkeySpec = new SecretKeySpec(bRaw, ENCRYPT_MODE_RVIA);
+            pCipher = Cipher.getInstance(ENCRYPT_MODE_RVIA);
+            pCipher.init(Cipher.ENCRYPT_MODE, pSkeySpec);
             strEncryptedString = Base64.encodeBase64String(pCipher.doFinal(bEncryptText));
-            pLog.trace("Se encripta el texto: " + strText + "  ->  " + strEncryptedString);
         }
         catch (Exception e)
         {
-            pLog.error("Error en el proceso de encriptado: " + e);
+            pLog.error("Error en el proceso de desencriptado: " + e);
             return null;
         }
         return strEncryptedString;
@@ -101,8 +96,8 @@ public class RviaConnectCipher
     public static String symmetricDecrypt(String strText, String strSecretKey)
     {
         Cipher pCipher;
-        String strEncryptedString = null;
-        byte[] bEncryptText = null;
+        String strDecryptedString = null;
+        byte[] bDecryptText = null;
         byte[] bRaw;
         byte[] bIvByte;
         SecretKeySpec pSkeySpec;
@@ -111,20 +106,20 @@ public class RviaConnectCipher
         {
             bRaw = strSecretKey.getBytes();
             pSkeySpec = new SecretKeySpec(bRaw, ENCRYPT_KEY_RVIA);
-            bEncryptText = Base64.decodeBase64(strText);
+            bDecryptText = Base64.decodeBase64(strText);
             pCipher = Cipher.getInstance(ENCRYPT_MODE_RVIA);
             bIvByte = new byte[pCipher.getBlockSize()];
             pIvParameterSpec = new IvParameterSpec(bIvByte);
             pCipher.init(Cipher.DECRYPT_MODE, pSkeySpec, pIvParameterSpec);
-            strEncryptedString = new String(pCipher.doFinal(bEncryptText));
-            pLog.trace("Se desencripta el texto: " + strText + "  ->  " + strEncryptedString);
+            strDecryptedString = new String(pCipher.doFinal(bDecryptText));
+            pLog.trace("Se desencripta el texto: " + strText + "  ->  " + strDecryptedString);
         }
         catch (Exception e)
         {
             pLog.error("Error en el proceso de desencriptado: " + e);
             return null;
         }
-        return strEncryptedString;
+        return strDecryptedString;
     }
 
     /**
@@ -139,29 +134,24 @@ public class RviaConnectCipher
     public static String symmetricDecryptOld(String strText, String strSecretKey)
     {
         Cipher pCipher;
-        String strEncryptedString = null;
-        byte[] bEncryptText = null;
+        String strDecryptedString;
+        byte[] bDecryptText = null;
         byte[] bRaw;
-        byte[] bIvByte;
         SecretKeySpec pSkeySpec;
-        IvParameterSpec pIvParameterSpec;
         try
         {
             bRaw = strSecretKey.getBytes();
-            pSkeySpec = new SecretKeySpec(bRaw, ENCRYPT_KEY_RVIA);
-            bEncryptText = Base64.decodeBase64(strText);
-            pCipher = Cipher.getInstance(ENCRYPT_MODE_RVIA_OLD);
-            bIvByte = new byte[pCipher.getBlockSize()];
-            pIvParameterSpec = new IvParameterSpec(bIvByte);
-            pCipher.init(Cipher.DECRYPT_MODE, pSkeySpec, pIvParameterSpec);
-            strEncryptedString = new String(pCipher.doFinal(bEncryptText));
-            pLog.trace("Se desencripta el texto: " + strText + "  ->  " + strEncryptedString);
+            pSkeySpec = new SecretKeySpec(bRaw, ENCRYPT_MODE_RVIA);
+            bDecryptText = Base64.decodeBase64(strText);
+            pCipher = Cipher.getInstance(ENCRYPT_MODE_RVIA);
+            pCipher.init(Cipher.DECRYPT_MODE, pSkeySpec);
+            strDecryptedString = new String(pCipher.doFinal(bDecryptText));
         }
         catch (Exception e)
         {
             pLog.error("Error en el proceso de desencriptado: " + e);
             return null;
         }
-        return strEncryptedString;
+        return strDecryptedString;
     }
 }
