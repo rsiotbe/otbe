@@ -47,7 +47,7 @@ public class RviaConnectCipher
         catch (Exception e)
         {
             pLog.error("Error en el proceso de encriptado: " + e);
-            return "Error";
+            return null;
         }
         return strEncryptedString;
     }
@@ -84,7 +84,7 @@ public class RviaConnectCipher
         catch (Exception e)
         {
             pLog.error("Error en el proceso de encriptado: " + e);
-            return "Error";
+            return null;
         }
         return strEncryptedString;
     }
@@ -122,7 +122,7 @@ public class RviaConnectCipher
         catch (Exception e)
         {
             pLog.error("Error en el proceso de desencriptado: " + e);
-            return "Error";
+            return null;
         }
         return strEncryptedString;
     }
@@ -160,7 +160,7 @@ public class RviaConnectCipher
         catch (Exception e)
         {
             pLog.error("Error en el proceso de desencriptado: " + e);
-            return "Error";
+            return null;
         }
         return strEncryptedString;
     }
